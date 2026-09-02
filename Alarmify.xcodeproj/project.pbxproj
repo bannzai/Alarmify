@@ -32,6 +32,21 @@
 		F793B4FAB205414176A8285C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
 		F85FB544587F14D09E6672A2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
 		FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247CF42D4F40787F4C65182A /* AppDelegate.swift */; };
+		F0741EE9469173649F6ADF3E /* AlarmifyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */; };
+		4B7E7C27C0554C845E459AF9 /* AlarmifyAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */; };
+		E8F14CF570C084D57A607E32 /* AlarmifyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */; };
+		B31BE58E67EAC1A826252E25 /* APIToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8995085D234479FC07C5802 /* APIToken.swift */; };
+		89410FAD6656B7D2FFA63FA7 /* StubAlarmifyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */; };
+		4066C3AB3D29DA4945C926BD /* APITokenModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E05876C65D36EA6A079E57 /* APITokenModel.swift */; };
+		53EAD0824A77DE703C32098B /* APITokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065124F3E5330F9EA8A86392 /* APITokenView.swift */; };
+		D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E725A6BB2526D22334F0AD0 /* AccountSession.swift */; };
+		BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */; };
+		0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */; };
+		5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */; };
+		8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA085358AAEA03A5EF70727B /* APITokenTests.swift */; };
+		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
+		B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */; };
+		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,7 +116,32 @@
 		FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyAlarmMetadata.swift; sourceTree = "<group>"; };
+		FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClient.swift"; sourceTree = "<group>"; };
+		C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIError.swift"; sourceTree = "<group>"; };
+		80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyBackend.swift"; sourceTree = "<group>"; };
+		C8995085D234479FC07C5802 /* APIToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIToken.swift"; sourceTree = "<group>"; };
+		3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StubAlarmifyAPIClient.swift"; sourceTree = "<group>"; };
+		85E05876C65D36EA6A079E57 /* APITokenModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenModel.swift"; sourceTree = "<group>"; };
+		065124F3E5330F9EA8A86392 /* APITokenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenView.swift"; sourceTree = "<group>"; };
+		0E725A6BB2526D22334F0AD0 /* AccountSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountSession.swift"; sourceTree = "<group>"; };
+		740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperMenuView.swift"; sourceTree = "<group>"; };
+		B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperSettings.swift"; sourceTree = "<group>"; };
+		CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClientTests.swift"; sourceTree = "<group>"; };
+		FA085358AAEA03A5EF70727B /* APITokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenTests.swift"; sourceTree = "<group>"; };
+		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4649D5FE6B8C40F98F7021CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */,
+				96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		2CCE9BAB00EC0990C832B23C /* AlarmifyWidget */ = {
@@ -170,6 +210,11 @@
 				FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */,
 				B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */,
 				5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */,
+				9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */,
+				EA6F3C3C50544DAC5E2DEED6 /* API */,
+				59154B5C415BFDDA5030DCF5 /* APIToken */,
+				41C12046F78BFC5C7EFB55BC /* Account */,
+				F0B0BA3AA317B1253CEA0183 /* Debug */,
 				51B09AA13A9C71008D188621 /* Shared */,
 				E6573050F56C14CBE499622A /* Utils */,
 			);
@@ -180,6 +225,8 @@
 			isa = PBXGroup;
 			children = (
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
+				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
+				FA085358AAEA03A5EF70727B /* APITokenTests.swift */,
 			);
 			path = AlarmifyTests;
 			sourceTree = "<group>";
@@ -191,6 +238,44 @@
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		EA6F3C3C50544DAC5E2DEED6 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */,
+				C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */,
+				80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */,
+				C8995085D234479FC07C5802 /* APIToken.swift */,
+				3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		59154B5C415BFDDA5030DCF5 /* APIToken */ = {
+			isa = PBXGroup;
+			children = (
+				85E05876C65D36EA6A079E57 /* APITokenModel.swift */,
+				065124F3E5330F9EA8A86392 /* APITokenView.swift */,
+			);
+			path = APIToken;
+			sourceTree = "<group>";
+		};
+		41C12046F78BFC5C7EFB55BC /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				0E725A6BB2526D22334F0AD0 /* AccountSession.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		F0B0BA3AA317B1253CEA0183 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */,
+				B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,6 +304,7 @@
 			buildConfigurationList = 3589CCFC139237E8AEA86D60 /* Build configuration list for PBXNativeTarget "Alarmify" */;
 			buildPhases = (
 				9AECDCB0EFB496ED778167B7 /* Sources */,
+				4649D5FE6B8C40F98F7021CA /* Frameworks */,
 				CB5D0521BF03DA354F13FCF5 /* Resources */,
 				CDC5F1D8F67B4C35816FC00E /* Embed Foundation Extensions */,
 			);
@@ -230,6 +316,8 @@
 			);
 			name = Alarmify;
 			packageProductDependencies = (
+				78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */,
+				01958D05CA8D55574EE318D0 /* FirebaseMessaging */,
 			);
 			productName = Alarmify;
 			productReference = B4CBF45DA44727442FBE4178 /* Alarmify.app */;
@@ -307,6 +395,9 @@
 			);
 			mainGroup = 36EAC6766A29B7DEDF68133A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
@@ -328,6 +419,7 @@
 				1D60D0AE0F1F756F1111ECE2 /* InfoPlist.xcstrings in Resources */,
 				191953572FB53D4E75DE28A8 /* Localizable.xcstrings in Resources */,
 				F765F6153169A374BE95CDE3 /* PrivacyInfo.xcprivacy in Resources */,
+				82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +431,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
+				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
+				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +462,16 @@
 				8FB69638DC050485008C1A96 /* ContentView.swift in Sources */,
 				961C849A700BC12ED6CE46E8 /* DeviceTokenStore.swift in Sources */,
 				974AB82FFFC32299E58CB354 /* Log.swift in Sources */,
+				F0741EE9469173649F6ADF3E /* AlarmifyAPIClient.swift in Sources */,
+				4B7E7C27C0554C845E459AF9 /* AlarmifyAPIError.swift in Sources */,
+				E8F14CF570C084D57A607E32 /* AlarmifyBackend.swift in Sources */,
+				B31BE58E67EAC1A826252E25 /* APIToken.swift in Sources */,
+				89410FAD6656B7D2FFA63FA7 /* StubAlarmifyAPIClient.swift in Sources */,
+				4066C3AB3D29DA4945C926BD /* APITokenModel.swift in Sources */,
+				53EAD0824A77DE703C32098B /* APITokenView.swift in Sources */,
+				D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */,
+				BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */,
+				0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -732,6 +836,30 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.18.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		01958D05CA8D55574EE318D0 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1E5BD0C5D2A8A2B0A486EF5B /* Project object */;
 }
