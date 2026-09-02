@@ -1,14 +1,15 @@
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
-import { Timestamp } from "firebase-admin/firestore";
+import { FieldPath, Timestamp, type DocumentData, type Query, type QuerySnapshot } from "firebase-admin/firestore";
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { planLimits } from "../lib/plan.js";
+import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
 import { MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
-  alarmHistoryCursorSchema,
   alarmHistoryLimitSchema,
   collections,
+  listCursorSchema,
   createApiTokenRequestSchema,
   registerDeviceRequestSchema,
   userSchema,
@@ -20,6 +21,53 @@ function currentUid(res: Response): string {
     throw new ApiError(401, "unauthenticated", "認証情報がありません");
   }
   return uid;
+}
+
+interface Page {
+  limit: number;
+  cursor: ListCursor | null;
+}
+
+function parsePage(req: Request): Page {
+  const parsedLimit = alarmHistoryLimitSchema.safeParse(req.query.limit ?? undefined);
+  if (!parsedLimit.success) {
+    throw badRequestFromZod(parsedLimit.error);
+  }
+  const parsedCursor = listCursorSchema.safeParse(req.query.cursor ?? undefined);
+  if (!parsedCursor.success) {
+    throw badRequestFromZod(parsedCursor.error);
+  }
+  if (!parsedCursor.data) {
+    return { limit: parsedLimit.data, cursor: null };
+  }
+  const cursor = decodeCursor(parsedCursor.data);
+  if (!cursor) {
+    throw new ApiError(400, "invalid_argument", "cursor の形式が不正です");
+  }
+  return { limit: parsedLimit.data, cursor };
+}
+
+/**
+ * 作成日時の新しい順に 1 ページ分を取る。
+ * cursor には並び順の値を持たせ、そのドキュメントが削除されていても続きを辿れるようにする
+ */
+async function paginate(
+  collection: Query<DocumentData>,
+  page: Page,
+): Promise<QuerySnapshot<DocumentData>> {
+  const ordered = collection.orderBy("createdAt", "desc").orderBy(FieldPath.documentId(), "desc");
+  const positioned = page.cursor
+    ? ordered.startAfter(page.cursor.createdAt, page.cursor.id)
+    : ordered;
+  return positioned.limit(page.limit).get();
+}
+
+function nextCursor(snapshot: QuerySnapshot<DocumentData>, limit: number): string | null {
+  if (snapshot.size < limit) {
+    return null;
+  }
+  const last = snapshot.docs[snapshot.size - 1];
+  return encodeCursor({ createdAt: last.get("createdAt") as Timestamp, id: last.id });
 }
 
 function authenticate(deps: Deps) {
@@ -90,6 +138,24 @@ export function createAppApi(deps: Deps): Express {
     res.status(200).json({ device_id: parsed.data.device_id, platform: parsed.data.platform });
   });
 
+  // 上限に達した時に、使わなくなった端末を見つけて消せるようにする
+  app.get("/v1/devices", async (_req, res) => {
+    const uid = currentUid(res);
+    const snapshot = await userRef(deps.firestore, uid)
+      .collection(collections.devices)
+      .orderBy("createdAt", "asc")
+      .limit(MAX_DEVICES_PER_USER)
+      .get();
+    res.status(200).json({
+      devices: snapshot.docs.map((doc) => ({
+        device_id: doc.id,
+        platform: doc.get("platform"),
+        created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
+        updated_at: (doc.get("updatedAt") as Timestamp).toDate().toISOString(),
+      })),
+    });
+  });
+
   app.delete("/v1/devices/:deviceId", async (req, res) => {
     const uid = currentUid(res);
     await userRef(deps.firestore, uid)
@@ -153,21 +219,22 @@ export function createAppApi(deps: Deps): Express {
     });
   });
 
-  app.get("/v1/api-tokens", async (_req, res) => {
+  app.get("/v1/api-tokens", async (req, res) => {
+    const page = parsePage(req);
     const uid = currentUid(res);
-    const snapshot = await userRef(deps.firestore, uid)
-      .collection(collections.apiTokens)
-      .where("revokedAt", "==", null)
-      .limit(100)
-      .get();
+    const snapshot = await paginate(
+      userRef(deps.firestore, uid).collection(collections.apiTokens).where("revokedAt", "==", null),
+      page,
+    );
     res.status(200).json({
       api_tokens: snapshot.docs.map((doc) => ({
         id: doc.id,
         name: doc.get("name"),
         prefix: doc.get("prefix"),
-        created_at: (doc.get("createdAt") as Timestamp | undefined)?.toDate().toISOString() ?? null,
+        created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
         last_used_at: (doc.get("lastUsedAt") as Timestamp | null | undefined)?.toDate().toISOString() ?? null,
       })),
+      next_cursor: nextCursor(snapshot, page.limit),
     });
   });
 
@@ -187,29 +254,13 @@ export function createAppApi(deps: Deps): Express {
     res.status(204).send();
   });
 
-  // 保持期間内の全件を辿れるよう、直前のページの最後の id を cursor にして続きを返す
   app.get("/v1/alarms", async (req, res) => {
-    const parsedLimit = alarmHistoryLimitSchema.safeParse(req.query.limit ?? undefined);
-    if (!parsedLimit.success) {
-      throw badRequestFromZod(parsedLimit.error);
-    }
-    const parsedCursor = alarmHistoryCursorSchema.safeParse(req.query.cursor ?? undefined);
-    if (!parsedCursor.success) {
-      throw badRequestFromZod(parsedCursor.error);
-    }
+    const page = parsePage(req);
     const uid = currentUid(res);
-    const alarmsRef = userRef(deps.firestore, uid).collection(collections.alarms);
-
-    let query = alarmsRef.orderBy("createdAt", "desc");
-    if (parsedCursor.data) {
-      const cursorSnapshot = await alarmsRef.doc(parsedCursor.data).get();
-      if (!cursorSnapshot.exists) {
-        throw new ApiError(400, "invalid_argument", "cursor のアラームが見つかりません");
-      }
-      query = query.startAfter(cursorSnapshot);
-    }
-    const snapshot = await query.limit(parsedLimit.data).get();
-
+    const snapshot = await paginate(
+      userRef(deps.firestore, uid).collection(collections.alarms),
+      page,
+    );
     res.status(200).json({
       alarms: snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -219,9 +270,7 @@ export function createAppApi(deps: Deps): Express {
         created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
         token_id: doc.get("tokenId"),
       })),
-      // 続きがあるかは次のページを取って判断する (件数が limit ちょうどなら cursor を返す)
-      next_cursor:
-        snapshot.size === parsedLimit.data ? snapshot.docs[snapshot.size - 1].id : null,
+      next_cursor: nextCursor(snapshot, page.limit),
     });
   });
 

@@ -1,4 +1,9 @@
-import { Timestamp } from "firebase-admin/firestore";
+import {
+  GrpcStatus,
+  Timestamp,
+  type Firestore,
+  type QueryDocumentSnapshot,
+} from "firebase-admin/firestore";
 import type { Deps } from "./deps.js";
 import { collections } from "../schema/index.js";
 
@@ -6,6 +11,30 @@ import { collections } from "../schema/index.js";
 export const CLEANUP_BATCH_SIZE = 500;
 /** 1 回の実行で回すバッチ数の上限。1 日の期限切れ件数を追い越せるだけ回し、無限に走らせない */
 export const CLEANUP_MAX_BATCHES = 20;
+
+/**
+ * 問い合わせた時点から変わっていないドキュメントだけを削除する。
+ * 問い合わせてから削除するまでの間に再スケジュールされたアラームを消さないよう、取得時点の更新時刻を条件にする
+ * (条件に合わないものは残し、次回の実行の対象にする)
+ */
+export async function deleteUnchanged(
+  firestore: Firestore,
+  docs: QueryDocumentSnapshot[],
+): Promise<number> {
+  const writer = firestore.bulkWriter();
+  writer.onWriteError(
+    (error) => error.code !== GrpcStatus.FAILED_PRECONDITION && error.failedAttempts < 3,
+  );
+  // 個々の Promise は close() で書き込みが流れるまで解決しないため、先に積んでから close する
+  const writes = docs.map((doc) =>
+    writer.delete(doc.ref, { lastUpdateTime: doc.updateTime }).then(
+      () => true,
+      () => false,
+    ),
+  );
+  await writer.close();
+  return (await Promise.all(writes)).filter(Boolean).length;
+}
 
 export interface CleanupOptions {
   batchSize?: number;
@@ -37,12 +66,7 @@ export async function deleteExpiredAlarms(
     if (snapshot.empty) {
       break;
     }
-    const writes = deps.firestore.batch();
-    for (const doc of snapshot.docs) {
-      writes.delete(doc.ref);
-    }
-    await writes.commit();
-    deleted += snapshot.size;
+    deleted += await deleteUnchanged(deps.firestore, snapshot.docs);
     if (snapshot.size < batchSize) {
       break;
     }

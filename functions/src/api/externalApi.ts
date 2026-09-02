@@ -31,6 +31,14 @@ export const EXTERNAL_GLOBAL_RATE_LIMIT: RateLimit = { limit: 600, windowMs: 60_
 /** 認証後の上限。詐称できない API トークン単位で数え、正規の呼び出し元同士が影響し合わないようにする */
 export const EXTERNAL_TOKEN_RATE_LIMIT: RateLimit = { limit: 60, windowMs: 60_000 };
 
+/**
+ * fire_at に指定できる先の限界。
+ * アラーム要求は発火 + 30 日まで残るため、際限なく先を許すと記録が残り続ける。
+ * Firestore の Timestamp の上限 (西暦 9999 年) を超える値で内部エラーになるのも防ぐ
+ */
+export const MAX_FIRE_AT_AHEAD_DAYS = 365;
+const MAX_FIRE_AT_AHEAD_MS = MAX_FIRE_AT_AHEAD_DAYS * 24 * 60 * 60 * 1000;
+
 export interface ExternalApiOptions {
   globalRateLimit?: RateLimit;
   tokenRateLimit?: RateLimit;
@@ -83,16 +91,17 @@ function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
       next(tooManyRequests());
       return;
     }
+    // トークンごとの枠も Firestore を引く前に消費する。上限を超えた呼び出しで読み取りを発生させない
+    if (!tokenLimiter.consume(tokenHash)) {
+      next(tooManyRequests());
+      return;
+    }
     const resolved = await findUserByApiToken(deps.firestore, plainToken);
     if (!resolved) {
       next(new ApiError(401, "unauthenticated", "API トークンが無効です"));
       return;
     }
     knownTokens.add(tokenHash);
-    if (!tokenLimiter.consume(`${resolved.uid}/${resolved.tokenId}`)) {
-      next(tooManyRequests());
-      return;
-    }
     res.locals.caller = resolved;
     await userRef(deps.firestore, resolved.uid)
       .collection(collections.apiTokens)
@@ -165,6 +174,36 @@ async function currentAlarmState(
   };
 }
 
+/**
+ * 最新の状態で push を送り、送っている間に状態が変わっていたら、変わった後の状態でもう一度送る。
+ * 登録と取り消しが同時に走った時に、端末へ古い方の指示だけが残るのを防ぐ
+ */
+async function deliverCurrentState(
+  deps: Deps,
+  uid: string,
+  alarmId: string,
+  devices: RegisteredDevice[],
+  state: AlarmState,
+): Promise<{ state: AlarmState; delivery: PushResult }> {
+  const delivery = await deliver(deps, devices, {
+    id: alarmId,
+    action: alarmActionOf(state.status),
+    fireAt: state.status === "canceled" ? null : state.fireAt,
+    title: state.title,
+  });
+  const latest = await currentAlarmState(deps, uid, alarmId, state);
+  if (latest.status === state.status) {
+    return { state, delivery };
+  }
+  const corrective = await deliver(deps, devices, {
+    id: alarmId,
+    action: alarmActionOf(latest.status),
+    fireAt: latest.status === "canceled" ? null : latest.fireAt,
+    title: latest.title,
+  });
+  return { state: latest, delivery: corrective };
+}
+
 function alarmResponse(id: string, state: AlarmState, delivery: PushResult): Record<string, unknown> {
   return {
     id,
@@ -218,6 +257,13 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     if (fireAt.getTime() <= now.getTime()) {
       throw new ApiError(400, "invalid_argument", "fire_at には未来の日時を指定してください");
     }
+    if (fireAt.getTime() > now.getTime() + MAX_FIRE_AT_AHEAD_MS) {
+      throw new ApiError(
+        400,
+        "invalid_argument",
+        `fire_at は ${MAX_FIRE_AT_AHEAD_DAYS} 日以内の日時を指定してください`,
+      );
+    }
 
     const devices = await listDevices(deps.firestore, uid);
     if (devices.length === 0) {
@@ -268,6 +314,8 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
           title,
           fireAt: Timestamp.fromDate(fireAt),
           status: "scheduled",
+          // 履歴の出どころを、その登録を行ったトークンに合わせる
+          tokenId,
           updatedAt: Timestamp.fromDate(now),
           expiresAt: expiresAtOf(now, fireAt),
         });
@@ -292,15 +340,16 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       fireAt,
       title,
     });
-    const delivery = await deliver(deps, devices, {
-      id: alarmId,
-      action: alarmActionOf(state.status),
-      fireAt: state.status === "canceled" ? null : state.fireAt,
-      title: state.title,
-    });
+    const { state: deliveredState, delivery } = await deliverCurrentState(
+      deps,
+      uid,
+      alarmId,
+      devices,
+      state,
+    );
     await recordDelivery(deps, uid, alarmId, delivery);
 
-    res.status(created ? 201 : 200).json(alarmResponse(alarmId, state, delivery));
+    res.status(created ? 201 : 200).json(alarmResponse(alarmId, deliveredState, delivery));
   });
 
   // 登録済みのアラームを取り消す。取り消し済みでも同じ応答を返す (冪等)
@@ -327,15 +376,16 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       fireAt: (snapshot.get("fireAt") as Timestamp).toDate(),
       title: (snapshot.get("title") as string | null) ?? null,
     });
-    const delivery = await deliver(deps, await listDevices(deps.firestore, uid), {
-      id: alarmId,
-      action: alarmActionOf(state.status),
-      fireAt: state.status === "canceled" ? null : state.fireAt,
-      title: state.title,
-    });
+    const { state: deliveredState, delivery } = await deliverCurrentState(
+      deps,
+      uid,
+      alarmId,
+      await listDevices(deps.firestore, uid),
+      state,
+    );
     await recordDelivery(deps, uid, alarmId, delivery);
 
-    res.status(200).json(alarmResponse(alarmId, state, delivery));
+    res.status(200).json(alarmResponse(alarmId, deliveredState, delivery));
   });
 
   app.use(notFoundHandler);

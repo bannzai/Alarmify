@@ -39,11 +39,20 @@ export const isoDateTimeSchema = z
 const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 /**
+ * Firestore のドキュメント id は大文字小文字を区別するが、iOS 側の UUID は区別しない。
+ * 同じアラームが 2 件登録されないよう、小文字に寄せてから使う
+ */
+const canonicalUuidSchema = z
+  .string()
+  .regex(uuidPattern, { message: "id は UUID で指定してください" })
+  .transform((value) => value.toLowerCase());
+
+/**
  * 外部サービス向け: POST /v1/alarms
  * id は呼び出し側が付けるアラームの識別子。再送で同じ id が来た時に、二重登録せず同じアラームを返すために使う
  */
 export const createAlarmRequestSchema = z.object({
-  id: z.string().regex(uuidPattern, { message: "id は UUID で指定してください" }).optional(),
+  id: canonicalUuidSchema.optional(),
   fire_at: isoDateTimeSchema,
   title: z.string().min(1).max(200).optional(),
 });
@@ -66,5 +75,5 @@ export type CreateApiTokenRequest = z.infer<typeof createApiTokenRequestSchema>;
 /** アプリ向け: GET /v1/alarms の limit。上限なしの取得を書かない (.claude/rules/firestore-db-rules.md) */
 export const alarmHistoryLimitSchema = z.coerce.number().int().min(1).max(100).default(50);
 
-/** アプリ向け: GET /v1/alarms の cursor。直前のページの最後のアラーム id */
-export const alarmHistoryCursorSchema = z.string().min(1).max(128).optional();
+/** アプリ向け: 一覧の続きを示す cursor (直前のページの最後の要素をエンコードした文字列) */
+export const listCursorSchema = z.string().min(1).max(256).optional();

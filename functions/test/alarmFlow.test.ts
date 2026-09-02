@@ -7,6 +7,7 @@ import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
 import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
+import { MAX_FIRE_AT_AHEAD_DAYS } from "../src/api/externalApi.js";
 import { userRef } from "../src/lib/store.js";
 import { collections } from "../src/schema/index.js";
 import {
@@ -91,6 +92,19 @@ describe("アプリ向け API", () => {
     await registerDevice("device-0", "fcm-token-updated");
   });
 
+  it("登録済みの端末を一覧できる", async () => {
+    await registerDevice("device-1", "fcm-token-1");
+    await registerDevice("device-2", "fcm-token-2");
+    const response = await request(appApi)
+      .get("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(200);
+    expect(response.body.devices.map((device: { device_id: string }) => device.device_id)).toEqual([
+      "device-1",
+      "device-2",
+    ]);
+  });
+
   it("平文のトークンは保存せず、ハッシュとプレフィックスだけを持つ", async () => {
     const issued = await issueApiToken();
     const stored = await userRef(context.deps.firestore, context.uid)
@@ -123,6 +137,7 @@ describe("アプリ向け API", () => {
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .expect(200);
     expect(list.body.api_tokens).toHaveLength(0);
+    expect(list.body.next_cursor).toBeNull();
     await issueApiToken("second");
   });
 });
@@ -548,6 +563,70 @@ describe("外部サービス向け API", () => {
     expect(stored.get("delivery").errors).toEqual(["messaging/invalid-registration-token"]);
   });
 
+  it("大文字小文字が違う同じ UUID は 1 件として扱う", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const alarmId = "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E";
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    const second = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId.toLowerCase(), fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(200);
+    expect(second.body.id).toBe(alarmId.toLowerCase());
+
+    const alarms = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .get();
+    expect(alarms.size).toBe(1);
+  });
+
+  it("fire_at が先すぎると 400", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const tooFar = new Date(TEST_NOW.getTime() + (MAX_FIRE_AT_AHEAD_DAYS + 1) * 24 * 60 * 60 * 1000);
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(tooFar) })
+      .expect(400);
+    expect(response.body.error.code).toBe("invalid_argument");
+  });
+
+  it("再スケジュールした時は、そのトークンを履歴の出どころにする", async () => {
+    await registerDevice();
+    const first = await issueApiToken("first");
+    const alarmId = "3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e";
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${first.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+
+    // 1 つ目を失効させて 2 つ目を発行する (無料プランは同時に 1 つまで)
+    await request(appApi)
+      .delete(`/v1/api-tokens/${first.id}`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(204);
+    const second = await issueApiToken("second");
+
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${second.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(new Date(FIRE_AT.getTime() + 1000)) })
+      .expect(200);
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(alarmId)
+      .get();
+    expect(stored.get("tokenId")).toBe(second.id);
+  });
+
   it("id が UUID でなければ 400", async () => {
     await registerDevice();
     const issued = await issueApiToken();
@@ -625,7 +704,7 @@ describe("アラーム履歴", () => {
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .expect(200);
     expect(first.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[2], ids[1]]);
-    expect(first.body.next_cursor).toBe(ids[1]);
+    expect(first.body.next_cursor).not.toBeNull();
 
     const second = await request(appApi)
       .get(`/v1/alarms?limit=2&cursor=${first.body.next_cursor}`)
@@ -635,11 +714,42 @@ describe("アラーム履歴", () => {
     expect(second.body.next_cursor).toBeNull();
   });
 
-  it("存在しない cursor は 400", async () => {
+  it("形式が不正な cursor は 400", async () => {
     await request(appApi)
-      .get("/v1/alarms?cursor=unknown-alarm")
+      .get("/v1/alarms?cursor=not-a-cursor")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .expect(400);
+  });
+
+  it("cursor のアラームが削除されていても続きを辿れる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const ids: string[] = [];
+    for (const index of [0, 1, 2]) {
+      context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
+      const created = await request(externalApi)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+        .expect(201);
+      ids.push(created.body.id);
+    }
+    const first = await request(appApi)
+      .get("/v1/alarms?limit=2")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(200);
+
+    // cursor が指すアラームが削除されても、残りを辿れる
+    await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(ids[1])
+      .delete();
+
+    const second = await request(appApi)
+      .get(`/v1/alarms?limit=2&cursor=${first.body.next_cursor}`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(200);
+    expect(second.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[0]]);
   });
 
   it("limit が範囲外なら 400", async () => {

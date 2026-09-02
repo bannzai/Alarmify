@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
-import { deleteExpiredAlarms } from "../src/lib/cleanup.js";
+import { deleteExpiredAlarms, deleteUnchanged } from "../src/lib/cleanup.js";
 import { userRef } from "../src/lib/store.js";
 import { collections } from "../src/schema/index.js";
 import { clearFirestore, createTestContext, TEST_NOW, type TestContext } from "./helpers.js";
@@ -49,6 +49,20 @@ describe("保持期間を過ぎたアラームの削除", () => {
     expect(await deleteExpiredAlarms(context.deps, options)).toBe(1);
     expect(await deleteExpiredAlarms(context.deps, options)).toBe(1);
     expect(await deleteExpiredAlarms(context.deps, options)).toBe(0);
+  });
+
+  it("問い合わせた後に更新されたアラームは削除しない", async () => {
+    await seedAlarm("expired", new Date(TEST_NOW.getTime() - 1000));
+    const alarmsRef = userRef(context.deps.firestore, context.uid).collection(collections.alarms);
+    const snapshot = await alarmsRef.get();
+
+    // 問い合わせの後に再スケジュールされた状況を作る
+    await alarmsRef.doc("expired").update({
+      expiresAt: Timestamp.fromMillis(TEST_NOW.getTime() + 60_000),
+    });
+
+    expect(await deleteUnchanged(context.deps.firestore, snapshot.docs)).toBe(0);
+    expect((await alarmsRef.doc("expired").get()).exists).toBe(true);
   });
 
   it("WriteBatch の上限を超える batchSize は受け付けない", async () => {
