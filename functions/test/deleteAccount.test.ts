@@ -4,7 +4,12 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { deleteUserAccount } from "../src/account/deleteAccount";
-import { userDocumentPath, userSubcollectionIds, userSubcollectionPath } from "../src/schema/user";
+import {
+  userDocumentPath,
+  usersCollectionId,
+  userSubcollectionIds,
+  userSubcollectionPath,
+} from "../src/schema/user";
 
 /** ローカル専用のプロジェクト ID。実プロジェクトへ接続するテストを書かない (.claude/rules/firestore-db-rules.md) */
 const projectId = "demo-alarmify";
@@ -95,7 +100,7 @@ describe("deleteAccount", () => {
   });
 
   beforeEach(async () => {
-    await firestore.recursiveDelete(firestore.collection("users"));
+    await firestore.recursiveDelete(firestore.collection(usersCollectionId));
     await auth.deleteUsers((await auth.listUsers()).users.map((user) => user.uid));
   });
 

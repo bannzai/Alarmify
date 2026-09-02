@@ -1,4 +1,7 @@
 XCODEPROJ := Alarmify.xcodeproj
+# Simulator 向けは ad-hoc 署名する。CODE_SIGNING_ALLOWED=NO では entitlements が付かず、
+# Keychain の読み書きが errSecMissingEntitlement (-34018) で失敗する (証明書は不要)
+SIM_CODE_SIGN := CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
 SCHEME := Alarmify
 CONFIGURATION := Debug
 DERIVED_DATA := tmp/DerivedData
@@ -12,7 +15,7 @@ DESTINATION ?= platform=iOS Simulator,id=$(SIMULATOR_UDID)
 
 # Simulator 向けビルド。generic destination なら simulator の起動なしでビルドできる
 build-ios:
-	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -configuration $(CONFIGURATION) -derivedDataPath $(DERIVED_DATA) -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -configuration $(CONFIGURATION) -derivedDataPath $(DERIVED_DATA) -destination 'generic/platform=iOS Simulator' $(SIM_CODE_SIGN) build
 
 # 実機向けビルド。code signing が必要なため、provisioning profile の自動生成とこの Mac へのデバイス登録を CLI から行えるようにする
 device:
@@ -43,7 +46,7 @@ test:
 	@set -e; \
 	destination="$(DESTINATION)"; \
 	[ -n "$$destination" ] && [ "$$destination" != "platform=iOS Simulator,id=" ] || { echo "Error: sim-boot でSimulatorを解決できません (sim-bootがPATHにあるか確認するか、DESTINATION='<destination>'またはSIMULATOR_UDID=<UDID>を指定してください)" >&2; exit 1; }; \
-	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -derivedDataPath $(DERIVED_DATA) -destination "$$destination" CODE_SIGNING_ALLOWED=NO test
+	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -derivedDataPath $(DERIVED_DATA) -destination "$$destination" $(SIM_CODE_SIGN) test
 
 clean:
 	rm -rf $(DERIVED_DATA)

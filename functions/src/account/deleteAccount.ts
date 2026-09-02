@@ -31,7 +31,8 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   await firestore.recursiveDelete(userDocument);
 
   const authUserExisted = await deleteAuthUser(uid);
-  logger.info("Deleted account", { uid, authUserExisted, userDocumentExisted: snapshot.exists });
+  // 削除したアカウントの識別子 (uid) はログにも残さない (ログの保持期間だけ識別可能なデータが残るため)
+  logger.info("Deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
 
   return { authUserExisted, userDocumentExisted: snapshot.exists };
 }

@@ -148,9 +148,10 @@ struct SettingsView: View {
         deletionState = .deleting
         do {
             try await deletionService.deleteAccount(credential: credential)
-            // 削除後はアプリを初期状態に戻し、匿名認証をやり直せるようにする
+            // 削除後はアプリを初期状態に戻し、匿名認証をやり直せるようにする。
+            // APNs デバイストークンは端末固有の値でアカウントのデータではなく、
+            // 再取得は次回起動時の registerForRemoteNotifications でしか行われないため破棄しない
             AccountStore.clear()
-            DeviceTokenStore.clear()
             self.credential = nil
             deletionState = .deleted
         } catch {

@@ -16,7 +16,6 @@ final class AccountDeletionTests: XCTestCase {
         StubURLProtocol.response = nil
         StubURLProtocol.requests = []
         AccountStore.clear()
-        DeviceTokenStore.clear()
         super.tearDown()
     }
 
@@ -65,6 +64,7 @@ final class AccountDeletionTests: XCTestCase {
         }
     }
 
+    /// ID トークンは Keychain、uid は UserDefaults に保存されるが、呼び出し側からは 1 つの認証情報として扱える
     func testAccountStoreClearRemovesCredentialAndIsIdempotent() {
         AccountStore.save(credential)
         XCTAssertEqual(AccountStore.load(), credential)
@@ -73,14 +73,6 @@ final class AccountDeletionTests: XCTestCase {
         AccountStore.clear()
 
         XCTAssertNil(AccountStore.load())
-    }
-
-    func testDeviceTokenStoreClearRemovesToken() {
-        DeviceTokenStore.save("0123456789abcdef")
-
-        DeviceTokenStore.clear()
-
-        XCTAssertNil(DeviceTokenStore.load())
     }
 }
 

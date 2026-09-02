@@ -24,13 +24,13 @@ jobs:
           set -o pipefail
           xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO build
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES build
       - name: Test
         run: |
           set -o pipefail
           xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
-            CODE_SIGNING_ALLOWED=NO test
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES test
 
   # Functions は Firebase Emulator (Java 必須) 上でテストする
   functions-test:
