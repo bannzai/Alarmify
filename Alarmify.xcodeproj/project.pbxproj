@@ -19,6 +19,7 @@
 		8FB69638DC050485008C1A96 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E342845A9F2DD93A664759A4 /* ContentView.swift */; };
 		934BEE33034BF5DADEC94446 /* AlarmifyAlarmMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */; };
 		961C849A700BC12ED6CE46E8 /* DeviceTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */; };
+		3F1A7C2049B08D6E1C4A5D71 /* DeviceIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */; };
 		974AB82FFFC32299E58CB354 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
 		AC3FD73CE08F56F35251424B /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
 		ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F13E25009531099CD8FB83 /* AlarmifyApp.swift */; };
@@ -91,6 +92,7 @@
 /* Begin PBXFileReference section */
 		1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyWidgetBundle.swift; sourceTree = "<group>"; };
 		1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTokenStore.swift; sourceTree = "<group>"; };
+		7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentifier.swift; sourceTree = "<group>"; };
 		21F13E25009531099CD8FB83 /* AlarmifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyApp.swift; sourceTree = "<group>"; };
 		247CF42D4F40787F4C65182A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2B404EE90E0E26173FD4D5C9 /* AlarmifyWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmifyWidget.entitlements; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 			isa = PBXGroup;
 			children = (
 				247CF42D4F40787F4C65182A /* AppDelegate.swift */,
+				7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */,
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
 			);
 			path = Utils;
@@ -460,6 +463,7 @@
 				FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */,
 				F793B4FAB205414176A8285C /* AppGroup.swift in Sources */,
 				8FB69638DC050485008C1A96 /* ContentView.swift in Sources */,
+				3F1A7C2049B08D6E1C4A5D71 /* DeviceIdentifier.swift in Sources */,
 				961C849A700BC12ED6CE46E8 /* DeviceTokenStore.swift in Sources */,
 				974AB82FFFC32299E58CB354 /* Log.swift in Sources */,
 				F0741EE9469173649F6ADF3E /* AlarmifyAPIClient.swift in Sources */,
