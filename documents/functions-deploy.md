@@ -11,9 +11,9 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 
 ## 現状: 初回デプロイの前提が未整備
 
-バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
+バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
 
-- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)
+- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
 
 ## ローカルからデプロイする
@@ -50,14 +50,14 @@ gh run watch "$RUN_ID"
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 
 # 付与内容の確認 → 適用 (冪等)
-bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --dry-run
-bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa
+bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --scheduler --dry-run
+bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --scheduler
 
 # 付与後、すべて [OK] になることを確認する (IAM の反映に数分かかることがある)
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 ```
 
-`onSchedule` の関数をデプロイ対象に含める時は `--scheduler` を足す (`roles/cloudscheduler.admin` が追加される)。
+`--scheduler` は `onSchedule` の関数 (`cleanupExpiredAlarms` / `sweepDeletedAccountsHourly`) のデプロイに要る `roles/cloudscheduler.admin` を追加する。
 
 ## Secret を登録する
 
