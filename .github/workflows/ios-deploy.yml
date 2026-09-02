@@ -7,7 +7,7 @@ name: ios-deploy
 # cloud signing (自動署名) は API Key に Admin ロールが必須なため採用しない。
 # 方式の設計判断は ios-deploy-actions skill (bannzai/castle) の references/signing-design.md を参照。
 #
-# skill のテンプレートから 2 点変えている (scaffold-ios-deploy.sh を再実行する時は両方を入れ直す):
+# skill のテンプレートから 3 点変えている (scaffold-ios-deploy.sh を再実行する時はすべて入れ直す):
 #  1. 起動を workflow_dispatch だけにしている。テンプレート既定は「main への push で自動起動 +
 #     workflow_dispatch」だが、App Store Connect のアプリレコードと署名アセット
 #     (App ID / App Group / 証明書 / profile / Secrets) がまだ無く、push 起動にすると
@@ -15,6 +15,8 @@ name: ios-deploy
 #     (手順: documents/ios-testflight-distribution.md「push トリガを有効に戻す」)
 #  2. DEVELOPMENT_TEAM (Team ID) をベタ書きせず environment secret APPLE_DEVELOPMENT_TEAM_ID から渡している。
 #     public リポジトリに Team ID の実値をコミットしない方針のため (AGENTS.md「秘匿情報」)
+#  3. Reject concurrent dispatch の run 一覧取得を fail-close にしている。テンプレートは取得失敗を
+#     読み飛ばして earlier=0 を算出し得るため、判定不能なまま並行配布を通してしまう
 on:
   workflow_dispatch:
 
@@ -71,10 +73,24 @@ jobs:
           else
             select_expr='map(select(.databaseId < $me)) | length'
           fi
-          earlier=$(for status in requested pending queued in_progress waiting; do
-              gh run list --repo "$GITHUB_REPOSITORY" --workflow 'ios-deploy.yml' \
-                --status "$status" --limit 100 --json databaseId
-            done | jq -s --argjson me "$GITHUB_RUN_ID" "add | $select_expr")
+          # 取得に 1 つでも失敗したら判定せずに中止する。失敗を読み飛ばすと、残りの応答から
+          # earlier=0 を算出して並行実行を通してしまう (判定不能を「並行なし」と誤って扱わない)
+          runs=""
+          for status in requested pending queued in_progress waiting; do
+            out=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'ios-deploy.yml' \
+              --status "$status" --limit 100 --json databaseId) || {
+              echo "::error::run 一覧の取得に失敗しました (status=${status})。並行実行を判定できないため中止します"
+              exit 1
+            }
+            runs="${runs}${out}"
+          done
+          earlier=$(printf '%s' "$runs" | jq -s --argjson me "$GITHUB_RUN_ID" "add | $select_expr")
+          case "$earlier" in
+            ''|*[!0-9]*)
+              echo "::error::未完了 run の件数を判定できませんでした (earlier='${earlier}')。中止します"
+              exit 1
+              ;;
+          esac
           if [ "$earlier" -gt 0 ]; then
             echo "::error::ほかの ios-deploy run が ${earlier} 件未完了です。完了を待って新しく dispatch し直してください"
             exit 1
