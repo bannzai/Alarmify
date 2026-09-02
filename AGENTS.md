@@ -30,3 +30,4 @@
 ## 秘匿情報
 
 - public リポジトリのため、API キー・APNs の認証キー (.p8)・Apple ID・Team ID の実値をコミットしない。ローカルでは direnv の `.envrc` (git 管理外) に置く
+- 唯一の例外は `Alarmify/GoogleService-Info.plist`。Firebase の iOS 用 API キーは秘密鍵ではなくクライアントの識別子で、バイナリからも取り出せるためコミットする。代わりに bundle id 制限・Firestore の全パス deny・Functions 側の ID トークン認証・App Check (#4) で守る (判断と引き受けるリスク: [ADR 0003](documents/adr/0003-commit-google-service-info-plist.md))
