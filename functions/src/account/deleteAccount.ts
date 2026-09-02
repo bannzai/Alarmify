@@ -27,14 +27,11 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   const tombstone = firestore.doc(deletedAccountDocumentPath(uid));
   const snapshot = await userDocument.get();
 
-  // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
-  // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
-  // Auth のユーザーより先に消すのは、ここで失敗しても呼び出し元が同じ認証情報で再試行できるようにするため
-  await firestore.recursiveDelete(userDocument);
-
+  // 削除の確定点は Auth のユーザーの削除で、データはその後に消す。
+  // Auth より先にデータを消すと、Auth の削除に失敗した時に「アカウントは生きているのにデータだけ消えた」状態で
+  // 呼び出し元へエラーを返すことになるため、Auth が消えるまでは何も壊さない。
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
-  // Auth の削除が完了するまでは削除を確定させない: 失敗したら目印を外し、外せなくても sweep 側が Auth の残存を見て取り下げる
-  // (呼び出し元にエラーを返した後で、裏で消してしまわないため)
+  // Auth の削除に失敗したら目印を外してエラーを返す (外せなくても sweep 側が Auth の残存を見て取り下げる)
   await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
   let authUserExisted: boolean;
   try {
@@ -46,7 +43,8 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
     throw error;
   }
 
-  // 1 回目の sweep と並行して届いた書き込み (配送先の登録等) を、この uid でサインインし直せなくなった後にもう一度消す。
+  // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
+  // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
   // これ以降に届き得るのは発行済みで未失効の ID トークンによる書き込みだけで、その窓はアプリ向け API の
   // 書き込み側が Auth のユーザーの存在を確認して拒否することで閉じる (バックエンド雛形の実装で担う)
   await firestore.recursiveDelete(userDocument);
@@ -81,13 +79,16 @@ export async function sweepDeletedAccounts(limit: number, now: Date = new Date()
   for (const tombstone of tombstones.docs) {
     const uid = tombstone.id;
     try {
+      // 目印はこの実行が読んだ版に限って消す。読んだ後に Callable の再試行が目印を置き直していたら
+      // (updateTime が変わる) 消さずに失敗として扱い、その再試行の目印を残す
+      const staleVersionOnly = { lastUpdateTime: tombstone.updateTime };
       if (await authUserExists(uid)) {
-        await tombstone.ref.delete();
+        await tombstone.ref.delete(staleVersionOnly);
         result.withdrawn += 1;
         continue;
       }
       await firestore.recursiveDelete(firestore.doc(userDocumentPath(uid)));
-      await tombstone.ref.delete();
+      await tombstone.ref.delete(staleVersionOnly);
       result.completed += 1;
     } catch (error) {
       result.failed += 1;

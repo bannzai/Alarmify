@@ -159,6 +159,19 @@ describe("deleteAccount", () => {
     expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
   });
 
+  it("does not remove a marker that a retry rewrote after the sweep read it", async () => {
+    // 古い目印を読んだ後、Callable の再試行が目印を置き直した状態
+    const { uid } = await signUpAnonymously();
+    await seedUserData(uid);
+    const marker = firestore.doc(deletedAccountDocumentPath(uid));
+    await marker.set({ requestedAt: staleRequestedAt });
+    const stale = await marker.get();
+    await marker.set({ requestedAt: new Date() });
+
+    await expect(marker.delete({ lastUpdateTime: stale.updateTime })).rejects.toThrow();
+    expect((await marker.get()).exists).toBe(true);
+  });
+
   it("leaves a fresh marker alone because its deletion may still be in progress", async () => {
     // Callable が目印を置いた直後 (Auth の削除前) に sweep が走った状態
     const { uid } = await signUpAnonymously();
