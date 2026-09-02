@@ -79,6 +79,19 @@ final class AlarmifyAPIClientTests: XCTestCase {
         try await makeClient().revokeAPIToken(id: "tok_3")
     }
 
+    func testRevokeEscapesTheTokenIdExactlyOnce() async throws {
+        StubURLProtocol.handler = { request in
+            // 空白と `/` を含む id でも、1 度だけエスケープされた 1 セグメントとして届く
+            XCTAssertEqual(
+                request.url?.absoluteString,
+                "http://127.0.0.1:5001/demo-alarmify/asia-northeast1/api/v1/me/apiTokens/tok%20a%2Fb"
+            )
+            return (204, Data())
+        }
+
+        try await makeClient().revokeAPIToken(id: "tok a/b")
+    }
+
     func testServerErrorMessageIsSurfacedAsIs() async {
         StubURLProtocol.handler = { _ in
             (429, Data(#"{"error":{"message":"Free plan allows 20 alarms per month"}}"#.utf8))

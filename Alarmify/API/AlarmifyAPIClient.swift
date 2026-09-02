@@ -51,9 +51,14 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     }
 
     func revokeAPIToken(id: String) async throws {
-        // トークン id はサーバーが採番した識別子だが、URL に載せる前にパーセントエンコードする
-        let encoded = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
-        _ = try await send(method: "DELETE", path: "/v1/me/apiTokens/\(encoded)", body: nil)
+        _ = try await send(method: "DELETE", path: "/v1/me/apiTokens/\(Self.escaped(id))", body: nil)
+    }
+
+    /// パスの 1 セグメントに埋め込める形へエスケープする。`/` も含めて escape し、URL 組み立て側では再エスケープしない
+    /// (サーバーが採番する id に何が入るかはクライアントからは決められないため)
+    static func escaped(_ pathComponent: String) -> String {
+        let allowed = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))
+        return pathComponent.addingPercentEncoding(withAllowedCharacters: allowed) ?? pathComponent
     }
 
     /// 一覧の応答は将来 `nextCursor` 等が増えても壊れないようオブジェクトで受ける
@@ -72,7 +77,7 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     private func send(method: String, path: String, body: [String: String]?) async throws -> Data {
         guard let token = try await idToken() else { throw AlarmifyAPIError.notSignedIn }
 
-        var request = URLRequest(url: backend.baseURL.appending(path: path))
+        var request = URLRequest(url: Self.url(baseURL: backend.baseURL, percentEncodedPath: path))
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let body {
@@ -88,6 +93,13 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
             throw AlarmifyAPIError.server(statusCode: httpResponse.statusCode, message: Self.errorMessage(from: data))
         }
         return data
+    }
+
+    /// `path` はエスケープ済みのパスとして扱い、`appending(path:)` による二重エンコードを避ける
+    private static func url(baseURL: URL, percentEncodedPath path: String) -> URL {
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else { return baseURL }
+        components.percentEncodedPath += path
+        return components.url ?? baseURL
     }
 
     /// エラー本文は JSON の `error.message` を優先し、JSON でなければ body をそのまま使う
