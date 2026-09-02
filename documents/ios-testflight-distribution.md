@@ -24,6 +24,29 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/signing-assets.sh create-certif
   --cn "yudai hirose CI Distribution" --out ./tmp/signing --allow-additional
 ```
 
+### 既存証明書を使い回す場合の書き出し
+
+`register-secrets.sh` は `./tmp/signing/distribution.p12` と `./tmp/signing/p12-password.txt` を読むため、キーチェーンの証明書を使い回す場合はこの 2 つを自分で用意する。
+
+キーチェーンからの書き出しは Keychain Access の GUI で行う。`security export` は対象を 1 つに絞れず、キーチェーン内の全 identity (別チームの証明書と秘密鍵を含む) を書き出してしまうため使わない。
+
+1. Keychain Access で「ログイン」キーチェーンの `Apple Distribution: yudai hirose (<Team ID>)` (有効期限 2027-01-17 のもの) を選ぶ
+2. 右クリック →「"Apple Distribution: ..." を書き出す...」→ フォーマット「個人情報交換 (.p12)」→ 保存先を `./tmp/signing/distribution.p12` にする
+3. 書き出し時に設定したパスワードを、改行なしで `./tmp/signing/p12-password.txt` に保存する
+
+```sh
+mkdir -p ./tmp/signing
+# 上の GUI 操作で ./tmp/signing/distribution.p12 を書き出してから、そのパスワードを保存する
+printf '%s' '<書き出し時に設定したパスワード>' > ./tmp/signing/p12-password.txt
+chmod 600 ./tmp/signing/distribution.p12 ./tmp/signing/p12-password.txt
+# 秘密鍵と証明書が両方入っていること (Key Attributes と Certificate bag が出ること) を確認する
+openssl pkcs12 -info -in ./tmp/signing/distribution.p12 -passin "file:./tmp/signing/p12-password.txt" -noout
+```
+
+`create-certificate` で新規発行した場合は、`--out` に指定したディレクトリへ `distribution.p12` と `p12-password.txt` が同じ名前で作られるため、この手順は不要。
+
+### provisioning profile を発行する
+
 profile は app 本体と 2 つの extension の 3 本を発行する。profile 名は `project.pbxproj` の `PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]` と workflow の ExportOptions に一致させる。
 
 ```sh

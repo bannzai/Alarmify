@@ -67,6 +67,7 @@ bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-i
 bash ~/.agents/skills/ios-deploy-actions/scripts/setup-environment.sh \
   --repo bannzai/Alarmify --environment firebase-prod --branch main
 
+mkdir -p ./tmp   # tmp/ は .gitignore 済みで、fresh checkout には存在しない
 # 途中で失敗しても本番の鍵をディスクに残さないよう、生成前に削除を予約しておく
 trap 'rm -f ./tmp/deployer.json' EXIT
 gcloud iam service-accounts keys create ./tmp/deployer.json \
