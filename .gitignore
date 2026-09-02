@@ -10,3 +10,8 @@ tmp/
 .mcp.json
 # bundler のローカルインストール先 (~/.bundle/config の path=vendor/bundle が作る)
 vendor/bundle/
+node_modules/
+functions/lib/
+# Firebase CLI / Emulator Suite が作るログとキャッシュ
+.firebase/
+*-debug.log
