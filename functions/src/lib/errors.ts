@@ -20,12 +20,24 @@ export function badRequestFromZod(error: z.ZodError): ApiError {
   return new ApiError(400, "invalid_argument", detail);
 }
 
-function isJsonParseFailure(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    (error as { type?: unknown }).type === "entity.parse.failed"
-  );
+/**
+ * body-parser (express.json) が投げるエラー。
+ * 大きすぎるボディの 413 など、クライアント側の誤りをサーバーエラーに丸めない
+ */
+function clientBodyFailure(error: unknown): ApiError | null {
+  if (typeof error !== "object" || error === null) {
+    return null;
+  }
+  const { status, type } = error as { status?: unknown; type?: unknown };
+  if (typeof type !== "string" || !type.startsWith("entity.")) {
+    return null;
+  }
+  if (typeof status !== "number" || status < 400 || status >= 500) {
+    return null;
+  }
+  return type === "entity.too.large"
+    ? new ApiError(status, "payload_too_large", "リクエストボディが大きすぎます")
+    : new ApiError(status, "invalid_argument", "リクエストボディの形式が不正です");
 }
 
 /** Express のエラーハンドラ。ApiError 以外は 500 に丸め、詳細はログにだけ残す */
@@ -39,8 +51,11 @@ export function errorHandler(
     res.status(error.status).json({ error: { code: error.code, message: error.message } });
     return;
   }
-  if (isJsonParseFailure(error)) {
-    res.status(400).json({ error: { code: "invalid_argument", message: "JSON の形式が不正です" } });
+  const bodyFailure = clientBodyFailure(error);
+  if (bodyFailure) {
+    res
+      .status(bodyFailure.status)
+      .json({ error: { code: bodyFailure.code, message: bodyFailure.message } });
     return;
   }
   console.error("unexpected error", error);

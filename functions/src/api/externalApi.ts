@@ -5,7 +5,7 @@ import { isApiTokenFormat, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { monthKey, planLimits } from "../lib/plan.js";
-import { buildAlarmMessage, type PushResult } from "../lib/push.js";
+import { alarmActionOf, buildAlarmMessage, type PushResult } from "../lib/push.js";
 import { createRateLimiter } from "../lib/rateLimit.js";
 import { expiresAtOf, findUserByApiToken, listDevices, userRef } from "../lib/store.js";
 import {
@@ -128,15 +128,21 @@ export function createExternalApi(deps: Deps): Express {
       throw new ApiError(409, "no_device_registered", "アラームを配送する端末が登録されていません");
     }
 
-    const alarmId = randomUUID();
+    const alarmId = parsed.data.id ?? randomUUID();
     const title = parsed.data.title ?? null;
-    const alarmRef = userRef(deps.firestore, uid).collection(collections.alarms).doc(alarmId);
+    const userDocRef = userRef(deps.firestore, uid);
+    const alarmRef = userDocRef.collection(collections.alarms).doc(alarmId);
 
-    // 月間上限の判定とアラーム要求の作成を同じトランザクションで行い、上限を超えて登録されないようにする
-    await deps.firestore.runTransaction(async (transaction) => {
-      const userSnapshot = await transaction.get(userRef(deps.firestore, uid));
+    // 月間上限の判定とアラーム要求の作成を同じトランザクションで行い、上限を超えて登録されないようにする。
+    // 同じ id での再送は登録済みのアラームを使い回し、二重登録も上限の二重消費もしない
+    const created = await deps.firestore.runTransaction(async (transaction) => {
+      const userSnapshot = await transaction.get(userDocRef);
       if (!userSnapshot.exists) {
         throw new ApiError(404, "not_found", "ユーザーが見つかりません");
+      }
+      const alarmSnapshot = await transaction.get(alarmRef);
+      if (alarmSnapshot.exists) {
+        return false;
       }
       const user = userSchema.parse(userSnapshot.data());
       const currentMonth = monthKey(now);
@@ -150,7 +156,7 @@ export function createExternalApi(deps: Deps): Express {
           `${user.plan} プランで登録できるアラームは月 ${limit} 件までです`,
         );
       }
-      transaction.update(userRef(deps.firestore, uid), {
+      transaction.update(userDocRef, {
         monthlyUsage: { month: currentMonth, scheduledAlarmCount: used + 1 },
         updatedAt: Timestamp.fromDate(now),
       });
@@ -165,13 +171,20 @@ export function createExternalApi(deps: Deps): Express {
         delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
       };
       transaction.set(alarmRef, alarm);
+      return true;
     });
+
+    // 再送では push も送り直す。配送だけが失敗した場合に、呼び出し側が同じ id で再試行できるようにする
+    const stored = created ? null : await alarmRef.get();
+    const storedStatus = (stored?.get("status") as AlarmStatus | undefined) ?? "scheduled";
+    const storedFireAt = stored ? (stored.get("fireAt") as Timestamp).toDate() : fireAt;
+    const storedTitle = stored ? ((stored.get("title") as string | null) ?? null) : title;
 
     const delivery = await deliver(deps, uid, {
       id: alarmId,
-      action: "schedule",
-      fireAt,
-      title,
+      action: alarmActionOf(storedStatus),
+      fireAt: storedStatus === "canceled" ? null : storedFireAt,
+      title: storedTitle,
     });
     await alarmRef.update({
       delivery: {
@@ -182,7 +195,9 @@ export function createExternalApi(deps: Deps): Express {
       },
     });
 
-    res.status(201).json(alarmResponse(alarmId, "scheduled", fireAt, title, delivery));
+    res
+      .status(created ? 201 : 200)
+      .json(alarmResponse(alarmId, storedStatus, storedFireAt, storedTitle, delivery));
   });
 
   // 登録済みのアラームを取り消す。取り消し済みでも同じ応答を返す (冪等)

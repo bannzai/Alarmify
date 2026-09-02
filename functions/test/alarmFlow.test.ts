@@ -344,6 +344,57 @@ describe("外部サービス向け API", () => {
     expect(response.body.error.code).toBe("rate_limited");
   });
 
+  it("同じ id での再送は二重登録せず、push だけ送り直す", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const alarmId = "3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e";
+    const body = { id: alarmId, fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" };
+
+    const first = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send(body)
+      .expect(201);
+    const second = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send(body)
+      .expect(200);
+    expect(second.body.id).toBe(first.body.id);
+
+    const alarms = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .get();
+    expect(alarms.docs.map((doc) => doc.id)).toEqual([alarmId]);
+    // 月間上限は 1 回しか消費しない
+    const user = await userRef(context.deps.firestore, context.uid).get();
+    expect(user.get("monthlyUsage")).toEqual({ month: "2026-09", scheduledAlarmCount: 1 });
+    // 配送だけが失敗した場合に再試行できるよう、push は毎回送る
+    expect(context.sentBatches).toHaveLength(2);
+  });
+
+  it("id が UUID でなければ 400", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: "not-a-uuid", fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(400);
+  });
+
+  it("ボディが上限を超えたら 413", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .set("content-type", "application/json")
+      .send(JSON.stringify({ fire_at: toIso8601Seconds(FIRE_AT), title: "a".repeat(40 * 1024) }))
+      .expect(413);
+    expect(response.body.error.code).toBe("payload_too_large");
+  });
+
   it("存在しないアラームの取り消しは 404", async () => {
     await registerDevice();
     const issued = await issueApiToken();

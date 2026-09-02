@@ -36,8 +36,14 @@ export const isoDateTimeSchema = z
   })
   .transform((value) => new Date(value));
 
-/** 外部サービス向け: POST /v1/alarms */
+const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+/**
+ * 外部サービス向け: POST /v1/alarms
+ * id は呼び出し側が付けるアラームの識別子。再送で同じ id が来た時に、二重登録せず同じアラームを返すために使う
+ */
 export const createAlarmRequestSchema = z.object({
+  id: z.string().regex(uuidPattern, { message: "id は UUID で指定してください" }).optional(),
   fire_at: isoDateTimeSchema,
   title: z.string().min(1).max(200).optional(),
 });
