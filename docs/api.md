@@ -34,7 +34,7 @@ Content-Type: application/json
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `fire_at` | string (ISO 8601, seconds precision, with a time zone) | one of `fire_at` / `fire_in` | Absolute time to ring. At least 30 seconds ahead and at most 365 days ahead (see the lead time below). |
-| `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request. `0` rings as soon as possible (see the lead time below). Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
+| `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request, at most 365 days. `0` rings as soon as possible (see the lead time below). Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
 | `title` | string | no | Shown on the alarm. 1 to 200 characters; longer titles are rejected with `400`. When omitted the app shows `Alarmify`. |
 | `id` | string (UUID) | no | Your own identifier for the alarm. Sending the same `id` again replaces the existing alarm instead of creating a second one, so a retry never rings twice. When omitted the server generates one. |
 
@@ -65,13 +65,13 @@ curl -X POST https://api.alarmify.app/v1/alarms \
 }
 ```
 
-`fire_at` in the response is always UTC. `delivery` counts the devices the push was handed to; a `failure_count` above 0 means a device could not be reached (the alarm stays scheduled and the push is retried when the device registers again). Keep `id` if you want to cancel the alarm later.
+`fire_at` in the response is always UTC. `delivery` counts the devices the push was handed to; a `failure_count` above 0 means a device could not be reached. The alarm record stays scheduled on the server, but the push is not retried automatically: send the same request again (same `id`) to redeliver it. Keep `id` if you want to cancel the alarm later.
 
 ### Errors
 
 | Status | `error.code` | When |
 | --- | --- | --- |
-| 400 | `invalid_argument` | Body is not JSON, both or neither of `fire_at` / `fire_in` are present, `fire_at` is not ISO 8601, less than 30 seconds ahead or more than 365 days ahead, `fire_in` is negative, `title` is empty or longer than 200 characters, `id` is not a UUID |
+| 400 | `invalid_argument` | Body is not JSON, both or neither of `fire_at` / `fire_in` are present, `fire_at` is not ISO 8601, less than 30 seconds ahead or more than 365 days ahead, `fire_in` is negative or more than 365 days, `title` is empty or longer than 200 characters, `id` is not a UUID |
 | 401 | `unauthenticated` | Missing, malformed or revoked token |
 | 403 | `plan_limit_exceeded` | The Free plan allows 20 alarms per calendar month. Upgrade to Pro for unlimited alarms |
 | 409 | `no_device_registered` | The account has no iPhone registered (open the app once to register the device) |

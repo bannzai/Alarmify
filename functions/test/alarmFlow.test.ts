@@ -250,6 +250,17 @@ describe("外部サービス向け API", () => {
     expect(asap.body.fire_at).toBe(
       new Date(TEST_NOW.getTime() + MIN_FIRE_AT_LEAD_SECONDS * 1000).toISOString(),
     );
+
+    // 受信時刻に秒未満があっても、秒単位への丸めでリードタイムを割り込まない (切り上げ)
+    context.setNow(new Date(TEST_NOW.getTime() + 500));
+    const subSecond = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 0 })
+      .expect(201);
+    expect(subSecond.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + (MIN_FIRE_AT_LEAD_SECONDS + 1) * 1000).toISOString(),
+    );
   });
 
   it("fire_at と fire_in は両方指定・両方省略とも 400", async () => {
@@ -272,6 +283,13 @@ describe("外部サービス向け API", () => {
       .set("authorization", `Bearer ${issued.token}`)
       .send({ fire_in: -1 })
       .expect(400);
+    // Date の範囲を超える値は 500 ではなく 400
+    const huge = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 9_000_000_000_000 })
+      .expect(400);
+    expect(huge.body.error.code).toBe("invalid_argument");
   });
 
   it("fire_at が過去・形式不正なら 400", async () => {

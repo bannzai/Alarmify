@@ -58,7 +58,13 @@ export const createAlarmRequestSchema = z
   .object({
     id: canonicalUuidSchema.optional(),
     fire_at: isoDateTimeSchema.optional(),
-    fire_in: z.number().int().min(0).optional(),
+    // 上限は fire_at と同じ 365 日 (externalApi.ts の MAX_FIRE_AT_AHEAD_DAYS)。Date の範囲を超える値で内部エラーにしない
+    fire_in: z
+      .number()
+      .int()
+      .min(0)
+      .max(365 * 24 * 60 * 60)
+      .optional(),
     title: z.string().min(1).max(200).optional(),
   })
   .refine((value) => (value.fire_at !== undefined) !== (value.fire_in !== undefined), {

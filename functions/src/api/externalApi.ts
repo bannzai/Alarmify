@@ -266,11 +266,12 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     const { uid, tokenId } = currentCaller(res);
     const now = deps.now();
     // fire_in は受信時刻からの相対指定。リードタイム未満の値は最小値へ繰り上げる (fire_in: 0 で「できるだけ早く」を表せるようにする)。
-    // push には秒までしか載せないため、fire_at と同じく秒未満を切り捨てて以降の比較を揃える
+    // push には秒までしか載せないため秒単位に丸めるが、切り捨てると now の秒未満の分だけリードタイムを割り込んで
+    // 直後の検査で 400 になるため、切り上げる
     const fireAt =
       parsed.data.fire_at ??
       new Date(
-        Math.floor(
+        Math.ceil(
           (now.getTime() + Math.max(parsed.data.fire_in ?? 0, MIN_FIRE_AT_LEAD_SECONDS) * 1000) /
             1000,
         ) * 1000,
