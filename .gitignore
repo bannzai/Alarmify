@@ -10,3 +10,5 @@ tmp/
 .mcp.json
 # bundler のローカルインストール先 (~/.bundle/config の path=vendor/bundle が作る)
 vendor/bundle/
+# RevenueCat の実キー (appl_) を置くローカル上書き。実値をコミットしないため追跡しない (Config.xcconfig のコメント参照)
+Config.local.xcconfig

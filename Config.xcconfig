@@ -1,0 +1,27 @@
+// ビルド設定の既定値。このファイルは追跡する。
+//
+// REVENUECAT_API_KEY は RevenueCat SDK に渡す public API key。Info.plist の RevenueCatAPIKey へ流し込み、
+// ProEntitlement.revenueCatAPIKey が読み取る。値が空の間は Purchases.configure を行わず、ペイウォールは
+// 「購入を準備できていない」状態を表示する (実際と異なる価格を見せないため。
+//  ~/.claude/rules/coding-rules-no-default-for-external-source-of-truth.md)
+//
+// - Debug の既定値は空。RevenueCat の project と Test Store App を作成したら、Test Store の API key
+//   (test_ で始まる) をここへ書いてコミットする。テスト購入専用のキーで、公開しても Test Store の
+//   テストデータに影響する程度のため public リポジトリでも追跡してよい
+// - Release の既定値は空。App Store 用の実キー (appl_ で始まる) は実値をコミットせず、gitignore した
+//   Config.local.xcconfig に置いて下の #include? で上書きする。Release で appl_ 以外のキーは
+//   scripts/check_release_revenuecat_key.sh がビルドエラーにする (Test Store キー入りのバイナリを
+//   出荷しないため。Alarmify ターゲットの Build Phase を参照)
+//
+// 手元で実ストア (StoreKit) の購入導線を動かすには、次の 1 行だけを書いた Config.local.xcconfig を
+// このファイルと同じ階層に作る:
+//
+//   REVENUECAT_API_KEY = appl_xxxxxxxxxxxxxxxxxxxxxxxxxxx
+//
+// キーは RevenueCat Dashboard の Project Settings > API Keys、または API で取得できる:
+//   bash ~/.claude/skills/revenuecat-product-setup/scripts/rc_get_public_api_key.sh <APP_ID>
+//
+// Config.local.xcconfig が無くてもビルドは通る (#include? は存在しないファイルを黙って読み飛ばす)。
+REVENUECAT_API_KEY =
+
+#include? "Config.local.xcconfig"
