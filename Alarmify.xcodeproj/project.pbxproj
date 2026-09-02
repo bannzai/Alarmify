@@ -39,6 +39,7 @@
 		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
 		A218D2E75B834B907F86F563 /* DeveloperMenuSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E027756856C4D87BA1ECAA /* DeveloperMenuSection.swift */; };
 		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
+		F539FED9E5C752EE042271D5 /* AccountIDTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6F5C3F96DBAA74313252ED /* AccountIDTokenProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 		31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		32E027756856C4D87BA1ECAA /* DeveloperMenuSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuSection.swift; sourceTree = "<group>"; };
 		59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
+		5D6F5C3F96DBAA74313252ED /* AccountIDTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountIDTokenProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -215,6 +217,7 @@
 			children = (
 				F63FA4031DA54FB02013FD91 /* AccountStore.swift */,
 				CFAA624AAD60F471A75D9867 /* AccountDeletionService.swift */,
+				5D6F5C3F96DBAA74313252ED /* AccountIDTokenProvider.swift */,
 				3F5607C87BE25D7E458821F9 /* BackendEndpoint.swift */,
 				66C27169A524ABD035D6D2F0 /* EmulatorAccountFactory.swift */,
 			);
@@ -399,6 +402,7 @@
 			files = (
 				7F98609DAF8B60456BDD7BFA /* AccountStore.swift in Sources */,
 				86040D829BB60BC8CCB585E1 /* AccountDeletionService.swift in Sources */,
+				F539FED9E5C752EE042271D5 /* AccountIDTokenProvider.swift in Sources */,
 				A7218559E1A74D5E58CE18B0 /* BackendEndpoint.swift in Sources */,
 				3F91EA99877F7FBBC5E604EE /* EmulatorAccountFactory.swift in Sources */,
 				ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */,

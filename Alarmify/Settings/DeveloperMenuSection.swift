@@ -34,7 +34,7 @@ struct DeveloperMenuSection: View {
         guard credential == nil else { return }
         do {
             let created = try await EmulatorAccountFactory.signUpAnonymously()
-            AccountStore.save(created)
+            try AccountStore.save(created)
             credential = created
             errorMessage = nil
         } catch {

@@ -11,6 +11,10 @@ enum AccountDeletionError: Error, LocalizedError, Equatable {
     case server(message: String)
     /// HTTP レスポンスとして解釈できなかった
     case invalidResponse
+    /// 保存済みの認証情報から ID トークンを取得できなかった (refresh トークンの失効・取り消し)
+    case authenticationExpired
+    /// アカウントの認証がまだ実装されていない (匿名認証の実装で解消する)
+    case authenticationUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -19,6 +23,12 @@ enum AccountDeletionError: Error, LocalizedError, Equatable {
         case .invalidResponse:
             // ja: サーバーからの応答を読み取れませんでした。時間をおいて試してください
             return String(localized: "Could not read the response from the server. Please try again later.")
+        case .authenticationExpired:
+            // ja: アカウントの認証が切れています。アプリを再起動して試してください
+            return String(localized: "Your session has expired. Restart the app and try again.")
+        case .authenticationUnavailable:
+            // ja: この端末ではアカウントの認証を利用できません
+            return String(localized: "Account authentication is not available on this device.")
         }
     }
 }
@@ -27,18 +37,26 @@ enum AccountDeletionError: Error, LocalizedError, Equatable {
 /// Callable のプロトコル (`{"data": ...}` を POST し、成功時は `{"result": ...}` が返る) に合わせて組み立てる
 struct RemoteAccountDeletionService: AccountDeletionService {
     private let endpoint: URL
+    private let idTokenProvider: AccountIDTokenProvider
     private let session: URLSession
 
-    init(endpoint: URL = BackendEndpoint.deleteAccount, session: URLSession = .shared) {
+    init(
+        endpoint: URL = BackendEndpoint.deleteAccount,
+        idTokenProvider: AccountIDTokenProvider = FirebaseIDTokenProvider(),
+        session: URLSession = .shared
+    ) {
         self.endpoint = endpoint
+        self.idTokenProvider = idTokenProvider
         self.session = session
     }
 
     func deleteAccount(credential: AccountCredential) async throws {
+        // ID トークンは短時間で失効するため、保存した値ではなく呼び出しの直前に取得したものを使う
+        let idToken = try await idTokenProvider.idToken(for: credential)
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(credential.idToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(idToken)", forHTTPHeaderField: "Authorization")
         // 削除対象は ID トークンの uid でサーバーが決めるため、パラメータは送らない
         request.httpBody = try JSONSerialization.data(withJSONObject: ["data": [String: String]()])
 

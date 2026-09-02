@@ -11,6 +11,16 @@
         }
       }
     },
+    "Account authentication is not available on this device." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この端末ではアカウントの認証を利用できません。"
+          }
+        }
+      }
+    },
     "Account ID" : {
       "localizations" : {
         "ja" : {
@@ -103,6 +113,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サーバーからの応答を読み取れませんでした。時間をおいて試してください。"
+          }
+        }
+      }
+    },
+    "Could not save the account credentials." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証情報を保存できませんでした。"
           }
         }
       }
@@ -316,6 +336,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アカウントを削除しました"
+          }
+        }
+      }
+    },
+    "Your session has expired. Restart the app and try again." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントの認証が切れています。アプリを再起動して試してください。"
           }
         }
       }

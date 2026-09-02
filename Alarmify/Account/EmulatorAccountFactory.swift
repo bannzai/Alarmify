@@ -19,10 +19,10 @@ enum EmulatorAccountFactory {
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200,
               let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let userId = json["localId"] as? String,
-              let idToken = json["idToken"] as? String else {
+              let refreshToken = json["refreshToken"] as? String else {
             throw AccountDeletionError.invalidResponse
         }
-        return AccountCredential(userId: userId, idToken: idToken)
+        return AccountCredential(userId: userId, refreshToken: refreshToken)
     }
 }
 #endif

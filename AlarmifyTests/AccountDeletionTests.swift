@@ -4,7 +4,11 @@ import XCTest
 /// アカウント削除の HTTP 呼び出しと、削除後にローカルの状態が初期化されることのテスト
 final class AccountDeletionTests: XCTestCase {
     private let endpoint = URL(string: "https://example.com/deleteAccount")!
-    private let credential = AccountCredential(userId: "uid-1234", idToken: "id-token-1234")
+    private let credential = AccountCredential(userId: "uid-1234", refreshToken: "refresh-token-1234")
+
+    private func service(session: URLSession) -> RemoteAccountDeletionService {
+        RemoteAccountDeletionService(endpoint: endpoint, idTokenProvider: StubIDTokenProvider(), session: session)
+    }
 
     private var session: URLSession {
         let configuration = URLSessionConfiguration.ephemeral
@@ -22,13 +26,14 @@ final class AccountDeletionTests: XCTestCase {
     func testDeleteAccountSendsCallableRequestWithIDToken() async throws {
         StubURLProtocol.response = .init(statusCode: 200, body: Data(#"{"result":{"userId":"uid-1234"}}"#.utf8))
 
-        try await RemoteAccountDeletionService(endpoint: endpoint, session: session).deleteAccount(credential: credential)
+        try await service(session: session).deleteAccount(credential: credential)
 
         let request = try XCTUnwrap(StubURLProtocol.requests.first)
         XCTAssertEqual(StubURLProtocol.requests.count, 1)
         XCTAssertEqual(request.url, endpoint)
         XCTAssertEqual(request.httpMethod, "POST")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer id-token-1234")
+        // 保存済みの値ではなく、呼び出し直前に取得した ID トークンを送る
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fresh-id-token")
         XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
         // 削除対象は ID トークンの uid でサーバーが決めるため、パラメータを送らない
         let body = try JSONSerialization.jsonObject(with: try XCTUnwrap(request.body)) as? [String: Any]
@@ -43,7 +48,7 @@ final class AccountDeletionTests: XCTestCase {
         )
 
         do {
-            try await RemoteAccountDeletionService(endpoint: endpoint, session: session).deleteAccount(credential: credential)
+            try await service(session: session).deleteAccount(credential: credential)
             XCTFail("Expected an error")
         } catch {
             XCTAssertEqual(
@@ -57,22 +62,50 @@ final class AccountDeletionTests: XCTestCase {
         StubURLProtocol.response = .init(statusCode: 500, body: Data("internal error".utf8))
 
         do {
-            try await RemoteAccountDeletionService(endpoint: endpoint, session: session).deleteAccount(credential: credential)
+            try await service(session: session).deleteAccount(credential: credential)
             XCTFail("Expected an error")
         } catch {
             XCTAssertEqual(error as? AccountDeletionError, .server(message: "HTTP 500"))
         }
     }
 
-    /// ID トークンは Keychain、uid は UserDefaults に保存されるが、呼び出し側からは 1 つの認証情報として扱える
-    func testAccountStoreClearRemovesCredentialAndIsIdempotent() {
-        AccountStore.save(credential)
+    func testDeleteAccountDoesNotCallTheEndpointWhenTheIDTokenCannotBeRefreshed() async {
+        let service = RemoteAccountDeletionService(
+            endpoint: endpoint,
+            idTokenProvider: FailingIDTokenProvider(),
+            session: session
+        )
+
+        do {
+            try await service.deleteAccount(credential: credential)
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual(error as? AccountDeletionError, .authenticationExpired)
+            XCTAssertTrue(StubURLProtocol.requests.isEmpty)
+        }
+    }
+
+    /// refresh トークンは Keychain、uid は UserDefaults に保存されるが、呼び出し側からは 1 つの認証情報として扱える
+    func testAccountStoreClearRemovesCredentialAndIsIdempotent() throws {
+        try AccountStore.save(credential)
         XCTAssertEqual(AccountStore.load(), credential)
 
         AccountStore.clear()
         AccountStore.clear()
 
         XCTAssertNil(AccountStore.load())
+    }
+}
+
+/// ID トークンの取得を差し替えるスタブ
+private struct StubIDTokenProvider: AccountIDTokenProvider {
+    func idToken(for credential: AccountCredential) async throws -> String { "fresh-id-token" }
+}
+
+/// refresh トークンが失効している状況のスタブ
+private struct FailingIDTokenProvider: AccountIDTokenProvider {
+    func idToken(for credential: AccountCredential) async throws -> String {
+        throw AccountDeletionError.authenticationExpired
     }
 }
 
