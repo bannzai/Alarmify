@@ -13,7 +13,7 @@ final class APITokenTests: XCTestCase {
 
         XCTAssertEqual(
             example,
-            "curl -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/api/v1/alarms -H 'Authorization: Bearer alm_1a2b_secret' -H 'Content-Type: application/json' -d '{\"fire_at\":\"2026-09-02T10:00:00Z\",\"title\":\"Deploy finished\"}'"
+            "curl -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi/v1/alarms -H 'Authorization: Bearer alm_1a2b_secret' -H 'Content-Type: application/json' -d '{\"fire_at\":\"2026-09-02T10:00:00Z\",\"title\":\"Deploy finished\"}'"
         )
         XCTAssertFalse(example.contains("\n"))
     }
@@ -25,7 +25,7 @@ final class APITokenTests: XCTestCase {
             fireDate: Date(timeIntervalSince1970: 0)
         )
 
-        XCTAssertTrue(example.contains("http://127.0.0.1:5410/demo-alarmify/asia-northeast1/api/v1/alarms"), example)
+        XCTAssertTrue(example.contains("http://127.0.0.1:5410/demo-alarmify/asia-northeast1/alarmsApi/v1/alarms"), example)
     }
 
     @MainActor

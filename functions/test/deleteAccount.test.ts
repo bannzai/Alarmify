@@ -166,6 +166,27 @@ describe("アカウント削除", () => {
     expect(await authUserExists(uid)).toBe(true);
   });
 
+  it("Auth の削除に失敗しても、別の呼び出しが置き直した目印は外さない", async () => {
+    const uid = await signUpAnonymously();
+    await seedUserData(uid);
+    const overlappingDeps: AccountDeletionDeps = {
+      firestore: deps.firestore,
+      auth: {
+        getUser: (id) => auth.getUser(id),
+        deleteUser: async () => {
+          // この呼び出しが目印を置いた後、別の呼び出しが目印を置き直した状態を作る
+          await marker(uid).set({ [deletedAccountFields.requestedAt]: Timestamp.fromDate(new Date()) });
+          throw new Error("auth unavailable");
+        },
+      },
+    };
+
+    await expect(deleteUserAccount(overlappingDeps, uid)).rejects.toThrow("auth unavailable");
+
+    expect((await marker(uid).get()).exists).toBe(true);
+    expect(await remainingDocumentCount(uid)).toBe(4);
+  });
+
   it("Auth の削除の応答だけが失われた時は、削除済みとして掃除まで進める", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);

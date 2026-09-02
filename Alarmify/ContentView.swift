@@ -147,6 +147,17 @@ struct ContentView: View {
                     Text("FCM registration token")
                 }
 
+                Section {
+                    NavigationLink {
+                        // 発行済みトークンの平文は発行直後の API トークン画面にしか無いため、ここからはプレースホルダ入りで表示する
+                        RecipesView(apiToken: nil, backend: session.settings.backend)
+                    } label: {
+                        // ja: 連携レシピ
+                        Label("Integration recipes", systemImage: "link")
+                    }
+                    .accessibilityIdentifier("open_recipes")
+                }
+
                 if let errorMessage {
                     Section {
                         Text(errorMessage)

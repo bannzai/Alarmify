@@ -1,5 +1,5 @@
 import type { Auth } from "firebase-admin/auth";
-import { FieldValue, type DocumentReference, type Firestore } from "firebase-admin/firestore";
+import { FieldValue, type DocumentReference, type Firestore, type Timestamp } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 import { collections, deletedAccountFields } from "../schema/index.js";
@@ -52,8 +52,8 @@ export async function deleteUserAccount(
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
-  await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
-  const authUserExisted = await deleteAuthUserOrWithdrawMarker(deps, uid, tombstone);
+  const marked = await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
+  const authUserExisted = await deleteAuthUserOrWithdrawMarker(deps, uid, tombstone, marked.writeTime);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
@@ -145,6 +145,7 @@ async function deleteAuthUserOrWithdrawMarker(
   deps: AccountDeletionDeps,
   uid: string,
   tombstone: DocumentReference,
+  markedAt: Timestamp,
 ): Promise<boolean> {
   try {
     return await deleteAuthUser(deps.auth, uid);
@@ -158,9 +159,22 @@ async function deleteAuthUserOrWithdrawMarker(
     if (!stillExists) {
       return true;
     }
-    await tombstone.delete();
+    // 目印はこの呼び出しが置いた版に限って外す。同じ uid の呼び出しが重なって目印を置き直していた場合は、
+    // その呼び出しの削除がまだ進行中のため残す (precondition の失敗は正常系)
+    await tombstone.delete({ lastUpdateTime: markedAt }).catch((deleteError: unknown) => {
+      if (!isFailedPrecondition(deleteError)) {
+        throw deleteError;
+      }
+    });
     throw error;
   }
+}
+
+/** Firestore の precondition (lastUpdateTime 等) が満たされなかったエラーか (gRPC の FAILED_PRECONDITION = 9) */
+function isFailedPrecondition(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const code = (error as { code?: unknown }).code;
+  return code === 9 || code === "failed-precondition";
 }
 
 /** Firebase Auth のユーザーを削除する。既に存在しない場合は false を返して成功扱いにする */

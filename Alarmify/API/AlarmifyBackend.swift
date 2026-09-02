@@ -12,14 +12,20 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         case .production:
             return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net")!
         case .emulator:
-            // ポートは firebase.json の emulators.functions と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
+            // ポートは firebase.json の emulators.functions.port と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
             return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1")!
         }
     }
 
-    /// API のベース URL (HTTPS 関数 `api`)。アプリ向け・外部サービス向けのどちらのパスもこの下にある
+    /// アプリ向け API のベース URL (HTTPS 関数 `api`)
     var baseURL: URL {
         functionsBaseURL.appending(path: "api")
+    }
+
+    /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
+    /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `baseURL` とは別の関数として公開されている
+    var alarmsAPIBaseURL: URL {
+        functionsBaseURL.appending(path: "alarmsApi")
     }
 
     /// アカウント削除の Callable 関数 `deleteAccount`
