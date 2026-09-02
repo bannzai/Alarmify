@@ -3,9 +3,12 @@
  * 外部サービス向け API は誰でも叩けるため、認証前の Firestore 読み取りが際限なく走らないようにする
  * (ADR 0001 の「API トークン + レート制限で守る」の一次防御。インスタンス単位のため厳密な総量制限ではない)
  */
-export interface RateLimiterOptions {
+export interface RateLimit {
   limit: number;
   windowMs: number;
+}
+
+export interface RateLimiterOptions extends RateLimit {
   now: () => Date;
   /** 保持するキーの上限。超えたら期限切れのキーを掃除する */
   maxKeys?: number;

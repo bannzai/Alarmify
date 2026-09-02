@@ -6,6 +6,7 @@ import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../l
 import { planLimits } from "../lib/plan.js";
 import { MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
+  alarmHistoryCursorSchema,
   alarmHistoryLimitSchema,
   collections,
   createApiTokenRequestSchema,
@@ -186,17 +187,29 @@ export function createAppApi(deps: Deps): Express {
     res.status(204).send();
   });
 
+  // 保持期間内の全件を辿れるよう、直前のページの最後の id を cursor にして続きを返す
   app.get("/v1/alarms", async (req, res) => {
     const parsedLimit = alarmHistoryLimitSchema.safeParse(req.query.limit ?? undefined);
     if (!parsedLimit.success) {
       throw badRequestFromZod(parsedLimit.error);
     }
+    const parsedCursor = alarmHistoryCursorSchema.safeParse(req.query.cursor ?? undefined);
+    if (!parsedCursor.success) {
+      throw badRequestFromZod(parsedCursor.error);
+    }
     const uid = currentUid(res);
-    const snapshot = await userRef(deps.firestore, uid)
-      .collection(collections.alarms)
-      .orderBy("createdAt", "desc")
-      .limit(parsedLimit.data)
-      .get();
+    const alarmsRef = userRef(deps.firestore, uid).collection(collections.alarms);
+
+    let query = alarmsRef.orderBy("createdAt", "desc");
+    if (parsedCursor.data) {
+      const cursorSnapshot = await alarmsRef.doc(parsedCursor.data).get();
+      if (!cursorSnapshot.exists) {
+        throw new ApiError(400, "invalid_argument", "cursor のアラームが見つかりません");
+      }
+      query = query.startAfter(cursorSnapshot);
+    }
+    const snapshot = await query.limit(parsedLimit.data).get();
+
     res.status(200).json({
       alarms: snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -206,6 +219,9 @@ export function createAppApi(deps: Deps): Express {
         created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
         token_id: doc.get("tokenId"),
       })),
+      // 続きがあるかは次のページを取って判断する (件数が limit ちょうどなら cursor を返す)
+      next_cursor:
+        snapshot.size === parsedLimit.data ? snapshot.docs[snapshot.size - 1].id : null,
     });
   });
 

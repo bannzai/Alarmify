@@ -6,8 +6,14 @@ import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { monthKey, planLimits } from "../lib/plan.js";
 import { alarmActionOf, buildAlarmMessage, type PushResult } from "../lib/push.js";
-import { createRateLimiter } from "../lib/rateLimit.js";
-import { expiresAtOf, findUserByApiToken, listDevices, userRef } from "../lib/store.js";
+import { createRateLimiter, type RateLimit } from "../lib/rateLimit.js";
+import {
+  expiresAfter,
+  expiresAtOf,
+  findUserByApiToken,
+  listDevices,
+  userRef,
+} from "../lib/store.js";
 import {
   collections,
   createAlarmRequestSchema,
@@ -15,6 +21,19 @@ import {
   type Alarm,
   type AlarmStatus,
 } from "../schema/index.js";
+
+/**
+ * 認証前に通る分の上限 (Function インスタンスあたり)。
+ * 呼び出し元 IP は X-Forwarded-For を詐称できるため、認証前はキーを持たせずインスタンス単位で数える
+ */
+export const EXTERNAL_GLOBAL_RATE_LIMIT: RateLimit = { limit: 600, windowMs: 60_000 };
+/** 認証後の上限。詐称できない API トークン単位で数え、正規の呼び出し元同士が影響し合わないようにする */
+export const EXTERNAL_TOKEN_RATE_LIMIT: RateLimit = { limit: 60, windowMs: 60_000 };
+
+export interface ExternalApiOptions {
+  globalRateLimit?: RateLimit;
+  tokenRateLimit?: RateLimit;
+}
 
 interface ExternalCaller {
   uid: string;
@@ -29,21 +48,14 @@ function currentCaller(res: Response): ExternalCaller {
   return caller;
 }
 
-/** 1 クライアント (IP) あたりの上限。Function インスタンスごとの一次防御 */
-export const EXTERNAL_RATE_LIMIT = { limit: 60, windowMs: 60_000 };
-
-function rateLimit(deps: Deps) {
-  const limiter = createRateLimiter({ ...EXTERNAL_RATE_LIMIT, now: deps.now });
-  return (req: Request, _res: Response, next: NextFunction): void => {
-    if (limiter.consume(req.ip ?? "unknown")) {
-      next();
-      return;
-    }
-    next(new ApiError(429, "rate_limited", "リクエストが多すぎます。しばらく待って再試行してください"));
-  };
+function tooManyRequests(): ApiError {
+  return new ApiError(429, "rate_limited", "リクエストが多すぎます。しばらく待って再試行してください");
 }
 
-function authenticate(deps: Deps) {
+function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
+  const globalLimiter = createRateLimiter({ ...options.globalRateLimit, now: deps.now });
+  const tokenLimiter = createRateLimiter({ ...options.tokenRateLimit, now: deps.now });
+
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const plainToken = parseBearerToken(req.header("authorization"));
     // 形式が違うトークンは Firestore を引かずに弾く (認証前の読み取りを増やさない)
@@ -51,9 +63,17 @@ function authenticate(deps: Deps) {
       next(new ApiError(401, "unauthenticated", "Authorization: Bearer <API トークン> が必要です"));
       return;
     }
+    if (!globalLimiter.consume("all")) {
+      next(tooManyRequests());
+      return;
+    }
     const resolved = await findUserByApiToken(deps.firestore, plainToken);
     if (!resolved) {
       next(new ApiError(401, "unauthenticated", "API トークンが無効です"));
+      return;
+    }
+    if (!tokenLimiter.consume(`${resolved.uid}/${resolved.tokenId}`)) {
+      next(tooManyRequests());
       return;
     }
     res.locals.caller = resolved;
@@ -85,32 +105,78 @@ async function deliver(
   return deps.sendPush(messages);
 }
 
-function alarmResponse(
-  id: string,
-  status: AlarmStatus,
-  fireAt: Date,
-  title: string | null,
-  delivery: PushResult,
-): Record<string, unknown> {
+interface AlarmState {
+  status: AlarmStatus;
+  fireAt: Date;
+  title: string | null;
+}
+
+/**
+ * 配送直前の状態を読み直す。
+ * 登録と配送の間に取り消しが確定していた場合に、取り消し済みのアラームへ schedule の push を送らないようにする
+ */
+async function currentAlarmState(
+  deps: Deps,
+  uid: string,
+  alarmId: string,
+  fallback: AlarmState,
+): Promise<AlarmState> {
+  const snapshot = await userRef(deps.firestore, uid)
+    .collection(collections.alarms)
+    .doc(alarmId)
+    .get();
+  if (!snapshot.exists) {
+    return fallback;
+  }
+  return {
+    status: (snapshot.get("status") as AlarmStatus | undefined) ?? fallback.status,
+    fireAt: (snapshot.get("fireAt") as Timestamp).toDate(),
+    title: (snapshot.get("title") as string | null) ?? null,
+  };
+}
+
+function alarmResponse(id: string, state: AlarmState, delivery: PushResult): Record<string, unknown> {
   return {
     id,
-    status,
-    fire_at: fireAt.toISOString(),
-    title,
+    status: state.status,
+    fire_at: state.fireAt.toISOString(),
+    title: state.title,
     delivery: { success_count: delivery.successCount, failure_count: delivery.failureCount },
   };
 }
 
+async function recordDelivery(
+  deps: Deps,
+  uid: string,
+  alarmId: string,
+  delivery: PushResult,
+): Promise<void> {
+  await userRef(deps.firestore, uid)
+    .collection(collections.alarms)
+    .doc(alarmId)
+    .update({
+      delivery: {
+        sentAt: Timestamp.fromDate(deps.now()),
+        successCount: delivery.successCount,
+        failureCount: delivery.failureCount,
+        errors: delivery.errors,
+      },
+    });
+}
+
 /** 外部サービス向け API。認証は Bearer の API トークンのみ (App Check の対象外。ADR 0001) */
-export function createExternalApi(deps: Deps): Express {
+export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}): Express {
+  const resolvedOptions: Required<ExternalApiOptions> = {
+    globalRateLimit: options.globalRateLimit ?? EXTERNAL_GLOBAL_RATE_LIMIT,
+    tokenRateLimit: options.tokenRateLimit ?? EXTERNAL_TOKEN_RATE_LIMIT,
+  };
+
   const app = express();
   app.disable("x-powered-by");
-  // Cloud Run のロードバランサ配下で X-Forwarded-For から呼び出し元 IP を取る
-  app.set("trust proxy", true);
-  app.use(rateLimit(deps));
   app.use(express.json({ limit: "32kb" }));
-  app.use(authenticate(deps));
+  app.use(authenticate(deps, resolvedOptions));
 
+  // 同じ id への POST は登録済みアラームの再スケジュールとして扱う (取り消し済みなら登録し直す)
   app.post("/v1/alarms", async (req, res) => {
     const parsed = createAlarmRequestSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -133,8 +199,7 @@ export function createExternalApi(deps: Deps): Express {
     const userDocRef = userRef(deps.firestore, uid);
     const alarmRef = userDocRef.collection(collections.alarms).doc(alarmId);
 
-    // 月間上限の判定とアラーム要求の作成を同じトランザクションで行い、上限を超えて登録されないようにする。
-    // 同じ id での再送は登録済みのアラームを使い回し、二重登録も上限の二重消費もしない
+    // 月間上限の判定と書き込みを同じトランザクションで行う。上限を消費するのは新規登録の時だけ
     const created = await deps.firestore.runTransaction(async (transaction) => {
       const userSnapshot = await transaction.get(userDocRef);
       if (!userSnapshot.exists) {
@@ -142,6 +207,13 @@ export function createExternalApi(deps: Deps): Express {
       }
       const alarmSnapshot = await transaction.get(alarmRef);
       if (alarmSnapshot.exists) {
+        transaction.update(alarmRef, {
+          title,
+          fireAt: Timestamp.fromDate(fireAt),
+          status: "scheduled",
+          updatedAt: Timestamp.fromDate(now),
+          expiresAt: expiresAtOf(now, fireAt),
+        });
         return false;
       }
       const user = userSchema.parse(userSnapshot.data());
@@ -174,55 +246,53 @@ export function createExternalApi(deps: Deps): Express {
       return true;
     });
 
-    // 再送では push も送り直す。配送だけが失敗した場合に、呼び出し側が同じ id で再試行できるようにする
-    const stored = created ? null : await alarmRef.get();
-    const storedStatus = (stored?.get("status") as AlarmStatus | undefined) ?? "scheduled";
-    const storedFireAt = stored ? (stored.get("fireAt") as Timestamp).toDate() : fireAt;
-    const storedTitle = stored ? ((stored.get("title") as string | null) ?? null) : title;
-
+    const state = await currentAlarmState(deps, uid, alarmId, {
+      status: "scheduled",
+      fireAt,
+      title,
+    });
     const delivery = await deliver(deps, uid, {
       id: alarmId,
-      action: alarmActionOf(storedStatus),
-      fireAt: storedStatus === "canceled" ? null : storedFireAt,
-      title: storedTitle,
+      action: alarmActionOf(state.status),
+      fireAt: state.status === "canceled" ? null : state.fireAt,
+      title: state.title,
     });
-    await alarmRef.update({
-      delivery: {
-        sentAt: Timestamp.fromDate(deps.now()),
-        successCount: delivery.successCount,
-        failureCount: delivery.failureCount,
-        errors: delivery.errors,
-      },
-    });
+    await recordDelivery(deps, uid, alarmId, delivery);
 
-    res
-      .status(created ? 201 : 200)
-      .json(alarmResponse(alarmId, storedStatus, storedFireAt, storedTitle, delivery));
+    res.status(created ? 201 : 200).json(alarmResponse(alarmId, state, delivery));
   });
 
   // 登録済みのアラームを取り消す。取り消し済みでも同じ応答を返す (冪等)
   app.delete("/v1/alarms/:alarmId", async (req, res) => {
     const { uid } = currentCaller(res);
-    const alarmRef = userRef(deps.firestore, uid)
-      .collection(collections.alarms)
-      .doc(req.params.alarmId);
+    const alarmId = req.params.alarmId;
+    const alarmRef = userRef(deps.firestore, uid).collection(collections.alarms).doc(alarmId);
     const snapshot = await alarmRef.get();
     if (!snapshot.exists) {
       throw new ApiError(404, "not_found", "アラームが見つかりません");
     }
-    const fireAt = (snapshot.get("fireAt") as Timestamp).toDate();
-    const title = (snapshot.get("title") as string | null) ?? null;
-
+    const now = deps.now();
     if (snapshot.get("status") !== "canceled") {
-      await alarmRef.update({ status: "canceled", updatedAt: Timestamp.fromDate(deps.now()) });
+      await alarmRef.update({
+        status: "canceled",
+        updatedAt: Timestamp.fromDate(now),
+        // 取り消したアラームを発火予定まで残す理由はないため、保持期間を取り消し時点から数え直す
+        expiresAt: expiresAfter(now),
+      });
     }
-    const delivery = await deliver(deps, uid, {
-      id: req.params.alarmId,
-      action: "cancel",
-      fireAt: null,
-      title,
+
+    const state = await currentAlarmState(deps, uid, alarmId, {
+      status: "canceled",
+      fireAt: (snapshot.get("fireAt") as Timestamp).toDate(),
+      title: (snapshot.get("title") as string | null) ?? null,
     });
-    res.status(200).json(alarmResponse(req.params.alarmId, "canceled", fireAt, title, delivery));
+    const delivery = await deliver(deps, uid, {
+      id: alarmId,
+      action: alarmActionOf(state.status),
+      fireAt: state.status === "canceled" ? null : state.fireAt,
+      title: state.title,
+    });
+    res.status(200).json(alarmResponse(alarmId, state, delivery));
   });
 
   app.use(notFoundHandler);

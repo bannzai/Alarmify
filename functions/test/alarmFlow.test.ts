@@ -5,7 +5,6 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
-import { EXTERNAL_RATE_LIMIT } from "../src/api/externalApi.js";
 import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
 import { userRef } from "../src/lib/store.js";
@@ -328,20 +327,53 @@ describe("外部サービス向け API", () => {
       .expect(401);
   });
 
-  it("同じ呼び出し元からの過剰なリクエストは 429", async () => {
-    for (let count = 0; count < EXTERNAL_RATE_LIMIT.limit; count += 1) {
-      await request(externalApi)
+  it("認証前の流量は呼び出し元によらずインスタンス単位で頭打ちにする", async () => {
+    // 認証前の上限は X-Forwarded-For を詐称しても回避できないことを、呼び出しごとに別の値を送って確かめる
+    const limited = await startTestServer(
+      createExternalApi(context.deps, { globalRateLimit: { limit: 2, windowMs: 60_000 } }),
+    );
+    try {
+      const token = `alm_${"a".repeat(43)}`;
+      for (let count = 0; count < 2; count += 1) {
+        await request(limited)
+          .post("/v1/alarms")
+          .set("authorization", `Bearer ${token}`)
+          .set("x-forwarded-for", `203.0.113.${count}`)
+          .send({})
+          .expect(401);
+      }
+      const response = await request(limited)
         .post("/v1/alarms")
-        .set("authorization", "Bearer alm_short")
+        .set("authorization", `Bearer ${token}`)
+        .set("x-forwarded-for", "203.0.113.99")
         .send({})
-        .expect(401);
+        .expect(429);
+      expect(response.body.error.code).toBe("rate_limited");
+    } finally {
+      await stopTestServer(limited);
     }
-    const response = await request(externalApi)
-      .post("/v1/alarms")
-      .set("authorization", "Bearer alm_short")
-      .send({})
-      .expect(429);
-    expect(response.body.error.code).toBe("rate_limited");
+  });
+
+  it("認証後の上限は API トークン単位で数える", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const limited = await startTestServer(
+      createExternalApi(context.deps, { tokenRateLimit: { limit: 1, windowMs: 60_000 } }),
+    );
+    try {
+      await request(limited)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+        .expect(201);
+      await request(limited)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+        .expect(429);
+    } finally {
+      await stopTestServer(limited);
+    }
   });
 
   it("同じ id での再送は二重登録せず、push だけ送り直す", async () => {
@@ -361,6 +393,7 @@ describe("外部サービス向け API", () => {
       .send(body)
       .expect(200);
     expect(second.body.id).toBe(first.body.id);
+    expect(second.body.fire_at).toBe(first.body.fire_at);
 
     const alarms = await userRef(context.deps.firestore, context.uid)
       .collection(collections.alarms)
@@ -371,6 +404,77 @@ describe("外部サービス向け API", () => {
     expect(user.get("monthlyUsage")).toEqual({ month: "2026-09", scheduledAlarmCount: 1 });
     // 配送だけが失敗した場合に再試行できるよう、push は毎回送る
     expect(context.sentBatches).toHaveLength(2);
+  });
+
+  it("同じ id に別の fire_at を送ると再スケジュールになる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const alarmId = "3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e";
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT), title: "first" })
+      .expect(201);
+
+    const rescheduled = new Date(FIRE_AT.getTime() + 60 * 60 * 1000);
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(rescheduled), title: "second" })
+      .expect(200);
+    expect(response.body.fire_at).toBe(rescheduled.toISOString());
+    expect(response.body.title).toBe("second");
+    expect(context.sentBatches.at(-1)?.[0].apns?.payload?.alarm).toEqual({
+      id: alarmId,
+      action: "schedule",
+      fire_at: toIso8601Seconds(rescheduled),
+      title: "second",
+    });
+  });
+
+  it("取り消したアラームは同じ id への POST で登録し直せる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const alarmId = "3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e";
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    await request(externalApi)
+      .delete(`/v1/alarms/${alarmId}`)
+      .set("authorization", `Bearer ${issued.token}`)
+      .expect(200);
+
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(200);
+    expect(response.body.status).toBe("scheduled");
+  });
+
+  it("取り消したアラームの保持期限は取り消し時点から数え直す", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const farFuture = new Date(TEST_NOW.getTime() + 365 * 24 * 60 * 60 * 1000);
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(farFuture) })
+      .expect(201);
+    await request(externalApi)
+      .delete(`/v1/alarms/${created.body.id}`)
+      .set("authorization", `Bearer ${issued.token}`)
+      .expect(200);
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(created.body.id)
+      .get();
+    expect((stored.get("expiresAt") as Timestamp).toMillis()).toBe(
+      TEST_NOW.getTime() + 30 * 24 * 60 * 60 * 1000,
+    );
   });
 
   it("id が UUID でなければ 400", async () => {
@@ -429,6 +533,42 @@ describe("アラーム履歴", () => {
       second.body.id,
       first.body.id,
     ]);
+  });
+
+  it("cursor で続きを取得できる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const ids: string[] = [];
+    for (const index of [0, 1, 2]) {
+      context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
+      const created = await request(externalApi)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT), title: `alarm-${index}` })
+        .expect(201);
+      ids.push(created.body.id);
+    }
+
+    const first = await request(appApi)
+      .get("/v1/alarms?limit=2")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(200);
+    expect(first.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[2], ids[1]]);
+    expect(first.body.next_cursor).toBe(ids[1]);
+
+    const second = await request(appApi)
+      .get(`/v1/alarms?limit=2&cursor=${first.body.next_cursor}`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(200);
+    expect(second.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[0]]);
+    expect(second.body.next_cursor).toBeNull();
+  });
+
+  it("存在しない cursor は 400", async () => {
+    await request(appApi)
+      .get("/v1/alarms?cursor=unknown-alarm")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(400);
   });
 
   it("limit が範囲外なら 400", async () => {

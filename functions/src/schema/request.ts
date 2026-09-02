@@ -65,3 +65,6 @@ export type CreateApiTokenRequest = z.infer<typeof createApiTokenRequestSchema>;
 
 /** アプリ向け: GET /v1/alarms の limit。上限なしの取得を書かない (.claude/rules/firestore-db-rules.md) */
 export const alarmHistoryLimitSchema = z.coerce.number().int().min(1).max(100).default(50);
+
+/** アプリ向け: GET /v1/alarms の cursor。直前のページの最後のアラーム id */
+export const alarmHistoryCursorSchema = z.string().min(1).max(128).optional();

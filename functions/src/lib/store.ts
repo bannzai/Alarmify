@@ -24,13 +24,17 @@ export function newUserDocument(now: Date): User {
   };
 }
 
+/** 基準時刻から保持期間が経過した時刻 */
+export function expiresAfter(base: Date): Timestamp {
+  return Timestamp.fromMillis(base.getTime() + ALARM_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+}
+
 /**
- * アラーム要求を削除してよくなる時刻。
+ * 登録中のアラーム要求を削除してよくなる時刻。
  * 発火が保持期間より先のアラームでも、発火するまでは取り消せる必要があるため、発火時刻を基準に取る
  */
 export function expiresAtOf(createdAt: Date, fireAt: Date): Timestamp {
-  const base = Math.max(createdAt.getTime(), fireAt.getTime());
-  return Timestamp.fromMillis(base + ALARM_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  return expiresAfter(createdAt.getTime() >= fireAt.getTime() ? createdAt : fireAt);
 }
 
 export interface ResolvedApiToken {
