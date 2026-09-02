@@ -13,18 +13,23 @@ extension String {
     static let proEntitlementEvaluatedAt = "proEntitlementEvaluatedAt"
 }
 
+/// 失効日時を過ぎた後に RevenueCat が有効と判定した観測を信じる最長期間。
+/// Apple の請求猶予期間は最長 16 日 (App Store Connect の設定上限) のため、それを越えて猶予が続くことはなく、
+/// この期間を過ぎても RevenueCat と再同期できていなければ無効に倒す (PR #20 レビュー指摘)
+let proEntitlementGracePeriodMax: TimeInterval = 16 * 24 * 60 * 60
+
 /// キャッシュした課金判定が now 時点でも有効か。
 /// 失効日時が未来ならそのまま有効。失効日時を過ぎている場合は、RevenueCat がその失効日時より後に有効と判定していた
-/// (Apple の請求猶予期間など、RevenueCat 側が正を持つ延長) 時だけ有効とし、それ以外は無効として
-/// 期限切れ・返金がアプリ停止中に起きても古い true を返さないようにする (PR #20 レビュー指摘)。
+/// (Apple の請求猶予期間など、RevenueCat 側が正を持つ延長) 時だけ、その判定から proEntitlementGracePeriodMax の間に限って
+/// 有効とし、それ以外は無効として期限切れ・返金がアプリ停止中に起きても古い true を返し続けないようにする (PR #20 レビュー指摘)。
 /// 失効日時なしは買い切りまたは未購入で、active の値をそのまま使う。
 /// 純粋関数であり、同じ入力に対して常に同じ出力を返す (冪等)
 func cachedProActive(active: Bool, expirationDate: Date?, evaluatedAt: Date?, now: Date) -> Bool {
     guard active else { return false }
     guard let expirationDate else { return true }
     if expirationDate > now { return true }
-    guard let evaluatedAt else { return false }
-    return evaluatedAt >= expirationDate
+    guard let evaluatedAt, evaluatedAt >= expirationDate else { return false }
+    return now < evaluatedAt.addingTimeInterval(proEntitlementGracePeriodMax)
 }
 
 /// Pro プランの課金判定と RevenueCat SDK の初期化 (課金設計は documents/PROJECT.md 参照)

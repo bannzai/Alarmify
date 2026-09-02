@@ -33,6 +33,15 @@ final class ProEntitlementTests: XCTestCase {
         XCTAssertTrue(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: now.addingTimeInterval(-30), now: now))
     }
 
+    /// 失効日時以降の有効判定も、その判定から proEntitlementGracePeriodMax を過ぎたら無効に倒す
+    /// (請求の回復に失敗して無効になった時にアプリが停止・オフラインでも、Pro が無期限に残らない)
+    func testActiveObservationAfterExpirationExpiresAfterGracePeriodMax() {
+        let expiration = now.addingTimeInterval(-60)
+        let evaluatedAt = expiration
+        XCTAssertTrue(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: evaluatedAt, now: evaluatedAt.addingTimeInterval(proEntitlementGracePeriodMax - 1)))
+        XCTAssertFalse(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: evaluatedAt, now: evaluatedAt.addingTimeInterval(proEntitlementGracePeriodMax)))
+    }
+
     /// 失効日時ちょうどは失効済みとして扱う (判定時刻がそれより前の場合)
     func testActiveAtExpirationIsNotPro() {
         XCTAssertFalse(cachedProActive(active: true, expirationDate: now, evaluatedAt: now.addingTimeInterval(-1), now: now))
