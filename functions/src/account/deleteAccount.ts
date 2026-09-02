@@ -31,17 +31,10 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // Auth より先にデータを消すと、Auth の削除に失敗した時に「アカウントは生きているのにデータだけ消えた」状態で
   // 呼び出し元へエラーを返すことになるため、Auth が消えるまでは何も壊さない。
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
-  // Auth の削除に失敗したら目印を外してエラーを返す (外せなくても sweep 側が Auth の残存を見て取り下げる)
+  // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
+  // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
   await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
-  let authUserExisted: boolean;
-  try {
-    authUserExisted = await deleteAuthUser(uid);
-  } catch (error) {
-    await tombstone.delete().catch((deleteError: unknown) => {
-      logger.error("Removing the deletion marker after a failed Auth deletion failed", { error: String(deleteError) });
-    });
-    throw error;
-  }
+  const authUserExisted = await deleteAuthUser(uid);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
