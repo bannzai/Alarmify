@@ -20,7 +20,7 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 
 ```sh
 make deploy-functions                                  # alias prod (= alarmify-prod) へ functions 全体をデプロイ
-make deploy-functions FUNCTIONS=v1-alarms-create        # 対象を絞る
+make deploy-functions FUNCTIONS=v1-alarms-create        # 対象を絞る (カンマ区切りで複数指定できる)
 make deploy-functions FIREBASE_ALIAS=prod               # alias を明示する場合
 ```
 
@@ -67,13 +67,16 @@ bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-i
 bash ~/.agents/skills/ios-deploy-actions/scripts/setup-environment.sh \
   --repo bannzai/Alarmify --environment firebase-prod --branch main
 
+# 途中で失敗しても本番の鍵をディスクに残さないよう、生成前に削除を予約しておく
+trap 'rm -f ./tmp/deployer.json' EXIT
 gcloud iam service-accounts keys create ./tmp/deployer.json \
   --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod
 B64=$(base64 < ./tmp/deployer.json)
 [ -n "$B64" ] || { echo "Error: 鍵が空です" >&2; exit 1; }
 printf '%s' "$B64" | gh secret set FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Alarmify --env firebase-prod
-# 鍵ファイルは登録後に削除する (./tmp は .gitignore 済みだが原本を残さない)
 ```
+
+`trap` は対話シェルでそのまま貼ると、そのシェルを閉じるまで発火しない。上のブロックはスクリプトファイル (`bash issue-key.sh`) か `bash -c` で実行し、実行後に `ls ./tmp/deployer.json` で鍵が残っていないことを確かめる。
 
 登録した secret の所在は env-secret-registry skill の `secret-locations.tsv` に記録する (値は記録しない)。
 

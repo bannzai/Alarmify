@@ -7,11 +7,14 @@ name: ios-deploy
 # cloud signing (自動署名) は API Key に Admin ロールが必須なため採用しない。
 # 方式の設計判断は ios-deploy-actions skill (bannzai/castle) の references/signing-design.md を参照。
 #
-# ios-deploy-actions skill のテンプレート既定は「main への push で自動起動 + workflow_dispatch」だが、
-# App Store Connect のアプリレコードと署名アセット (App ID / App Group / 証明書 / profile / Secrets) が
-# まだ無く、push 起動にすると main へのマージのたびに必ず失敗する run が出るため、現時点では
-# workflow_dispatch だけにしている。初回配布に成功したら push トリガを戻す
-# (手順: documents/ios-testflight-distribution.md「push トリガを有効に戻す」)
+# skill のテンプレートから 2 点変えている (scaffold-ios-deploy.sh を再実行する時は両方を入れ直す):
+#  1. 起動を workflow_dispatch だけにしている。テンプレート既定は「main への push で自動起動 +
+#     workflow_dispatch」だが、App Store Connect のアプリレコードと署名アセット
+#     (App ID / App Group / 証明書 / profile / Secrets) がまだ無く、push 起動にすると
+#     main へのマージのたびに必ず失敗する run が出るため。初回配布に成功したら push トリガを戻す
+#     (手順: documents/ios-testflight-distribution.md「push トリガを有効に戻す」)
+#  2. DEVELOPMENT_TEAM (Team ID) をベタ書きせず environment secret APPLE_DEVELOPMENT_TEAM_ID から渡している。
+#     public リポジトリに Team ID の実値をコミットしない方針のため (AGENTS.md「秘匿情報」)
 on:
   workflow_dispatch:
 
@@ -23,7 +26,6 @@ env:
   # Re-run せず新しく dispatch する (アップロード済みと同じ番号の再送は拒否されるため)。
   # Upload より前の step で失敗した run は、その番号がまだアップロードされていないため Re-run で復旧してよい
   BUILD_NUMBER_OFFSET: 0
-  DEVELOPMENT_TEAM: "TQPN82UBBY"
   PROJECT_PATH: "Alarmify.xcodeproj"
   SCHEME: "Alarmify"
   ARCHIVE_PATH: tmp/app.xcarchive
@@ -48,6 +50,8 @@ jobs:
     env:
       ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
       ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+      # Team ID は public リポジトリにコミットしない方針のため environment secret から渡す (AGENTS.md「秘匿情報」)
+      DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM_ID }}
     steps:
       # 配布は同時に 1 本だけ実行する。GitHub の concurrency は同一 group の pending を 1 件しか保持せず、
       # 多重 dispatch で途中の pending run が黙ってキャンセルされ配布が失われるため使わない。
@@ -85,6 +89,7 @@ jobs:
         env:
           ASC_API_KEY_P8_BASE64: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
         run: |
+          [ -n "$DEVELOPMENT_TEAM" ] || { echo "::error::Secret APPLE_DEVELOPMENT_TEAM_ID が空です"; exit 1; }
           [ -n "$ASC_API_KEY_ID" ] || { echo "::error::Secret ASC_API_KEY_ID が空です"; exit 1; }
           [ -n "$ASC_API_KEY_ISSUER_ID" ] || { echo "::error::Secret ASC_API_KEY_ISSUER_ID が空です"; exit 1; }
           [ -n "$ASC_API_KEY_P8_BASE64" ] || { echo "::error::Secret ASC_API_KEY_P8_BASE64 が空です"; exit 1; }

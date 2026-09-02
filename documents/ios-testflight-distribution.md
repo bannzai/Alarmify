@@ -13,7 +13,7 @@ workflow・`project.pbxproj` の手動署名設定・ビルド番号の採番は
 
 ## 署名アセットを発行する
 
-証明書はチームに 1 枚を使い回す。Team `TQPN82UBBY` には有効な Apple Distribution 証明書が 2 枚あり (`4U43R7FQ5Q` / `68L9PY6PX2`)、うち serial `1E45CE77DD6B86B207FFBAC2D25E52DF` の 1 枚 (`68L9PY6PX2`、有効期限 2027-01-17) は開発機の login キーチェーンに秘密鍵ごと入っている。まずこの秘密鍵から `.p12` を書き出して使い回し、書き出せない場合だけ新規発行する (Apple Distribution 証明書は発行枚数に上限がある)。
+証明書はチームに 1 枚を使い回す。開発チームには有効な Apple Distribution 証明書が 2 枚あり (証明書 ID `4U43R7FQ5Q` / `68L9PY6PX2`)、うち serial `1E45CE77DD6B86B207FFBAC2D25E52DF` の 1 枚 (`68L9PY6PX2`、有効期限 2027-01-17) は開発機の login キーチェーンに秘密鍵ごと入っている。まずこの秘密鍵から `.p12` を書き出して使い回し、書き出せない場合だけ新規発行する (Apple Distribution 証明書は発行枚数に上限がある)。
 
 ```sh
 # 既存証明書の一覧 (証明書 ID / 名義 / serial / 有効期限)
@@ -64,12 +64,15 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
   --secret ASC_API_KEY_ID="$ASC_API_KEY_ID" \
   --secret ASC_API_KEY_ISSUER_ID="$ASC_API_KEY_ISSUER_ID" \
   --secret ASC_API_KEY_P8_BASE64="$ASC_API_KEY_P8_BASE64" \
+  --secret APPLE_DEVELOPMENT_TEAM_ID="$FASTLANE_TEAM_ID" \
   --secret-base64-file IOS_P12_CERTIFICATE_BASE64=./tmp/signing/distribution.p12 \
   --secret-from-file IOS_P12_PASSWORD=./tmp/signing/p12-password.txt \
   --secret-base64-file IOS_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.AppStore.mobileprovision \
   --secret-base64-file IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.NotificationService.AppStore.mobileprovision \
   --secret-base64-file IOS_WIDGET_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.Widget.AppStore.mobileprovision
 ```
+
+`APPLE_DEVELOPMENT_TEAM_ID` は Developer Portal の Team ID。public リポジトリに Team ID の実値をコミットしない方針 (AGENTS.md「秘匿情報」) のため、workflow にベタ書きせず environment secret から渡す。ローカルでは direnv の `.envrc` の `FASTLANE_TEAM_ID` に入っている。
 
 `--dry-run` で対象と値の非空を確認してから、`--dry-run` を外して登録する。1 つでも空値・不存在があれば 1 件も書き込まれない。登録後は `gh secret list --repo bannzai/Alarmify` を確認し、同じキーがリポジトリスコープに残っていないこと (environment 側にだけあること) を確かめる。
 

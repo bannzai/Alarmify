@@ -28,6 +28,12 @@ on:
 permissions:
   contents: read
 
+# 本番の Functions へ同時にデプロイしない。並行すると古い run が後に完了して、
+# 古い checkout の内容が本番に残り得るため、先行 run の完了を待って直列に流す
+concurrency:
+  group: functions-deploy-firebase-prod
+  cancel-in-progress: false
+
 env:
   # firebase-tools は明示的にバージョンを固定する (latest だと CLI の更新で挙動が変わり、デプロイが再現しなくなるため)
   FIREBASE_TOOLS_VERSION: "15.28.2"
@@ -58,6 +64,12 @@ jobs:
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
+      - name: Install functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      # 依存のインストールより後に置く。npm ci は依存の lifecycle script を実行するため、
+      # 先に鍵を配置すると本番を変更できる資格情報を依存のスクリプトから読めてしまう
       - name: Restore service account key
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 }}
@@ -70,17 +82,16 @@ jobs:
           jq -r '"鍵のサービスアカウント: " + .client_email' "$key_path"
           echo "GOOGLE_APPLICATION_CREDENTIALS=${key_path}" >> "$GITHUB_ENV"
 
-      - name: Install functions dependencies
-        run: npm ci
-        working-directory: functions
-
       - name: Deploy functions
         env:
           FIREBASE_ALIAS: ${{ inputs.environment }}
           FUNCTIONS: ${{ inputs.functions }}
         run: |
+          # firebase の部分デプロイは対象ごとに接頭辞が要る (functions:a,functions:b)。
+          # functions:a,b は b が別種のターゲットとして解釈されて失敗する
           if [ -n "$FUNCTIONS" ]; then
-            target="functions:${FUNCTIONS}"
+            target=$(printf '%s' "$FUNCTIONS" | awk -F',' '{for (i = 1; i <= NF; i++) { gsub(/^[ \t]+|[ \t]+$/, "", $i); if ($i != "") printf "%sfunctions:%s", (n++ ? "," : ""), $i }}')
+            [ -n "$target" ] || { echo "::error::functions の指定が空です"; exit 1; }
           else
             target="functions"
           fi
