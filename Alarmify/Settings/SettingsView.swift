@@ -13,9 +13,7 @@ struct SettingsView: View {
     /// 公開している削除手順のページ (英語版)。ロケール別の URL が壊れた時の戻り先
     private static let englishAccountDeletionGuideURL = URL(string: "https://bannzai.github.io/Alarmify/AccountDeletion-en")!
 
-    var deletionService: AccountDeletionService = RemoteAccountDeletionService()
-
-    @State private var credential = AccountStore.load()
+    @State private var session = AccountSession.shared
     @State private var deletionState: DeletionState = .idle
     /// 削除の確認ダイアログの表示状態
     @State private var deletionConfirmation = false
@@ -23,19 +21,19 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                if let credential {
-                    LabeledContent {
-                        Text(credential.userId)
+                LabeledContent {
+                    if let uid = session.uid {
+                        Text(uid)
                             .font(.caption.monospaced())
                             .textSelection(.enabled)
-                    } label: {
-                        // ja: アカウント ID
-                        Text("Account ID")
+                    } else {
+                        // ja: サインイン中
+                        Text("Signing in")
+                            .foregroundStyle(.secondary)
                     }
-                } else {
-                    // ja: アカウントはまだ作成されていません
-                    Text("No account has been created yet")
-                        .foregroundStyle(.secondary)
+                } label: {
+                    // ja: アカウント ID
+                    Text("Account ID")
                 }
             } header: {
                 // ja: アカウント
@@ -59,7 +57,7 @@ struct SettingsView: View {
                     }
                 }
                 .accessibilityIdentifier("settings_delete_account")
-                .disabled(credential == nil || deletionState == .deleting)
+                .disabled(session.uid == nil || deletionState == .deleting)
 
                 Link(destination: accountDeletionGuideURL) {
                     // ja: 削除の手順と削除されるデータ
@@ -80,15 +78,12 @@ struct SettingsView: View {
                 Section {
                     Text(message)
                         .foregroundStyle(.red)
+                        .accessibilityIdentifier("settings_delete_error")
                 } header: {
                     // ja: エラー
                     Text("Error")
                 }
             }
-
-#if DEBUG
-            DeveloperMenuSection(credential: $credential)
-#endif
         }
         // ja: 設定
         .navigationTitle("Settings")
@@ -104,6 +99,7 @@ struct SettingsView: View {
                 // ja: 削除する
                 Text("Delete")
             }
+            .accessibilityIdentifier("settings_delete_confirm")
             Button(role: .cancel) {
             } label: {
                 // ja: キャンセル
@@ -144,15 +140,9 @@ struct SettingsView: View {
     }
 
     private func deleteAccount() async {
-        guard let credential else { return }
         deletionState = .deleting
         do {
-            try await deletionService.deleteAccount(credential: credential)
-            // 削除後はアプリを初期状態に戻し、匿名認証をやり直せるようにする。
-            // APNs デバイストークンは端末固有の値でアカウントのデータではなく、
-            // 再取得は次回起動時の registerForRemoteNotifications でしか行われないため破棄しない
-            AccountStore.clear()
-            self.credential = nil
+            try await session.deleteAccount()
             deletionState = .deleted
         } catch {
             deletionState = .failed(message: error.localizedDescription)
