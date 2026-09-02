@@ -231,6 +231,49 @@ describe("外部サービス向け API", () => {
       .expect(401);
   });
 
+  it("fire_in は受信からの秒数で発火時刻を決め、リードタイム未満は最小値へ繰り上げる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+
+    const later = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 300, title: "Backup finished" })
+      .expect(201);
+    expect(later.body.fire_at).toBe(new Date(TEST_NOW.getTime() + 300 * 1000).toISOString());
+
+    const asap = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 0 })
+      .expect(201);
+    expect(asap.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + MIN_FIRE_AT_LEAD_SECONDS * 1000).toISOString(),
+    );
+  });
+
+  it("fire_at と fire_in は両方指定・両方省略とも 400", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const both = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), fire_in: 60 })
+      .expect(400);
+    expect(both.body.error.code).toBe("invalid_argument");
+    const neither = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ title: "no time" })
+      .expect(400);
+    expect(neither.body.error.code).toBe("invalid_argument");
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: -1 })
+      .expect(400);
+  });
+
   it("fire_at が過去・形式不正なら 400", async () => {
     await registerDevice();
     const issued = await issueApiToken();

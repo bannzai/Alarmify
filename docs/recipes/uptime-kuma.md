@@ -31,7 +31,7 @@ Additional Headers:
 }
 ```
 
-`monitorJSON['name']` is the monitor name and `heartbeatJSON['status']` is `0` for DOWN, `1` for UP, `2` for PENDING and `3` for MAINTENANCE, so the alarm title reads `Website is down`, `Website is up`, `Website is pending` or `Website is in maintenance`. The `json` filter JSON-encodes the title (including the quotes), so a monitor name containing a quote still produces a valid body. `{{ msg | json }}` holds Uptime Kuma's own message if you prefer the full text (the API truncates titles to 100 characters).
+`monitorJSON['name']` is the monitor name and `heartbeatJSON['status']` is `0` for DOWN, `1` for UP, `2` for PENDING and `3` for MAINTENANCE, so the alarm title reads `Website is down`, `Website is up`, `Website is pending` or `Website is in maintenance`. The `json` filter JSON-encodes the title (including the quotes), so a monitor name containing a quote still produces a valid body. `{{ msg | json }}` holds Uptime Kuma's own message if you prefer the full text (the API rejects titles longer than 200 characters).
 
 ## 2. Attach it to monitors
 
@@ -39,7 +39,7 @@ Enable the notification on the monitors that should wake you, or turn on **Defau
 
 ## 3. Test
 
-Press **Test** on the notification. Your iPhone should ring about a minute later (the API's minimum lead time).
+Press **Test** on the notification. Your iPhone should ring within a minute (the API's minimum lead time is 30 seconds).
 
 ## UP events also ring
 

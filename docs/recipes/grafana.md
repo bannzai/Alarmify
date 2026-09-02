@@ -21,7 +21,7 @@ Under **Optional Webhook settings**, enable **Custom Payload** and paste:
 {{ coll.Dict "fire_in" 0 "title" (printf "%s: %s" (.Status | toUpper) .CommonLabels.alertname) | data.ToJSON }}
 ```
 
-`coll.Dict` and `data.ToJSON` build the JSON, so an alert name containing a quote or a backslash is escaped correctly. `fire_in: 0` rings about a minute after the alert (the API's minimum lead time) without any date arithmetic in the template. `.Status` is `firing` or `resolved`; `.CommonLabels.alertname` is the alert rule name.
+`coll.Dict` and `data.ToJSON` build the JSON, so an alert name containing a quote or a backslash is escaped correctly. `fire_in: 0` rings within a minute of the alert (the API's minimum lead time is 30 seconds) without any date arithmetic in the template. `.Status` is `firing` or `resolved`; `.CommonLabels.alertname` is the alert rule name.
 
 ## 3. Do not ring when the alert resolves
 
@@ -29,7 +29,7 @@ Grafana sends a second notification when the alert resolves, which would ring ag
 
 ## Test it
 
-Contact points, the contact point's menu, **Test**. Send a test notification; your iPhone should ring about a minute later with the title `FIRING: TestAlert`.
+Contact points, the contact point's menu, **Test**. Send a test notification; your iPhone should ring within a minute with the title `FIRING: TestAlert`.
 
 ## Older Grafana without Custom Payload
 

@@ -265,7 +265,16 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     }
     const { uid, tokenId } = currentCaller(res);
     const now = deps.now();
-    const fireAt = parsed.data.fire_at;
+    // fire_in は受信時刻からの相対指定。リードタイム未満の値は最小値へ繰り上げる (fire_in: 0 で「できるだけ早く」を表せるようにする)。
+    // push には秒までしか載せないため、fire_at と同じく秒未満を切り捨てて以降の比較を揃える
+    const fireAt =
+      parsed.data.fire_at ??
+      new Date(
+        Math.floor(
+          (now.getTime() + Math.max(parsed.data.fire_in ?? 0, MIN_FIRE_AT_LEAD_SECONDS) * 1000) /
+            1000,
+        ) * 1000,
+      );
     if (fireAt.getTime() < now.getTime() + MIN_FIRE_AT_LEAD_MS) {
       throw new ApiError(
         400,

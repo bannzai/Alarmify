@@ -178,8 +178,8 @@ extension IntegrationRecipe {
                 Text("Under Optional Webhook settings, enable Custom Payload and paste the template."),
                 // ja: 解決時にも鳴らないよう、Disable resolved message をオンにします
                 Text("Turn on Disable resolved message so a resolved alert does not ring again."),
-                // ja: 通知先の Test で、約 1 分後に iPhone が鳴ることを確認します
-                Text("Use Test on the contact point; your iPhone should ring about a minute later."),
+                // ja: 通知先の Test で、1 分以内に iPhone が鳴ることを確認します
+                Text("Use Test on the contact point; your iPhone should ring within a minute."),
             ]
         case .uptimeKuma:
             [

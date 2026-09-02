@@ -37,7 +37,7 @@ final class IntegrationRecipeTests: XCTestCase {
 
     func testEndpointFollowsTheSelectedBackend() {
         let bodies = IntegrationRecipe.shell.snippets(apiToken: nil, backend: .emulator).map(\.body)
-        XCTAssertTrue(bodies.contains { $0.contains("http://127.0.0.1:5001/demo-alarmify/asia-northeast1/api/v1/alarms") })
+        XCTAssertTrue(bodies.contains { $0.contains("http://127.0.0.1:5410/demo-alarmify/asia-northeast1/alarmsApi/v1/alarms") })
         XCTAssertFalse(bodies.contains { $0.contains("alarmify-prod") })
     }
 

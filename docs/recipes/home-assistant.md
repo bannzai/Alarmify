@@ -27,7 +27,7 @@ rest_command:
 
 ## 3. Call it from an automation
 
-Ring (about a minute later, the API's minimum lead time) when the front door opens between midnight and 6am:
+Ring (within a minute; the API's minimum lead time is 30 seconds) when the front door opens between midnight and 6am:
 
 ```yaml
 # automations.yaml

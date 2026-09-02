@@ -82,7 +82,7 @@ response=$(curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms 
   -H "Content-Type: application/json" \
   -d "$(jq -cn --arg fire_at "$FIRE_AT" '{fire_at: $fire_at, title: "Nightly job is still running"}')") \
   || { echo "alarm request failed: $response" >&2; exit 1; }
-ID=$(jq -r '.id // empty' <<<"$response")
+ID=$(printf '%s' "$response" | jq -r '.id // empty')
 [ -n "$ID" ] || { echo "no alarm id in response: $response" >&2; exit 1; }
 
 ./nightly-job.sh

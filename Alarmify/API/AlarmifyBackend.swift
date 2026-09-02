@@ -18,6 +18,18 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         }
     }
 
+    /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
+    /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `baseURL` とは別の関数として公開されている
+    var alarmsAPIBaseURL: URL {
+        switch self {
+        case .production:
+            return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi")!
+        case .emulator:
+            // Functions エミュレータのポートは firebase.json の emulators.functions.port
+            return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/alarmsApi")!
+        }
+    }
+
     /// Firebase Auth エミュレータのホストとポート。production では nil
     var authEmulator: (host: String, port: Int)? {
         switch self {
