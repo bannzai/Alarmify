@@ -12,6 +12,14 @@ struct SettingsPage: View {
     /// 表示中のペイウォールの文脈。nil の間はペイウォールを出さない
     @State private var paywallTrigger: PaywallTrigger?
 
+    /// プラン表示の判定に使う現在時刻。
+    /// @AppStorage の値は時計が失効日時を越えても変わらないため、画面を開いたまま失効した時に
+    /// body を再評価させる状態としてここに持つ (PR #20 レビュー指摘)
+    @State private var now = Date.now
+
+    /// バックグラウンドから戻った時に now を取り直すための scene の状態
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         List {
             Section {
@@ -77,6 +85,29 @@ struct SettingsPage: View {
         .sheet(item: $paywallTrigger) { trigger in
             PaywallPage(trigger: trigger)
         }
+        .task(id: proEntitlementExpiration) {
+            await refreshNowAtExpiration()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Task.sleep はアプリが停止している間は進まないため、前面に戻った時にも取り直す
+            if phase == .active {
+                now = .now
+            }
+        }
+    }
+
+    /// 失効日時まで待ってから now を取り直す。
+    /// 失効日時が無い (買い切り・未購入) 場合と、すでに過ぎている場合は待たない。
+    /// 何度呼んでも now が現在時刻になるだけで、同じ状態へ収束する (冪等)
+    private func refreshNowAtExpiration() async {
+        guard let expirationDate = proEntitlementExpiration.map(Date.init(timeIntervalSince1970:)) else { return }
+        let interval = expirationDate.timeIntervalSince(.now)
+        guard interval > 0 else {
+            now = .now
+            return
+        }
+        try? await Task.sleep(for: .seconds(interval))
+        now = .now
     }
 
     /// キャッシュした entitlement が今この瞬間も有効か
@@ -84,7 +115,7 @@ struct SettingsPage: View {
         cachedProActive(
             active: proEntitlementActive,
             expirationDate: proEntitlementExpiration.map(Date.init(timeIntervalSince1970:)),
-            now: .now
+            now: now
         )
     }
 }
