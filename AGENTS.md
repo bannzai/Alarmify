@@ -18,6 +18,8 @@
 - 動作確認 (UI・挙動): `/ios-simulator` skill を起点にする。simulator は sim-boot 経由のプロジェクト固有 simulator を使い、アプリの起動は `make ios`
 - push 経路の確認: APNs を使わずに `xcrun simctl push <UDID> com.bannzai.Alarmify documents/push-payloads/<ファイル>.apns` で simulator へ payload を投げられる。`schedule.apns` (Notification Service Extension 経由。`mutable-content: 1`) と `background.apns` (background push。`content-available: 1`) を用意している。payload の形式は `Alarmify/Shared/AlarmRequest.swift` が正
 - AlarmKit の発火確認は「1〜2 分後のアラーム」で行う。発火判定は画面表示で行う (simulator は sound `.default` だと鳴らない癖がある)
+- バックエンド: `npm --prefix functions install` の後、`npm --prefix functions test` で Firebase Emulator (auth / firestore / functions) を起動してテストを実行する。エミュレータのポートは `firebase.json` を正とし、他プロジェクトのエミュレータと衝突しない値にしている
+- アプリからバックエンドを呼ぶ動作確認: `npm --prefix functions run serve` でエミュレータを起動する。DEBUG ビルドの接続先は `Alarmify/Account/BackendEndpoint.swift` (Release は `alarmify-prod`)
 - 実機確認: `make install-device` (接続中の実機へ install + launch)。APNs のデバイストークン取得・実 push の受信・App terminated / Device locked 状態の挙動は実機でしか検証できない
 - public リポジトリのため、GitHub Actions の macOS runner 上のリモート simulator (simtunnel) も使える。caller workflow は `.github/workflows/simulator-session.yml` (Secrets `TS_OIDC_CLIENT_ID` / `TS_OIDC_AUDIENCE` の登録が前提)
 
