@@ -32,6 +32,9 @@
 		F793B4FAB205414176A8285C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
 		F85FB544587F14D09E6672A2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
 		FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247CF42D4F40787F4C65182A /* AppDelegate.swift */; };
+		AB54F8297976C075A3928F98 /* IntegrationRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62CBDCFD66775632D8EEFB3 /* IntegrationRecipe.swift */; };
+		A1CA3951F407D3DB61AB41D2 /* RecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D82B1F1CDD6B6E8B21BAEE /* RecipesView.swift */; };
+		52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */; };
 		F0741EE9469173649F6ADF3E /* AlarmifyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */; };
 		4B7E7C27C0554C845E459AF9 /* AlarmifyAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */; };
 		E8F14CF570C084D57A607E32 /* AlarmifyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */; };
@@ -116,6 +119,9 @@
 		FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyAlarmMetadata.swift; sourceTree = "<group>"; };
+		F62CBDCFD66775632D8EEFB3 /* IntegrationRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationRecipe.swift; sourceTree = "<group>"; };
+		22D82B1F1CDD6B6E8B21BAEE /* RecipesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesView.swift; sourceTree = "<group>"; };
+		36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationRecipeTests.swift; sourceTree = "<group>"; };
 		FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClient.swift"; sourceTree = "<group>"; };
 		C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIError.swift"; sourceTree = "<group>"; };
 		80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyBackend.swift"; sourceTree = "<group>"; };
@@ -210,6 +216,7 @@
 				FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */,
 				B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */,
 				5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */,
+				F02D4BD41F02D42E38373922 /* Recipes */,
 				9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */,
 				EA6F3C3C50544DAC5E2DEED6 /* API */,
 				59154B5C415BFDDA5030DCF5 /* APIToken */,
@@ -225,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
+				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
 				FA085358AAEA03A5EF70727B /* APITokenTests.swift */,
 			);
@@ -238,6 +246,15 @@
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		F02D4BD41F02D42E38373922 /* Recipes */ = {
+			isa = PBXGroup;
+			children = (
+				F62CBDCFD66775632D8EEFB3 /* IntegrationRecipe.swift */,
+				22D82B1F1CDD6B6E8B21BAEE /* RecipesView.swift */,
+			);
+			path = Recipes;
 			sourceTree = "<group>";
 		};
 		EA6F3C3C50544DAC5E2DEED6 /* API */ = {
@@ -430,6 +447,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
@@ -453,6 +471,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1CA3951F407D3DB61AB41D2 /* RecipesView.swift in Sources */,
+				AB54F8297976C075A3928F98 /* IntegrationRecipe.swift in Sources */,
 				2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */,
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,

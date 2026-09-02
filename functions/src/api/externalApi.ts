@@ -216,6 +216,16 @@ async function deliverCurrentState(
   return { state: latest, delivery: corrective };
 }
 
+/**
+ * fire_in (受信時刻からの秒数) を発火時刻にする。
+ * リードタイム未満の値は最小値へ繰り上げる (fire_in: 0 で「できるだけ早く」を表せるようにする)。
+ * push には秒までしか載せないため秒単位に丸めるが、切り捨てると now の秒未満の分だけリードタイムを割り込むため切り上げる
+ */
+function relativeFireAt(now: Date, fireInSeconds: number): Date {
+  const delayMs = Math.max(fireInSeconds, MIN_FIRE_AT_LEAD_SECONDS) * 1000;
+  return new Date(Math.ceil((now.getTime() + delayMs) / 1000) * 1000);
+}
+
 function alarmResponse(id: string, state: AlarmState, delivery: PushResult): Record<string, unknown> {
   return {
     id,
@@ -265,20 +275,24 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     }
     const { uid, tokenId } = currentCaller(res);
     const now = deps.now();
-    const fireAt = parsed.data.fire_at;
-    if (fireAt.getTime() < now.getTime() + MIN_FIRE_AT_LEAD_MS) {
-      throw new ApiError(
-        400,
-        "invalid_argument",
-        `fire_at には ${MIN_FIRE_AT_LEAD_SECONDS} 秒以上先の日時を指定してください`,
-      );
-    }
-    if (fireAt.getTime() > now.getTime() + MAX_FIRE_AT_AHEAD_MS) {
-      throw new ApiError(
-        400,
-        "invalid_argument",
-        `fire_at は ${MAX_FIRE_AT_AHEAD_DAYS} 日以内の日時を指定してください`,
-      );
+    const fireAt = parsed.data.fire_at ?? relativeFireAt(now, parsed.data.fire_in ?? 0);
+    // 範囲の検査は絶対時刻の fire_at にだけ行う。fire_in は schema で 0〜365 日に収まり、リードタイムへの繰り上げも済んでいる
+    // (秒への丸めで境界を 1 秒未満はみ出した値まで弾かない)
+    if (parsed.data.fire_at !== undefined) {
+      if (fireAt.getTime() < now.getTime() + MIN_FIRE_AT_LEAD_MS) {
+        throw new ApiError(
+          400,
+          "invalid_argument",
+          `fire_at には ${MIN_FIRE_AT_LEAD_SECONDS} 秒以上先の日時を指定してください`,
+        );
+      }
+      if (fireAt.getTime() > now.getTime() + MAX_FIRE_AT_AHEAD_MS) {
+        throw new ApiError(
+          400,
+          "invalid_argument",
+          `fire_at は ${MAX_FIRE_AT_AHEAD_DAYS} 日以内の日時を指定してください`,
+        );
+      }
     }
 
     const devices = await listDevices(deps.firestore, uid);

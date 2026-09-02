@@ -231,6 +231,78 @@ describe("外部サービス向け API", () => {
       .expect(401);
   });
 
+  it("fire_in は受信からの秒数で発火時刻を決め、リードタイム未満は最小値へ繰り上げる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+
+    const later = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 300, title: "Backup finished" })
+      .expect(201);
+    expect(later.body.fire_at).toBe(new Date(TEST_NOW.getTime() + 300 * 1000).toISOString());
+
+    const asap = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 0 })
+      .expect(201);
+    expect(asap.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + MIN_FIRE_AT_LEAD_SECONDS * 1000).toISOString(),
+    );
+
+    // 受信時刻に秒未満があっても、秒単位への丸めでリードタイムを割り込まない (切り上げ)
+    context.setNow(new Date(TEST_NOW.getTime() + 500));
+    const subSecond = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 0 })
+      .expect(201);
+    expect(subSecond.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + (MIN_FIRE_AT_LEAD_SECONDS + 1) * 1000).toISOString(),
+    );
+
+    // 上限ちょうど (365 日) も、秒への切り上げで境界をはみ出した分を理由に弾かない
+    const maxDelay = MAX_FIRE_AT_AHEAD_DAYS * 24 * 60 * 60;
+    const atMax = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: maxDelay })
+      .expect(201);
+    expect(atMax.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + 1000 + maxDelay * 1000).toISOString(),
+    );
+  });
+
+  it("fire_at と fire_in は両方指定・両方省略とも 400", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const both = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), fire_in: 60 })
+      .expect(400);
+    expect(both.body.error.code).toBe("invalid_argument");
+    const neither = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ title: "no time" })
+      .expect(400);
+    expect(neither.body.error.code).toBe("invalid_argument");
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: -1 })
+      .expect(400);
+    // Date の範囲を超える値は 500 ではなく 400
+    const huge = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: 9_000_000_000_000 })
+      .expect(400);
+    expect(huge.body.error.code).toBe("invalid_argument");
+  });
+
   it("fire_at が過去・形式不正なら 400", async () => {
     await registerDevice();
     const issued = await issueApiToken();
