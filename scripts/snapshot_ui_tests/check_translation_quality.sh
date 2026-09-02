@@ -212,12 +212,14 @@ if [ ! -d "$SCREENSHOTS_DIR" ]; then
   exit 1
 fi
 
-# Feature Pageディレクトリを取得
-feature_pages=$(find "$SCREENSHOTS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
+# 期待する Feature Page (テストクラス) の一覧は AlarmifySnapshotUITests/**/*SnapshotUITest.swift が SSOT。
+# 実在するディレクトリだけを走査すると、-n 1 で一部しか生成していない状態を全件チェック済みと誤認するため、
+# 期待側から辿って出力ディレクトリの欠落を失敗として収集する
+feature_pages=$(find AlarmifySnapshotUITests -type f -name "*SnapshotUITest.swift" -exec basename {} .swift \; | sort)
 
 # echo は空文字でも改行を出して wc -l が 1 になるため、件数ではなく変数の空判定で 0 件を検出する
 if [ -z "$feature_pages" ]; then
-  echo "Error: No feature page directories found in $SCREENSHOTS_DIR"
+  echo "Error: AlarmifySnapshotUITests に SnapshotUITest が見つかりません"
   exit 1
 fi
 total_features=$(echo "$feature_pages" | wc -l | tr -d ' ')
@@ -247,11 +249,17 @@ missing_comparisons=""
 
 # 繰り返しのupload処理では途中でエラーが起きても処理は継続して欲しい
 set +e
-for feature_page_dir in $feature_pages; do
+for feature_page in $feature_pages; do
   feature_count=$((feature_count + 1))
-  feature_page=$(basename "$feature_page_dir")
+  feature_page_dir="$SCREENSHOTS_DIR/$feature_page"
 
   sep "[$feature_count/$total_features] Processing: $feature_page"
+
+  if [ ! -d "$feature_page_dir" ]; then
+    echo "  Error: スクリーンショットのディレクトリがありません: $feature_page_dir"
+    missing_baselines+="  - ${feature_page} (directory missing)"$'\n'
+    continue
+  fi
 
   # README.mdからソースパスを取得
   readme_file="$feature_page_dir/README.md"

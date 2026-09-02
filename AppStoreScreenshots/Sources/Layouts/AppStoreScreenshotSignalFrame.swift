@@ -2,7 +2,8 @@ import SwiftUI
 
 /// 訴求軸 signal (1〜5 枚目)。夜色の地に左揃えの極太見出し、上部にアイコンと同じ橙のシグナルの微光を敷き、
 /// 下部にデバイスフレーム付きのモック画面を置く。訴求は「Webhook → 本物のアラーム」「サイレント / 集中モードでも鳴る」
-/// 「何とでもつながる」(issue #10) を軸に、API 1 回での登録と、サーバーからの取り消し・変更で締める。
+/// 「何とでもつながる」(issue #10) を軸に、API 1 回での登録と、手元で管理できる API トークンで締める。
+/// 見せる画面は実装済みの機能に限る (連携レシピ・API トークンは本番画面の構成をなぞる)
 /// スクリーンショット番号とバリアントの対応は scripts/generate_screenshots/appstore_screenshot_env.sh の get_variant_name が正
 
 /// 訴求軸 signal のレイアウトコンテナ
@@ -133,12 +134,12 @@ struct AppStoreScreenshot3Page: View {
             //
             // つながる
             title: Text("Connects\nwith anything"),
-            // ja: GitHub Actions も Home Assistant も
+            // ja: GitHub Actions や Home Assistant の
             //
-            // cron も curl も
-            subtitle: "GitHub Actions, Home Assistant, cron, Zapier and plain curl"
+            // レシピをコピーするだけ
+            subtitle: "Ready-made recipes for GitHub Actions, Home Assistant, Grafana and more"
         ) {
-            MockIntegrationsScreen()
+            MockRecipesScreen()
         }
     }
 }
@@ -175,20 +176,20 @@ struct AppStoreScreenshot4Page_Previews: PreviewProvider {
     }
 }
 
-/// App Store スクリーンショット 5 枚目 - signal - 取り消しも変更もサーバーから
+/// App Store スクリーンショット 5 枚目 - signal - トークンは手元で管理
 struct AppStoreScreenshot5Page: View {
     var body: some View {
         AppStoreScreenshotSignalLayout(
-            // ja: 取り消しも変更も
+            // ja: トークンは
             //
-            // サーバーから
-            title: Text("Cancel or change\nfrom your server"),
-            // ja: 登録と発火の履歴は
+            // 手元で管理
+            title: Text("Tokens you\ncontrol"),
+            // ja: アプリで発行して
             //
-            // アプリで確認できる
-            subtitle: "Every alarm keeps a history you can check in the app"
+            // いつでも失効できる
+            subtitle: "Issue it in the app and revoke it whenever you like"
         ) {
-            MockHomeScreen()
+            MockAPITokenScreen()
         }
     }
 }

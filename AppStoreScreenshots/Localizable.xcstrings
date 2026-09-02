@@ -1,52 +1,52 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "6 connected": {
+    "A rest_command you can call from any automation": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "6 件を連携中"
+            "value": "任意のオートメーションから呼べる rest_command"
           }
         }
       }
     },
-    "Backup finished": {
+    "A webhook contact point that rings when an alert fires": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "バックアップ完了"
+            "value": "アラートの発火時に鳴らす Webhook 通知先"
           }
         }
       }
     },
-    "CPU over 90%": {
+    "A webhook notification that rings when a monitor goes down": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "CPU 使用率 90% 超"
+            "value": "モニターがダウンした時に鳴らす Webhook 通知"
           }
         }
       }
     },
-    "Cancel or change\nfrom your server": {
+    "API reference": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "取り消しも変更も\nサーバーから"
+            "value": "API リファレンス"
           }
         }
       }
     },
-    "Cancelled by API": {
+    "API tokens": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "API から取り消し"
+            "value": "API トークン"
           }
         }
       }
@@ -61,12 +61,22 @@
         }
       }
     },
-    "Daily standup": {
+    "Copy curl example": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "朝会"
+            "value": "curl の例をコピーする"
+          }
+        }
+      }
+    },
+    "Copy token": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンをコピーする"
           }
         }
       }
@@ -91,82 +101,52 @@
         }
       }
     },
-    "Every alarm keeps a history you can check in the app": {
+    "Integration recipes": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "登録と発火の履歴は\nアプリで確認できる"
+            "value": "連携レシピ"
           }
         }
       }
     },
-    "Fired at 1:12": {
+    "Integration recipes with this token": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "1:12 に発火"
+            "value": "このトークン入りの連携レシピ"
           }
         }
       }
     },
-    "Fired at 3:07": {
+    "Issue a token": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "3:07 に発火"
+            "value": "トークンを発行する"
           }
         }
       }
     },
-    "Front door opened": {
+    "Issue it in the app and revoke it whenever you like": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "玄関のドアが開いた"
+            "value": "アプリで発行して\nいつでも失効できる"
           }
         }
       }
     },
-    "GitHub Actions, Home Assistant, cron, Zapier and plain curl": {
+    "Issued token": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitHub Actions も Home Assistant も\ncron も curl も"
-          }
-        }
-      }
-    },
-    "History": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴"
-          }
-        }
-      }
-    },
-    "New order": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "新規注文"
-          }
-        }
-      }
-    },
-    "Next alarm": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "次のアラーム"
+            "value": "発行したトークン"
           }
         }
       }
@@ -201,6 +181,26 @@
         }
       }
     },
+    "One curl line for scripts, crontab and CI jobs": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スクリプト・crontab・CI から 1 行の curl で鳴らす"
+          }
+        }
+      }
+    },
+    "Ready-made recipes for GitHub Actions, Home Assistant, Grafana and more": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Actions や Home Assistant の\nレシピをコピーするだけ"
+          }
+        }
+      }
+    },
     "Request": {
       "localizations": {
         "ja": {
@@ -211,22 +211,22 @@
         }
       }
     },
-    "Rescheduled to 7:30": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "7:30 に変更"
-          }
-        }
-      }
-    },
     "Response": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "レスポンス"
+          }
+        }
+      }
+    },
+    "Ring when a workflow finishes or fails": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "workflow の完了・失敗時に鳴らす"
           }
         }
       }
@@ -281,16 +281,6 @@
         }
       }
     },
-    "Sources": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "連携元"
-          }
-        }
-      }
-    },
     "Stop": {
       "localizations": {
         "ja": {
@@ -301,22 +291,42 @@
         }
       }
     },
-    "Test alarm": {
+    "The 'Get Contents of URL' action, for Shortcuts automations": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "テストアラーム"
+            "value": "「URL の内容を取得」アクションで鳴らす"
           }
         }
       }
     },
-    "Today": {
+    "This value is shown only once. Save it into your service before closing.": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "今日"
+            "value": "この値を見られるのは今だけです。外部サービスに設定してから閉じてください。"
+          }
+        }
+      }
+    },
+    "Tokens": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発行済みのトークン"
+          }
+        }
+      }
+    },
+    "Tokens you\ncontrol": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンは\n手元で管理"
           }
         }
       }
