@@ -90,6 +90,17 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Alarmify")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SettingsPage()
+                    } label: {
+                        // ja: 設定
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                    .accessibilityIdentifier("content_settings_button")
+                }
+            }
             .refreshable { refresh() }
             .task { refresh() }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
