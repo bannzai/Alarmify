@@ -8,16 +8,23 @@ extension String {
     /// entitlement の失効日時 (epoch 秒) をキャッシュする UserDefaults キー。
     /// 購読はアプリ停止中に失効し得るため、proEntitlementActive と対で保存して参照時に同期判定する
     static let proEntitlementExpiration = "proEntitlementExpiration"
+    /// RevenueCat が entitlement を判定した時刻 (CustomerInfo.requestDate、epoch 秒) をキャッシュする UserDefaults キー。
+    /// 失効日時を過ぎていても RevenueCat が有効と判定した (請求猶予期間など) 場合に、その判定を尊重するために保存する
+    static let proEntitlementEvaluatedAt = "proEntitlementEvaluatedAt"
 }
 
 /// キャッシュした課金判定が now 時点でも有効か。
-/// 失効日時が保存されている場合は同期比較し、期限切れ・返金がアプリ停止中に起きても古い true を返さないようにする。
+/// 失効日時が未来ならそのまま有効。失効日時を過ぎている場合は、RevenueCat がその失効日時より後に有効と判定していた
+/// (Apple の請求猶予期間など、RevenueCat 側が正を持つ延長) 時だけ有効とし、それ以外は無効として
+/// 期限切れ・返金がアプリ停止中に起きても古い true を返さないようにする (PR #20 レビュー指摘)。
 /// 失効日時なしは買い切りまたは未購入で、active の値をそのまま使う。
 /// 純粋関数であり、同じ入力に対して常に同じ出力を返す (冪等)
-func cachedProActive(active: Bool, expirationDate: Date?, now: Date) -> Bool {
+func cachedProActive(active: Bool, expirationDate: Date?, evaluatedAt: Date?, now: Date) -> Bool {
     guard active else { return false }
     guard let expirationDate else { return true }
-    return expirationDate > now
+    if expirationDate > now { return true }
+    guard let evaluatedAt else { return false }
+    return evaluatedAt >= expirationDate
 }
 
 /// Pro プランの課金判定と RevenueCat SDK の初期化 (課金設計は documents/PROJECT.md 参照)
@@ -40,6 +47,7 @@ enum ProEntitlement {
         cachedProActive(
             active: UserDefaults.standard.bool(forKey: .proEntitlementActive),
             expirationDate: (UserDefaults.standard.object(forKey: .proEntitlementExpiration) as? Double).map(Date.init(timeIntervalSince1970:)),
+            evaluatedAt: (UserDefaults.standard.object(forKey: .proEntitlementEvaluatedAt) as? Double).map(Date.init(timeIntervalSince1970:)),
             now: .now
         )
     }
@@ -49,6 +57,7 @@ enum ProEntitlement {
     static func cacheEntitlement(customerInfo: CustomerInfo) {
         let entitlement = customerInfo.entitlements[entitlementIdentifier]
         UserDefaults.standard.set(entitlement?.isActive == true, forKey: .proEntitlementActive)
+        UserDefaults.standard.set(customerInfo.requestDate.timeIntervalSince1970, forKey: .proEntitlementEvaluatedAt)
         if let expirationDate = entitlement?.expirationDate {
             UserDefaults.standard.set(expirationDate.timeIntervalSince1970, forKey: .proEntitlementExpiration)
         } else {

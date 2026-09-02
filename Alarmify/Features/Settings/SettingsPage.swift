@@ -8,6 +8,8 @@ struct SettingsPage: View {
     @AppStorage(.proEntitlementActive) private var proEntitlementActive = false
     /// entitlement の失効日時 (epoch 秒)。買い切り・未購入では保存されないため Optional
     @AppStorage(.proEntitlementExpiration) private var proEntitlementExpiration: Double?
+    /// RevenueCat が entitlement を判定した時刻 (epoch 秒)。失効日時を過ぎた後の判定を尊重するために使う
+    @AppStorage(.proEntitlementEvaluatedAt) private var proEntitlementEvaluatedAt: Double?
 
     /// 表示中のペイウォールの文脈。nil の間はペイウォールを出さない
     @State private var paywallTrigger: PaywallTrigger?
@@ -97,6 +99,7 @@ struct SettingsPage: View {
         cachedProActive(
             active: proEntitlementActive,
             expirationDate: proEntitlementExpiration.map(Date.init(timeIntervalSince1970:)),
+            evaluatedAt: proEntitlementEvaluatedAt.map(Date.init(timeIntervalSince1970:)),
             now: now
         )
     }
