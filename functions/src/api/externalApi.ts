@@ -288,9 +288,11 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         throw new ApiError(404, "not_found", "ユーザーが見つかりません");
       }
       const alarmSnapshot = await transaction.get(alarmRef);
+      // 別のトークンからの同じ内容は、そのトークンによる新しい登録として扱う (出どころと上限の付け替え)
       const isSameRequest =
         alarmSnapshot.exists &&
         alarmSnapshot.get("status") === "scheduled" &&
+        alarmSnapshot.get("tokenId") === tokenId &&
         (alarmSnapshot.get("fireAt") as Timestamp).toMillis() === fireAt.getTime() &&
         (((alarmSnapshot.get("title") as string | null) ?? null) === title);
       if (isSameRequest) {

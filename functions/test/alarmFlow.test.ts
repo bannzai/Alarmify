@@ -614,10 +614,11 @@ describe("外部サービス向け API", () => {
       .expect(204);
     const second = await issueApiToken("second");
 
+    // 内容が同じでもトークンが違えば、そのトークンの登録として出どころと上限を付け替える
     await request(externalApi)
       .post("/v1/alarms")
       .set("authorization", `Bearer ${second.token}`)
-      .send({ id: alarmId, fire_at: toIso8601Seconds(new Date(FIRE_AT.getTime() + 1000)) })
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
       .expect(200);
 
     const stored = await userRef(context.deps.firestore, context.uid)
@@ -625,6 +626,8 @@ describe("外部サービス向け API", () => {
       .doc(alarmId)
       .get();
     expect(stored.get("tokenId")).toBe(second.id);
+    const user = await userRef(context.deps.firestore, context.uid).get();
+    expect(user.get("monthlyUsage").scheduledAlarmCount).toBe(2);
   });
 
   it("大文字の UUID で取り消しても同じアラームに届く", async () => {
@@ -760,6 +763,12 @@ describe("アラーム履歴", () => {
     const outOfRange = Buffer.from("9007199254740991:x", "utf8").toString("base64url");
     await request(appApi)
       .get(`/v1/alarms?cursor=${outOfRange}`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(400);
+    // ドキュメント id として使えない文字を含む
+    const invalidId = Buffer.from("0:a/b", "utf8").toString("base64url");
+    await request(appApi)
+      .get(`/v1/alarms?cursor=${invalidId}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .expect(400);
   });

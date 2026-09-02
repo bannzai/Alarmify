@@ -22,7 +22,8 @@ export function decodeCursor(cursor: string): ListCursor | null {
   }
   const millis = Number(decoded.slice(0, separator));
   const id = decoded.slice(separator + 1);
-  if (!Number.isSafeInteger(millis) || id.length === 0) {
+  // ドキュメント id に "/" は使えない。含んでいると startAfter がパスとして解釈して例外になる
+  if (!Number.isSafeInteger(millis) || id.length === 0 || id.includes("/")) {
     return null;
   }
   // Firestore の Timestamp の範囲 (西暦 1 年〜9999 年) を外れる値は生成時に例外になるため、400 に落とす
