@@ -87,8 +87,9 @@ ID=$(jq -r '.id // empty' <<<"$response")
 
 ./nightly-job.sh
 
-# The job finished: cancel the alarm
-curl -sS -X DELETE "https://api.alarmify.app/v1/alarms/$ID" \
+# The job finished: cancel the alarm. --fail-with-body makes a rejected cancellation
+# (revoked token, server error) fail the script instead of leaving the alarm scheduled silently
+curl -sS --fail-with-body -X DELETE "https://api.alarmify.app/v1/alarms/$ID" \
   -H "Authorization: Bearer $ALARMIFY_TOKEN"
 ```
 
