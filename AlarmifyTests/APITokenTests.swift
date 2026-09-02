@@ -25,7 +25,7 @@ final class APITokenTests: XCTestCase {
             fireDate: Date(timeIntervalSince1970: 0)
         )
 
-        XCTAssertTrue(example.contains("http://127.0.0.1:5501/demo-alarmify/asia-northeast1/api/v1/alarms"), example)
+        XCTAssertTrue(example.contains("http://127.0.0.1:5410/demo-alarmify/asia-northeast1/api/v1/alarms"), example)
     }
 
     @MainActor

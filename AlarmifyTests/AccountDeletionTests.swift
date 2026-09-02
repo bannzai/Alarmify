@@ -26,7 +26,7 @@ final class AccountDeletionTests: XCTestCase {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
             // `api` ではなく Callable 関数 `deleteAccount` を直接呼ぶ
-            XCTAssertEqual(request.url?.absoluteString, "http://127.0.0.1:5501/demo-alarmify/asia-northeast1/deleteAccount")
+            XCTAssertEqual(request.url?.absoluteString, "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/deleteAccount")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer id-token")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
             // 削除対象は ID トークンの uid でサーバーが決めるため、パラメータを送らない

@@ -84,7 +84,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
             // 空白と `/` を含む id でも、1 度だけエスケープされた 1 セグメントとして届く
             XCTAssertEqual(
                 request.url?.absoluteString,
-                "http://127.0.0.1:5501/demo-alarmify/asia-northeast1/api/v1/me/apiTokens/tok%20a%2Fb"
+                "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/api/v1/me/apiTokens/tok%20a%2Fb"
             )
             return (204, Data())
         }

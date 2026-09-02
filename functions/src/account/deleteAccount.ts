@@ -1,12 +1,14 @@
-import { getAuth } from "firebase-admin/auth";
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import type { Auth } from "firebase-admin/auth";
+import { FieldValue, type Firestore } from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
-import {
-  deletedAccountDocumentPath,
-  deletedAccountFields,
-  deletedAccountsCollectionId,
-  userDocumentPath,
-} from "../schema/user";
+import { collections, deletedAccountFields } from "../schema/index.js";
+
+/** アカウント削除が依存する外部リソース。テストはエミュレータの Firestore / Auth を差し込む */
+export interface AccountDeletionDeps {
+  firestore: Firestore;
+  auth: Pick<Auth, "deleteUser" | "getUser">;
+}
 
 /**
  * アカウント削除の結果。削除前にアカウントが存在したかどうかを呼び出し元へ返す
@@ -20,16 +22,27 @@ export interface DeleteUserAccountResult {
 }
 
 /**
+ * 目印を置いてからこの時間が経つまでは、Callable がまだ削除の途中とみなして sweep が触れない
+ * (Callable の実行は数秒で終わるため、目印の作成と Auth の削除の間に sweep が割り込んで目印を取り下げないようにする)
+ */
+export const DELETION_MARKER_MINIMUM_AGE_MS = 10 * 60 * 1000;
+
+/** 1 回の sweep で処理する目印の件数の上限 (.claude/rules/firestore-db-rules.md) */
+export const SWEEP_BATCH_SIZE = 100;
+
+/**
  * ユーザーのサーバー上のデータ (`users/{uid}` とその配下の apiTokens / devices / alarms) と
  * Firebase Auth のユーザーを削除する。
  *
  * 冪等: 既に削除済みの uid で再実行してもエラーにせず、削除済みの状態のまま結果を返す
  * (ネットワーク再送やユーザーの再タップで二重に呼ばれても成功で終わらせるため)
  */
-export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountResult> {
-  const firestore = getFirestore();
-  const userDocument = firestore.doc(userDocumentPath(uid));
-  const tombstone = firestore.doc(deletedAccountDocumentPath(uid));
+export async function deleteUserAccount(
+  deps: AccountDeletionDeps,
+  uid: string,
+): Promise<DeleteUserAccountResult> {
+  const userDocument = deps.firestore.collection(collections.users).doc(uid);
+  const tombstone = deps.firestore.collection(collections.deletedAccounts).doc(uid);
   const snapshot = await userDocument.get();
 
   // 削除の確定点は Auth のユーザーの削除で、データはその後に消す。
@@ -39,13 +52,13 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
   const marked = await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
-  const authUserExisted = await deleteAuthUser(uid);
+  const authUserExisted = await deleteAuthUser(deps.auth, uid);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
   // これ以降に届き得るのは発行済みで未失効の ID トークンによる書き込みだけで、その窓はアプリ向け API の
-  // 書き込み側が Auth のユーザーの存在を確認して拒否することで閉じる (バックエンド雛形の実装で担う)
-  await firestore.recursiveDelete(userDocument);
+  // 書き込み側が Auth のユーザーの存在を確認して拒否することで閉じる
+  await deps.firestore.recursiveDelete(userDocument);
   // 目印はこの呼び出しが置いた版に限って消す。同じ uid の呼び出しが重なって目印を置き直していた場合は、
   // その呼び出しの掃除がまだ終わっていない可能性があるため残す (precondition の失敗は正常系)
   await tombstone.delete({ lastUpdateTime: marked.writeTime }).catch((error: unknown) => {
@@ -55,54 +68,9 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   });
 
   // 削除したアカウントの識別子 (uid) はログにも残さない (ログの保持期間だけ識別可能なデータが残るため)
-  logger.info("Deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
+  logger.info("deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
 
   return { authUserExisted, userDocumentExisted: snapshot.exists };
-}
-
-/**
- * 目印を置いてからこの時間が経つまでは、Callable がまだ削除の途中とみなして sweep が触れない
- * (Callable の実行は数秒で終わるため、目印の作成と Auth の削除の間に sweep が割り込んで目印を取り下げないようにする)
- */
-export const deletionMarkerMinimumAgeMs = 10 * 60 * 1000;
-
-/**
- * Auth の削除後に掃除が途中で失敗したアカウント (`deletedAccounts/{uid}` が残っているもの) の削除を完了させる。
- * Auth のユーザーがまだ存在する目印は、削除が確定する前に失敗したものなので、データに触れずに目印だけ取り下げる。
- * 1 件の失敗で残りを止めない (失敗した目印は次回の実行でまた対象になる)。
- * 1 回の実行で処理する件数に上限を設ける (.claude/rules/firestore-db-rules.md)。処理結果の件数を返す
- */
-export async function sweepDeletedAccounts(limit: number, now: Date = new Date()): Promise<SweepDeletedAccountsResult> {
-  const firestore = getFirestore();
-  const tombstones = await firestore
-    .collection(deletedAccountsCollectionId)
-    .where(deletedAccountFields.requestedAt, "<=", new Date(now.getTime() - deletionMarkerMinimumAgeMs))
-    .limit(limit)
-    .get();
-  const result: SweepDeletedAccountsResult = { completed: 0, withdrawn: 0, failed: 0 };
-  for (const tombstone of tombstones.docs) {
-    const uid = tombstone.id;
-    try {
-      // 目印はこの実行が読んだ版に限って消す。読んだ後に Callable の再試行が目印を置き直していたら
-      // (updateTime が変わる) 消さずに失敗として扱い、その再試行の目印を残す
-      const staleVersionOnly = { lastUpdateTime: tombstone.updateTime };
-      if (await authUserExists(uid)) {
-        await tombstone.ref.delete(staleVersionOnly);
-        result.withdrawn += 1;
-        continue;
-      }
-      await firestore.recursiveDelete(firestore.doc(userDocumentPath(uid)));
-      await tombstone.ref.delete(staleVersionOnly);
-      result.completed += 1;
-    } catch (error) {
-      result.failed += 1;
-      logger.error("Sweeping a deleted account failed", { error: String(error) });
-    }
-  }
-  if (tombstones.size > 0) {
-    logger.info("Swept deleted accounts", result);
-  }
-  return result;
 }
 
 /** sweepDeletedAccounts の処理結果 */
@@ -115,10 +83,68 @@ export interface SweepDeletedAccountsResult {
   failed: number;
 }
 
-/** Firebase Auth にユーザーが存在するか */
-async function authUserExists(uid: string): Promise<boolean> {
+/**
+ * Auth の削除後に掃除が途中で失敗したアカウント (`deletedAccounts/{uid}` が残っているもの) の削除を完了させる。
+ * Auth のユーザーがまだ存在する目印は、削除が確定する前に失敗したものなので、データに触れずに目印だけ取り下げる。
+ * 1 件の失敗で残りを止めない (失敗した目印は次回の実行でまた対象になる)
+ */
+export async function sweepDeletedAccounts(
+  deps: AccountDeletionDeps,
+  now: Date,
+  limit: number = SWEEP_BATCH_SIZE,
+): Promise<SweepDeletedAccountsResult> {
+  const tombstones = await deps.firestore
+    .collection(collections.deletedAccounts)
+    .where(deletedAccountFields.requestedAt, "<=", new Date(now.getTime() - DELETION_MARKER_MINIMUM_AGE_MS))
+    .limit(limit)
+    .get();
+  const result: SweepDeletedAccountsResult = { completed: 0, withdrawn: 0, failed: 0 };
+  for (const tombstone of tombstones.docs) {
+    const uid = tombstone.id;
+    try {
+      // 目印はこの実行が読んだ版に限って消す。読んだ後に Callable の再試行が目印を置き直していたら
+      // (updateTime が変わる) 消さずに失敗として扱い、その再試行の目印を残す
+      const staleVersionOnly = { lastUpdateTime: tombstone.updateTime };
+      if (await authUserExists(deps.auth, uid)) {
+        await tombstone.ref.delete(staleVersionOnly);
+        result.withdrawn += 1;
+        continue;
+      }
+      await deps.firestore.recursiveDelete(deps.firestore.collection(collections.users).doc(uid));
+      await tombstone.ref.delete(staleVersionOnly);
+      result.completed += 1;
+    } catch (error) {
+      result.failed += 1;
+      logger.error("sweeping a deleted account failed", { error: String(error) });
+    }
+  }
+  if (tombstones.size > 0) {
+    logger.info("swept deleted accounts", result);
+  }
+  return result;
+}
+
+/**
+ * Callable `deleteAccount` の本体。呼び出し元自身のアカウントを削除する。
+ * 削除対象は必ず ID トークンの uid にする (他人の uid を指定できないよう、リクエストのパラメータからは uid を受け取らない)
+ */
+export async function handleDeleteAccount(
+  deps: AccountDeletionDeps,
+  // CallableRequest のうち使うのは認証情報の uid だけ (テストが request 全体を組み立てなくて済むようにする)
+  request: { auth?: { uid: string } },
+): Promise<DeleteUserAccountResult & { userId: string }> {
+  const uid = request.auth?.uid;
+  if (uid === undefined) {
+    throw new HttpsError("unauthenticated", "Authentication is required to delete the account.");
+  }
+  const result = await deleteUserAccount(deps, uid);
+  return { userId: uid, ...result };
+}
+
+/** Firebase Auth のユーザーを削除する。既に存在しない場合は false を返して成功扱いにする */
+async function deleteAuthUser(auth: AccountDeletionDeps["auth"], uid: string): Promise<boolean> {
   try {
-    await getAuth().getUser(uid);
+    await auth.deleteUser(uid);
     return true;
   } catch (error) {
     if (isUserNotFound(error)) {
@@ -128,10 +154,10 @@ async function authUserExists(uid: string): Promise<boolean> {
   }
 }
 
-/** Firebase Auth のユーザーを削除する。既に存在しない場合は false を返して成功扱いにする */
-async function deleteAuthUser(uid: string): Promise<boolean> {
+/** Firebase Auth にユーザーが存在するか */
+async function authUserExists(auth: AccountDeletionDeps["auth"], uid: string): Promise<boolean> {
   try {
-    await getAuth().deleteUser(uid);
+    await auth.getUser(uid);
     return true;
   } catch (error) {
     if (isUserNotFound(error)) {

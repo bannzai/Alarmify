@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2023",
-    "lib": ["es2023"],
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "lib": ["es2022"],
     "outDir": "lib",
     "rootDir": "src",
+    "sourceMap": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "sourceMap": true
+    "types": ["node"]
   },
   "include": ["src"]
 }

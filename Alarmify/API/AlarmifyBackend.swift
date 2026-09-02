@@ -13,7 +13,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
             return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net")!
         case .emulator:
             // ポートは firebase.json の emulators.functions と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
-            return URL(string: "http://127.0.0.1:5501/demo-alarmify/asia-northeast1")!
+            return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1")!
         }
     }
 
@@ -33,7 +33,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         case .production:
             return nil
         case .emulator:
-            return ("127.0.0.1", 9399)
+            return ("127.0.0.1", 9410)
         }
     }
 }

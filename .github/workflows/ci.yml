@@ -4,6 +4,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# チェックアウトとビルドしかしないため、トークンには読み取りだけを与える
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -34,12 +38,16 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES test
 
-  # Functions は Firebase Emulator (Java 必須) 上でテストする
-  functions-test:
+  # Firebase Functions (バックエンド) の lint とエミュレータ上のテスト
+  functions:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, '[Skip CI]') }}
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: functions
     steps:
+      # npm ci が依存パッケージのインストールスクリプトを実行するため、チェックアウトの認証情報を残さない
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -48,9 +56,11 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: functions/package-lock.json
+      # Firestore エミュレータの実行に JDK が必要
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-      - run: npm ci --prefix functions
-      - run: npm --prefix functions test
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test

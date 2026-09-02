@@ -9,28 +9,18 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 | `default` | `demo-alarmify` | ローカルのエミュレータ専用 (実プロジェクトではない) |
 | `prod` | `alarmify-prod` | 本番 (asia-northeast1) |
 
-## デプロイの前提
+## 現状: 初回デプロイの前提が未整備
 
-バックエンドの実装は `functions/` と `firebase.json` にある (アカウント削除の `deleteAccount` と、その掃除の定期実行 `sweepDeletedAccountsHourly`。外部サービス向けの API は https://github.com/bannzai/Alarmify/issues/2 で追加する)。初回のデプロイ前に次の 2 つを済ませる:
+バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
 
-- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
+- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
-
-## Firestore のルールをデプロイする
-
-`firestore.rules` (全パス deny) と `firestore.indexes.json` は `--only functions` では配布されないため、初回と変更時に別途デプロイする。ローカルから:
-
-```sh
-make deploy-firestore                                  # alias prod (= alarmify-prod) へルールとインデックスをデプロイ
-```
-
-デプロイ専用サービスアカウントの IAM は Functions と共通 (下記)。GitHub Actions からの経路は Functions の workflow と同じ認証で追加できるが、変更頻度が低いためローカルからのデプロイを正とする。
 
 ## ローカルからデプロイする
 
 ```sh
 make deploy-functions                                  # alias prod (= alarmify-prod) へ functions 全体をデプロイ
-make deploy-functions FUNCTIONS=v1-alarms-create        # 対象を絞る (カンマ区切りで複数指定できる)
+make deploy-functions FUNCTIONS=alarmsApi               # 対象を絞る (カンマ区切りで複数指定できる)
 make deploy-functions FIREBASE_ALIAS=prod               # alias を明示する場合
 ```
 
@@ -43,7 +33,7 @@ target は実行前に alias から GCP プロジェクト ID を解決してロ
 ```sh
 gh workflow run functions-deploy.yml --ref main -f environment=prod
 # 対象を絞る場合
-gh workflow run functions-deploy.yml --ref main -f environment=prod -f functions=v1-alarms-create
+gh workflow run functions-deploy.yml --ref main -f environment=prod -f functions=alarmsApi
 
 RUN_ID="$(gh run list --workflow functions-deploy.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh run watch "$RUN_ID"
@@ -67,7 +57,7 @@ bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-i
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 ```
 
-`--scheduler` は `onSchedule` の関数 (`sweepDeletedAccountsHourly`) のデプロイに要る `roles/cloudscheduler.admin` を追加する。
+`--scheduler` は `onSchedule` の関数 (`cleanupExpiredAlarms` / `sweepDeletedAccountsHourly`) のデプロイに要る `roles/cloudscheduler.admin` を追加する。
 
 ## Secret を登録する
 

@@ -1,38 +1,62 @@
 import { initializeApp } from "firebase-admin/app";
-import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { deleteUserAccount, sweepDeletedAccounts } from "./account/deleteAccount";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
+import { setGlobalOptions } from "firebase-functions";
+import { onCall, onRequest } from "firebase-functions/https";
+import { logger } from "firebase-functions";
+import { onSchedule } from "firebase-functions/scheduler";
+import { handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
+import { createAppApi } from "./api/appApi.js";
+import { createExternalApi } from "./api/externalApi.js";
+import { deleteExpiredAlarms } from "./lib/cleanup.js";
+import type { Deps } from "./lib/deps.js";
+import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
 
 initializeApp();
+setGlobalOptions({ region: "asia-northeast1", maxInstances: 10 });
 
-/** Firestore・Functions ともに asia-northeast1 (ADR 0001) */
-const region = "asia-northeast1";
+function createDeps(): Deps {
+  return {
+    firestore: getFirestore(),
+    sendPush: createFcmPushSender(getMessaging()),
+    verifyIdToken: async (idToken) => {
+      const decoded = await getAuth().verifyIdToken(idToken);
+      return { uid: decoded.uid };
+    },
+    // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
+    pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
+    now: () => new Date(),
+  };
+}
+
+/** アプリ向け API (Firebase Auth の ID トークンで認証) */
+export const appApi = onRequest(createAppApi(createDeps()));
+
+/** 外部サービス向け API (Bearer = API トークン) */
+export const alarmsApi = onRequest(createExternalApi(createDeps()));
+
+/** 保持期間を過ぎたアラーム要求の削除。期限切れの発生量を追い越せるよう、1 回の実行で複数バッチを処理する */
+export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
+  const deleted = await deleteExpiredAlarms(createDeps());
+  logger.info("deleted expired alarms", { deleted });
+});
 
 /**
  * 呼び出し元自身のアカウントとサーバー上のデータを削除する Callable。
  * App Store Review Guideline 5.1.1 (v) の「アプリ内からのアカウント削除」に対応する。
- *
- * 認証は Firebase Auth (匿名認証) の ID トークンで行い、削除対象は必ずトークンの uid にする
- * (他人の uid を指定できないよう、リクエストのパラメータからは uid を受け取らない)。
- * App Check の強制はアプリ側の App Attest 導入と合わせて有効にする
+ * App Check の強制はアプリ側の App Attest 導入 (#4) と合わせて有効にする
  */
-export const deleteAccount = onCall({ region }, async (request) => {
-  const uid = request.auth?.uid;
-  if (uid === undefined) {
-    throw new HttpsError("unauthenticated", "Authentication is required to delete the account.");
-  }
-
-  const result = await deleteUserAccount(uid);
-  return { userId: uid, ...result };
-});
+export const deleteAccount = onCall((request) =>
+  handleDeleteAccount({ firestore: getFirestore(), auth: getAuth() }, request),
+);
 
 /**
  * アカウント削除の掃除が途中で失敗した分を完了させる定期実行。
- * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す。
- * デプロイには Cloud Scheduler の権限が要る (documents/functions-deploy.md の `--scheduler`)
+ * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す
  */
-export const sweepDeletedAccountsHourly = onSchedule({ region, schedule: "every 60 minutes" }, async () => {
-  const result = await sweepDeletedAccounts(100);
+export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async () => {
+  const result = await sweepDeletedAccounts({ firestore: getFirestore(), auth: getAuth() }, new Date());
   if (result.failed > 0) {
     throw new Error(`${result.failed} deleted account(s) could not be swept`);
   }

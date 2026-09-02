@@ -1,58 +1,21 @@
-import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
+import { timestampSchema } from "./firestore.js";
 
-/**
- * Firestore のユーザー配下のパス定義。
- * コレクション名の文字列リテラルを Functions とテストに散らばらせないため、参照はすべてここを通す
- * (.claude/rules/firestore-db-rules.md)。各ドキュメントのフィールド定義はバックエンド雛形の実装で追加する
- */
+export const planSchema = z.enum(["free", "pro"]);
+export type Plan = z.infer<typeof planSchema>;
 
-/** ユーザーのルートコレクション。1 ドキュメント = 1 アカウント (Firebase Auth の uid) */
-export const usersCollectionId = "users";
-
-/** `users/{uid}` 配下のサブコレクション。アカウント削除ではこれらをすべて消す */
-export const userSubcollectionIds = {
-  /** ハッシュ化した API トークン */
-  apiTokens: "apiTokens",
-  /** デバイストークン・プラットフォーム・最終確認日時 */
-  devices: "devices",
-  /** アラーム要求と配送状態 */
-  alarms: "alarms",
-} as const;
-
-export type UserSubcollectionId = (typeof userSubcollectionIds)[keyof typeof userSubcollectionIds];
-
-/** `users/{uid}` のドキュメントパス */
-export function userDocumentPath(uid: string): string {
-  return `${usersCollectionId}/${uid}`;
-}
-
-/** `users/{uid}/{subcollection}` のコレクションパス */
-export function userSubcollectionPath(uid: string, subcollection: UserSubcollectionId): string {
-  return `${userDocumentPath(uid)}/${subcollection}`;
-}
-
-/**
- * 削除処理中のアカウントの目印 (`deletedAccounts/{uid}`)。
- * Auth のユーザーを消す前に置き、`users/{uid}` 配下の掃除まで終わったら消す。
- * 掃除が途中で失敗しても、定期実行の sweep がこの目印を頼りに完了させる (呼び出し元は Auth が無くなると再試行できないため)
- */
-export const deletedAccountsCollectionId = "deletedAccounts";
-
-/** `deletedAccounts/{uid}` のドキュメントパス */
-export function deletedAccountDocumentPath(uid: string): string {
-  return `${deletedAccountsCollectionId}/${uid}`;
-}
-
-/** `deletedAccounts/{uid}` のフィールド名。書き込み・クエリ・テストはこの定数を通す */
-export const deletedAccountFields = {
-  /** 目印を置いた時刻。sweep はこの値が十分に古い目印だけを対象にする */
-  requestedAt: "requestedAt",
-} as const;
-
-/** `deletedAccounts/{uid}` のドキュメント */
-export const deletedAccountSchema = z.object({
-  [deletedAccountFields.requestedAt]: z.instanceof(Timestamp),
+/** 無料プランの月間上限を判定するためのカウンタ。month が変わった時点で 0 から数え直す */
+export const monthlyUsageSchema = z.object({
+  month: z.string().regex(/^\d{4}-\d{2}$/),
+  scheduledAlarmCount: z.number().int().nonnegative(),
 });
+export type MonthlyUsage = z.infer<typeof monthlyUsageSchema>;
 
-export type DeletedAccount = z.infer<typeof deletedAccountSchema>;
+/** users/{uid} */
+export const userSchema = z.object({
+  plan: planSchema,
+  monthlyUsage: monthlyUsageSchema,
+  createdAt: timestampSchema,
+  updatedAt: timestampSchema,
+});
+export type User = z.infer<typeof userSchema>;

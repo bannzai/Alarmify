@@ -20,8 +20,8 @@
 - push 経路の確認: APNs を使わずに `xcrun simctl push <UDID> com.bannzai.Alarmify documents/push-payloads/<ファイル>.apns` で simulator へ payload を投げられる。`schedule.apns` (Notification Service Extension 経由。`mutable-content: 1`) と `background.apns` (background push。`content-available: 1`) を用意している。payload の形式は `Alarmify/Shared/AlarmRequest.swift` が正
 - バックエンド (アプリ向け API) の確認: Firebase Auth の匿名認証は `CODE_SIGNING_ALLOWED=NO` のビルドだと keychain へアクセスできず失敗する。`make build-ios` / `make test` は simulator 向けを ad-hoc 署名する (証明書不要) ため、その成果物をそのまま install してよい。バックエンドを起動せずに API トークン画面やアカウント削除の画面フローを確認する時は、アプリの開発者メニュー (DEBUG / TestFlight のみ) で「通信をスタブに差し替える」を有効にする (スタブの削除は Firebase Auth の実アカウントを変えない)
 - AlarmKit の発火確認は「1〜2 分後のアラーム」で行う。発火判定は画面表示で行う (simulator は sound `.default` だと鳴らない癖がある)
-- バックエンド: `npm --prefix functions install` の後、`npm --prefix functions test` で Firebase Emulator (auth / firestore / functions) を起動してテストを実行する。エミュレータのポートは `firebase.json` を正とし、他プロジェクトのエミュレータと衝突しない値にしている
-- アプリからバックエンドを呼ぶ動作確認: `npm --prefix functions run serve` でエミュレータを起動し、アプリの開発者メニューで接続先を emulator に切り替えて再起動する。接続先の URL とポートは `Alarmify/API/AlarmifyBackend.swift` (`firebase.json` と揃える)
+- バックエンド (`functions/`) のテスト: `make test-functions`。型検査の後、Firestore / Auth エミュレータ (`demo-alarmify`) 上で vitest を実行する (`npm --prefix functions test` と同じ。エミュレータの実行に JDK が必要)。lint は `npm --prefix functions run lint`。エミュレータのポートは `firebase.json` を正とし、アプリの接続先 (`Alarmify/API/AlarmifyBackend.swift`) もそれに揃える
+- エミュレータだけを起動して API を手で叩く場合は `make emulators` (Firestore / Auth)。実プロジェクトへ接続するテストは書かない
 - 実機確認: `make install-device` (接続中の実機へ install + launch)。APNs のデバイストークン取得・実 push の受信・App terminated / Device locked 状態の挙動は実機でしか検証できない
 
 ## 配布とデプロイ
@@ -32,6 +32,7 @@
 ## 公開サイトとバックエンド
 
 - `docs/` は GitHub Pages (main の `/docs`) で配信する LP と法務ドキュメント。LP の検証は `bash ~/.agents/skills/landing-page-builder/scripts/verify-lp.sh --app-store-support --has-account docs/index.html`
+- Functions の構成: アプリ向け API `appApi` (Firebase Auth の ID トークンで認証。端末登録・API トークンの発行 / 失効・アラーム履歴)、外部サービス向け API `alarmsApi` (Bearer = API トークン。`POST /v1/alarms` / `DELETE /v1/alarms/{id}`)、保持期間 (30 日) を過ぎたアラーム要求を消す `cleanupExpiredAlarms`、アカウント削除の Callable `deleteAccount` とその掃除を完了させる `sweepDeletedAccountsHourly`。push payload は `Alarmify/Shared/AlarmRequest.swift` の形式に揃え、`mutable-content` と `content-available` の切り替えは環境変数 `ALARMIFY_PUSH_DELIVERY` (`notification-service` / `background`) で行う
 - バックエンドは Firebase `alarmify-prod` (構成: `documents/adr/0001-firebase-backend.md`、DB の規約: `.claude/rules/firestore-db-rules.md`)。ローカルは `demo-alarmify` のエミュレータで動かし、デプロイは `--project prod` を明示する
 
 ## 秘匿情報
