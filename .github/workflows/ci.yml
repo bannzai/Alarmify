@@ -25,6 +25,16 @@ jobs:
           xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO build
+      # スクリーンショット基盤 (AppStoreScreenshots / 各 UITest) のコンパイル腐敗を検出する。UITest の実行はしない
+      - name: Build screenshot targets
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project Alarmify.xcodeproj -scheme AppStoreScreenshotsUITests \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
+          xcodebuild build-for-testing -project Alarmify.xcodeproj -scheme AlarmifySnapshotUITests \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
       - name: Test
         run: |
           set -o pipefail
