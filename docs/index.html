@@ -195,7 +195,11 @@
     padding: 7px 16px;
     background: var(--bg-2);
   }
+  a.chip { text-decoration: none; }
+  a.chip:hover { border-color: var(--accent-line); color: var(--fg); }
   .chips-note { margin-top: 20px; font-size: 14px; color: var(--fg-3); max-width: 40em; }
+  .chips-note a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+  .chips-note a:hover { border-bottom-color: var(--accent); }
 
   /* plans */
   .plans { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
@@ -259,6 +263,7 @@
         <a href="#how">How it works</a>
         <a href="#why">Why a real alarm</a>
         <a href="#integrations">Integrations</a>
+        <a href="./api">API</a>
         <a href="#plans">Plans</a>
         <a href="#support">Support</a>
       </nav>
@@ -287,6 +292,7 @@
         <p class="code-note">
           The API is still under development. The endpoint, the request shape and the host name
           above show the planned interface and may change before release.
+          Full request and response details: <a href="./api">API reference</a>.
         </p>
       </div>
 
@@ -366,17 +372,23 @@
           header, it can wake you up.
         </p>
         <div class="chips">
-          <span class="chip">GitHub Actions</span>
-          <span class="chip">Home Assistant</span>
-          <span class="chip">Grafana</span>
-          <span class="chip">Uptime Kuma</span>
-          <span class="chip">cron</span>
+          <a class="chip" href="./recipes/github-actions">GitHub Actions</a>
+          <a class="chip" href="./recipes/home-assistant">Home Assistant</a>
+          <a class="chip" href="./recipes/grafana">Grafana</a>
+          <a class="chip" href="./recipes/uptime-kuma">Uptime Kuma</a>
+          <a class="chip" href="./recipes/cron">cron</a>
           <span class="chip">Zapier</span>
-          <span class="chip">Shortcuts</span>
+          <a class="chip" href="./recipes/shortcuts">Shortcuts</a>
         </div>
         <p class="chips-note">
           A long build that finishes at night, a probe that goes red, a washing machine that
           finished its cycle, a rehearsal alarm your automation sets an hour before a flight.
+        </p>
+        <p class="chips-note">
+          Copy-and-paste setups for each of these are in the
+          <a href="./recipes/">integration recipes</a>, and the request and response shapes are in the
+          <a href="./api">API reference</a>. The same recipes are available inside the app with your
+          token filled in.
         </p>
       </div>
     </section>
@@ -443,6 +455,8 @@
   <footer>
     <div class="container">
       <div class="links">
+        <a href="./api">API Reference</a>
+        <a href="./recipes/">Integration Recipes</a>
         <a href="./Terms-en">Terms of Service</a>
         <a href="./PrivacyPolicy-en">Privacy Policy</a>
         <a href="./AccountDeletion-en">Account Deletion</a>
