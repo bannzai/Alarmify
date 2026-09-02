@@ -19,16 +19,17 @@ final class AlarmifyAPIClientTests: XCTestCase {
     }
 
     private func makeClient(idToken: String? = "id-token") -> URLSessionAlarmifyAPIClient {
-        URLSessionAlarmifyAPIClient(backend: .emulator, session: session) { idToken }
+        URLSessionAlarmifyAPIClient(backend: .emulator, session: session, deviceID: "device-1") { idToken }
     }
 
     func testAPITokensAreDecodedIntoTypedStructs() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "GET")
-            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/api/v1/me/apiTokens")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/api-tokens")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer id-token")
+            // 日時はバックエンドの Date.toISOString() と同じ小数秒つきの形で返る
             let body = """
-            {"apiTokens":[{"id":"tok_1","prefix":"alm_9f2c","createdAt":"2026-09-02T10:00:00Z","lastUsedAt":null}]}
+            {"api_tokens":[{"id":"tok_1","name":"ci","prefix":"alm_9f2c","created_at":"2026-09-02T10:00:00.000Z","last_used_at":null}],"next_cursor":null}
             """
             return (200, Data(body.utf8))
         }
@@ -37,6 +38,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
 
         XCTAssertEqual(tokens.count, 1)
         XCTAssertEqual(tokens.first?.id, "tok_1")
+        XCTAssertEqual(tokens.first?.name, "ci")
         XCTAssertEqual(tokens.first?.prefix, "alm_9f2c")
         XCTAssertEqual(tokens.first?.createdAt, Date(timeIntervalSince1970: 1_788_343_200))
         XCTAssertNil(tokens.first?.lastUsedAt)
@@ -45,25 +47,33 @@ final class AlarmifyAPIClientTests: XCTestCase {
     func testIssuedTokenCarriesTheSecretOnlyReturnedOnce() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/api-tokens")
+            // 発行の応答は入れ子が無く、`token` が平文の値。小数秒の無い日時も受け付ける
             let body = """
-            {"apiToken":{"id":"tok_2","prefix":"alm_1a2b","createdAt":"2026-09-02T10:00:00Z","lastUsedAt":null},"secret":"alm_1a2b_secret"}
+            {"id":"tok_2","name":"default","prefix":"alm_1a2b","token":"alm_1a2b_secret","created_at":"2026-09-02T10:00:00Z"}
             """
-            return (200, Data(body.utf8))
+            return (201, Data(body.utf8))
         }
 
         let issued = try await makeClient().issueAPIToken()
 
         XCTAssertEqual(issued.token.id, "tok_2")
+        XCTAssertEqual(issued.token.name, "default")
+        XCTAssertEqual(issued.token.prefix, "alm_1a2b")
+        XCTAssertEqual(issued.token.createdAt, Date(timeIntervalSince1970: 1_788_343_200))
+        XCTAssertNil(issued.token.lastUsedAt)
         XCTAssertEqual(issued.secret, "alm_1a2b_secret")
     }
 
-    func testRegisterDeviceSendsFCMRegistrationToken() async throws {
+    func testRegisterDeviceSendsTheDeviceIdAndFCMToken() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
-            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/api/v1/me/devices")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/devices")
             let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
-            XCTAssertEqual(body?["fcm_registration_token"], "fcm-token")
-            return (204, Data())
+            XCTAssertEqual(body?["device_id"], "device-1")
+            XCTAssertEqual(body?["fcm_token"], "fcm-token")
+            XCTAssertEqual(body?["platform"], "ios")
+            return (200, Data(#"{"device_id":"device-1","platform":"ios"}"#.utf8))
         }
 
         try await makeClient().registerDevice(fcmRegistrationToken: "fcm-token")
@@ -72,7 +82,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
     func testRevokeUsesTheTokenIdInThePath() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "DELETE")
-            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/api/v1/me/apiTokens/tok_3")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/api-tokens/tok_3")
             return (204, Data())
         }
 
@@ -84,7 +94,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
             // 空白と `/` を含む id でも、1 度だけエスケープされた 1 セグメントとして届く
             XCTAssertEqual(
                 request.url?.absoluteString,
-                "http://127.0.0.1:5001/demo-alarmify/asia-northeast1/api/v1/me/apiTokens/tok%20a%2Fb"
+                "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/appApi/v1/api-tokens/tok%20a%2Fb"
             )
             return (204, Data())
         }
@@ -134,7 +144,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
     }
 
     func testMalformedSuccessBodyIsRejectedInsteadOfDefaulted() async {
-        StubURLProtocol.handler = { _ in (200, Data(#"{"apiTokens":[{"id":"tok_4"}]}"#.utf8)) }
+        StubURLProtocol.handler = { _ in (200, Data(#"{"api_tokens":[{"id":"tok_4"}]}"#.utf8)) }
 
         do {
             _ = try await makeClient().apiTokens()
