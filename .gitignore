@@ -1,0 +1,12 @@
+.DS_Store
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/
+tmp/
+.claude/settings.local.json
+.envrc
+# simtunnel mcp-config が worktree ごとに書き込む接続設定 (セッション固有のためコミットしない)
+.mcp.json
+# bundler のローカルインストール先 (~/.bundle/config の path=vendor/bundle が作る)
+vendor/bundle/

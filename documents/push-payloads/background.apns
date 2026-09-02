@@ -1,0 +1,12 @@
+{
+  "Simulator Target Bundle": "com.bannzai.Alarmify",
+  "aps": {
+    "content-available": 1
+  },
+  "alarm": {
+    "id": "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E",
+    "action": "schedule",
+    "fire_at": "2026-09-03T07:00:00Z",
+    "title": "Deploy finished"
+  }
+}
