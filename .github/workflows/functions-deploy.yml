@@ -1,0 +1,144 @@
+name: functions-deploy
+
+# workflow_dispatch で手動起動する Firebase Functions (gen2) の配布ワークフロー。
+# 対象環境は `.firebaserc` の alias で明示する (~/.claude/rules/firebase-environment-check.md)。
+# 認証はデプロイ専用サービスアカウント github-firebase-deployer@<プロジェクト>.iam.gserviceaccount.com の
+# 鍵 (Secret FIREBASE_SERVICE_ACCOUNT_JSON_BASE64) で行う。必要な IAM は
+# firebase-functions-deploy-iam-setup skill (bannzai/castle) の grant-deploy-iam.sh が付与する。
+#
+# 本番の資格情報は environment secrets に置き、environment のデプロイブランチ制限で main からの起動だけに絞る
+# (workflow_dispatch は --ref に任意の branch を指定できるため、feature branch 上で改変した workflow から
+#  本番へデプロイできる経路をここで塞ぐ)。
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "デプロイ先の Firebase プロジェクト alias (.firebaserc)"
+        required: true
+        type: choice
+        options:
+          - prod
+        default: prod
+      functions:
+        description: "デプロイ対象の関数を絞る場合の指定 (例: appApi,alarmsApi)。空なら functions 全体"
+        required: false
+        type: string
+        default: ""
+
+# 多重 dispatch の検出に run 一覧の取得が要る
+permissions:
+  contents: read
+  actions: read
+
+env:
+  # firebase-tools は明示的にバージョンを固定する (latest だと CLI の更新で挙動が変わり、デプロイが再現しなくなるため)
+  FIREBASE_TOOLS_VERSION: "15.28.2"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # environment 名は inputs.environment ではなく固定文字列にする。
+    # inputs から組み立てると、未作成の environment 名を渡した run が保護なしで走ってしまう
+    environment: firebase-prod
+    timeout-minutes: 30
+    steps:
+      # 本番へのデプロイは同時に 1 本だけ実行する。GitHub の concurrency は同一 group の pending を
+      # 1 件しか保持せず、3 本目の dispatch が待機中の 2 本目を黙ってキャンセルするため使わない。
+      # 代わりに先行の未完了 run があれば即失敗し、先行 run の完了後に dispatch し直してもらう
+      # (並行すると古い run が後に完了して、古い checkout の内容が本番に残り得る)
+      - name: Reject concurrent dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 未完了の status を直接絞り込む。completed 込みの recent 一覧では、長時間未完了の run が
+          # 後続 dispatch に押し出されて一覧から消え、先行 run を見落として並行実行を許してしまう
+          # 初回 dispatch は自分より古い run だけを数える (後発だけが失敗し、先行はそのまま走り切る)。
+          # Re-run は元の run ID を再利用するため、自分以外の未完了 run をすべて数える
+          if [ "${GITHUB_RUN_ATTEMPT:-1}" -gt 1 ]; then
+            select_expr='map(select(.databaseId != $me)) | length'
+          else
+            select_expr='map(select(.databaseId < $me)) | length'
+          fi
+          # 取得に 1 つでも失敗したら判定せずに中止する。失敗を読み飛ばすと、残りの応答から
+          # earlier=0 を算出して並行実行を通してしまう (判定不能を「並行なし」と誤って扱わない)
+          runs=""
+          for status in requested pending queued in_progress waiting; do
+            out=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'functions-deploy.yml' \
+              --status "$status" --limit 100 --json databaseId) || {
+              echo "::error::run 一覧の取得に失敗しました (status=${status})。並行実行を判定できないため中止します"
+              exit 1
+            }
+            runs="${runs}${out}"
+          done
+          earlier=$(printf '%s' "$runs" | jq -s --argjson me "$GITHUB_RUN_ID" "add | $select_expr")
+          case "$earlier" in
+            ''|*[!0-9]*)
+              echo "::error::未完了 run の件数を判定できませんでした (earlier='${earlier}')。中止します"
+              exit 1
+              ;;
+          esac
+          if [ "$earlier" -gt 0 ]; then
+            echo "::error::ほかの functions-deploy run が ${earlier} 件未完了です。完了を待って新しく dispatch し直してください"
+            exit 1
+          fi
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Resolve target project
+        env:
+          FIREBASE_ALIAS: ${{ inputs.environment }}
+        run: |
+          [ -n "$FIREBASE_ALIAS" ] || { echo "::error::environment (Firebase alias) が空です"; exit 1; }
+          project_id=$(jq -r --arg alias "$FIREBASE_ALIAS" '.projects[$alias] // empty' .firebaserc)
+          [ -n "$project_id" ] || { echo "::error::.firebaserc に alias '${FIREBASE_ALIAS}' がありません"; exit 1; }
+          echo "FIREBASE_PROJECT_ID=${project_id}" >> "$GITHUB_ENV"
+          echo "デプロイ先: alias=${FIREBASE_ALIAS} project=${project_id}"
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      # firebase-tools のインストールも鍵の復元より前に済ませる。npx はインストール時に
+      # 依存の lifecycle script を実行するため、deploy step で解決させると鍵を読める状態になる
+      - name: Install firebase-tools
+        run: npm install --global "firebase-tools@${FIREBASE_TOOLS_VERSION}"
+
+      # 依存のインストールより後に置く。npm ci は依存の lifecycle script を実行するため、
+      # 先に鍵を配置すると本番を変更できる資格情報を依存のスクリプトから読めてしまう
+      - name: Restore service account key
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 }}
+        run: |
+          [ -n "$FIREBASE_SERVICE_ACCOUNT_JSON_BASE64" ] || { echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 が空です"; exit 1; }
+          mkdir -p "$RUNNER_TEMP/firebase"
+          key_path="$RUNNER_TEMP/firebase/deployer.json"
+          echo -n "$FIREBASE_SERVICE_ACCOUNT_JSON_BASE64" | base64 --decode > "$key_path"
+          # 鍵の SA と付与先の SA が食い違うと IAM を付けても ActAs エラーが出続けるため、client_email をログに残す
+          jq -r '"鍵のサービスアカウント: " + .client_email' "$key_path"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${key_path}" >> "$GITHUB_ENV"
+
+      - name: Deploy functions
+        env:
+          FIREBASE_ALIAS: ${{ inputs.environment }}
+          FUNCTIONS: ${{ inputs.functions }}
+        run: |
+          # firebase の部分デプロイは対象ごとに接頭辞が要る (functions:a,functions:b)。
+          # functions:a,b は b が別種のターゲットとして解釈されて失敗する
+          if [ -n "$FUNCTIONS" ]; then
+            target=$(printf '%s' "$FUNCTIONS" | awk -F',' '{for (i = 1; i <= NF; i++) { gsub(/^[ \t]+|[ \t]+$/, "", $i); if ($i != "") printf "%sfunctions:%s", (n++ ? "," : ""), $i }}')
+            [ -n "$target" ] || { echo "::error::functions の指定が空です"; exit 1; }
+          else
+            target="functions"
+          fi
+          echo "firebase deploy --only ${target} --project ${FIREBASE_ALIAS} (${FIREBASE_PROJECT_ID})"
+          firebase deploy --only "$target" --project "$FIREBASE_ALIAS" --non-interactive
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase/deployer.json" || true

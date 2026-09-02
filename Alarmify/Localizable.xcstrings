@@ -1,18 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Alarmify" : {
-      "shouldTranslate" : false
-    },
-    "AlarmKit" : {
-      "shouldTranslate" : false
-    },
-    "Allow alarms" : {
+    "API tokens" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アラームの権限を許可する"
+            "value" : "API トークン"
           }
         }
       }
@@ -27,12 +21,58 @@
         }
       }
     },
+    "Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント"
+          }
+        }
+      }
+    },
+    "AlarmKit" : {
+      "shouldTranslate" : false
+    },
+    "Alarmify" : {
+      "shouldTranslate" : false
+    },
+    "Allow alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームの権限を許可する"
+          }
+        }
+      }
+    },
+    "Apply" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を反映する"
+          }
+        }
+      }
+    },
     "Authorized" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "許可済み"
+          }
+        }
+      }
+    },
+    "Backend" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックエンド"
           }
         }
       }
@@ -47,12 +87,62 @@
         }
       }
     },
+    "Close" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        }
+      }
+    },
+    "Copy curl example" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "curl の例をコピーする"
+          }
+        }
+      }
+    },
+    "Copy token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンをコピーする"
+          }
+        }
+      }
+    },
     "Denied" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "拒否"
+          }
+        }
+      }
+    },
+    "Developer menu" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開発者メニュー"
+          }
+        }
+      }
+    },
+    "Device registration" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配送先の登録"
           }
         }
       }
@@ -67,12 +157,72 @@
         }
       }
     },
+    "FCM registration token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FCM 登録トークン"
+          }
+        }
+      }
+    },
+    "Issue a token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンを発行する"
+          }
+        }
+      }
+    },
+    "Issued token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発行したトークン"
+          }
+        }
+      }
+    },
+    "Lets you exercise issuing and revoking tokens without a running backend." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックエンドを起動していなくても、API トークンの発行と失効の画面を確認できます。"
+          }
+        }
+      }
+    },
     "No alarms scheduled" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "登録済みのアラームはありません"
+          }
+        }
+      }
+    },
+    "No tokens yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンはまだありません"
+          }
+        }
+      }
+    },
+    "Not available yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未取得"
           }
         }
       }
@@ -87,6 +237,16 @@
         }
       }
     },
+    "Not registered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未登録"
+          }
+        }
+      }
+    },
     "Not registered (available on a physical device only)" : {
       "localizations" : {
         "ja" : {
@@ -97,12 +257,72 @@
         }
       }
     },
+    "Not signed in" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインインが完了していません"
+          }
+        }
+      }
+    },
     "Permission" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "権限"
+          }
+        }
+      }
+    },
+    "Register this device again" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配送先を登録し直す"
+          }
+        }
+      }
+    },
+    "Registered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済み"
+          }
+        }
+      }
+    },
+    "Registering" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録中"
+          }
+        }
+      }
+    },
+    "Restart the app to switch the backend." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続先の変更はアプリを再起動すると反映されます。"
+          }
+        }
+      }
+    },
+    "Revoke" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失効させる"
           }
         }
       }
@@ -127,6 +347,16 @@
         }
       }
     },
+    "Signing in" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインイン中"
+          }
+        }
+      }
+    },
     "Stop" : {
       "localizations" : {
         "ja" : {
@@ -147,12 +377,42 @@
         }
       }
     },
+    "This value is shown only once. Save it into your service before closing." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この値を見られるのは今だけです。外部サービスに設定してから閉じてください。"
+          }
+        }
+      }
+    },
+    "Tokens" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発行済みのトークン"
+          }
+        }
+      }
+    },
     "Unknown" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "不明"
+          }
+        }
+      }
+    },
+    "Use a stubbed API client" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信をスタブに差し替える"
           }
         }
       }
