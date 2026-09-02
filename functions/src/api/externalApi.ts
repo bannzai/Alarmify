@@ -16,6 +16,7 @@ import {
   type RegisteredDevice,
 } from "../lib/store.js";
 import {
+  canonicalUuidSchema,
   collections,
   createAlarmRequestSchema,
   userSchema,
@@ -192,7 +193,11 @@ async function deliverCurrentState(
     title: state.title,
   });
   const latest = await currentAlarmState(deps, uid, alarmId, state);
-  if (latest.status === state.status) {
+  if (
+    latest.status === state.status &&
+    latest.fireAt.getTime() === state.fireAt.getTime() &&
+    latest.title === state.title
+  ) {
     return { state, delivery };
   }
   const corrective = await deliver(deps, devices, {
@@ -355,7 +360,11 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
   // 登録済みのアラームを取り消す。取り消し済みでも同じ応答を返す (冪等)
   app.delete("/v1/alarms/:alarmId", async (req, res) => {
     const { uid } = currentCaller(res);
-    const alarmId = req.params.alarmId;
+    const parsedId = canonicalUuidSchema.safeParse(req.params.alarmId);
+    if (!parsedId.success) {
+      throw badRequestFromZod(parsedId.error);
+    }
+    const alarmId = parsedId.data;
     const alarmRef = userRef(deps.firestore, uid).collection(collections.alarms).doc(alarmId);
     const snapshot = await alarmRef.get();
     if (!snapshot.exists) {

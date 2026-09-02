@@ -390,7 +390,7 @@ describe("外部サービス向け API", () => {
           .send({});
       }
       await request(limited)
-        .delete("/v1/alarms/unknown-alarm")
+        .delete("/v1/alarms/00000000-0000-4000-8000-000000000000")
         .set("authorization", `Bearer ${issued.token}`)
         .expect(404);
     } finally {
@@ -627,6 +627,43 @@ describe("外部サービス向け API", () => {
     expect(stored.get("tokenId")).toBe(second.id);
   });
 
+  it("大文字の UUID で取り消しても同じアラームに届く", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const alarmId = "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E";
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: alarmId, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    const response = await request(externalApi)
+      .delete(`/v1/alarms/${alarmId}`)
+      .set("authorization", `Bearer ${issued.token}`)
+      .expect(200);
+    expect(response.body.id).toBe(alarmId.toLowerCase());
+    await request(externalApi)
+      .delete("/v1/alarms/not-a-uuid")
+      .set("authorization", `Bearer ${issued.token}`)
+      .expect(400);
+  });
+
+  it("小数秒を切り捨てると過去になる fire_at は 400", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    context.setNow(new Date("2026-09-02T12:00:00.800Z"));
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: "2026-09-02T12:00:00.900Z" })
+      .expect(400);
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: "2026-09-02T12:00:01.900Z" })
+      .expect(201);
+    expect(response.body.fire_at).toBe("2026-09-02T12:00:01.000Z");
+  });
+
   it("id が UUID でなければ 400", async () => {
     await registerDevice();
     const issued = await issueApiToken();
@@ -653,7 +690,7 @@ describe("外部サービス向け API", () => {
     await registerDevice();
     const issued = await issueApiToken();
     await request(externalApi)
-      .delete("/v1/alarms/unknown-alarm")
+      .delete("/v1/alarms/00000000-0000-4000-8000-000000000000")
       .set("authorization", `Bearer ${issued.token}`)
       .expect(404);
   });
@@ -717,6 +754,12 @@ describe("アラーム履歴", () => {
   it("形式が不正な cursor は 400", async () => {
     await request(appApi)
       .get("/v1/alarms?cursor=not-a-cursor")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .expect(400);
+    // Firestore の Timestamp の範囲を外れる時刻
+    const outOfRange = Buffer.from("9007199254740991:x", "utf8").toString("base64url");
+    await request(appApi)
+      .get(`/v1/alarms?cursor=${outOfRange}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .expect(400);
   });

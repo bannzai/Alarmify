@@ -25,5 +25,10 @@ export function decodeCursor(cursor: string): ListCursor | null {
   if (!Number.isSafeInteger(millis) || id.length === 0) {
     return null;
   }
-  return { createdAt: Timestamp.fromMillis(millis), id };
+  // Firestore の Timestamp の範囲 (西暦 1 年〜9999 年) を外れる値は生成時に例外になるため、400 に落とす
+  try {
+    return { createdAt: Timestamp.fromMillis(millis), id };
+  } catch {
+    return null;
+  }
 }

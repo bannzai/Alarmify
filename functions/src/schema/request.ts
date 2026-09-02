@@ -29,12 +29,13 @@ function isIsoDateTime(value: string): boolean {
   return !Number.isNaN(Date.parse(value));
 }
 
+/** push には秒までしか載せないため、小数秒は受け取った時点で切り捨てて以降の判定と揃える */
 export const isoDateTimeSchema = z
   .string()
   .refine(isIsoDateTime, {
     message: "ISO 8601 の日時 (例: 2026-09-03T07:00:00Z) を指定してください",
   })
-  .transform((value) => new Date(value));
+  .transform((value) => new Date(Math.floor(Date.parse(value) / 1000) * 1000));
 
 const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
@@ -42,7 +43,7 @@ const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4
  * Firestore のドキュメント id は大文字小文字を区別するが、iOS 側の UUID は区別しない。
  * 同じアラームが 2 件登録されないよう、小文字に寄せてから使う
  */
-const canonicalUuidSchema = z
+export const canonicalUuidSchema = z
   .string()
   .regex(uuidPattern, { message: "id は UUID で指定してください" })
   .transform((value) => value.toLowerCase());
