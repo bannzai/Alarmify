@@ -18,6 +18,7 @@ final class APITokenTests: XCTestCase {
         XCTAssertFalse(example.contains("\n"))
     }
 
+    /// アプリ向け (appApi) ではなく外部サービス向け (alarmsApi) の URL を出す
     func testCurlExamplePointsAtTheSelectedBackend() {
         let example = APITokenUsageExample.curl(
             secret: "secret",

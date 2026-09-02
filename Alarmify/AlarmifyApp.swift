@@ -10,13 +10,16 @@ struct AlarmifyApp: App {
         #if DEBUG
         if isSnapshotUITest {
             // 撮影対象の本番画面 (ContentView) は App Group に残ったトークンと登録済みアラームを表示するため、
-            // 以前の実行の状態に依存せず、トークンや UUID が画像 (翻訳チェックの Issue に添付される) に写らないよう空にする
+            // 以前の実行の状態に依存せず、トークンや UUID が画像 (翻訳チェックの Issue に添付される) に写らないよう空にする。
+            // RevenueCat も configure しない (API キーの有無や通信状況で表示が変わらないようにする)
             DeviceTokenStore.removeAll()
             for alarm in AlarmKitScheduler.alarms {
                 try? AlarmKitScheduler.cancel(id: alarm.id)
             }
+            return
         }
         #endif
+        ProEntitlement.configureIfPossible()
     }
 
     var body: some Scene {
@@ -39,5 +42,9 @@ struct AlarmifyApp: App {
         ContentView()
             // 匿名認証のアカウントは起動時に自動で作る (ユーザーの操作を挟まない)
             .task { await AccountSession.shared.signIn() }
+            .task {
+                // 購入・復元・期限切れによる entitlement の変化をアプリの生存中ずっとキャッシュへ反映し続ける
+                await ProEntitlement.observeCustomerInfo()
+            }
     }
 }

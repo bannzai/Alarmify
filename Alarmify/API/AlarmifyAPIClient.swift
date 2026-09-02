@@ -1,6 +1,6 @@
 import Foundation
 
-/// アプリ向けバックエンド API の呼び出し口。
+/// アプリ向けバックエンド API (`appApi`) の呼び出し口。
 /// 実通信 (`URLSessionAlarmifyAPIClient`) と検証用スタブ (`StubAlarmifyAPIClient`) を差し替えられるようにプロトコルで定義する
 protocol AlarmifyAPIClient: Sendable {
     /// FCM 登録トークンをこの端末の配送先として登録する
@@ -15,45 +15,66 @@ protocol AlarmifyAPIClient: Sendable {
     func deleteAccount() async throws
 }
 
-/// URLSession で Cloud Functions のアプリ向け API を叩く実装。
+/// URLSession で Cloud Functions のアプリ向け API (`appApi`) を叩く実装。
 /// Firebase Auth の ID トークンを `Authorization: Bearer` に付けて認証する。
 /// Firebase への依存は `idToken` クロージャに閉じ込め、テストでは差し替える
 struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     let backend: AlarmifyBackend
     let session: URLSession
+    /// 端末登録の宛先を識別する値。同じ値での再登録は上書きになる
+    let deviceID: String
     /// Firebase Auth の ID トークンを返す。未サインインなら nil
     let idToken: @Sendable () async throws -> String?
 
     init(
         backend: AlarmifyBackend,
         session: URLSession = .shared,
+        deviceID: String = DeviceIdentifier.current,
         idToken: @escaping @Sendable () async throws -> String?
     ) {
         self.backend = backend
         self.session = session
+        self.deviceID = deviceID
         self.idToken = idToken
     }
 
     func registerDevice(fcmRegistrationToken: String) async throws {
         _ = try await send(
             method: "POST",
-            path: "/v1/me/devices",
-            body: ["fcm_registration_token": fcmRegistrationToken]
+            path: "/v1/devices",
+            body: ["device_id": deviceID, "fcm_token": fcmRegistrationToken, "platform": "ios"]
         )
     }
 
+    /// 一覧は 1 ページに収まらないことがある (Pro プランのトークン数に上限が無い)。
+    /// 途中で打ち切ると古いトークンが画面から消え、漏洩を疑った時に失効させられなくなるため、cursor を辿って全ページ取得する
     func apiTokens() async throws -> [APIToken] {
-        let data = try await send(method: "GET", path: "/v1/me/apiTokens", body: nil)
-        return try decode(APITokenListResponse.self, from: data).apiTokens
+        var tokens: [APIToken] = []
+        var cursor: String?
+        repeat {
+            // 1 ページあたりの件数はサーバーが受け付ける最大値 (alarmHistoryLimitSchema の max)。往復を最小にする
+            var query = [URLQueryItem(name: "limit", value: "100")]
+            if let cursor {
+                query.append(URLQueryItem(name: "cursor", value: cursor))
+            }
+            let data = try await send(method: "GET", path: "/v1/api-tokens", query: query, body: nil)
+            let page = try decode(APITokenListResponse.self, from: data)
+            tokens += page.apiTokens
+            // 同じ cursor が返り続ける応答で無限ループにしない
+            guard let nextCursor = page.nextCursor, nextCursor != cursor else { break }
+            cursor = nextCursor
+        } while true
+        return tokens
     }
 
     func issueAPIToken() async throws -> IssuedAPIToken {
-        let data = try await send(method: "POST", path: "/v1/me/apiTokens", body: [:])
+        // name を送らない発行はサーバー側の既定値 (`default`) になる
+        let data = try await send(method: "POST", path: "/v1/api-tokens", body: [:])
         return try decode(IssuedAPIToken.self, from: data)
     }
 
     func revokeAPIToken(id: String) async throws {
-        _ = try await send(method: "DELETE", path: "/v1/me/apiTokens/\(Self.escaped(id))", body: nil)
+        _ = try await send(method: "DELETE", path: "/v1/api-tokens/\(Self.escaped(id))", body: nil)
     }
 
     /// Callable 関数のプロトコル (`{"data": ...}` を POST し、成功時は `{"result": ...}`、失敗時は `{"error": {"message": ...}}`) で呼ぶ。
@@ -83,9 +104,15 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         return pathComponent.addingPercentEncoding(withAllowedCharacters: allowed) ?? pathComponent
     }
 
-    /// 一覧の応答は将来 `nextCursor` 等が増えても壊れないようオブジェクトで受ける
+    /// 一覧の応答。`nextCursor` は続きのページを指し、最後のページでは nil になる
     private struct APITokenListResponse: Decodable {
         let apiTokens: [APIToken]
+        let nextCursor: String?
+
+        private enum CodingKeys: String, CodingKey {
+            case apiTokens = "api_tokens"
+            case nextCursor = "next_cursor"
+        }
     }
 
     /// サーバーのエラー応答。`error.message` をそのまま画面に出す
@@ -96,8 +123,8 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         let error: Body
     }
 
-    private func send(method: String, path: String, body: [String: Any]?) async throws -> Data {
-        try await send(method: method, url: Self.url(baseURL: backend.baseURL, percentEncodedPath: path), body: body)
+    private func send(method: String, path: String, query: [URLQueryItem]? = nil, body: [String: Any]?) async throws -> Data {
+        try await send(method: method, url: Self.url(baseURL: backend.appBaseURL, percentEncodedPath: path, query: query), body: body)
     }
 
     private func send(method: String, url: URL, body: [String: Any]?) async throws -> Data {
@@ -122,9 +149,10 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     }
 
     /// `path` はエスケープ済みのパスとして扱い、`appending(path:)` による二重エンコードを避ける
-    private static func url(baseURL: URL, percentEncodedPath path: String) -> URL {
+    private static func url(baseURL: URL, percentEncodedPath path: String, query: [URLQueryItem]?) -> URL {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else { return baseURL }
         components.percentEncodedPath += path
+        components.queryItems = query
         return components.url ?? baseURL
     }
 
@@ -137,12 +165,30 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
         do {
-            return try decoder.decode(type, from: data)
+            return try Self.decoder.decode(type, from: data)
         } catch {
             throw AlarmifyAPIError.invalidResponse(detail: error.localizedDescription)
         }
     }
+
+    /// バックエンドの日時は `Date.toISOString()` (小数秒つき) で返るが、Firestore から読み直した値など小数秒が無い形も届く。
+    /// `.iso8601` は小数秒を解釈できないため、両方を受け付ける
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        let withFractionalSeconds = ISO8601DateFormatter()
+        withFractionalSeconds.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let withoutFractionalSeconds = ISO8601DateFormatter()
+        withoutFractionalSeconds.formatOptions = [.withInternetDateTime]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let text = try decoder.singleValueContainer().decode(String.self)
+            guard let date = withFractionalSeconds.date(from: text) ?? withoutFractionalSeconds.date(from: text) else {
+                throw DecodingError.dataCorrupted(
+                    DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Not an ISO 8601 date: \(text)")
+                )
+            }
+            return date
+        }
+        return decoder
+    }()
 }

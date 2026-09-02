@@ -92,8 +92,11 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
   --secret-from-file IOS_P12_PASSWORD=./tmp/signing/p12-password.txt \
   --secret-base64-file IOS_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.AppStore.mobileprovision \
   --secret-base64-file IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.NotificationService.AppStore.mobileprovision \
-  --secret-base64-file IOS_WIDGET_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.Widget.AppStore.mobileprovision
+  --secret-base64-file IOS_WIDGET_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.Widget.AppStore.mobileprovision \
+  --secret REVENUECAT_API_KEY="$REVENUECAT_API_KEY"
 ```
+
+`REVENUECAT_API_KEY` は RevenueCat の App Store 用 public API key (`appl_` で始まる)。Release ビルドの Build Phase (`scripts/check_release_revenuecat_key.sh`) が `appl_` のキーを要求し、無いと archive が失敗する (Test Store のキー入りバイナリを出荷しないため)。ローカルは gitignore した `Config.local.xcconfig`、CI はこの secret から `xcodebuild` の引数で渡す (取得方法は `Config.xcconfig` のコメント)。
 
 `APPLE_DEVELOPMENT_TEAM_ID` は Developer Portal の Team ID。public リポジトリに Team ID の実値をコミットしない方針 (AGENTS.md「秘匿情報」) のため、workflow にベタ書きせず environment secret から渡す。ローカルでは direnv の `.envrc` の `FASTLANE_TEAM_ID` に入っている。
 

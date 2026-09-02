@@ -4,6 +4,9 @@ import SwiftUI
 struct DeveloperMenuView: View {
     @State private var session = AccountSession.shared
     @State private var settings = DeveloperMenu.settings
+    /// 無料枠の上限に達した時のペイウォール。上限判定を持つバックエンド (#2) がまだ無く通常操作では到達できないため、
+    /// ここから開いて表示を確認する (`.claude/rules/debug-menu-for-verification.md`)
+    @State private var paywallTrigger: PaywallTrigger?
 
     var body: some View {
         List {
@@ -17,7 +20,11 @@ struct DeveloperMenuView: View {
                     Text("Backend")
                 }
                 .accessibilityIdentifier("debug_backend")
-                Text(settings.backend.baseURL.absoluteString)
+                // アプリ向け (appApi) と外部サービス向け (alarmsApi) は別の関数のため、両方の接続先を出す
+                Text(settings.backend.appBaseURL.absoluteString)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                Text(settings.backend.alarmsAPIBaseURL.absoluteString)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
             } header: {
@@ -51,9 +58,25 @@ struct DeveloperMenuView: View {
                         .accessibilityIdentifier("debug_pending_restart")
                 }
             }
+
+            Section {
+                Button {
+                    paywallTrigger = .freeQuotaExceeded
+                } label: {
+                    // ja: 無料枠の上限のペイウォールを表示
+                    Text("Show the free quota paywall")
+                }
+                .accessibilityIdentifier("debug_show_free_quota_paywall")
+            } header: {
+                // ja: 課金
+                Text("Subscription")
+            }
         }
         // ja: 開発者メニュー
         .navigationTitle(Text("Developer menu"))
+        .sheet(item: $paywallTrigger) { trigger in
+            PaywallPage(trigger: trigger)
+        }
     }
 }
 
