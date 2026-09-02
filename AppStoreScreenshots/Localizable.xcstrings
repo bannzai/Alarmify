@@ -331,22 +331,22 @@
         }
       }
     },
-    "Tuesday, September 2": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "9月2日 火曜日"
-          }
-        }
-      }
-    },
     "Webhooks become\nreal alarms": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "Webhook を\n本物のアラームに"
+          }
+        }
+      }
+    },
+    "Wednesday, September 2": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9月2日 水曜日"
           }
         }
       }

@@ -25,8 +25,8 @@ struct MockAlarmRingingScreen: View {
             }
 
             VStack(spacing: 6) {
-                // ja: 9月2日 火曜日
-                Text("Tuesday, September 2")
+                // ja: 9月2日 水曜日
+                Text("Wednesday, September 2")
                     .font(.system(size: 17, weight: .medium))
                     .foregroundStyle(Color.paper.opacity(0.6))
                 // 時刻はロケール非依存の視覚要素のため verbatim

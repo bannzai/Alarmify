@@ -2,7 +2,7 @@ import SwiftUI
 
 /// API トークン画面 (Alarmify/APIToken/APITokenView.swift) のモック。
 /// 発行直後の状態 (発行したトークンの表示とコピー・レシピへの導線) と発行済み一覧を、本番の構成に忠実に再現する。
-/// トークンの値は見本のため verbatim
+/// トークンの値は見本のため verbatim (形式は backend の functions/src/lib/apiToken.ts と同じ alm_ + base64url 43 文字。一覧の prefix は alm_ + 8 文字)
 struct MockAPITokenScreen: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -16,7 +16,7 @@ struct MockAPITokenScreen: View {
                 // ja: 発行したトークン
                 sectionLabel(Text("Issued token"))
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: "alfy_live_3b0e0c6e9f1b4c0a9e7d1f2a3b4c5d6e")
+                    Text(verbatim: "alm_7IgGDZhcjdSu_qJkCLTn4TW0fIfiLYLeSzVRW1bVtAY")
                         .font(.system(size: 13, weight: .regular, design: .monospaced))
                         .foregroundStyle(Color.paper)
                         .lineLimit(1)
@@ -44,9 +44,9 @@ struct MockAPITokenScreen: View {
                 // ja: 発行済みのトークン
                 sectionLabel(Text("Tokens"))
                 VStack(alignment: .leading, spacing: 0) {
-                    tokenRow(prefix: "alfy_live_3b0e…", createdAt: "2026/09/02 3:05")
+                    tokenRow(prefix: "alm_7IgGDZhc…", createdAt: "2026/09/02 3:05")
                     HairlineDivider().padding(.leading, 16)
-                    tokenRow(prefix: "alfy_live_8c41…", createdAt: "2026/08/28 21:14")
+                    tokenRow(prefix: "alm_mbcS-hMC…", createdAt: "2026/08/28 21:14")
                 }
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.panel))
             }
