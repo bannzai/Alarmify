@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase-admin/app";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { deleteUserAccount } from "./account/deleteAccount";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { deleteUserAccount, sweepDeletedAccounts } from "./account/deleteAccount";
 
 initializeApp();
 
@@ -23,4 +24,13 @@ export const deleteAccount = onCall({ region }, async (request) => {
 
   const result = await deleteUserAccount(uid);
   return { userId: uid, ...result };
+});
+
+/**
+ * アカウント削除の掃除が途中で失敗した分を完了させる定期実行。
+ * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す。
+ * デプロイには Cloud Scheduler の権限が要る (documents/functions-deploy.md の `--scheduler`)
+ */
+export const sweepDeletedAccountsHourly = onSchedule({ region, schedule: "every 60 minutes" }, async () => {
+  await sweepDeletedAccounts(100);
 });

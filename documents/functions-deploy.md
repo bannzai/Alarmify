@@ -57,7 +57,7 @@ bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-i
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 ```
 
-`onSchedule` の関数をデプロイ対象に含める時は `--scheduler` を足す (`roles/cloudscheduler.admin` が追加される)。
+`onSchedule` の関数をデプロイ対象に含める時は `--scheduler` を足す (`roles/cloudscheduler.admin` が追加される)。`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) が `onSchedule` のため、初回のデプロイ前に付与しておく。
 
 ## Secret を登録する
 

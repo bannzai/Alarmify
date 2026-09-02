@@ -3,8 +3,10 @@ import { deleteApp, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { deleteUserAccount } from "../src/account/deleteAccount";
+import { deleteUserAccount, sweepDeletedAccounts } from "../src/account/deleteAccount";
 import {
+  deletedAccountDocumentPath,
+  deletedAccountsCollectionId,
   userDocumentPath,
   usersCollectionId,
   userSubcollectionIds,
@@ -101,6 +103,7 @@ describe("deleteAccount", () => {
 
   beforeEach(async () => {
     await firestore.recursiveDelete(firestore.collection(usersCollectionId));
+    await firestore.recursiveDelete(firestore.collection(deletedAccountsCollectionId));
     await auth.deleteUsers((await auth.listUsers()).users.map((user) => user.uid));
   });
 
@@ -114,6 +117,27 @@ describe("deleteAccount", () => {
     expect(result).toEqual({ authUserExisted: true, userDocumentExisted: true });
     expect(await remainingDocumentCount(uid)).toBe(0);
     await expect(auth.getUser(uid)).rejects.toMatchObject({ code: "auth/user-not-found" });
+    // 掃除まで終わったアカウントの目印は残さない
+    expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
+  });
+
+  it("finishes the cleanup of accounts whose deletion stopped after the Auth user was removed", async () => {
+    // Auth の削除後に掃除が失敗した状態: 目印が残り、配下のデータと Auth のユーザーが残っている
+    const { uid } = await signUpAnonymously();
+    await seedUserData(uid);
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+    const untouched = await signUpAnonymously();
+    await seedUserData(untouched.uid);
+
+    const swept = await sweepDeletedAccounts(10);
+
+    expect(swept).toBe(1);
+    expect(await remainingDocumentCount(uid)).toBe(0);
+    await expect(auth.getUser(uid)).rejects.toMatchObject({ code: "auth/user-not-found" });
+    expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
+    // 目印の無いアカウントには触れない
+    expect(await remainingDocumentCount(untouched.uid)).toBe(4);
+    expect((await auth.getUser(untouched.uid)).uid).toBe(untouched.uid);
   });
 
   it("succeeds without changing anything when the account is already deleted", async () => {
