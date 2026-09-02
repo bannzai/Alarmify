@@ -97,7 +97,10 @@ final class AccountSession {
     var client: AlarmifyAPIClient { apiClient }
 
     private func registerDeviceIfPossible() async {
-        guard let fcmRegistrationToken else { return }
+        // FCM の delegate は起動のたびに呼ばれるとは限らない (新規取得とローテーション時だけ)。
+        // 受信済みのトークンが保存されていればそれで登録し、再起動後の再試行が空振りしないようにする
+        guard let fcmRegistrationToken = fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() else { return }
+        self.fcmRegistrationToken = fcmRegistrationToken
         deviceRegistration = .registering
         do {
             try await apiClient.registerDevice(fcmRegistrationToken: fcmRegistrationToken)
