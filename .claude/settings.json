@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh-r2-image:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(date:*)",
+      "Bash(bash /Users/bannzai/.claude/skills/run-qa/scripts/affected_features.sh:*)",
+      "Bash(bash /Users/bannzai/.claude/skills/run-qa/scripts/mark_verified.sh:*)",
+      "Bash(bash /Users/bannzai/.claude/skills/setup-qa/scripts/sync_evidence.sh:*)",
+      "Bash(sim-boot:*)",
+      "Bash(SCRIPT_QUIET=1 sim-boot:*)",
+      "Bash(sim-list:*)",
+      "Bash(SCRIPT_QUIET=1 sim-list:*)",
+      "Bash(sim-shutdown:*)",
+      "Bash(SCRIPT_QUIET=1 sim-shutdown:*)",
+      "Bash(xcrun simctl:*)",
+      "Bash(maestro:*)",
+      "mcp__mobile",
+      "Bash(xcodebuild:*)",
+      "mcp__xcodebuildmcp"
+    ]
+  }
+}

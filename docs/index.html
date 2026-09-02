@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alarmify - Turn any webhook into a real iPhone alarm</title>
+<meta name="description" content="Alarmify turns any HTTP request into a real AlarmKit alarm on your iPhone. It rings through Silent mode and Focus, shows on the lock screen, and works when the app is closed. Built for on-call engineers and home automation." />
+<link rel="canonical" href="https://bannzai.github.io/Alarmify/" />
+<meta name="theme-color" content="#0A0A0B" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Alarmify" />
+<meta property="og:title" content="Alarmify - Turn any webhook into a real iPhone alarm" />
+<meta property="og:description" content="Call one HTTPS endpoint from CI, a monitor, or your smart home, and a real alarm rings on your iPhone. Through Silent mode, through Focus, even when the app is closed." />
+<meta property="og:url" content="https://bannzai.github.io/Alarmify/" />
+<meta property="og:image" content="https://bannzai.github.io/Alarmify/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Alarmify - Turn any webhook into a real iPhone alarm" />
+<meta name="twitter:description" content="Call one HTTPS endpoint from anything, and a real alarm rings on your iPhone. Through Silent mode, through Focus, even when the app is closed." />
+<meta name="twitter:image" content="https://bannzai.github.io/Alarmify/og.png" />
+<link rel="icon" type="image/png" href="./icon.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Alarmify",
+  "description": "Turn any webhook or API call into a real alarm on your iPhone. Alarmify schedules an AlarmKit alarm that rings through Silent mode and Focus, shows on the lock screen, and works when the app is closed.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "iOS 26",
+  "url": "https://bannzai.github.io/Alarmify/",
+  "image": "https://bannzai.github.io/Alarmify/og.png",
+  "author": { "@type": "Person", "name": "bannzai" }
+}
+</script>
+<style>
+  :root {
+    --bg: #0A0A0B;
+    --bg-2: #0F1012;
+    --fg: #F2F2F0;
+    --fg-2: rgba(242, 242, 240, 0.76);
+    --fg-3: rgba(242, 242, 240, 0.56);
+    --fg-4: rgba(242, 242, 240, 0.55);
+    --hair: rgba(242, 242, 240, 0.10);
+    --hair-2: rgba(242, 242, 240, 0.16);
+    --accent: #F97316;
+    --accent-soft: rgba(249, 115, 22, 0.14);
+    --accent-line: rgba(249, 115, 22, 0.40);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .container { max-width: 1020px; margin: 0 auto; padding: 0 28px; }
+
+  .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* header */
+  header { padding: 24px 0; border-bottom: 1px solid var(--hair); }
+  header .container { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-mark {
+    width: 12px; height: 12px; border-radius: 3px; background: var(--accent);
+    box-shadow: 0 0 16px rgba(249, 115, 22, 0.7);
+    flex: none;
+  }
+  .brand-name { font-size: 15px; font-weight: 600; letter-spacing: 0.02em; }
+  nav.top { display: flex; gap: 24px; }
+  nav.top a { font-size: 13px; color: var(--fg-3); text-decoration: none; }
+  nav.top a:hover { color: var(--fg); }
+
+  /* hero */
+  .hero { padding: 76px 0 88px; }
+  .hero h1 {
+    margin-top: 18px;
+    font-size: 46px;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    max-width: 16em;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero .lead { margin-top: 22px; font-size: 17px; color: var(--fg-2); max-width: 34em; }
+
+  .code {
+    margin-top: 34px;
+    background: var(--bg-2);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 720px;
+  }
+  .code .code-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--hair);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--fg-3);
+    text-transform: uppercase;
+  }
+  .code .badge {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    padding: 2px 10px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .code pre {
+    margin: 0;
+    padding: 18px 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--fg-2);
+    -webkit-overflow-scrolling: touch;
+  }
+  .code pre .c-cmd { color: var(--fg); }
+  .code pre .c-flag { color: var(--accent); }
+  .code .code-note { padding: 0 16px 16px; font-size: 12px; color: var(--fg-4); }
+
+  .actions { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 10px; padding: 14px 24px; font-size: 14px; font-weight: 600;
+    text-decoration: none; border: 1px solid transparent;
+  }
+  .btn.disabled {
+    background: transparent;
+    border-color: var(--hair-2);
+    color: var(--fg-3);
+    cursor: not-allowed;
+  }
+  .actions .note { font-size: 13px; color: var(--fg-3); }
+
+  /* sections */
+  section { padding: 84px 0; border-top: 1px solid var(--hair); }
+  section h2 { margin-top: 14px; font-size: 30px; line-height: 1.3; letter-spacing: -0.02em; font-weight: 700; }
+  section .lead { margin-top: 14px; font-size: 16px; color: var(--fg-2); max-width: 40em; }
+
+  /* steps */
+  .steps { margin-top: 44px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .step {
+    background: var(--bg-2);
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .step .no {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .step h3 { margin-top: 12px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .step p { margin-top: 8px; font-size: 14px; color: var(--fg-3); }
+
+  /* facts */
+  .facts { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 40px; }
+  .fact { padding: 22px 0; border-top: 1px solid var(--hair); }
+  .fact h3 { font-size: 15px; font-weight: 600; }
+  .fact h3::before {
+    content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); margin-right: 10px; vertical-align: middle;
+  }
+  .fact p { margin-top: 6px; font-size: 14px; color: var(--fg-3); }
+
+  /* chips */
+  .chips { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--fg-2);
+    border: 1px solid var(--hair-2);
+    border-radius: 999px;
+    padding: 7px 16px;
+    background: var(--bg-2);
+  }
+  .chips-note { margin-top: 20px; font-size: 14px; color: var(--fg-3); max-width: 40em; }
+
+  /* plans */
+  .plans { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .plan {
+    background: var(--bg-2);
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    padding: 26px;
+  }
+  .plan.pro { border-color: var(--accent-line); }
+  .plan h3 { font-size: 18px; font-weight: 700; }
+  .plan .tag { margin-top: 4px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-4); }
+  .plan.pro .tag { color: var(--accent); }
+  .plan ul { margin-top: 18px; list-style: none; }
+  .plan li { font-size: 14px; color: var(--fg-2); padding: 7px 0 7px 20px; position: relative; }
+  .plan li::before {
+    content: ""; position: absolute; left: 0; top: 15px;
+    width: 8px; height: 2px; background: var(--accent);
+  }
+  .plan .price-note { margin-top: 18px; font-size: 13px; color: var(--fg-4); }
+
+  /* support */
+  .support .contact { margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .support .card {
+    background: var(--bg-2);
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .support .card h3 { font-size: 15px; font-weight: 600; }
+  .support .card p { margin-top: 8px; font-size: 14px; color: var(--fg-3); }
+  .support .card a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-line); word-break: break-word; }
+  .support .card a:hover { border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--hair); padding: 36px 0 56px; font-size: 13px; color: var(--fg-3); }
+  footer .links { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+  footer .links a { text-decoration: none; }
+  footer .links a:hover { color: var(--fg); }
+  footer .lang-note { margin-top: 18px; font-size: 12px; color: var(--fg-4); max-width: 46em; }
+  footer .copyright { margin-top: 18px; font-size: 12px; color: var(--fg-4); }
+
+  @media (max-width: 860px) {
+    nav.top { display: none; }
+    .hero { padding: 52px 0 64px; }
+    .hero h1 { font-size: 32px; }
+    section { padding: 64px 0; }
+    section h2 { font-size: 24px; }
+    .container { padding: 0 20px; }
+    .code pre { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a class="brand" href="#top" aria-label="Alarmify">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Alarmify</span>
+      </a>
+      <nav class="top" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#why">Why a real alarm</a>
+        <a href="#integrations">Integrations</a>
+        <a href="#plans">Plans</a>
+        <a href="#support">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="container hero">
+      <p class="label">Webhook to real iPhone alarm</p>
+      <h1>Any HTTP request can <em>wake you up</em>.</h1>
+      <p class="lead">
+        Alarmify gives you an HTTPS endpoint and a personal token. Call it from CI, a monitor,
+        your smart home, or a shell script, and a real alarm is scheduled on your iPhone.
+        Not a push notification you can sleep through.
+      </p>
+
+      <div class="code">
+        <div class="code-head">
+          <span>Schedule an alarm</span>
+          <span class="badge">Planned API (予定)</span>
+        </div>
+<pre><code><span class="c-cmd">curl</span> -X POST https://api.alarmify.app/v1/alarms \
+  <span class="c-flag">-H</span> "Authorization: Bearer &lt;token&gt;" \
+  <span class="c-flag">-H</span> "Content-Type: application/json" \
+  <span class="c-flag">-d</span> '{"fire_at":"2026-09-03T07:00:00Z","title":"Deploy finished"}'</code></pre>
+        <p class="code-note">
+          The API is still under development. The endpoint, the request shape and the host name
+          above show the planned interface and may change before release.
+        </p>
+      </div>
+
+      <div class="actions">
+        <span id="store-cta" class="btn disabled" role="button" aria-disabled="true">Coming soon to the App Store</span>
+        <span class="note">iPhone, iOS 26 or later</span>
+      </div>
+    </div>
+
+    <section id="how">
+      <div class="container">
+        <p class="label">How it works</p>
+        <h2>Three steps, then forget about it.</h2>
+        <div class="steps">
+          <div class="step">
+            <span class="no">01</span>
+            <h3>Get a token in the app</h3>
+            <p>Install Alarmify and issue a personal bearer token from the app. The token belongs to your account and to your iPhone.</p>
+          </div>
+          <div class="step">
+            <span class="no">02</span>
+            <h3>Call the API from anything</h3>
+            <p>Any system that can send an HTTPS request can schedule an alarm: a workflow step, a monitoring rule, a cron job, a shortcut.</p>
+          </div>
+          <div class="step">
+            <span class="no">03</span>
+            <h3>Your iPhone rings</h3>
+            <p>At the requested time a real alarm goes off on your device, with the title you sent, so you know what woke you before you open anything.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="why">
+      <div class="container">
+        <p class="label">Why a real alarm</p>
+        <h2>A notification is a suggestion. An alarm is not.</h2>
+        <p class="lead">
+          Alarmify schedules a system alarm through AlarmKit, the same mechanism the built-in
+          Clock app uses. That is what makes it survive the settings that silence everything else.
+        </p>
+        <div class="facts">
+          <div class="fact">
+            <h3>Rings in Silent mode</h3>
+            <p>The ring switch does not mute it. Your phone can stay silent all evening and still wake you at 3am.</p>
+          </div>
+          <div class="fact">
+            <h3>Breaks through Focus</h3>
+            <p>Sleep Focus and Do Not Disturb hold back notifications. An alarm still sounds.</p>
+          </div>
+          <div class="fact">
+            <h3>Shows on the lock screen</h3>
+            <p>The alarm appears with its title, so an incident has a name before you unlock anything.</p>
+          </div>
+          <div class="fact">
+            <h3>Works when the app is closed</h3>
+            <p>Once scheduled, the alarm lives in the system. Alarmify does not have to be running.</p>
+          </div>
+          <div class="fact">
+            <h3>Built on AlarmKit</h3>
+            <p>Uses Apple's alarm framework rather than a background push, so it behaves like a real alarm and not like a message.</p>
+          </div>
+          <div class="fact">
+            <h3>iOS 26 and later</h3>
+            <p>AlarmKit requires iOS 26, so Alarmify targets iOS 26 and later on iPhone.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="integrations">
+      <div class="container">
+        <p class="label">Integrations</p>
+        <h2>Works with anything that can send an HTTP request.</h2>
+        <p class="lead">
+          There is nothing to install on the other side. If it can make a POST request with a
+          header, it can wake you up.
+        </p>
+        <div class="chips">
+          <span class="chip">GitHub Actions</span>
+          <span class="chip">Home Assistant</span>
+          <span class="chip">Grafana</span>
+          <span class="chip">Uptime Kuma</span>
+          <span class="chip">cron</span>
+          <span class="chip">Zapier</span>
+          <span class="chip">Shortcuts</span>
+        </div>
+        <p class="chips-note">
+          A long build that finishes at night, a probe that goes red, a washing machine that
+          finished its cycle, a rehearsal alarm your automation sets an hour before a flight.
+        </p>
+      </div>
+    </section>
+
+    <section id="plans">
+      <div class="container">
+        <p class="label">Plans</p>
+        <h2>Start free. Upgrade when it becomes infrastructure.</h2>
+        <div class="plans">
+          <div class="plan">
+            <h3>Free</h3>
+            <p class="tag">No cost</p>
+            <ul>
+              <li>Schedule alarms from the API</li>
+              <li>One personal token</li>
+              <li>Real AlarmKit alarms on your iPhone</li>
+              <li>All integrations, since they are just HTTP</li>
+            </ul>
+            <p class="price-note">Available to everyone with the app.</p>
+          </div>
+          <div class="plan pro">
+            <h3>Pro</h3>
+            <p class="tag">Subscription</p>
+            <ul>
+              <li>Higher request and alarm limits</li>
+              <li>Multiple tokens to separate your systems</li>
+              <li>Longer alarm history</li>
+              <li>Priority support by email</li>
+            </ul>
+            <p class="price-note">Pricing and the exact limits will be listed on the App Store when Alarmify is released.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="support" class="support">
+      <div class="container">
+        <p class="label">Support</p>
+        <h2>Support / Contact</h2>
+        <p class="lead">
+          Questions, bug reports and feature requests are all welcome. We read every message.
+        </p>
+        <div class="contact">
+          <div class="card">
+            <h3>Email</h3>
+            <p>
+              Write to <a href="mailto:bannzai.app@gmail.com">bannzai.app@gmail.com</a>
+              and we will get back to you.
+            </p>
+          </div>
+          <div class="card">
+            <h3>From inside the app</h3>
+            <p>You can also reach support from the in-app settings screen, which sends us your message together with the diagnostic details we need.</p>
+          </div>
+          <div class="card">
+            <h3>Your account</h3>
+            <p><a href="./AccountDeletion-en">How to delete your account and data</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="links">
+        <a href="./Terms-en">Terms of Service</a>
+        <a href="./PrivacyPolicy-en">Privacy Policy</a>
+        <a href="./AccountDeletion-en">Account Deletion</a>
+        <a href="./Terms-ja" lang="ja" hreflang="ja">利用規約</a>
+        <a href="./PrivacyPolicy-ja" lang="ja" hreflang="ja">プライバシーポリシー</a>
+        <a href="./SpecifiedCommercialTransactionAct-ja" lang="ja" hreflang="ja">特定商取引法に基づく表示</a>
+      </div>
+      <p class="lang-note">
+        This page is in English. The last three links are the Japanese legal documents, required
+        for distribution in Japan.
+      </p>
+      <p class="copyright">© 2026 bannzai</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,737 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0FB8E33250E80EC144D8B196 /* AlarmifyNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		172885D547342920AEA2AE2C /* AlarmRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */; };
+		187089734143E64C82CBB81C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F0EDE7A7D5B739462304A9 /* NotificationService.swift */; };
+		191953572FB53D4E75DE28A8 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */; };
+		1D60D0AE0F1F756F1111ECE2 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */; };
+		2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */; };
+		5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */; };
+		604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */; };
+		65EEE41D8B399132533F169E /* AlarmifyAlarmMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */; };
+		8FB69638DC050485008C1A96 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E342845A9F2DD93A664759A4 /* ContentView.swift */; };
+		934BEE33034BF5DADEC94446 /* AlarmifyAlarmMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */; };
+		961C849A700BC12ED6CE46E8 /* DeviceTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */; };
+		974AB82FFFC32299E58CB354 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
+		AC3FD73CE08F56F35251424B /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
+		ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F13E25009531099CD8FB83 /* AlarmifyApp.swift */; };
+		B9D380F69A74168B936F4FAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3855C5317EACB9CD0D7B34D /* Assets.xcassets */; };
+		BEDCB68CE5413BC4E1A30603 /* AlarmifyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */; };
+		DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */; };
+		DF5F29343C850077D3CECD66 /* AlarmKitScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */; };
+		E9E8F58B61DBC3A66DCD71B7 /* AlarmifyWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EB78EA59DDA5273EB6BE7614 /* AlarmLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AD83FE37A50A790D0662E0 /* AlarmLiveActivityWidget.swift */; };
+		F765F6153169A374BE95CDE3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */; };
+		F793B4FAB205414176A8285C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
+		F85FB544587F14D09E6672A2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
+		FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247CF42D4F40787F4C65182A /* AppDelegate.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		198153EC4191CF7E47950AEF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E5BD0C5D2A8A2B0A486EF5B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6311E5183487B186DFAD61E5;
+			remoteInfo = AlarmifyNotificationService;
+		};
+		3BA1D55DF77DC0287D947871 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E5BD0C5D2A8A2B0A486EF5B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 248286557F1F631FB650136E;
+			remoteInfo = Alarmify;
+		};
+		A27AF8758F1F380033FD722A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E5BD0C5D2A8A2B0A486EF5B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E64E562DCD767DCAE420E1AA;
+			remoteInfo = AlarmifyWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CDC5F1D8F67B4C35816FC00E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0FB8E33250E80EC144D8B196 /* AlarmifyNotificationService.appex in Embed Foundation Extensions */,
+				E9E8F58B61DBC3A66DCD71B7 /* AlarmifyWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyWidgetBundle.swift; sourceTree = "<group>"; };
+		1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTokenStore.swift; sourceTree = "<group>"; };
+		21F13E25009531099CD8FB83 /* AlarmifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyApp.swift; sourceTree = "<group>"; };
+		247CF42D4F40787F4C65182A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2B404EE90E0E26173FD4D5C9 /* AlarmifyWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmifyWidget.entitlements; sourceTree = "<group>"; };
+		35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5BE9FC39A39F916DDE0394A8 /* AlarmifyNotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmifyNotificationService.entitlements; sourceTree = "<group>"; };
+		5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		630A149327D7E7B8B157D826 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		633A352AB48A5C3DAE7BCA24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6A743AADD346E8A5C4A7FB09 /* Alarmify.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Alarmify.entitlements; sourceTree = "<group>"; };
+		77F0EDE7A7D5B739462304A9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A3855C5317EACB9CD0D7B34D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmRequestTests.swift; sourceTree = "<group>"; };
+		AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmKitScheduler.swift; sourceTree = "<group>"; };
+		B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		B4CBF45DA44727442FBE4178 /* Alarmify.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Alarmify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmRequest.swift; sourceTree = "<group>"; };
+		DD24C3E43B6B73E9312095FA /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		E342845A9F2DD93A664759A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E7C01D11C177E9EE614886E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E9717C42C34501711DD130DE /* AlarmifyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AlarmifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0821876EF19698F1E1AEF9A /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+		F0AD83FE37A50A790D0662E0 /* AlarmLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmLiveActivityWidget.swift; sourceTree = "<group>"; };
+		FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyAlarmMetadata.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2CCE9BAB00EC0990C832B23C /* AlarmifyWidget */ = {
+			isa = PBXGroup;
+			children = (
+				2B404EE90E0E26173FD4D5C9 /* AlarmifyWidget.entitlements */,
+				1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */,
+				F0AD83FE37A50A790D0662E0 /* AlarmLiveActivityWidget.swift */,
+				630A149327D7E7B8B157D826 /* Info.plist */,
+			);
+			path = AlarmifyWidget;
+			sourceTree = "<group>";
+		};
+		36EAC6766A29B7DEDF68133A = {
+			isa = PBXGroup;
+			children = (
+				75D54258EC60BB38497012C1 /* Alarmify */,
+				4F913C6C48213E5F27C23669 /* AlarmifyNotificationService */,
+				9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */,
+				2CCE9BAB00EC0990C832B23C /* AlarmifyWidget */,
+				3D7DD060F192A0DDFB65CA77 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3D7DD060F192A0DDFB65CA77 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B4CBF45DA44727442FBE4178 /* Alarmify.app */,
+				FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */,
+				E9717C42C34501711DD130DE /* AlarmifyTests.xctest */,
+				35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4F913C6C48213E5F27C23669 /* AlarmifyNotificationService */ = {
+			isa = PBXGroup;
+			children = (
+				5BE9FC39A39F916DDE0394A8 /* AlarmifyNotificationService.entitlements */,
+				633A352AB48A5C3DAE7BCA24 /* Info.plist */,
+				77F0EDE7A7D5B739462304A9 /* NotificationService.swift */,
+			);
+			path = AlarmifyNotificationService;
+			sourceTree = "<group>";
+		};
+		51B09AA13A9C71008D188621 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */,
+				AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */,
+				D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */,
+				F0821876EF19698F1E1AEF9A /* AppGroup.swift */,
+				DD24C3E43B6B73E9312095FA /* Log.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		75D54258EC60BB38497012C1 /* Alarmify */ = {
+			isa = PBXGroup;
+			children = (
+				6A743AADD346E8A5C4A7FB09 /* Alarmify.entitlements */,
+				21F13E25009531099CD8FB83 /* AlarmifyApp.swift */,
+				A3855C5317EACB9CD0D7B34D /* Assets.xcassets */,
+				E342845A9F2DD93A664759A4 /* ContentView.swift */,
+				E7C01D11C177E9EE614886E4 /* Info.plist */,
+				FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */,
+				B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */,
+				5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */,
+				51B09AA13A9C71008D188621 /* Shared */,
+				E6573050F56C14CBE499622A /* Utils */,
+			);
+			path = Alarmify;
+			sourceTree = "<group>";
+		};
+		9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */ = {
+			isa = PBXGroup;
+			children = (
+				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
+			);
+			path = AlarmifyTests;
+			sourceTree = "<group>";
+		};
+		E6573050F56C14CBE499622A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				247CF42D4F40787F4C65182A /* AppDelegate.swift */,
+				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		09647E043F97EFD753F0E379 /* AlarmifyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01C1D10850E4168732CBD5FE /* Build configuration list for PBXNativeTarget "AlarmifyTests" */;
+			buildPhases = (
+				18396ED1DB6167B02CA77DD5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9067B9A976250353AE1EE90A /* PBXTargetDependency */,
+			);
+			name = AlarmifyTests;
+			packageProductDependencies = (
+			);
+			productName = AlarmifyTests;
+			productReference = E9717C42C34501711DD130DE /* AlarmifyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		248286557F1F631FB650136E /* Alarmify */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3589CCFC139237E8AEA86D60 /* Build configuration list for PBXNativeTarget "Alarmify" */;
+			buildPhases = (
+				9AECDCB0EFB496ED778167B7 /* Sources */,
+				CB5D0521BF03DA354F13FCF5 /* Resources */,
+				CDC5F1D8F67B4C35816FC00E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9385719CC96D956DFCB9BA20 /* PBXTargetDependency */,
+				06AA60016B738E54148C6C8E /* PBXTargetDependency */,
+			);
+			name = Alarmify;
+			packageProductDependencies = (
+			);
+			productName = Alarmify;
+			productReference = B4CBF45DA44727442FBE4178 /* Alarmify.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6311E5183487B186DFAD61E5 /* AlarmifyNotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7C3B576B72CA2FE4F1D3CAA /* Build configuration list for PBXNativeTarget "AlarmifyNotificationService" */;
+			buildPhases = (
+				397FD34ECBC994CC58DB5052 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AlarmifyNotificationService;
+			packageProductDependencies = (
+			);
+			productName = AlarmifyNotificationService;
+			productReference = FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		E64E562DCD767DCAE420E1AA /* AlarmifyWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3146D9F42A0D6CAADB24C232 /* Build configuration list for PBXNativeTarget "AlarmifyWidget" */;
+			buildPhases = (
+				9C285E94CB80E562E7EF3FA8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AlarmifyWidget;
+			packageProductDependencies = (
+			);
+			productName = AlarmifyWidget;
+			productReference = 35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1E5BD0C5D2A8A2B0A486EF5B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					09647E043F97EFD753F0E379 = {
+						DevelopmentTeam = TQPN82UBBY;
+						ProvisioningStyle = Automatic;
+					};
+					248286557F1F631FB650136E = {
+						DevelopmentTeam = TQPN82UBBY;
+						ProvisioningStyle = Automatic;
+					};
+					6311E5183487B186DFAD61E5 = {
+						DevelopmentTeam = TQPN82UBBY;
+						ProvisioningStyle = Automatic;
+					};
+					E64E562DCD767DCAE420E1AA = {
+						DevelopmentTeam = TQPN82UBBY;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B467C582D59D7D89B01E46A9 /* Build configuration list for PBXProject "Alarmify" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				ja,
+			);
+			mainGroup = 36EAC6766A29B7DEDF68133A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				248286557F1F631FB650136E /* Alarmify */,
+				6311E5183487B186DFAD61E5 /* AlarmifyNotificationService */,
+				09647E043F97EFD753F0E379 /* AlarmifyTests */,
+				E64E562DCD767DCAE420E1AA /* AlarmifyWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CB5D0521BF03DA354F13FCF5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9D380F69A74168B936F4FAF /* Assets.xcassets in Resources */,
+				1D60D0AE0F1F756F1111ECE2 /* InfoPlist.xcstrings in Resources */,
+				191953572FB53D4E75DE28A8 /* Localizable.xcstrings in Resources */,
+				F765F6153169A374BE95CDE3 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		18396ED1DB6167B02CA77DD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		397FD34ECBC994CC58DB5052 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF5F29343C850077D3CECD66 /* AlarmKitScheduler.swift in Sources */,
+				172885D547342920AEA2AE2C /* AlarmRequest.swift in Sources */,
+				65EEE41D8B399132533F169E /* AlarmifyAlarmMetadata.swift in Sources */,
+				AC3FD73CE08F56F35251424B /* AppGroup.swift in Sources */,
+				F85FB544587F14D09E6672A2 /* Log.swift in Sources */,
+				187089734143E64C82CBB81C /* NotificationService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9AECDCB0EFB496ED778167B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */,
+				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
+				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
+				ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */,
+				FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */,
+				F793B4FAB205414176A8285C /* AppGroup.swift in Sources */,
+				8FB69638DC050485008C1A96 /* ContentView.swift in Sources */,
+				961C849A700BC12ED6CE46E8 /* DeviceTokenStore.swift in Sources */,
+				974AB82FFFC32299E58CB354 /* Log.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9C285E94CB80E562E7EF3FA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB78EA59DDA5273EB6BE7614 /* AlarmLiveActivityWidget.swift in Sources */,
+				934BEE33034BF5DADEC94446 /* AlarmifyAlarmMetadata.swift in Sources */,
+				BEDCB68CE5413BC4E1A30603 /* AlarmifyWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		06AA60016B738E54148C6C8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E64E562DCD767DCAE420E1AA /* AlarmifyWidget */;
+			targetProxy = A27AF8758F1F380033FD722A /* PBXContainerItemProxy */;
+		};
+		9067B9A976250353AE1EE90A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 248286557F1F631FB650136E /* Alarmify */;
+			targetProxy = 3BA1D55DF77DC0287D947871 /* PBXContainerItemProxy */;
+		};
+		9385719CC96D956DFCB9BA20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6311E5183487B186DFAD61E5 /* AlarmifyNotificationService */;
+			targetProxy = 198153EC4191CF7E47950AEF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1E35554CBF092BB4B73C9FA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AlarmifyNotificationService/AlarmifyNotificationService.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.NotificationService;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		208AE43C4525D98D7ABB39BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Alarmify/Alarmify.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Alarmify/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		53DDDDE785FCEBF9E2F6D231 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.AlarmifyTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Alarmify.app/Alarmify";
+			};
+			name = Debug;
+		};
+		590D2E11BCBB0B7340962A9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AlarmifyNotificationService/AlarmifyNotificationService.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.NotificationService;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		68B95331C5E23E8F1E6A5A04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Alarmify/Alarmify.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Alarmify/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6C99CE1FD985F038F6923EB3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = TQPN82UBBY;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7F279E0093D2A2D1E20E4B7C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AlarmifyWidget/AlarmifyWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmifyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.Widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9DD38D75B709E76475A7C7DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AlarmifyWidget/AlarmifyWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmifyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.Widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE3F68BEC33FF7F7AE2F107E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.AlarmifyTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Alarmify.app/Alarmify";
+			};
+			name = Release;
+		};
+		F045B08CC71F8F42B9F390D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = TQPN82UBBY;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		01C1D10850E4168732CBD5FE /* Build configuration list for PBXNativeTarget "AlarmifyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53DDDDE785FCEBF9E2F6D231 /* Debug */,
+				BE3F68BEC33FF7F7AE2F107E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3146D9F42A0D6CAADB24C232 /* Build configuration list for PBXNativeTarget "AlarmifyWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9DD38D75B709E76475A7C7DF /* Debug */,
+				7F279E0093D2A2D1E20E4B7C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3589CCFC139237E8AEA86D60 /* Build configuration list for PBXNativeTarget "Alarmify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68B95331C5E23E8F1E6A5A04 /* Debug */,
+				208AE43C4525D98D7ABB39BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B467C582D59D7D89B01E46A9 /* Build configuration list for PBXProject "Alarmify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F045B08CC71F8F42B9F390D7 /* Debug */,
+				6C99CE1FD985F038F6923EB3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F7C3B576B72CA2FE4F1D3CAA /* Build configuration list for PBXNativeTarget "AlarmifyNotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E35554CBF092BB4B73C9FA3 /* Debug */,
+				590D2E11BCBB0B7340962A9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1E5BD0C5D2A8A2B0A486EF5B /* Project object */;
+}

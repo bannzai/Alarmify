@@ -1,0 +1,8 @@
+# apple_id / team_id / itc_team_id はここに書かず、fastlane 公式の環境変数で渡す
+# (public リポジトリに Apple ID・Team ID を載せないため)。direnv の .envrc (git 管理外) に設定する:
+#   FASTLANE_USER         — Apple ID (apple_id 相当)
+#   FASTLANE_TEAM_ID      — Developer Portal Team ID (team_id 相当)
+#   FASTLANE_ITC_TEAM_ID  — App Store Connect Team ID (itc_team_id 相当)
+# fastlane はこれらの環境変数を Appfile 記載なしで自動で読む
+# https://docs.fastlane.tools/advanced/#environment-variables
+app_identifier("com.bannzai.Alarmify") # The bundle identifier of your app

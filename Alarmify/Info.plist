@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- 権限の説明文はアプリの基準言語 (英語) で書き、日本語は InfoPlist.xcstrings で提供する。
+	     InfoPlist.xcstrings に en の値が無いと OS のダイアログにキー名が表示されるため、同じ英文を en にも持たせる -->
+	<!-- 輸出コンプライアンスの事前回答。通信は自前 API への HTTPS のみで、免除対象外の暗号化を使わないため false -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>Used to schedule and ring alarms triggered by your external services.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<!-- 検証方式 2 (Silent / Background Push) の受信に必要 -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+</dict>
+</plist>

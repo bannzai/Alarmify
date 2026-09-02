@@ -1,0 +1,33 @@
+name: ci
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # public repo のため macOS runner は無料 (private では使わない方針の例外)
+  build-and-test:
+    runs-on: macos-26
+    if: ${{ !contains(github.event.pull_request.title, '[Skip CI]') }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: xcodebuild -version
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build
+      - name: Test
+        run: |
+          set -o pipefail
+          xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            CODE_SIGNING_ALLOWED=NO test

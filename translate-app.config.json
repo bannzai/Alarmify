@@ -1,0 +1,15 @@
+{
+  "format": "xcstrings",
+  "path": "Alarmify/Localizable.xcstrings",
+  "source_language": "en",
+  "target_languages": [
+    "ar", "ca", "cs", "da", "de", "el", "es", "es-419", "fi", "fr", "he", "hi", "hr", "hu", "id", "it", "ja", "ko", "ms", "nb", "nl", "pl", "pt-BR", "pt-PT", "ro", "ru", "sk", "sv", "th", "tr", "uk", "vi", "zh-HK", "zh-Hans", "zh-Hant"
+  ],
+  "engine": "codex",
+  "model": "gpt-5.6-luna",
+  "context": "外部サービス (Webhook / REST API / GitHub Actions / Home Assistant 等) からの HTTP リクエストを契機に、iPhone の AlarmKit アラーム (サイレントモードや集中モード中でも鳴る本物のアラーム) を登録・更新する iOS アプリ「Alarmify」。開発者・ホームオートメーション利用者向けの技術的なプロダクトで、UI 文言は簡潔で正確な文体に訳す。アプリ名 Alarmify、AlarmKit、APNs、Webhook、API などの固有名詞・技術用語は訳さない。二人称・敬称の文体は言語ごとに次で統一し、同じ言語内で混在させない: de は du、fr は vous、es/es-419 は tú、it は tu、pt-BR は você、pt-PT は tu、ca は tu、nl は je、da/nb/sv は du、fi は sinä、ru は вы、uk は ви、pl は ty、cs/sk は ty、hr は ti、hu は te、ro は tu、el は εσύ、he は男性単数 (אתה)、ar は أنت (男性単数)、hi は आप と 〜ें の敬体、id は kamu、ms は anda、tr は sen、vi は bạn、th は คุณ、ko は 해요体で「당신」を使わず主語を省略、zh-Hans/zh-Hant/zh-HK は 你 (您 を使わない)、ja は です・ます調で「あなた」を多用しない。",
+  "source_dirs": [
+    "Alarmify",
+    "AlarmifyWidget"
+  ]
+}
