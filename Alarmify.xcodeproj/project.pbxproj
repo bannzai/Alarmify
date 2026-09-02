@@ -532,16 +532,13 @@
 						ProvisioningStyle = Automatic;
 					};
 					E5B040DD3C66B94C2FDDC168 = {
-						DevelopmentTeam = TQPN82UBBY;
 						ProvisioningStyle = Automatic;
 					};
 					F757CD7CE812C3E390CC1B4A = {
-						DevelopmentTeam = TQPN82UBBY;
 						ProvisioningStyle = Automatic;
 						TestTargetID = E5B040DD3C66B94C2FDDC168;
 					};
 					47EE5169062EE1311887238F = {
-						DevelopmentTeam = TQPN82UBBY;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 248286557F1F631FB650136E;
 					};

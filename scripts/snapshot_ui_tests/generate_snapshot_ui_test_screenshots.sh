@@ -220,6 +220,15 @@ test_files=$(echo "$all_test_files" | tail -n +$BEGIN_INDEX)
 # -n オプションが指定されている場合は制限
 if [ -n "$MAX_TESTS" ]; then
   test_files=$(echo "$test_files" | head -n "$MAX_TESTS")
+fi
+
+# -b / -n の指定がテスト数と合わず 1 件も選ばれなかった時は、何も撮らずに All done. で成功しないよう失敗させる
+if [ -z "$test_files" ]; then
+  echo "Error: 実行するテストがありません (-b $BEGIN_INDEX, -n ${MAX_TESTS:-all}, テスト総数 $total_count)" >&2
+  exit 1
+fi
+
+if [ -n "$MAX_TESTS" ]; then
   end_index=$((BEGIN_INDEX + MAX_TESTS - 1))
   sep "Running tests $BEGIN_INDEX to $end_index (total: $total_count)"
 else

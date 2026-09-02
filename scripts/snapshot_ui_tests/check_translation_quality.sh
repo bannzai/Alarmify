@@ -199,10 +199,19 @@ fi
 
 # Feature Pageディレクトリを取得
 feature_pages=$(find "$SCREENSHOTS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
+
+# echo は空文字でも改行を出して wc -l が 1 になるため、件数ではなく変数の空判定で 0 件を検出する
+if [ -z "$feature_pages" ]; then
+  echo "Error: No feature page directories found in $SCREENSHOTS_DIR"
+  exit 1
+fi
 total_features=$(echo "$feature_pages" | wc -l | tr -d ' ')
 
-if [ "$total_features" -eq 0 ]; then
-  echo "Error: No feature page directories found in $SCREENSHOTS_DIR"
+# 比較対象の言語 (ja 以外) は撮影言語の SSOT (AlarmifySnapshotUITests/Languages.swift) から決める。
+# ディレクトリに実在する PNG だけを比較すると、-l ja だけで生成した状態を「問題なし」と誤認するため
+expected_langs=$(sed -nE 's/^[[:space:]]*\("([A-Za-z-]+)",.*/\1/p' AlarmifySnapshotUITests/Languages.swift | grep -v '^ja$' || true)
+if [ -z "$expected_langs" ]; then
+  echo "Error: AlarmifySnapshotUITests/Languages.swift から比較対象の言語を取得できません"
   exit 1
 fi
 
@@ -219,6 +228,7 @@ issue_count=0
 analysis_failures=""
 issue_creation_failures=""
 missing_baselines=""
+missing_comparisons=""
 
 # 繰り返しのupload処理では途中でエラーが起きても処理は継続して欲しい
 set +e
@@ -262,16 +272,13 @@ for feature_page_dir in $feature_pages; do
 
     echo "  Base image: $ja_png"
 
-    # ja.png以外の言語を取得
-    other_langs=$(find "$index_dir" -name "*.png" ! -name "ja.png" -exec basename {} .png \; | sort)
-
-    if [ -z "$other_langs" ]; then
-      echo "  No other languages found for comparison"
-      continue
-    fi
-
-    # 各言語をチェック
-    for lang in $other_langs; do
+    # 各言語をチェック。対象言語の PNG が無ければ、比較を飛ばさず欠落として収集する
+    for lang in $expected_langs; do
+      if [ ! -f "$index_dir/${lang}.png" ]; then
+        echo "  Error: ${lang}.png (比較画像) がありません: $index_dir"
+        missing_comparisons+="  - ${feature_page}/${index}/${lang}"$'\n'
+        continue
+      fi
       # Issue数の上限チェック
       if [ -n "$MAX_ISSUES" ] && [ "$issue_count" -ge "$MAX_ISSUES" ]; then
         sep "Reached maximum issue limit ($MAX_ISSUES), stopping"
@@ -495,6 +502,12 @@ if [ -n "$missing_baselines" ]; then
   sep "ERROR: Baseline (ja.png) missing for:"
   echo "$missing_baselines"
   echo "先に generate_snapshot_ui_test_screenshots.sh で ja を含めて生成してください"
+  check_failed=true
+fi
+if [ -n "$missing_comparisons" ]; then
+  sep "ERROR: Comparison image missing for:"
+  echo "$missing_comparisons"
+  echo "先に generate_snapshot_ui_test_screenshots.sh で対象言語 (AlarmifySnapshotUITests/Languages.swift) をすべて生成してください"
   check_failed=true
 fi
 if [ -n "$issue_creation_failures" ]; then

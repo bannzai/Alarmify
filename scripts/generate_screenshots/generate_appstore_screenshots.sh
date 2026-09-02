@@ -309,8 +309,10 @@ run_single_test() {
   fi
 }
 
-# 一時ディレクトリの準備
+# 一時ディレクトリの準備。前回の実行が途中で終わって残った成功マーカー (.success_*) を引き継ぐと、
+# 今回の撮影が失敗してもリトライ・失敗報告をすり抜けて exit 0 になるため、開始時に作り直す
 TEMP_SCREENSHOTS_DIR="scripts/generate_screenshots/temp_screenshots"
+cleanup_temp_files
 mkdir -p "$TEMP_SCREENSHOTS_DIR"
 
 # 言語フィルタリング設定のログ出力

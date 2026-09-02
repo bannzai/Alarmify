@@ -31,9 +31,12 @@ final class AppStoreScreenshot2PageSnapshotUITest: XCTestCase {
             app.launchArguments += ["-AppleLanguages", "(\(language))"]
             // 日付等のロケール依存表示を対象地域の形式で撮影するため、リージョン付きタグも渡す
             app.launchArguments += ["-AppleLocale", languageWithRegion]
-            app.launch()
 
             for index in (0..<previewCount) {
+                // 遷移先の Preview には戻るボタンが無い (navigationBarBackButtonHidden) ため、
+                // index ごとに起動し直して一覧画面から次の Preview をタップする (launch は起動中のアプリを終了してから起動する)
+                app.launch()
+
                 let button = app.buttons["\(previewType)_\(index)"].firstMatch
                 // 一覧の下部にあるボタンは初期表示領域外になり得るため、hittable になるまでスクロールしてからタップする
                 var swipeCount = 0
