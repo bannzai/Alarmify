@@ -190,10 +190,10 @@ struct PaywallPage: View {
             if result.userCancelled {
                 return
             }
+            // customerInfoStream 経由のキャッシュ更新は非同期で、dismiss 直後の描画に間に合わないことがあるため、
+            // 確定した CustomerInfo を先にキャッシュへ反映する
+            ProEntitlement.cacheEntitlement(customerInfo: result.customerInfo)
             if result.customerInfo.entitlements[ProEntitlement.entitlementIdentifier]?.isActive == true {
-                // customerInfoStream 経由のキャッシュ更新は非同期で、dismiss 直後の描画に間に合わないことがあるため、
-                // 確定した CustomerInfo を先にキャッシュへ反映する
-                ProEntitlement.cacheEntitlement(customerInfo: result.customerInfo)
                 dismiss()
             } else {
                 // 商品と entitlement の紐付け不備・反映遅延で、購入が成功しても pro が有効にならないケースを黙殺しない
@@ -218,8 +218,10 @@ struct PaywallPage: View {
         defer { isPurchasing = false }
         do {
             let customerInfo = try await Purchases.shared.restorePurchases()
+            // 返金・失効で entitlement が無効になっている場合に古い true を残さないため、
+            // 有効・無効のどちらでも確定した CustomerInfo をキャッシュへ反映する (PR #20 レビュー指摘)
+            ProEntitlement.cacheEntitlement(customerInfo: customerInfo)
             if customerInfo.entitlements[ProEntitlement.entitlementIdentifier]?.isActive == true {
-                ProEntitlement.cacheEntitlement(customerInfo: customerInfo)
                 dismiss()
             } else {
                 // ja: 復元できる購入が見つかりませんでした。

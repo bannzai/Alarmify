@@ -1,6 +1,26 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ / month" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月 %@"
+          }
+        }
+      }
+    },
+    "%@ / year" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年 %@"
+          }
+        }
+      }
+    },
     "Alarmify" : {
       "shouldTranslate" : false
     },
