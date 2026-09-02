@@ -7,7 +7,7 @@ import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
 import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
-import { MAX_FIRE_AT_AHEAD_DAYS } from "../src/api/externalApi.js";
+import { MAX_FIRE_AT_AHEAD_DAYS, MIN_FIRE_AT_LEAD_SECONDS } from "../src/api/externalApi.js";
 import { userRef } from "../src/lib/store.js";
 import { collections } from "../src/schema/index.js";
 import {
@@ -90,6 +90,14 @@ describe("アプリ向け API", () => {
       .expect(403);
     expect(response.body.error.code).toBe("device_limit_exceeded");
     await registerDevice("device-0", "fcm-token-updated");
+  });
+
+  it('device_id に "/" を含む登録は 400', async () => {
+    await request(appApi)
+      .post("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .send({ device_id: "a/b/c", fcm_token: "fcm-token" })
+      .expect(400);
   });
 
   it("登録済みの端末を一覧できる", async () => {
@@ -650,21 +658,22 @@ describe("外部サービス向け API", () => {
       .expect(400);
   });
 
-  it("小数秒を切り捨てると過去になる fire_at は 400", async () => {
+  it("fire_at は小数秒を切り捨て、配送に要する余裕より近い日時は 400", async () => {
     await registerDevice();
     const issued = await issueApiToken();
     context.setNow(new Date("2026-09-02T12:00:00.800Z"));
+    // 切り捨てると 12:00:30 で、リードタイム (30 秒) にわずかに足りない
     await request(externalApi)
       .post("/v1/alarms")
       .set("authorization", `Bearer ${issued.token}`)
-      .send({ fire_at: "2026-09-02T12:00:00.900Z" })
+      .send({ fire_at: "2026-09-02T12:00:30.900Z" })
       .expect(400);
     const response = await request(externalApi)
       .post("/v1/alarms")
       .set("authorization", `Bearer ${issued.token}`)
-      .send({ fire_at: "2026-09-02T12:00:01.900Z" })
+      .send({ fire_at: `2026-09-02T12:00:${MIN_FIRE_AT_LEAD_SECONDS + 1}.900Z` })
       .expect(201);
-    expect(response.body.fire_at).toBe("2026-09-02T12:00:01.000Z");
+    expect(response.body.fire_at).toBe(`2026-09-02T12:00:${MIN_FIRE_AT_LEAD_SECONDS + 1}.000Z`);
   });
 
   it("id が UUID でなければ 400", async () => {

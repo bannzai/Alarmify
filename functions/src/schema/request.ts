@@ -61,7 +61,12 @@ export type CreateAlarmRequest = z.infer<typeof createAlarmRequestSchema>;
 
 /** アプリ向け: POST /v1/devices */
 export const registerDeviceRequestSchema = z.object({
-  device_id: z.string().min(1).max(128),
+  // Firestore のドキュメント id に "/" は使えない (パスとして解釈され、別の場所に保存されるか例外になる)
+  device_id: z
+    .string()
+    .min(1)
+    .max(128)
+    .refine((value) => !value.includes("/"), { message: 'device_id に "/" は使えません' }),
   fcm_token: z.string().min(1).max(4096),
   platform: devicePlatformSchema.default("ios"),
 });

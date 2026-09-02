@@ -38,6 +38,13 @@ export const EXTERNAL_TOKEN_RATE_LIMIT: RateLimit = { limit: 60, windowMs: 60_00
  * Firestore の Timestamp の上限 (西暦 9999 年) を超える値で内部エラーになるのも防ぐ
  */
 export const MAX_FIRE_AT_AHEAD_DAYS = 365;
+/**
+ * fire_at に必要な最小のリードタイム。
+ * 受け付けてから端末に届くまでに Firestore の書き込みと FCM / APNs の配送 (数秒) が挟まり、
+ * 届いた時点で過去の日時は AlarmKit が受け付けないため、その分の余裕を要求する
+ */
+export const MIN_FIRE_AT_LEAD_SECONDS = 30;
+const MIN_FIRE_AT_LEAD_MS = MIN_FIRE_AT_LEAD_SECONDS * 1000;
 const MAX_FIRE_AT_AHEAD_MS = MAX_FIRE_AT_AHEAD_DAYS * 24 * 60 * 60 * 1000;
 
 export interface ExternalApiOptions {
@@ -259,8 +266,12 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     const { uid, tokenId } = currentCaller(res);
     const now = deps.now();
     const fireAt = parsed.data.fire_at;
-    if (fireAt.getTime() <= now.getTime()) {
-      throw new ApiError(400, "invalid_argument", "fire_at には未来の日時を指定してください");
+    if (fireAt.getTime() < now.getTime() + MIN_FIRE_AT_LEAD_MS) {
+      throw new ApiError(
+        400,
+        "invalid_argument",
+        `fire_at には ${MIN_FIRE_AT_LEAD_SECONDS} 秒以上先の日時を指定してください`,
+      );
     }
     if (fireAt.getTime() > now.getTime() + MAX_FIRE_AT_AHEAD_MS) {
       throw new ApiError(
