@@ -15,11 +15,17 @@
 ## 検証方法
 
 - シミュレータビルド: `make build-ios`、ユニットテスト: `make test` (simulator は sim-boot が用意する)。ログは `./tmp/build.log` 等に保存し、全文を warning / error で検査する
-- 動作確認 (UI・挙動): `/ios-simulator` skill を起点にする。simulator は sim-boot 経由のプロジェクト固有 simulator を使い、アプリの起動は `make ios`
+- 動作確認 (UI・挙動): `/ios-simulator` skill を起点にする。本リポジトリは public のため、**simtunnel (GitHub Actions macOS Runner 上のリモート iOS Simulator) を通じて行う**。caller workflow は `.github/workflows/simulator-session.yml`、セッション名は worktree 名 (`issue-N` 等) にし、確認が終わったら `simtunnel down` で閉じる (macOS runner の並列上限を CI と共有するため放置しない)
+  - Maestro E2E・XCUITest・StoreKit 検証・`xcrun simctl` を伴う手順 (`documents/push-payloads/` の `simctl push` を含む) はリモート実行できないため、その場合のみローカル sim-boot (`/sim-manager`、アプリ起動は `make ios`) に倒す (使い分けの詳細は `/ios-simulator` skill Phase 1)
 - push 経路の確認: APNs を使わずに `xcrun simctl push <UDID> com.bannzai.Alarmify documents/push-payloads/<ファイル>.apns` で simulator へ payload を投げられる。`schedule.apns` (Notification Service Extension 経由。`mutable-content: 1`) と `background.apns` (background push。`content-available: 1`) を用意している。payload の形式は `Alarmify/Shared/AlarmRequest.swift` が正
+- バックエンド (アプリ向け API) の確認: Firebase Auth の匿名認証は `CODE_SIGNING_ALLOWED=NO` のビルドだと keychain へアクセスできず失敗する。simulator での動作確認は署名ありでビルドしたアプリを install する (`make build-ios` の成果物ではなく `xcodebuild -destination "platform=iOS Simulator,id=<UDID>" build`)。バックエンドを起動せずに API トークン画面を確認する時は、アプリの開発者メニュー (DEBUG / TestFlight のみ) で「通信をスタブに差し替える」を有効にする
 - AlarmKit の発火確認は「1〜2 分後のアラーム」で行う。発火判定は画面表示で行う (simulator は sound `.default` だと鳴らない癖がある)
 - 実機確認: `make install-device` (接続中の実機へ install + launch)。APNs のデバイストークン取得・実 push の受信・App terminated / Device locked 状態の挙動は実機でしか検証できない
-- public リポジトリのため、GitHub Actions の macOS runner 上のリモート simulator (simtunnel) も使える。caller workflow は `.github/workflows/simulator-session.yml` (Secrets `TS_OIDC_CLIENT_ID` / `TS_OIDC_AUDIENCE` の登録が前提)
+
+## 配布とデプロイ
+
+- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
+- Functions のデプロイはローカルが `make deploy-functions`、CI が `.github/workflows/functions-deploy.yml` (workflow_dispatch)。デプロイ先は `.firebaserc` の alias で明示する。手順は `documents/functions-deploy.md`
 
 ## 公開サイトとバックエンド
 
@@ -29,3 +35,4 @@
 ## 秘匿情報
 
 - public リポジトリのため、API キー・APNs の認証キー (.p8)・Apple ID・Team ID の実値をコミットしない。ローカルでは direnv の `.envrc` (git 管理外) に置く
+- 唯一の例外は `Alarmify/GoogleService-Info.plist`。Firebase の iOS 用 API キーは秘密鍵ではなくクライアントの識別子で、バイナリからも取り出せるためコミットする。代わりに bundle id 制限・Firestore の全パス deny・Functions 側の ID トークン認証・App Check (#4) で守る (判断と引き受けるリスク: [ADR 0003](documents/adr/0003-commit-google-service-info-plist.md))

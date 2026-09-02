@@ -31,6 +31,16 @@
         }
       }
     },
+    "Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント"
+          }
+        }
+      }
+    },
     "Add the 'Get Contents of URL' action and set the URL." : {
       "localizations" : {
         "ja" : {
@@ -87,6 +97,16 @@
         }
       }
     },
+    "API tokens" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API トークン"
+          }
+        }
+      }
+    },
     "APNs device token" : {
       "localizations" : {
         "ja" : {
@@ -97,12 +117,32 @@
         }
       }
     },
+    "Apply" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を反映する"
+          }
+        }
+      }
+    },
     "Authorized" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "許可済み"
+          }
+        }
+      }
+    },
+    "Backend" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックエンド"
           }
         }
       }
@@ -127,12 +167,42 @@
         }
       }
     },
+    "Close" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        }
+      }
+    },
     "Copy" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "コピー"
+          }
+        }
+      }
+    },
+    "Copy curl example" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "curl の例をコピーする"
+          }
+        }
+      }
+    },
+    "Copy token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンをコピーする"
           }
         }
       }
@@ -157,6 +227,26 @@
         }
       }
     },
+    "Developer menu" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開発者メニュー"
+          }
+        }
+      }
+    },
+    "Device registration" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配送先の登録"
+          }
+        }
+      }
+    },
     "Enable the notification on the monitors that should wake you, then press Test. UP events ring too, with an 'is up' title." : {
       "localizations" : {
         "ja" : {
@@ -177,12 +267,32 @@
         }
       }
     },
+    "FCM registration token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FCM 登録トークン"
+          }
+        }
+      }
+    },
     "Integration recipes" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "連携レシピ"
+          }
+        }
+      }
+    },
+    "Issue a token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンを発行する"
           }
         }
       }
@@ -197,12 +307,32 @@
         }
       }
     },
+    "Issued token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発行したトークン"
+          }
+        }
+      }
+    },
     "Keep the token in the 'ALARMIFY_TOKEN' environment variable rather than in a file you commit." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "トークンは環境変数「ALARMIFY_TOKEN」に置き、コミットするファイルに書かないようにします"
+          }
+        }
+      }
+    },
+    "Lets you exercise issuing and revoking tokens without a running backend." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックエンドを起動していなくても、API トークンの発行と失効の画面を確認できます。"
           }
         }
       }
@@ -217,6 +347,26 @@
         }
       }
     },
+    "No tokens yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンはまだありません"
+          }
+        }
+      }
+    },
+    "Not available yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未取得"
+          }
+        }
+      }
+    },
     "Not determined" : {
       "localizations" : {
         "ja" : {
@@ -227,12 +377,32 @@
         }
       }
     },
+    "Not registered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未登録"
+          }
+        }
+      }
+    },
     "Not registered (available on a physical device only)" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "未登録 (実機でのみ取得できます)"
+          }
+        }
+      }
+    },
+    "Not signed in" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインインが完了していません"
           }
         }
       }
@@ -283,6 +453,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "スクリプトの末尾や crontab に curl を置きます。「fire_in」は受信からの秒数なので日時の計算は不要です"
+          }
+        }
+      }
+    },
+    "Register this device again" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配送先を登録し直す"
+          }
+        }
+      }
+    },
+    "Registered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済み"
+          }
+        }
+      }
+    },
+    "Registering" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録中"
+          }
+        }
+      }
+    },
+    "Restart the app to switch the backend." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続先の変更はアプリを再起動すると反映されます。"
+          }
+        }
+      }
+    },
+    "Revoke" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失効させる"
           }
         }
       }
@@ -367,6 +587,16 @@
         }
       }
     },
+    "Signing in" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインイン中"
+          }
+        }
+      }
+    },
     "Steps" : {
       "localizations" : {
         "ja" : {
@@ -417,12 +647,32 @@
         }
       }
     },
+    "This value is shown only once. Save it into your service before closing." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この値を見られるのは今だけです。外部サービスに設定してから閉じてください。"
+          }
+        }
+      }
+    },
     "To ring only when a command fails, keep its exit status in a variable and exit with it after sending the alarm, so CI still sees the failure." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "失敗時だけ鳴らす時は終了ステータスを変数に取り、アラーム送信後にその値で exit します (CI が失敗を検知できるように)"
+          }
+        }
+      }
+    },
+    "Tokens" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発行済みのトークン"
           }
         }
       }
@@ -453,6 +703,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不明"
+          }
+        }
+      }
+    },
+    "Use a stubbed API client" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信をスタブに差し替える"
           }
         }
       }
