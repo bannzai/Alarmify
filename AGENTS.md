@@ -32,7 +32,7 @@
 ## 公開サイトとバックエンド
 
 - `docs/` は GitHub Pages (main の `/docs`) で配信する LP と法務ドキュメント。LP の検証は `bash ~/.agents/skills/landing-page-builder/scripts/verify-lp.sh --app-store-support --has-account docs/index.html`
-- Functions の構成: アプリ向け API `appApi` (Firebase Auth の ID トークンで認証。端末登録・API トークンの発行 / 失効・アラーム履歴)、外部サービス向け API `alarmsApi` (Bearer = API トークン。`POST /v1/alarms` / `DELETE /v1/alarms/{id}`)、保持期間 (30 日) を過ぎたアラーム要求を消す `cleanupExpiredAlarms`、アカウント削除の Callable `deleteAccount` とその掃除を完了させる `sweepDeletedAccountsHourly`。push payload は `Alarmify/Shared/AlarmRequest.swift` の形式に揃え、`mutable-content` と `content-available` の切り替えは環境変数 `ALARMIFY_PUSH_DELIVERY` (`notification-service` / `background`) で行う
+- Functions の構成: アプリ向け API `appApi` (Firebase Auth の ID トークンで認証。端末登録・API トークンの発行 / 失効・アラーム履歴)、外部サービス向け API `alarmsApi` (Bearer = API トークン。`POST /v1/alarms` / `DELETE /v1/alarms/{id}`)、保持期間 (30 日) を過ぎたアラーム要求を消す `cleanupExpiredAlarms`、アカウント削除の Callable `deleteAccount` とその掃除を完了させる `sweepDeletedAccountsHourly` (削除中の目印 `deletedAccounts/{uid}` がある間は `appApi` の書き込みを 410 で拒否し、目印は 2 時間後の sweep が最後の掃除と一緒に消す)。push payload は `Alarmify/Shared/AlarmRequest.swift` の形式に揃え、`mutable-content` と `content-available` の切り替えは環境変数 `ALARMIFY_PUSH_DELIVERY` (`notification-service` / `background`) で行う
 - バックエンドは Firebase `alarmify-prod` (構成: `documents/adr/0001-firebase-backend.md`、DB の規約: `.claude/rules/firestore-db-rules.md`)。ローカルは `demo-alarmify` のエミュレータで動かし、デプロイは `--project prod` を明示する
 
 ## 秘匿情報

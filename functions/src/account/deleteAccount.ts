@@ -22,10 +22,11 @@ export interface DeleteUserAccountResult {
 }
 
 /**
- * 目印を置いてからこの時間が経つまでは、Callable がまだ削除の途中とみなして sweep が触れない
- * (Callable の実行は数秒で終わるため、目印の作成と Auth の削除の間に sweep が割り込んで目印を取り下げないようにする)
+ * 目印を置いてからこの時間が経つまでは sweep が触れず、目印が残り続ける。
+ * 目印がある間はアプリ向け API の書き込みが拒否されるため、削除前に発行された ID トークン (有効期間 1 時間) による
+ * 書き込みがデータを作り直せない。2 時間経てば有効な ID トークンは残らず、sweep が最後の掃除をして目印を消す
  */
-export const DELETION_MARKER_MINIMUM_AGE_MS = 10 * 60 * 1000;
+export const DELETION_MARKER_MINIMUM_AGE_MS = 2 * 60 * 60 * 1000;
 
 /** 1 回の sweep で処理する目印の件数の上限 (.claude/rules/firestore-db-rules.md) */
 export const SWEEP_BATCH_SIZE = 100;
@@ -51,21 +52,14 @@ export async function deleteUserAccount(
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
-  const marked = await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
+  await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
   const authUserExisted = await deleteAuthUser(deps.auth, uid);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
-  // これ以降に届き得るのは発行済みで未失効の ID トークンによる書き込みだけで、その窓はアプリ向け API の
-  // 書き込み側が Auth のユーザーの存在を確認して拒否することで閉じる
+  // 目印はここでは消さない。削除前に発行された ID トークンによる書き込みが後から届いても、
+  // 目印がある間はアプリ向け API が拒否し、目印は有効な ID トークンが残らなくなった後に sweep が最後の掃除と一緒に消す
   await deps.firestore.recursiveDelete(userDocument);
-  // 目印はこの呼び出しが置いた版に限って消す。同じ uid の呼び出しが重なって目印を置き直していた場合は、
-  // その呼び出しの掃除がまだ終わっていない可能性があるため残す (precondition の失敗は正常系)
-  await tombstone.delete({ lastUpdateTime: marked.writeTime }).catch((error: unknown) => {
-    if (!isFailedPrecondition(error)) {
-      throw error;
-    }
-  });
 
   // 削除したアカウントの識別子 (uid) はログにも残さない (ログの保持期間だけ識別可能なデータが残るため)
   logger.info("deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
@@ -165,13 +159,6 @@ async function authUserExists(auth: AccountDeletionDeps["auth"], uid: string): P
     }
     throw error;
   }
-}
-
-/** Firestore の precondition (lastUpdateTime 等) が満たされなかったエラーか (gRPC の FAILED_PRECONDITION = 9) */
-function isFailedPrecondition(error: unknown): boolean {
-  if (typeof error !== "object" || error === null) return false;
-  const code = (error as { code?: unknown }).code;
-  return code === 9 || code === "failed-precondition";
 }
 
 function isUserNotFound(error: unknown): boolean {

@@ -1,11 +1,18 @@
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
-import { FieldPath, Timestamp, type DocumentData, type Query, type QuerySnapshot } from "firebase-admin/firestore";
+import {
+  FieldPath,
+  Timestamp,
+  type DocumentData,
+  type Query,
+  type QuerySnapshot,
+  type Transaction,
+} from "firebase-admin/firestore";
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { planLimits } from "../lib/plan.js";
 import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
-import { MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
+import { deletionMarkerRef, MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
   alarmHistoryLimitSchema,
   collections,
@@ -14,6 +21,17 @@ import {
   registerDeviceRequestSchema,
   userSchema,
 } from "../schema/index.js";
+
+/**
+ * 削除処理中 (目印がある) アカウントのデータを作り直さない。
+ * 削除前に発行された ID トークンで届いた書き込みが、掃除の後にドキュメントを復活させないよう、書き込みと同じトランザクションで判定する
+ */
+async function rejectIfAccountDeleted(transaction: Transaction, deps: Deps, uid: string): Promise<void> {
+  const marker = await transaction.get(deletionMarkerRef(deps.firestore, uid));
+  if (marker.exists) {
+    throw new ApiError(410, "account_deleted", "アカウントは削除されています");
+  }
+}
 
 function currentUid(res: Response): string {
   const uid = res.locals.uid;
@@ -112,6 +130,7 @@ export function createAppApi(deps: Deps): Express {
     const deviceRef = devicesRef.doc(parsed.data.device_id);
 
     await deps.firestore.runTransaction(async (transaction) => {
+      await rejectIfAccountDeleted(transaction, deps, uid);
       const userSnapshot = await transaction.get(userDocRef);
       const deviceSnapshot = await transaction.get(deviceRef);
       // 配送は登録済みの全端末に行う。取りこぼしが出ないよう、配送で見る上限と同じ数で登録を止める
@@ -180,6 +199,7 @@ export function createAppApi(deps: Deps): Express {
 
     // 上限の判定と発行を同じトランザクションで行い、同時実行で上限を超えて発行されないようにする
     await deps.firestore.runTransaction(async (transaction) => {
+      await rejectIfAccountDeleted(transaction, deps, uid);
       const userSnapshot = await transaction.get(userDocRef);
       const user = userSnapshot.exists ? userSchema.parse(userSnapshot.data()) : null;
       const plan = user?.plan ?? "free";

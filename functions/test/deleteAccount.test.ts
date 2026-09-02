@@ -9,7 +9,18 @@ import {
   type AccountDeletionDeps,
 } from "../src/account/deleteAccount.js";
 import { collections, deletedAccountFields } from "../src/schema/index.js";
-import { clearFirestore, PROJECT_ID, TEST_NOW, testFirestore } from "./helpers.js";
+import request from "supertest";
+import { createAppApi } from "../src/api/appApi.js";
+import {
+  clearFirestore,
+  createTestContext,
+  PROJECT_ID,
+  startTestServer,
+  stopTestServer,
+  TEST_NOW,
+  testFirestore,
+  VALID_ID_TOKEN,
+} from "./helpers.js";
 
 let deps: AccountDeletionDeps;
 let auth: Auth;
@@ -94,7 +105,7 @@ beforeEach(async () => {
 });
 
 describe("アカウント削除", () => {
-  it("Firestore のユーザー配下と Auth のユーザーを削除し、目印を残さない", async () => {
+  it("Firestore のユーザー配下と Auth のユーザーを削除し、書き込みを拒否するための目印を残す", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);
     expect(await remainingDocumentCount(uid)).toBe(4);
@@ -104,7 +115,7 @@ describe("アカウント削除", () => {
     expect(result).toEqual({ authUserExisted: true, userDocumentExisted: true });
     expect(await remainingDocumentCount(uid)).toBe(0);
     expect(await authUserExists(uid)).toBe(false);
-    expect((await marker(uid).get()).exists).toBe(false);
+    expect((await marker(uid).get()).exists).toBe(true);
   });
 
   it("削除済みの uid で再実行しても成功する (冪等)", async () => {
@@ -135,27 +146,34 @@ describe("アカウント削除", () => {
     expect(await authUserExists(uid)).toBe(false);
   });
 
-  it("削除の途中で別の呼び出しが目印を置き直しても、その目印は残す", async () => {
+  it("目印がある間は、削除前の ID トークンで届いた書き込みがデータを作り直せない", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);
-    const deletion = deleteUserAccount(deps, uid);
-    // deleteUserAccount が目印を置いたのを待ってから、別の呼び出しとして目印を置き直す
-    for (let attempt = 0; !(await marker(uid).get()).exists; attempt += 1) {
-      if (attempt >= 200) throw new Error("deleteUserAccount did not write the marker in time");
-      await new Promise((resolve) => setTimeout(resolve, 10));
+    await deleteUserAccount(deps, uid);
+    const context = createTestContext(uid);
+    const appApi = await startTestServer(createAppApi(context.deps));
+    try {
+      const device = await request(appApi)
+        .post("/v1/devices")
+        .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .send({ device_id: "device-1", fcm_token: "fcm-token-1" })
+        .expect(410);
+      expect(device.body.error.code).toBe("account_deleted");
+      const token = await request(appApi)
+        .post("/v1/api-tokens")
+        .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .send({ name: "github-actions" })
+        .expect(410);
+      expect(token.body.error.code).toBe("account_deleted");
+    } finally {
+      await stopTestServer(appApi);
     }
-    await marker(uid).set({ [deletedAccountFields.requestedAt]: Timestamp.fromDate(new Date()) });
-
-    await deletion;
-
     expect(await remainingDocumentCount(uid)).toBe(0);
-    expect(await authUserExists(uid)).toBe(false);
-    expect((await marker(uid).get()).exists).toBe(true);
   });
 });
 
 describe("削除の掃除 (sweep)", () => {
-  it("Auth の削除後に掃除が失敗したアカウントの削除を完了させ、目印の無いアカウントには触れない", async () => {
+  it("Auth の削除後に残ったデータを消して目印を外し、目印の無いアカウントには触れない", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);
     await marker(uid).set({ [deletedAccountFields.requestedAt]: staleRequestedAt });
@@ -185,7 +203,7 @@ describe("削除の掃除 (sweep)", () => {
     expect((await marker(uid).get()).exists).toBe(false);
   });
 
-  it("作りたての目印には触れない (削除がまだ進行中の可能性があるため)", async () => {
+  it("有効な ID トークンが残り得る間 (目印を置いてから 2 時間) は触れない", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);
     await marker(uid).set({ [deletedAccountFields.requestedAt]: Timestamp.fromDate(TEST_NOW) });
