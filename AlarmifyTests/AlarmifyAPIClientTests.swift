@@ -65,6 +65,32 @@ final class AlarmifyAPIClientTests: XCTestCase {
         XCTAssertEqual(issued.secret, "alm_1a2b_secret")
     }
 
+    /// 1 ページに収まらない一覧でも、失効させたいトークンが隠れないよう最後まで辿る
+    func testAPITokensFollowsThePaginationCursor() async throws {
+        nonisolated(unsafe) var requestedCursors: [String?] = []
+        StubURLProtocol.handler = { request in
+            let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            let cursor = components?.queryItems?.first { $0.name == "cursor" }?.value
+            requestedCursors.append(cursor)
+            XCTAssertEqual(components?.queryItems?.first { $0.name == "limit" }?.value, "100")
+            if cursor == nil {
+                let body = """
+                {"api_tokens":[{"id":"tok_1","name":"ci","prefix":"alm_1","created_at":"2026-09-02T10:00:00.000Z","last_used_at":null}],"next_cursor":"cursor_1"}
+                """
+                return (200, Data(body.utf8))
+            }
+            let body = """
+            {"api_tokens":[{"id":"tok_2","name":"cron","prefix":"alm_2","created_at":"2026-09-02T10:00:00.000Z","last_used_at":null}],"next_cursor":null}
+            """
+            return (200, Data(body.utf8))
+        }
+
+        let tokens = try await makeClient().apiTokens()
+
+        XCTAssertEqual(tokens.map(\.id), ["tok_1", "tok_2"])
+        XCTAssertEqual(requestedCursors, [nil, "cursor_1"])
+    }
+
     /// 再インストールを跨いでも同じ端末として登録し直せるよう、同じ値を返し続ける
     func testDeviceIdentifierIsStableAcrossReads() {
         let first = DeviceIdentifier.current

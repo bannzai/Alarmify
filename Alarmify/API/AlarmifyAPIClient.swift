@@ -44,9 +44,25 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         )
     }
 
+    /// 一覧は 1 ページに収まらないことがある (Pro プランのトークン数に上限が無い)。
+    /// 途中で打ち切ると古いトークンが画面から消え、漏洩を疑った時に失効させられなくなるため、cursor を辿って全ページ取得する
     func apiTokens() async throws -> [APIToken] {
-        let data = try await send(method: "GET", path: "/v1/api-tokens", body: nil)
-        return try decode(APITokenListResponse.self, from: data).apiTokens
+        var tokens: [APIToken] = []
+        var cursor: String?
+        repeat {
+            // 1 ページあたりの件数はサーバーが受け付ける最大値 (alarmHistoryLimitSchema の max)。往復を最小にする
+            var query = [URLQueryItem(name: "limit", value: "100")]
+            if let cursor {
+                query.append(URLQueryItem(name: "cursor", value: cursor))
+            }
+            let data = try await send(method: "GET", path: "/v1/api-tokens", query: query, body: nil)
+            let page = try decode(APITokenListResponse.self, from: data)
+            tokens += page.apiTokens
+            // 同じ cursor が返り続ける応答で無限ループにしない
+            guard let nextCursor = page.nextCursor, nextCursor != cursor else { break }
+            cursor = nextCursor
+        } while true
+        return tokens
     }
 
     func issueAPIToken() async throws -> IssuedAPIToken {
@@ -66,12 +82,14 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         return pathComponent.addingPercentEncoding(withAllowedCharacters: allowed) ?? pathComponent
     }
 
-    /// 一覧の応答。`next_cursor` は続きのページを指すが、現在の画面は 1 ページ目だけを扱うため読まない
+    /// 一覧の応答。`nextCursor` は続きのページを指し、最後のページでは nil になる
     private struct APITokenListResponse: Decodable {
         let apiTokens: [APIToken]
+        let nextCursor: String?
 
         private enum CodingKeys: String, CodingKey {
             case apiTokens = "api_tokens"
+            case nextCursor = "next_cursor"
         }
     }
 
@@ -83,10 +101,10 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         let error: Body
     }
 
-    private func send(method: String, path: String, body: [String: String]?) async throws -> Data {
+    private func send(method: String, path: String, query: [URLQueryItem]? = nil, body: [String: String]?) async throws -> Data {
         guard let token = try await idToken() else { throw AlarmifyAPIError.notSignedIn }
 
-        var request = URLRequest(url: Self.url(baseURL: backend.appBaseURL, percentEncodedPath: path))
+        var request = URLRequest(url: Self.url(baseURL: backend.appBaseURL, percentEncodedPath: path, query: query))
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let body {
@@ -105,9 +123,10 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     }
 
     /// `path` はエスケープ済みのパスとして扱い、`appending(path:)` による二重エンコードを避ける
-    private static func url(baseURL: URL, percentEncodedPath path: String) -> URL {
+    private static func url(baseURL: URL, percentEncodedPath path: String, query: [URLQueryItem]?) -> URL {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else { return baseURL }
         components.percentEncodedPath += path
+        components.queryItems = query
         return components.url ?? baseURL
     }
 

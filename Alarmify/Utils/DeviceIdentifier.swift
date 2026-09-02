@@ -55,8 +55,10 @@ enum DeviceIdentifier {
     private static func saveToKeychain(_ identifier: String) -> Bool {
         var attributes = baseQuery
         attributes[kSecValueData as String] = Data(identifier.utf8)
-        // push を受けた時に Extension からも読めるよう、初回のロック解除以降は取り出せるようにする
-        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        // push を受けた時に Extension からも読めるよう、初回のロック解除以降は取り出せるようにする。
+        // ThisDeviceOnly にするのは、この値が「配送先のこの端末」を指すため。バックアップ復元や機種変更で
+        // 別の端末へ移ると、同じ device_id の登録を互いに上書きし合って片方に push が届かなくなる
+        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         let status = SecItemAdd(attributes as CFDictionary, nil)
         if status == errSecDuplicateItem {
             return SecItemUpdate(baseQuery as CFDictionary, [kSecValueData as String: Data(identifier.utf8)] as CFDictionary) == errSecSuccess
