@@ -17,6 +17,7 @@ Or in the browser: Settings, Secrets and variables, Actions, New repository secr
 
 `fire_in` needs no date arithmetic. The request body is built with `jq` (preinstalled on GitHub-hosted runners) so a workflow name containing quotes or backslashes still produces valid JSON, and the values come in through `env` so the shell never parses them.
 
+{% raw %}
 ```yaml
 # .github/workflows/deploy.yml
 jobs:
@@ -37,6 +38,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$(jq -cn --arg title "$WORKFLOW: $STATUS" '{fire_in: 0, title: $title}')"
 ```
+{% endraw %}
 
 - `if: always()` runs the step after a failure too. Use `if: failure()` to ring only when something broke.
 - `WORKFLOW` and `STATUS` put the workflow name and `success` / `failure` in the alarm title.
@@ -46,6 +48,7 @@ jobs:
 
 A rehearsal alarm one hour before a scheduled release:
 
+{% raw %}
 ```yaml
       - name: Alarm one hour before the release window
         env:
@@ -57,5 +60,6 @@ A rehearsal alarm one hour before a scheduled release:
             -H "Content-Type: application/json" \
             -d "$(jq -cn --arg fire_at "$FIRE_AT" '{fire_at: $fire_at, title: "Release window opens in 1 hour"}')"
 ```
+{% endraw %}
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)

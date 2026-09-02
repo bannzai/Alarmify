@@ -7,7 +7,7 @@ Alarmify exposes one HTTPS API. Any system that can send an HTTP request with a 
 - Base URL: `https://api.alarmify.app` (planned; see the note above)
 - Format: JSON request and response bodies, UTF-8
 - Time: ISO 8601 with a time zone (`2026-09-03T07:00:00Z` or `2026-09-03T16:00:00+09:00`)
-- Recipes for GitHub Actions, Home Assistant, Shortcuts, Grafana, Uptime Kuma and cron: [Integration recipes](./recipes/index.md)
+- Recipes for GitHub Actions, Home Assistant, Shortcuts, Grafana, Uptime Kuma and cron: [Integration recipes](./recipes/)
 
 ## Authentication
 

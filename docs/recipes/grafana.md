@@ -17,9 +17,11 @@ Alerting, Contact points, Add contact point. Choose the **Webhook** integration 
 
 Under **Optional Webhook settings**, enable **Custom Payload** and paste:
 
+{% raw %}
 ```
 {{ coll.Dict "fire_in" 0 "title" (printf "%s: %s" (.Status | toUpper) .CommonLabels.alertname) | data.ToJSON }}
 ```
+{% endraw %}
 
 `coll.Dict` and `data.ToJSON` build the JSON, so an alert name containing a quote or a backslash is escaped correctly. `fire_in: 0` rings within a minute of the alert (the API's minimum lead time is 30 seconds) without any date arithmetic in the template. `.Status` is `firing` or `resolved`; `.CommonLabels.alertname` is the alert rule name.
 
@@ -33,6 +35,6 @@ Contact points, the contact point's menu, **Test**. Send a test notification; yo
 
 ## Older Grafana without Custom Payload
 
-Versions without the Custom Payload option send Grafana's own JSON, which the API does not understand. Put a small relay in between (a Cloudflare Worker, a Home Assistant webhook trigger that calls the [Home Assistant recipe](./home-assistant.md), or a shell script on a server) that receives the Grafana payload and issues the `POST /v1/alarms` call.
+Versions without the Custom Payload option send Grafana's own JSON, which the API does not understand. Put a small relay in between (a Cloudflare Worker, a Home Assistant webhook trigger that calls the [Home Assistant recipe](./home-assistant), or a shell script on a server) that receives the Grafana payload and issues the `POST /v1/alarms` call.
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)

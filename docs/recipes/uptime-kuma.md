@@ -14,6 +14,7 @@ Settings, Notifications, Setup Notification. Choose **Webhook** as the notificat
 
 Custom Body (a Liquid template; Uptime Kuma 1.23 or later):
 
+{% raw %}
 ```liquid
 {% case heartbeatJSON['status'] %}{% when 0 %}{% assign state = "down" %}{% when 1 %}{% assign state = "up" %}{% when 2 %}{% assign state = "pending" %}{% else %}{% assign state = "in maintenance" %}{% endcase %}
 {
@@ -21,6 +22,7 @@ Custom Body (a Liquid template; Uptime Kuma 1.23 or later):
   "title": {{ monitorJSON['name'] | append: " is " | append: state | json }}
 }
 ```
+{% endraw %}
 
 Additional Headers:
 
@@ -31,7 +33,7 @@ Additional Headers:
 }
 ```
 
-`monitorJSON['name']` is the monitor name and `heartbeatJSON['status']` is `0` for DOWN, `1` for UP, `2` for PENDING and `3` for MAINTENANCE, so the alarm title reads `Website is down`, `Website is up`, `Website is pending` or `Website is in maintenance`. The `json` filter JSON-encodes the title (including the quotes), so a monitor name containing a quote still produces a valid body. `{{ msg | json }}` holds Uptime Kuma's own message if you prefer the full text (the API rejects titles longer than 200 characters).
+{% raw %}`monitorJSON['name']` is the monitor name and `heartbeatJSON['status']` is `0` for DOWN, `1` for UP, `2` for PENDING and `3` for MAINTENANCE, so the alarm title reads `Website is down`, `Website is up`, `Website is pending` or `Website is in maintenance`. The `json` filter JSON-encodes the title (including the quotes), so a monitor name containing a quote still produces a valid body. `{{ msg | json }}` holds Uptime Kuma's own message if you prefer the full text (the API rejects titles longer than 200 characters).{% endraw %}
 
 ## 2. Attach it to monitors
 
@@ -43,6 +45,6 @@ Press **Test** on the notification. Your iPhone should ring within a minute (the
 
 ## UP events also ring
 
-Uptime Kuma sends the same webhook for DOWN and UP and has no per-notification filter, so a recovery also rings, with the title `... is up`. To ring only when a monitor goes down, route the webhook through a small relay (a Cloudflare Worker, or a Home Assistant webhook trigger that calls the [Home Assistant recipe](./home-assistant.md)) that drops events whose `heartbeat.status` is not `0`.
+Uptime Kuma sends the same webhook for DOWN and UP and has no per-notification filter, so a recovery also rings, with the title `... is up`. To ring only when a monitor goes down, route the webhook through a small relay (a Cloudflare Worker, or a Home Assistant webhook trigger that calls the [Home Assistant recipe](./home-assistant)) that drops events whose `heartbeat.status` is not `0`.
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)

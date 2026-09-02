@@ -47,4 +47,4 @@ https://api.alarmify.app/v1/alarms/<id>
 
 with the same `Authorization` header.
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)

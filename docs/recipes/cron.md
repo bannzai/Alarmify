@@ -93,4 +93,4 @@ curl -sS --fail-with-body -X DELETE "https://api.alarmify.app/v1/alarms/$ID" \
   -H "Authorization: Bearer $ALARMIFY_TOKEN"
 ```
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)

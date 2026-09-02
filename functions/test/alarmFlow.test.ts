@@ -261,6 +261,17 @@ describe("外部サービス向け API", () => {
     expect(subSecond.body.fire_at).toBe(
       new Date(TEST_NOW.getTime() + (MIN_FIRE_AT_LEAD_SECONDS + 1) * 1000).toISOString(),
     );
+
+    // 上限ちょうど (365 日) も、秒への切り上げで境界をはみ出した分を理由に弾かない
+    const maxDelay = MAX_FIRE_AT_AHEAD_DAYS * 24 * 60 * 60;
+    const atMax = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_in: maxDelay })
+      .expect(201);
+    expect(atMax.body.fire_at).toBe(
+      new Date(TEST_NOW.getTime() + 1000 + maxDelay * 1000).toISOString(),
+    );
   });
 
   it("fire_at と fire_in は両方指定・両方省略とも 400", async () => {

@@ -11,6 +11,7 @@ alarmify_authorization: "Bearer <API_TOKEN>"
 
 ## 2. Define the command in `configuration.yaml`
 
+{% raw %}
 ```yaml
 # configuration.yaml
 rest_command:
@@ -22,6 +23,7 @@ rest_command:
     content_type: "application/json"
     payload: '{"fire_in": {{ fire_in | default(0) }}, "title": {{ title | default("Home Assistant") | to_json }}}'
 ```
+{% endraw %}
 
 `to_json` JSON-encodes the title (including the surrounding quotes), so a title containing a quote or a backslash still produces a valid request body. Restart Home Assistant (or reload the REST command integration) after editing.
 
@@ -60,6 +62,7 @@ Ring 10 minutes after the dryer finishes, so you have time to get to it before t
 
 If you would rather send an absolute time, add a second command that takes `fire_at` and build it with a template:
 
+{% raw %}
 ```yaml
 rest_command:
   alarmify_alarm_at:
@@ -70,12 +73,15 @@ rest_command:
     content_type: "application/json"
     payload: '{"fire_at": {{ fire_at | to_json }}, "title": {{ title | to_json }}}'
 ```
+{% endraw %}
 
+{% raw %}
 ```yaml
     - action: rest_command.alarmify_alarm_at
       data:
         fire_at: "{{ (utcnow() + timedelta(minutes=30)).strftime('%Y-%m-%dT%H:%M:%SZ') }}"
         title: "Leave for the airport"
 ```
+{% endraw %}
 
-Reference: [API reference](../api.md)
+Reference: [API reference](../api)
