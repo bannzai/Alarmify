@@ -26,6 +26,9 @@ final class AccountSession {
     private(set) var deviceRegistration: DeviceRegistrationState = .notRegistered
     /// サインインに失敗したエラーの説明。成功したら nil に戻す
     private(set) var signInError: String?
+    /// 開発者メニューで接続先を変えた後、再起動するまで反映されない状態かどうか。
+    /// Firebase Auth の向き先 (エミュレータ / 本番) は起動時にしか決められないため、切り替えは再起動を待つ
+    private(set) var backendChangePendingRestart = false
 
     /// 接続先とスタブ利用の設定。開発者メニューから変更されたら API クライアントを作り直す
     private(set) var settings: DeveloperSettings
@@ -37,11 +40,13 @@ final class AccountSession {
         self.apiClient = Self.makeAPIClient(settings: settings)
     }
 
-    /// 匿名認証でサインインする。既にサインイン済みなら既存のアカウントをそのまま使う (再インストールを跨いだ復元は Firebase Auth の keychain 永続化に任せる)
+    /// 匿名認証でサインインする。既にサインイン済みなら既存のアカウントをそのまま使う (再インストールを跨いだ復元は Firebase Auth の keychain 永続化に任せる)。
+    /// 起動時のほか、前面復帰と画面からの再試行でも呼ぶ (一過性のネットワークエラーで永久にサインインできないままにしないため)
     func signIn() async {
         if let user = Auth.auth().currentUser {
             uid = user.uid
             signInError = nil
+            await registerDeviceIfPossible()
             return
         }
         do {
@@ -51,7 +56,10 @@ final class AccountSession {
         } catch {
             signInError = error.localizedDescription
             Logger.push.error("Anonymous sign-in failed: \(error.localizedDescription)")
+            return
         }
+        // サインインの完了前に FCM トークンが届いていた場合、その登録はここで初めて成立する
+        await registerDeviceIfPossible()
     }
 
     /// FCM 登録トークンを受け取り、サインイン済みならバックエンドへ登録する
@@ -60,14 +68,19 @@ final class AccountSession {
         await registerDeviceIfPossible()
     }
 
-    /// 画面からの再試行。トークンが未取得なら何もしない
+    /// 画面からの再試行。サインインが済んでいなければサインインからやり直す
     func retryDeviceRegistration() async {
-        await registerDeviceIfPossible()
+        await signIn()
     }
 
-    /// 開発者メニューからの設定変更を反映する。API クライアントを作り直し、登録状態を初期化する
+    /// 開発者メニューからの設定変更を反映する。
+    /// 接続先の変更は Firebase Auth の向き先を伴うため保存だけ行い、反映は次の起動に委ねる
+    /// (今の実行中に差し替えると、本番の ID トークンをエミュレータへ送る等のちぐはぐな組み合わせになる)
     func apply(settings: DeveloperSettings) {
+        let backendChanged = settings.backend != self.settings.backend
         DeveloperMenu.settings = settings
+        backendChangePendingRestart = backendChanged
+        guard !backendChanged else { return }
         self.settings = settings
         apiClient = Self.makeAPIClient(settings: settings)
         deviceRegistration = .notRegistered

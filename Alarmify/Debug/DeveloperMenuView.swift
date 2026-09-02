@@ -44,6 +44,12 @@ struct DeveloperMenuView: View {
                     Text("Apply")
                 }
                 .accessibilityIdentifier("debug_apply")
+            } footer: {
+                if session.backendChangePendingRestart {
+                    // ja: 接続先の変更はアプリを再起動すると反映されます。
+                    Text("Restart the app to switch the backend.")
+                        .accessibilityIdentifier("debug_pending_restart")
+                }
             }
         }
         // ja: 開発者メニュー

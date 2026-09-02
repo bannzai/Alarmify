@@ -162,6 +162,8 @@ struct ContentView: View {
             .task { refresh() }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 refresh()
+                // 起動時のサインインが一過性のエラーで失敗していた場合、前面復帰のたびにやり直す
+                Task { await session.signIn() }
             }
         }
     }

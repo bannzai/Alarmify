@@ -307,6 +307,16 @@
         }
       }
     },
+    "Restart the app to switch the backend." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続先の変更はアプリを再起動すると反映されます。"
+          }
+        }
+      }
+    },
     "Revoke" : {
       "localizations" : {
         "ja" : {
