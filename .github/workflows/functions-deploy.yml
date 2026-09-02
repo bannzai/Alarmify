@@ -20,7 +20,7 @@ on:
           - prod
         default: prod
       functions:
-        description: "デプロイ対象の関数を絞る場合の指定 (例: v1-alarms-create,v1-alarms-cancel)。空なら functions 全体"
+        description: "デプロイ対象の関数を絞る場合の指定 (例: appApi,alarmsApi)。空なら functions 全体"
         required: false
         type: string
         default: ""

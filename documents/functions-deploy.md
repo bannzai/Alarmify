@@ -9,9 +9,9 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 | `default` | `demo-alarmify` | ローカルのエミュレータ専用 (実プロジェクトではない) |
 | `prod` | `alarmify-prod` | 本番 (asia-northeast1) |
 
-## 現状: functions/ がまだ無い
+## 現状: 初回デプロイの前提が未整備
 
-バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/issues/2 で追加する。それまで `make deploy-functions` は `functions/ がありません` で止まり、workflow も `npm ci` で失敗する。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) だけが先に整備してある状態で、次の 2 つは未実施:
+バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
 
 - デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
@@ -20,7 +20,7 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 
 ```sh
 make deploy-functions                                  # alias prod (= alarmify-prod) へ functions 全体をデプロイ
-make deploy-functions FUNCTIONS=v1-alarms-create        # 対象を絞る (カンマ区切りで複数指定できる)
+make deploy-functions FUNCTIONS=alarmsApi               # 対象を絞る (カンマ区切りで複数指定できる)
 make deploy-functions FIREBASE_ALIAS=prod               # alias を明示する場合
 ```
 
@@ -33,7 +33,7 @@ target は実行前に alias から GCP プロジェクト ID を解決してロ
 ```sh
 gh workflow run functions-deploy.yml --ref main -f environment=prod
 # 対象を絞る場合
-gh workflow run functions-deploy.yml --ref main -f environment=prod -f functions=v1-alarms-create
+gh workflow run functions-deploy.yml --ref main -f environment=prod -f functions=alarmsApi
 
 RUN_ID="$(gh run list --workflow functions-deploy.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh run watch "$RUN_ID"
