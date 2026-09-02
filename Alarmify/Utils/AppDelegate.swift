@@ -13,8 +13,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         FirebaseApp.configure()
         // 開発者メニューでエミュレータを選んでいる時だけ、Firebase Auth の宛先をローカルへ向ける
-        if let authEmulator = DeveloperMenu.settings.backend.authEmulator {
+        let backend = DeveloperMenu.settings.backend
+        if let authEmulator = backend.authEmulator {
             Auth.auth().useEmulator(withHost: authEmulator.host, port: authEmulator.port)
+        }
+        // keychain に残ったアカウントが別の接続先のものなら捨てる (本番の ID トークンをエミュレータへ送らない)
+        if let authenticatedBackend = DeveloperMenu.authenticatedBackend, authenticatedBackend != backend {
+            do {
+                try Auth.auth().signOut()
+            } catch {
+                Logger.push.error("Signing out for backend switch failed: \(error.localizedDescription)")
+            }
         }
         Messaging.messaging().delegate = self
 

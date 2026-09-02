@@ -16,6 +16,7 @@ struct DeveloperSettings: Equatable, Sendable {
 enum DeveloperMenu {
     private static let backendKey = "developerBackend"
     private static let stubAPIClientKey = "developerStubAPIClient"
+    private static let authenticatedBackendKey = "developerAuthenticatedBackend"
 
     /// 開発者メニューを表示してよいか。TestFlight は App Store と同じ Release バイナリのためレシート名で判定する
     static var isAvailable: Bool {
@@ -24,6 +25,13 @@ enum DeveloperMenu {
         #else
         return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
         #endif
+    }
+
+    /// Firebase Auth の keychain に残っているアカウントがどの接続先のものか。未サインインなら nil。
+    /// 本番とエミュレータのアカウントは互換性が無いため、接続先を切り替えた起動ではこの値と比較してサインアウトする
+    static var authenticatedBackend: AlarmifyBackend? {
+        get { AppGroup.userDefaults.string(forKey: authenticatedBackendKey).flatMap(AlarmifyBackend.init(rawValue:)) }
+        set { AppGroup.userDefaults.set(newValue?.rawValue, forKey: authenticatedBackendKey) }
     }
 
     /// 保存済みの設定。解放されていなければ既定値

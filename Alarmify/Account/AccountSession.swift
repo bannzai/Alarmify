@@ -51,6 +51,7 @@ final class AccountSession {
         }
         do {
             let result = try await Auth.auth().signInAnonymously()
+            DeveloperMenu.authenticatedBackend = settings.backend
             uid = result.user.uid
             signInError = nil
         } catch {
