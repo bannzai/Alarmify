@@ -16,3 +16,8 @@ artifacts/
 scripts/generate_screenshots/artifacts/
 scripts/generate_screenshots/temp_screenshots/
 scripts/snapshot_ui_tests/screenshots/
+node_modules/
+functions/lib/
+# Firebase CLI / Emulator Suite が作るログとキャッシュ
+.firebase/
+*-debug.log

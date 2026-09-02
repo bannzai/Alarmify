@@ -4,6 +4,7 @@ import SwiftUI
 /// 技術検証用のトップ画面。AlarmKit の権限状態・登録済みアラーム・APNs デバイストークンを表示し、
 /// 手元でのアラーム登録と push 経路の検証に必要な情報をまとめる
 struct ContentView: View {
+    @State private var session = AccountSession.shared
     @State private var authorizationState = AlarmKitScheduler.authorizationState
     @State private var alarms: [Alarm] = []
     @State private var deviceToken = DeviceTokenStore.load()
@@ -12,6 +13,58 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    LabeledContent {
+                        if let uid = session.uid {
+                            Text(uid)
+                                .font(.caption.monospaced())
+                                .textSelection(.enabled)
+                        } else {
+                            // ja: サインイン中
+                            Text("Signing in")
+                                .foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        // ja: アカウント
+                        Text("Account")
+                    }
+                    LabeledContent {
+                        deviceRegistrationText
+                    } label: {
+                        // ja: 配送先の登録
+                        Text("Device registration")
+                    }
+                    Button {
+                        Task { await session.retryDeviceRegistration() }
+                    } label: {
+                        // ja: 配送先を登録し直す
+                        Text("Register this device again")
+                    }
+                    NavigationLink {
+                        APITokenView()
+                    } label: {
+                        // ja: API トークン
+                        Text("API tokens")
+                    }
+                    .accessibilityIdentifier("account_api_tokens")
+                    if DeveloperMenu.isAvailable {
+                        NavigationLink {
+                            DeveloperMenuView()
+                        } label: {
+                            // ja: 開発者メニュー
+                            Text("Developer menu")
+                        }
+                        .accessibilityIdentifier("debug_menu")
+                    }
+                    if let signInError = session.signInError {
+                        Text(signInError)
+                            .foregroundStyle(.red)
+                    }
+                } header: {
+                    // ja: アカウント
+                    Text("Account")
+                }
+
                 Section {
                     LabeledContent {
                         authorizationStateText
@@ -79,6 +132,32 @@ struct ContentView: View {
                     Text("APNs device token")
                 }
 
+                Section {
+                    if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
+                        Text(fcmRegistrationToken)
+                            .font(.caption.monospaced())
+                            .textSelection(.enabled)
+                    } else {
+                        // ja: 未取得
+                        Text("Not available yet")
+                            .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    // ja: FCM 登録トークン
+                    Text("FCM registration token")
+                }
+
+                Section {
+                    NavigationLink {
+                        // 発行済みトークンの平文は発行直後の API トークン画面にしか無いため、ここからはプレースホルダ入りで表示する
+                        RecipesView(apiToken: nil, backend: session.settings.backend)
+                    } label: {
+                        // ja: 連携レシピ
+                        Label("Integration recipes", systemImage: "link")
+                    }
+                    .accessibilityIdentifier("open_recipes")
+                }
+
                 if let errorMessage {
                     Section {
                         Text(errorMessage)
@@ -94,7 +173,25 @@ struct ContentView: View {
             .task { refresh() }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 refresh()
+                // 起動時のサインインが一過性のエラーで失敗していた場合、前面復帰のたびにやり直す
+                Task { await session.signIn() }
             }
+        }
+    }
+
+    private var deviceRegistrationText: Text {
+        switch session.deviceRegistration {
+        case .notRegistered:
+            // ja: 未登録
+            return Text("Not registered")
+        case .registering:
+            // ja: 登録中
+            return Text("Registering")
+        case .registered:
+            // ja: 登録済み
+            return Text("Registered")
+        case .failed(let message):
+            return Text(message)
         }
     }
 
