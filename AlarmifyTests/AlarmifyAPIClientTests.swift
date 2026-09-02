@@ -65,6 +65,15 @@ final class AlarmifyAPIClientTests: XCTestCase {
         XCTAssertEqual(issued.secret, "alm_1a2b_secret")
     }
 
+    /// 再インストールを跨いでも同じ端末として登録し直せるよう、同じ値を返し続ける
+    func testDeviceIdentifierIsStableAcrossReads() {
+        let first = DeviceIdentifier.current
+
+        XCTAssertFalse(first.isEmpty)
+        XCTAssertFalse(first.contains("/"), "device_id は Firestore のドキュメント id に使うため / を含められない")
+        XCTAssertEqual(DeviceIdentifier.current, first)
+    }
+
     func testRegisterDeviceSendsTheDeviceIdAndFCMToken() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")

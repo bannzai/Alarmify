@@ -33,6 +33,8 @@ final class AccountSession {
     /// 接続先とスタブ利用の設定。開発者メニューから変更されたら API クライアントを作り直す
     private(set) var settings: DeveloperSettings
     private var apiClient: AlarmifyAPIClient
+    /// 実行中・実行待ちの端末登録。登録は同じ device_id を書き換えるため直列に行う
+    private var registration: Task<Void, Never>?
 
     /// 既定は保存済みの開発者設定から作る。テストは設定を直接渡して UserDefaults に触れずに組み立てる
     init(settings: DeveloperSettings = DeveloperMenu.settings) {
@@ -96,9 +98,22 @@ final class AccountSession {
     /// API トークン画面が使う呼び出し口。設定に応じた実装を返す
     var client: AlarmifyAPIClient { apiClient }
 
+    /// 起動時の登録とトークンのローテーションが重なると、同じ device_id への登録が並行して走る。
+    /// 先に送った古いトークンの登録が後から着くとバックエンドを古い値で上書きしてしまうため、直前の登録の完了を待ってから始める
     private func registerDeviceIfPossible() async {
+        let previous = registration
+        let task = Task { @MainActor [weak self] in
+            await previous?.value
+            await self?.registerDevice()
+        }
+        registration = task
+        await task.value
+    }
+
+    private func registerDevice() async {
         // FCM の delegate は起動のたびに呼ばれるとは限らない (新規取得とローテーション時だけ)。
-        // 受信済みのトークンが保存されていればそれで登録し、再起動後の再試行が空振りしないようにする
+        // 受信済みのトークンが保存されていればそれで登録し、再起動後の再試行が空振りしないようにする。
+        // 直列化した後に読むことで、待っている間に届いた新しいトークンで登録する
         guard let fcmRegistrationToken = fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() else { return }
         self.fcmRegistrationToken = fcmRegistrationToken
         deviceRegistration = .registering
