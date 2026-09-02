@@ -1,4 +1,4 @@
-# 0003. 課金は RevenueCat で行い、API キーは xcconfig 経由で渡す
+# 0004. 課金は RevenueCat で行い、API キーは xcconfig 経由で渡す
 
 ## Status
 Accepted (2026-09-02)

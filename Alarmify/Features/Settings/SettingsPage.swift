@@ -61,24 +61,6 @@ struct SettingsPage: View {
                 // ja: 法務情報
                 Text("Legal")
             }
-
-            #if DEBUG
-            // 無料枠の上限に達した時のペイウォールは、上限判定を持つバックエンド (#2) がまだ無く到達できないため、
-            // 検証用の導線をここへ置く (.claude/rules/debug-menu-for-verification.md)。
-            // 開発者メニューを設ける時に TestFlight 配布でも解放するかを判断する
-            Section {
-                Button {
-                    paywallTrigger = .freeQuotaExceeded
-                } label: {
-                    // ja: 無料枠の上限のペイウォールを表示
-                    Text("Show the free quota paywall")
-                }
-                .accessibilityIdentifier("debug_show_free_quota_paywall")
-            } header: {
-                // ja: 開発者向け
-                Text("Developer")
-            }
-            #endif
         }
         // ja: 設定
         .navigationTitle(Text("Settings"))
