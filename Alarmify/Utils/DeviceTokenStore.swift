@@ -12,4 +12,10 @@ enum DeviceTokenStore {
     static func load() -> String? {
         AppGroup.userDefaults.string(forKey: key)
     }
+
+    /// 保存済みのトークンを破棄する。アカウント削除でサーバー上の端末情報が消えた後、アプリを初期状態に戻すために使う。
+    /// 保存されていない状態で呼んでも何も起きない
+    static func clear() {
+        AppGroup.userDefaults.removeObject(forKey: key)
+    }
 }

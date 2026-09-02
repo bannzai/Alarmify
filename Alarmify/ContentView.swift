@@ -54,8 +54,8 @@ struct ContentView: View {
                             Button(role: .destructive) {
                                 cancel(alarm)
                             } label: {
-                                // ja: 取り消す
-                                Text("Cancel")
+                                // ja: アラームを取り消す
+                                Text("Cancel alarm")
                             }
                         }
                     }
@@ -90,6 +90,17 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Alarmify")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        // ja: 設定
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                    .accessibilityIdentifier("open_settings")
+                }
+            }
             .refreshable { refresh() }
             .task { refresh() }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in

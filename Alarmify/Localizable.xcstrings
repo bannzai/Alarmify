@@ -1,11 +1,51 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント"
+          }
+        }
+      }
+    },
+    "Account ID" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント ID"
+          }
+        }
+      }
+    },
     "Alarmify" : {
       "shouldTranslate" : false
     },
     "AlarmKit" : {
       "shouldTranslate" : false
+    },
+    "Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone に登録済みのアラームは残っています。不要な場合はアラーム一覧から取り消してください。"
+          }
+        }
+      }
+    },
+    "All of your data on the server will be deleted. This cannot be undone." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー上のデータがすべて削除され、取り消せません。"
+          }
+        }
+      }
     },
     "Allow alarms" : {
       "localizations" : {
@@ -42,7 +82,77 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取り消す"
+            "value" : "キャンセル"
+          }
+        }
+      }
+    },
+    "Cancel alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームを取り消す"
+          }
+        }
+      }
+    },
+    "Could not read the response from the server. Please try again later." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーからの応答を読み取れませんでした。時間をおいて試してください。"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除する"
+          }
+        }
+      }
+    },
+    "Delete Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除"
+          }
+        }
+      }
+    },
+    "Delete your account?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除しますか？"
+          }
+        }
+      }
+    },
+    "Deleting your account permanently removes your API tokens, device information, and alarm history from the server. This cannot be undone.\n\nAlarms already scheduled on this iPhone are not cancelled. Cancel them individually from the alarm list." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除すると、サーバー上の API トークン・端末情報・アラーム履歴がすべて消え、取り消せません。\n\nこの iPhone に登録済みの AlarmKit のアラームは解除されません。アラーム一覧から個別に取り消してください。"
+          }
+        }
+      }
+    },
+    "Deletion steps and the data that is deleted" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除の手順と削除されるデータ"
           }
         }
       }
@@ -63,6 +173,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "エラー"
+          }
+        }
+      }
+    },
+    "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ja"
+          }
+        }
+      }
+    },
+    "Include this account ID when you request deletion by email." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メールで削除を依頼する時は、このアカウント ID を書き添えてください。"
+          }
+        }
+      }
+    },
+    "No account has been created yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントはまだ作成されていません"
           }
         }
       }
@@ -97,6 +237,9 @@
         }
       }
     },
+    "OK" : {
+      "shouldTranslate" : false
+    },
     "Permission" : {
       "localizations" : {
         "ja" : {
@@ -127,6 +270,16 @@
         }
       }
     },
+    "Settings" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
+          }
+        }
+      }
+    },
     "Stop" : {
       "localizations" : {
         "ja" : {
@@ -153,6 +306,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不明"
+          }
+        }
+      }
+    },
+    "Your account has been deleted" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除しました"
           }
         }
       }

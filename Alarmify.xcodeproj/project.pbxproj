@@ -32,6 +32,13 @@
 		F793B4FAB205414176A8285C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821876EF19698F1E1AEF9A /* AppGroup.swift */; };
 		F85FB544587F14D09E6672A2 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24C3E43B6B73E9312095FA /* Log.swift */; };
 		FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247CF42D4F40787F4C65182A /* AppDelegate.swift */; };
+		7F98609DAF8B60456BDD7BFA /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63FA4031DA54FB02013FD91 /* AccountStore.swift */; };
+		86040D829BB60BC8CCB585E1 /* AccountDeletionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFAA624AAD60F471A75D9867 /* AccountDeletionService.swift */; };
+		A7218559E1A74D5E58CE18B0 /* BackendEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5607C87BE25D7E458821F9 /* BackendEndpoint.swift */; };
+		3F91EA99877F7FBBC5E604EE /* EmulatorAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C27169A524ABD035D6D2F0 /* EmulatorAccountFactory.swift */; };
+		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
+		A218D2E75B834B907F86F563 /* DeveloperMenuSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E027756856C4D87BA1ECAA /* DeveloperMenuSection.swift */; };
+		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +108,13 @@
 		FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		FFFC9C75B0BE87008F194FBE /* AlarmifyAlarmMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyAlarmMetadata.swift; sourceTree = "<group>"; };
+		F63FA4031DA54FB02013FD91 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
+		CFAA624AAD60F471A75D9867 /* AccountDeletionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionService.swift; sourceTree = "<group>"; };
+		3F5607C87BE25D7E458821F9 /* BackendEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendEndpoint.swift; sourceTree = "<group>"; };
+		66C27169A524ABD035D6D2F0 /* EmulatorAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorAccountFactory.swift; sourceTree = "<group>"; };
+		31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		32E027756856C4D87BA1ECAA /* DeveloperMenuSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuSection.swift; sourceTree = "<group>"; };
+		59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -162,6 +176,7 @@
 		75D54258EC60BB38497012C1 /* Alarmify */ = {
 			isa = PBXGroup;
 			children = (
+				1AC8827AE59523758F88B39E /* Account */,
 				6A743AADD346E8A5C4A7FB09 /* Alarmify.entitlements */,
 				21F13E25009531099CD8FB83 /* AlarmifyApp.swift */,
 				A3855C5317EACB9CD0D7B34D /* Assets.xcassets */,
@@ -170,6 +185,7 @@
 				FDD1EDB4947F6AFA392B78F0 /* InfoPlist.xcstrings */,
 				B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */,
 				5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */,
+				D0CA17BBA4161446FC3D6EE6 /* Settings */,
 				51B09AA13A9C71008D188621 /* Shared */,
 				E6573050F56C14CBE499622A /* Utils */,
 			);
@@ -179,6 +195,7 @@
 		9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */ = {
 			isa = PBXGroup;
 			children = (
+				59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
 			);
 			path = AlarmifyTests;
@@ -191,6 +208,26 @@
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		1AC8827AE59523758F88B39E /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				F63FA4031DA54FB02013FD91 /* AccountStore.swift */,
+				CFAA624AAD60F471A75D9867 /* AccountDeletionService.swift */,
+				3F5607C87BE25D7E458821F9 /* BackendEndpoint.swift */,
+				66C27169A524ABD035D6D2F0 /* EmulatorAccountFactory.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		D0CA17BBA4161446FC3D6EE6 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */,
+				32E027756856C4D87BA1ECAA /* DeveloperMenuSection.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -338,6 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,6 +397,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F98609DAF8B60456BDD7BFA /* AccountStore.swift in Sources */,
+				86040D829BB60BC8CCB585E1 /* AccountDeletionService.swift in Sources */,
+				A7218559E1A74D5E58CE18B0 /* BackendEndpoint.swift in Sources */,
+				3F91EA99877F7FBBC5E604EE /* EmulatorAccountFactory.swift in Sources */,
+				ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */,
+				A218D2E75B834B907F86F563 /* DeveloperMenuSection.swift in Sources */,
 				2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */,
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
