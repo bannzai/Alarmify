@@ -9,6 +9,8 @@ struct AlarmifyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                // 匿名認証のアカウントは起動時に自動で作る (ユーザーの操作を挟まない)
+                .task { await AccountSession.shared.signIn() }
         }
     }
 }
