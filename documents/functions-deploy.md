@@ -11,7 +11,7 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 
 ## 現状: 初回デプロイの前提が未整備
 
-バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)。`firebase.json` の `firestore.indexes` に複合インデックスを定義しているため、初回は `firebase deploy --only firestore:indexes --project prod` も実行する (エミュレータはインデックスの不足を検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
+バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
 
 - デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
