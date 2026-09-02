@@ -42,11 +42,23 @@ describe("保持期間を過ぎたアラームの削除", () => {
     expect(remaining.docs.map((doc) => doc.id)).toEqual(["alive"]);
   });
 
-  it("1 回の実行で削除する件数に上限を設ける", async () => {
+  it("1 回の実行で処理するバッチ数に上限を設ける", async () => {
     await seedAlarm("expired-1", new Date(TEST_NOW.getTime() - 1000));
     await seedAlarm("expired-2", new Date(TEST_NOW.getTime() - 1000));
-    expect(await deleteExpiredAlarms(context.deps, 1)).toBe(1);
-    expect(await deleteExpiredAlarms(context.deps, 1)).toBe(1);
-    expect(await deleteExpiredAlarms(context.deps, 1)).toBe(0);
+    const options = { batchSize: 1, maxBatches: 1 };
+    expect(await deleteExpiredAlarms(context.deps, options)).toBe(1);
+    expect(await deleteExpiredAlarms(context.deps, options)).toBe(1);
+    expect(await deleteExpiredAlarms(context.deps, options)).toBe(0);
+  });
+
+  it("バッチサイズを超える件数も 1 回の実行で削除しきる", async () => {
+    for (const index of [1, 2, 3, 4, 5]) {
+      await seedAlarm(`expired-${index}`, new Date(TEST_NOW.getTime() - 1000));
+    }
+    expect(await deleteExpiredAlarms(context.deps, { batchSize: 2, maxBatches: 10 })).toBe(5);
+    const remaining = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .get();
+    expect(remaining.empty).toBe(true);
   });
 });

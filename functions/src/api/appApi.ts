@@ -4,12 +4,13 @@ import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { planLimits } from "../lib/plan.js";
-import { ensureUser, userRef } from "../lib/store.js";
+import { MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
   alarmHistoryLimitSchema,
   collections,
   createApiTokenRequestSchema,
   registerDeviceRequestSchema,
+  userSchema,
 } from "../schema/index.js";
 
 function currentUid(res: Response): string {
@@ -57,18 +58,31 @@ export function createAppApi(deps: Deps): Express {
     }
     const uid = currentUid(res);
     const now = deps.now();
-    await ensureUser(deps.firestore, uid, now);
+    const userDocRef = userRef(deps.firestore, uid);
+    const devicesRef = userDocRef.collection(collections.devices);
+    const deviceRef = devicesRef.doc(parsed.data.device_id);
 
-    const ref = userRef(deps.firestore, uid)
-      .collection(collections.devices)
-      .doc(parsed.data.device_id);
     await deps.firestore.runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(ref);
-      const createdAt = snapshot.exists ? snapshot.get("createdAt") : Timestamp.fromDate(now);
-      transaction.set(ref, {
+      const userSnapshot = await transaction.get(userDocRef);
+      const deviceSnapshot = await transaction.get(deviceRef);
+      // 配送は登録済みの全端末に行う。取りこぼしが出ないよう、配送で見る上限と同じ数で登録を止める
+      if (!deviceSnapshot.exists) {
+        const registered = await transaction.get(devicesRef.limit(MAX_DEVICES_PER_USER));
+        if (registered.size >= MAX_DEVICES_PER_USER) {
+          throw new ApiError(
+            403,
+            "device_limit_exceeded",
+            `登録できる端末は ${MAX_DEVICES_PER_USER} 台までです`,
+          );
+        }
+      }
+      if (!userSnapshot.exists) {
+        transaction.set(userDocRef, newUserDocument(now));
+      }
+      transaction.set(deviceRef, {
         fcmToken: parsed.data.fcm_token,
         platform: parsed.data.platform,
-        createdAt,
+        createdAt: deviceSnapshot.exists ? deviceSnapshot.get("createdAt") : Timestamp.fromDate(now),
         updatedAt: Timestamp.fromDate(now),
       });
     });
@@ -92,31 +106,42 @@ export function createAppApi(deps: Deps): Express {
     }
     const uid = currentUid(res);
     const now = deps.now();
-    const user = await ensureUser(deps.firestore, uid, now);
-    const tokensRef = userRef(deps.firestore, uid).collection(collections.apiTokens);
-
-    const limit = planLimits[user.plan].apiTokens;
-    if (Number.isFinite(limit)) {
-      const active = await tokensRef.where("revokedAt", "==", null).limit(limit).get();
-      if (active.size >= limit) {
-        throw new ApiError(
-          403,
-          "plan_limit_exceeded",
-          `${user.plan} プランで発行できる API トークンは ${limit} 個までです`,
-        );
-      }
-    }
-
+    const userDocRef = userRef(deps.firestore, uid);
+    const tokensRef = userDocRef.collection(collections.apiTokens);
     const generated = generateApiToken();
     const ref = tokensRef.doc();
-    await ref.set({
-      name: parsed.data.name,
-      hash: generated.hash,
-      prefix: generated.prefix,
-      createdAt: Timestamp.fromDate(now),
-      lastUsedAt: null,
-      revokedAt: null,
+
+    // 上限の判定と発行を同じトランザクションで行い、同時実行で上限を超えて発行されないようにする
+    await deps.firestore.runTransaction(async (transaction) => {
+      const userSnapshot = await transaction.get(userDocRef);
+      const user = userSnapshot.exists ? userSchema.parse(userSnapshot.data()) : null;
+      const plan = user?.plan ?? "free";
+      const limit = planLimits[plan].apiTokens;
+      if (Number.isFinite(limit)) {
+        const active = await transaction.get(
+          tokensRef.where("revokedAt", "==", null).limit(limit),
+        );
+        if (active.size >= limit) {
+          throw new ApiError(
+            403,
+            "plan_limit_exceeded",
+            `${plan} プランで発行できる API トークンは ${limit} 個までです`,
+          );
+        }
+      }
+      if (!user) {
+        transaction.set(userDocRef, newUserDocument(now));
+      }
+      transaction.set(ref, {
+        name: parsed.data.name,
+        hash: generated.hash,
+        prefix: generated.prefix,
+        createdAt: Timestamp.fromDate(now),
+        lastUsedAt: null,
+        revokedAt: null,
+      });
     });
+
     res.status(201).json({
       id: ref.id,
       name: parsed.data.name,

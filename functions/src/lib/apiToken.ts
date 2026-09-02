@@ -37,6 +37,16 @@ export function hashEquals(a: string, b: string): boolean {
   return timingSafeEqual(left, right);
 }
 
+/**
+ * 発行した平文トークンの形式。
+ * 形式に合わないトークンは Firestore を引く前に弾く (認証前の読み取りを増やさないため)
+ */
+const apiTokenPattern = new RegExp(`^${API_TOKEN_PREFIX}[A-Za-z0-9_-]{43}$`);
+
+export function isApiTokenFormat(token: string): boolean {
+  return apiTokenPattern.test(token);
+}
+
 /** Authorization ヘッダーから Bearer の値を取り出す。形式不正なら null */
 export function parseBearerToken(header: string | undefined): string | null {
   if (!header) {

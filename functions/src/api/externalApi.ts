@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import { Timestamp } from "firebase-admin/firestore";
-import { API_TOKEN_PREFIX, parseBearerToken } from "../lib/apiToken.js";
+import { isApiTokenFormat, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { monthKey, planLimits } from "../lib/plan.js";
 import { buildAlarmMessage, type PushResult } from "../lib/push.js";
+import { createRateLimiter } from "../lib/rateLimit.js";
 import { expiresAtOf, findUserByApiToken, listDevices, userRef } from "../lib/store.js";
 import {
   collections,
@@ -28,10 +29,25 @@ function currentCaller(res: Response): ExternalCaller {
   return caller;
 }
 
+/** 1 クライアント (IP) あたりの上限。Function インスタンスごとの一次防御 */
+export const EXTERNAL_RATE_LIMIT = { limit: 60, windowMs: 60_000 };
+
+function rateLimit(deps: Deps) {
+  const limiter = createRateLimiter({ ...EXTERNAL_RATE_LIMIT, now: deps.now });
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (limiter.consume(req.ip ?? "unknown")) {
+      next();
+      return;
+    }
+    next(new ApiError(429, "rate_limited", "リクエストが多すぎます。しばらく待って再試行してください"));
+  };
+}
+
 function authenticate(deps: Deps) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const plainToken = parseBearerToken(req.header("authorization"));
-    if (!plainToken || !plainToken.startsWith(API_TOKEN_PREFIX)) {
+    // 形式が違うトークンは Firestore を引かずに弾く (認証前の読み取りを増やさない)
+    if (!plainToken || !isApiTokenFormat(plainToken)) {
       next(new ApiError(401, "unauthenticated", "Authorization: Bearer <API トークン> が必要です"));
       return;
     }
@@ -89,6 +105,9 @@ function alarmResponse(
 export function createExternalApi(deps: Deps): Express {
   const app = express();
   app.disable("x-powered-by");
+  // Cloud Run のロードバランサ配下で X-Forwarded-For から呼び出し元 IP を取る
+  app.set("trust proxy", true);
+  app.use(rateLimit(deps));
   app.use(express.json({ limit: "32kb" }));
   app.use(authenticate(deps));
 
@@ -142,7 +161,7 @@ export function createExternalApi(deps: Deps): Express {
         tokenId,
         createdAt: Timestamp.fromDate(now),
         updatedAt: Timestamp.fromDate(now),
-        expiresAt: expiresAtOf(now),
+        expiresAt: expiresAtOf(now, fireAt),
         delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
       };
       transaction.set(alarmRef, alarm);

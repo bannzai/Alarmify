@@ -5,7 +5,9 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
+import { EXTERNAL_RATE_LIMIT } from "../src/api/externalApi.js";
 import { toIso8601Seconds } from "../src/lib/push.js";
+import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
 import { userRef } from "../src/lib/store.js";
 import { collections } from "../src/schema/index.js";
 import {
@@ -77,6 +79,19 @@ describe("アプリ向け API", () => {
     expect((snapshot.docs[0].get("createdAt") as Timestamp).toMillis()).toBe(TEST_NOW.getTime());
   });
 
+  it("登録できる端末数には上限があり、既存端末の更新は上限に関係なく通る", async () => {
+    for (let index = 0; index < MAX_DEVICES_PER_USER; index += 1) {
+      await registerDevice(`device-${index}`, `fcm-token-${index}`);
+    }
+    const response = await request(appApi)
+      .post("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .send({ device_id: "device-over", fcm_token: "fcm-token-over" })
+      .expect(403);
+    expect(response.body.error.code).toBe("device_limit_exceeded");
+    await registerDevice("device-0", "fcm-token-updated");
+  });
+
   it("平文のトークンは保存せず、ハッシュとプレフィックスだけを持つ", async () => {
     const issued = await issueApiToken();
     const stored = await userRef(context.deps.firestore, context.uid)
@@ -146,9 +161,9 @@ describe("外部サービス向け API", () => {
     expect(stored.get("status")).toBe("scheduled");
     expect(stored.get("tokenId")).toBe(issued.id);
     expect(stored.get("delivery").successCount).toBe(1);
-    // 保持期間 30 日
+    // 保持期間 30 日は発火時刻を基準に取る (発火まで取り消せる必要があるため)
     expect((stored.get("expiresAt") as Timestamp).toMillis()).toBe(
-      TEST_NOW.getTime() + 30 * 24 * 60 * 60 * 1000,
+      FIRE_AT.getTime() + 30 * 24 * 60 * 60 * 1000,
     );
   });
 
@@ -274,6 +289,59 @@ describe("外部サービス向け API", () => {
         title: "Deploy finished",
       });
     }
+  });
+
+  it("保持期間より先の fire_at でも、発火まではアラームの記録が残る", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const farFuture = new Date(TEST_NOW.getTime() + 90 * 24 * 60 * 60 * 1000);
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(farFuture) })
+      .expect(201);
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(created.body.id)
+      .get();
+    expect((stored.get("expiresAt") as Timestamp).toMillis()).toBe(
+      farFuture.getTime() + 30 * 24 * 60 * 60 * 1000,
+    );
+  });
+
+  it("暦日として存在しない fire_at は 400 (Date.parse の丸めを受け入れない)", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: "2027-02-29T07:00:00Z" })
+      .expect(400);
+    expect(response.body.error.code).toBe("invalid_argument");
+  });
+
+  it("形式が違うトークンは Firestore を引かずに 401", async () => {
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", "Bearer alm_short")
+      .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(401);
+  });
+
+  it("同じ呼び出し元からの過剰なリクエストは 429", async () => {
+    for (let count = 0; count < EXTERNAL_RATE_LIMIT.limit; count += 1) {
+      await request(externalApi)
+        .post("/v1/alarms")
+        .set("authorization", "Bearer alm_short")
+        .send({})
+        .expect(401);
+    }
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", "Bearer alm_short")
+      .send({})
+      .expect(429);
+    expect(response.body.error.code).toBe("rate_limited");
   });
 
   it("存在しないアラームの取り消しは 404", async () => {

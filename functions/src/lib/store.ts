@@ -1,42 +1,36 @@
-import type {
-  DocumentReference,
-  DocumentData,
-  Firestore,
-} from "firebase-admin/firestore";
+import type { DocumentData, DocumentReference, Firestore } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { hashApiToken, hashEquals } from "./apiToken.js";
 import { monthKey } from "./plan.js";
-import { collections, userSchema, type User } from "../schema/index.js";
+import { collections, type User } from "../schema/index.js";
 
 /** アラーム要求の保持期間。expiresAt を過ぎたものは Scheduled Function が削除する */
 export const ALARM_RETENTION_DAYS = 30;
+
+/** 1 ユーザーが登録できる端末数の上限。配送はここまでの全端末に行う */
+export const MAX_DEVICES_PER_USER = 20;
 
 export function userRef(firestore: Firestore, uid: string): DocumentReference<DocumentData> {
   return firestore.collection(collections.users).doc(uid);
 }
 
-export function expiresAtOf(createdAt: Date): Timestamp {
-  return Timestamp.fromMillis(createdAt.getTime() + ALARM_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+export function newUserDocument(now: Date): User {
+  const timestamp = Timestamp.fromDate(now);
+  return {
+    plan: "free",
+    monthlyUsage: { month: monthKey(now), scheduledAlarmCount: 0 },
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
 }
 
-/** users/{uid} を作る。既にあれば何もしない (冪等) */
-export async function ensureUser(firestore: Firestore, uid: string, now: Date): Promise<User> {
-  const ref = userRef(firestore, uid);
-  return firestore.runTransaction(async (transaction) => {
-    const snapshot = await transaction.get(ref);
-    if (snapshot.exists) {
-      return userSchema.parse(snapshot.data());
-    }
-    const timestamp = Timestamp.fromDate(now);
-    const user: User = {
-      plan: "free",
-      monthlyUsage: { month: monthKey(now), scheduledAlarmCount: 0 },
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    };
-    transaction.set(ref, user);
-    return user;
-  });
+/**
+ * アラーム要求を削除してよくなる時刻。
+ * 発火が保持期間より先のアラームでも、発火するまでは取り消せる必要があるため、発火時刻を基準に取る
+ */
+export function expiresAtOf(createdAt: Date, fireAt: Date): Timestamp {
+  const base = Math.max(createdAt.getTime(), fireAt.getTime());
+  return Timestamp.fromMillis(base + ALARM_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 }
 
 export interface ResolvedApiToken {
@@ -81,11 +75,10 @@ export interface RegisteredDevice {
 }
 
 /** 一覧取得には必ず limit を付ける (.claude/rules/firestore-db-rules.md) */
-export const MAX_DEVICES_PER_USER = 20;
-
 export async function listDevices(firestore: Firestore, uid: string): Promise<RegisteredDevice[]> {
   const snapshot = await userRef(firestore, uid)
     .collection(collections.devices)
+    .orderBy("createdAt", "asc")
     .limit(MAX_DEVICES_PER_USER)
     .get();
   return snapshot.docs.flatMap((doc) => {

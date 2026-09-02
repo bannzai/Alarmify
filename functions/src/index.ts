@@ -35,8 +35,8 @@ export const appApi = onRequest(createAppApi(createDeps()));
 /** 外部サービス向け API (Bearer = API トークン) */
 export const alarmsApi = onRequest(createExternalApi(createDeps()));
 
-/** 保持期間を過ぎたアラーム要求の削除 */
-export const cleanupExpiredAlarms = onSchedule("every 24 hours", async () => {
+/** 保持期間を過ぎたアラーム要求の削除。期限切れの発生量を追い越せるよう、1 回の実行で複数バッチを処理する */
+export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
   const deleted = await deleteExpiredAlarms(createDeps());
   logger.info("deleted expired alarms", { deleted });
 });
