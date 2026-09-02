@@ -108,16 +108,18 @@ upload_to_r2() {
   chmod 600 "$curl_config"
   printf 'user = "%s:%s"\n' "$R2_ACCESS_KEY_ID" "$R2_SECRET_ACCESS_KEY" > "$curl_config"
 
-  # アップロード実行。接続 10 秒・全体 120 秒で打ち切る (ハングした転送で撮影フロー全体を止めないための上限)
+  # アップロード実行。接続 10 秒・全体 120 秒で打ち切る (ハングした転送で撮影フロー全体を止めないための上限)。
+  # 呼び出し元が set -e の時に curl の失敗 (DNS・接続・タイムアウト) で即終了して認証情報ファイルが残らないよう、
+  # 失敗を || で受けてから片付ける
   local response
+  local curl_status=0
   response=$(curl -s -w "\n%{http_code}" -X PUT "$url" \
     --connect-timeout 10 \
     --max-time 120 \
     --aws-sigv4 "aws:amz:auto:s3" \
     --config "$curl_config" \
     -H "Content-Type: image/png" \
-    --data-binary "@${file_path}")
-  local curl_status=$?
+    --data-binary "@${file_path}") || curl_status=$?
   rm -f "$curl_config"
 
   echo "$response"

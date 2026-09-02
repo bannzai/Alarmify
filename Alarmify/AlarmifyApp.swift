@@ -6,6 +6,19 @@ struct AlarmifyApp: App {
     /// APNs のデバイストークン受信と background push の受信は UIApplicationDelegate でしか受け取れないため adaptor で接続する
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
+    init() {
+        #if DEBUG
+        if isSnapshotUITest {
+            // 撮影対象の本番画面 (ContentView) は App Group に残ったトークンと登録済みアラームを表示するため、
+            // 以前の実行の状態に依存せず、トークンや UUID が画像 (翻訳チェックの Issue に添付される) に写らないよう空にする
+            DeviceTokenStore.removeAll()
+            for alarm in AlarmKitScheduler.alarms {
+                try? AlarmKitScheduler.cancel(id: alarm.id)
+            }
+        }
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             #if DEBUG

@@ -121,6 +121,21 @@ done
 # 進行ログを見やすく
 sep() { printf '\n==== %s ====\n' "$*"; }
 
+# カンマ区切りの label がリポジトリに揃っているか確認し、無いものは作る (再実行しても既存は変更しない)
+ensure_labels() {
+  local labels=$1
+  local existing
+  existing=$(gh label list --limit 200 --json name --jq '.[].name')
+  local label
+  for label in $(echo "$labels" | tr ',' '\n'); do
+    [ -n "$label" ] || continue
+    if ! echo "$existing" | grep -qx "$label"; then
+      gh label create "$label" --description "翻訳品質チェック (scripts/snapshot_ui_tests/check_translation_quality.sh) が起票する Issue" --color "0E8A16" || \
+        echo "    Warning: label '$label' を作成できませんでした"
+    fi
+  done
+}
+
 # GitHub Issueに画像をアップロードする関数
 # Cloudflare R2 (AWS Signature V4認証) + ライフサイクルポリシーで30日後自動削除
 upload_screenshot_to_issue() {
@@ -248,14 +263,21 @@ for feature_page_dir in $feature_pages; do
   source_path=$(grep -E '^`.*`$' "$readme_file" | sed 's/`//g' | head -1)
   echo "Source path: $source_path"
 
-  # Indexディレクトリを取得 (0, 1, 2, ...)
-  index_dirs=$(find "$feature_page_dir" -mindepth 1 -maxdepth 1 -type d | sort)
+  # 期待する Preview の個数はテストファイルの `let previewCount = N` が SSOT。
+  # 実在するディレクトリだけを走査すると、中断で欠けたインデックスを未検査のまま成功にしてしまうため、
+  # 0..N-1 を期待側から辿り、無いインデックスは基準画像の欠落として収集する
+  test_source=$(find AlarmifySnapshotUITests -type f -name "${feature_page}.swift" 2>/dev/null | head -1)
+  preview_count=1
+  if [ -n "$test_source" ]; then
+    preview_count=$(sed -nE 's/^[[:space:]]*let previewCount = ([0-9]+).*/\1/p' "$test_source" | head -1)
+    preview_count=${preview_count:-1}
+  fi
 
-  for index_dir in $index_dirs; do
-    index=$(basename "$index_dir")
-
-    # 数字のディレクトリのみ処理
-    if ! [[ "$index" =~ ^[0-9]+$ ]]; then
+  for ((index = 0; index < preview_count; index++)); do
+    index_dir="$feature_page_dir/$index"
+    if [ ! -d "$index_dir" ]; then
+      echo "  Error: Index $index のスクリーンショットがありません: $index_dir"
+      missing_baselines+="  - ${feature_page}/${index}"$'\n'
       continue
     fi
 
@@ -434,20 +456,34 @@ issue-${lang}.md ファイルは作成せず、「翻訳に問題は見つかり
         if [ -f "$issue_md_path" ]; then
           echo "    Issue file created: $issue_md_path"
 
-          # GitHub Issueを作成。同じ対象の open Issue が既にある場合は重複作成しない (再実行の冪等性)
+          # GitHub Issueを作成。同じ対象の open Issue が既にある場合は重複作成しない (再実行の冪等性)。
+          # 重複確認そのものが失敗 (API 障害・認証切れ) した時は「該当なし」と区別し、重複を作らないよう起票を見送って失敗に数える
           issue_title="翻訳品質改善: ${feature_page} - ${lang} (Index: ${index})"
-          existing_issue=$(gh issue list --state open --label translation --search "in:title \"${issue_title}\"" --json number --jq '.[0].number // empty' 2>/dev/null || true)
+          if ! existing_issue=$(gh issue list --state open --label translation --search "in:title \"${issue_title}\"" --json number --jq '.[0].number // empty'); then
+            echo "    Error: 既存 Issue の確認に失敗しました (gh issue list)。重複を避けるため起票を見送ります"
+            echo "    Issue file preserved at: $issue_md_path"
+            issue_creation_failures+="  - ${feature_page}/${index}/${lang} (duplicate lookup failed)"$'\n'
+            sleep 2
+            continue
+          fi
           if [ -n "$existing_issue" ]; then
             echo "    Skipping issue creation (open issue #${existing_issue} already exists): $issue_title"
             issue_count=$((issue_count + 1))
             sleep 2
             continue
           fi
+          # issue.md の front matter (title / labels) は gh には解釈されないため、labels を取り出して --label で渡し、
+          # 本文からは front matter を取り除く。label はリポジトリに無ければ作る (無い label を渡すと起票が失敗する)
+          issue_labels=$(sed -nE 's/^labels:[[:space:]]*//p' "$issue_md_path" | head -1 | tr -d ' ')
+          issue_labels=${issue_labels:-translation,i18n,quality}
+          ensure_labels "$issue_labels"
+          issue_body_path="${issue_md_path%.md}.body.md"
+          awk 'NR == 1 && $0 == "---" { skipping = 1; next } skipping && $0 == "---" { skipping = 0; next } !skipping { print }' "$issue_md_path" > "$issue_body_path"
           sep "    Creating GitHub Issue from $issue_md_path"
           if ! issue_url=$(gh issue create \
             --title "$issue_title" \
-            --label "translation" \
-            --body-file "$issue_md_path"); then
+            --label "$issue_labels" \
+            --body-file "$issue_body_path"); then
             # 検出済みの問題を Issue にできなかった場合は成功扱いにしない (最後に非ゼロで終了する)
             echo "    Error: Failed to create GitHub Issue"
             echo "    Issue file preserved at: $issue_md_path"

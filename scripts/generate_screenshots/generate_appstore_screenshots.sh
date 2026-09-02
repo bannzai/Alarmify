@@ -160,6 +160,12 @@ if [ -z "$SCREENSHOT_OS_VERSION" ]; then
   exit 1
 fi
 
+# -l が区切り文字や空白だけ (-l ',' 等) だと対象言語が 0 件になり、完了判定が空ループで成功して 1 枚も撮らずに exit 0 になるため拒否する
+if [ -n "$LANGUAGES" ] && [ -z "$(echo "$LANGUAGES" | tr ',' '\n' | tr -d ' ' | grep -v '^$')" ]; then
+  echo "Error: -l に有効な言語が含まれていません: '$LANGUAGES'" >&2
+  exit 1
+fi
+
 # ログファイルの設定
 # fd 3 にコンソール出力を保存し、stdout/stderr はログファイルへリダイレクト
 exec 3>&1 4>&2

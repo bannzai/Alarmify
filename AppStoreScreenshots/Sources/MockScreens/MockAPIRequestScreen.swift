@@ -2,7 +2,9 @@ import SwiftUI
 
 /// アラーム登録 API (POST /v1/alarms) のリクエストとレスポンスのモック。
 /// 「POST ひとつで登録完了」を、curl 1 コマンドとその応答で伝える。
-/// コードはローカライズ対象外のため verbatim で書く。API のホスト名は未確定のため環境変数の形で示す
+/// コードはローカライズ対象外のため verbatim で書く。API のホスト名は未確定のため環境変数の形で示す。
+/// リクエストとレスポンスの形は docs/api.md (functions/src/api/externalApi.ts) の契約に合わせる:
+/// リクエストは JSON の Content-Type が必須、レスポンスの id は UUID、fire_at は UTC (Z) で返る
 struct MockAPIRequestScreen: View {
     /// リクエストの 1 行分。強調 (フラグ・値) はシグナル橙で塗る
     private struct CodeLine {
@@ -14,6 +16,7 @@ struct MockAPIRequestScreen: View {
     private let requestLines: [CodeLine] = [
         CodeLine(text: "curl -X POST $ALARMIFY_API/v1/alarms \\"),
         CodeLine(text: "-H \"Authorization: Bearer $TOKEN\" \\", indent: 1),
+        CodeLine(text: "-H \"Content-Type: application/json\" \\", indent: 1),
         CodeLine(text: "-d '{", indent: 1),
         CodeLine(text: "\"fire_at\": \"2026-09-02T03:07:00+09:00\",", isEmphasized: true, indent: 2),
         CodeLine(text: "\"title\": \"Deploy finished\"", isEmphasized: true, indent: 2),
@@ -22,9 +25,10 @@ struct MockAPIRequestScreen: View {
 
     private let responseLines: [CodeLine] = [
         CodeLine(text: "{"),
-        CodeLine(text: "\"id\": \"alm_8f3k2\",", indent: 1),
+        CodeLine(text: "\"id\": \"3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e\",", indent: 1),
         CodeLine(text: "\"status\": \"scheduled\",", isEmphasized: true, indent: 1),
-        CodeLine(text: "\"fire_at\": \"2026-09-02T03:07:00+09:00\"", indent: 1),
+        CodeLine(text: "\"fire_at\": \"2026-09-01T18:07:00.000Z\",", indent: 1),
+        CodeLine(text: "\"title\": \"Deploy finished\"", indent: 1),
         CodeLine(text: "}"),
     ]
 
