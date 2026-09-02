@@ -19,7 +19,7 @@ actor StubAlarmifyAPIClient: AlarmifyAPIClient {
     func issueAPIToken() async throws -> IssuedAPIToken {
         issuedCount += 1
         let suffix = String(format: "%04x", issuedCount)
-        let token = APIToken(id: "stub-\(suffix)", prefix: "alm_\(suffix)", createdAt: .now, lastUsedAt: nil)
+        let token = APIToken(id: "stub-\(suffix)", name: "default", prefix: "alm_\(suffix)", createdAt: .now, lastUsedAt: nil)
         tokens.append(token)
         return IssuedAPIToken(token: token, secret: "alm_\(suffix)_\(UUID().uuidString.replacingOccurrences(of: "-", with: ""))")
     }
