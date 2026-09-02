@@ -66,7 +66,7 @@ struct SettingsView: View {
             } footer: {
                 // ja: 削除すると、サーバー上の API トークン・端末情報・アラーム履歴がすべて消え、取り消せません。
                 //
-                // この iPhone に登録済みの AlarmKit のアラームは解除されません。アラーム一覧から個別に取り消してください
+                // この iPhone に登録済みのアラームは解除されません。アラーム一覧から個別に取り消してください
                 Text("""
                     Deleting your account permanently removes your API tokens, device information, and alarm history from the server. This cannot be undone.
 

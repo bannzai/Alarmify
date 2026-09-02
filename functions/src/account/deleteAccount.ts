@@ -1,7 +1,12 @@
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { deletedAccountDocumentPath, deletedAccountsCollectionId, userDocumentPath } from "../schema/user";
+import {
+  deletedAccountDocumentPath,
+  deletedAccountFields,
+  deletedAccountsCollectionId,
+  userDocumentPath,
+} from "../schema/user";
 
 /**
  * アカウント削除の結果。削除前にアカウントが存在したかどうかを呼び出し元へ返す
@@ -33,7 +38,7 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
-  const marked = await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
+  const marked = await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
   const authUserExisted = await deleteAuthUser(uid);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
@@ -71,7 +76,7 @@ export async function sweepDeletedAccounts(limit: number, now: Date = new Date()
   const firestore = getFirestore();
   const tombstones = await firestore
     .collection(deletedAccountsCollectionId)
-    .where("requestedAt", "<=", new Date(now.getTime() - deletionMarkerMinimumAgeMs))
+    .where(deletedAccountFields.requestedAt, "<=", new Date(now.getTime() - deletionMarkerMinimumAgeMs))
     .limit(limit)
     .get();
   const result: SweepDeletedAccountsResult = { completed: 0, withdrawn: 0, failed: 0 };

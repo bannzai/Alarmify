@@ -1,3 +1,6 @@
+import { Timestamp } from "firebase-admin/firestore";
+import { z } from "zod";
+
 /**
  * Firestore のユーザー配下のパス定義。
  * コレクション名の文字列リテラルを Functions とテストに散らばらせないため、参照はすべてここを通す
@@ -40,3 +43,16 @@ export const deletedAccountsCollectionId = "deletedAccounts";
 export function deletedAccountDocumentPath(uid: string): string {
   return `${deletedAccountsCollectionId}/${uid}`;
 }
+
+/** `deletedAccounts/{uid}` のフィールド名。書き込み・クエリ・テストはこの定数を通す */
+export const deletedAccountFields = {
+  /** 目印を置いた時刻。sweep はこの値が十分に古い目印だけを対象にする */
+  requestedAt: "requestedAt",
+} as const;
+
+/** `deletedAccounts/{uid}` のドキュメント */
+export const deletedAccountSchema = z.object({
+  [deletedAccountFields.requestedAt]: z.instanceof(Timestamp),
+});
+
+export type DeletedAccount = z.infer<typeof deletedAccountSchema>;

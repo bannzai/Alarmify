@@ -6,6 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { deleteUserAccount, deletionMarkerMinimumAgeMs, sweepDeletedAccounts } from "../src/account/deleteAccount";
 import {
   deletedAccountDocumentPath,
+  deletedAccountFields,
   deletedAccountsCollectionId,
   userDocumentPath,
   usersCollectionId,
@@ -128,7 +129,7 @@ describe("deleteAccount", () => {
     // Auth の削除後に掃除が失敗した状態: 目印が残り、配下のデータと Auth のユーザーが残っている
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
-    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: staleRequestedAt });
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ [deletedAccountFields.requestedAt]: staleRequestedAt });
     const untouched = await signUpAnonymously();
     await seedUserData(untouched.uid);
 
@@ -149,7 +150,7 @@ describe("deleteAccount", () => {
     // Auth の削除前に失敗して目印だけ残った状態: ユーザーもデータもそのまま
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
-    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: staleRequestedAt });
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ [deletedAccountFields.requestedAt]: staleRequestedAt });
 
     const swept = await sweepDeletedAccounts(10);
 
@@ -164,9 +165,9 @@ describe("deleteAccount", () => {
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
     const marker = firestore.doc(deletedAccountDocumentPath(uid));
-    await marker.set({ requestedAt: staleRequestedAt });
+    await marker.set({ [deletedAccountFields.requestedAt]: staleRequestedAt });
     const stale = await marker.get();
-    await marker.set({ requestedAt: new Date() });
+    await marker.set({ [deletedAccountFields.requestedAt]: new Date() });
 
     await expect(marker.delete({ lastUpdateTime: stale.updateTime })).rejects.toThrow();
     expect((await marker.get()).exists).toBe(true);
@@ -183,7 +184,7 @@ describe("deleteAccount", () => {
       if (attempt >= 200) throw new Error("deleteUserAccount did not write the marker in time");
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
-    await marker.set({ requestedAt: new Date() });
+    await marker.set({ [deletedAccountFields.requestedAt]: new Date() });
 
     await deletion;
 
@@ -197,7 +198,7 @@ describe("deleteAccount", () => {
     // Callable が目印を置いた直後 (Auth の削除前) に sweep が走った状態
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
-    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ [deletedAccountFields.requestedAt]: new Date() });
 
     const swept = await sweepDeletedAccounts(10);
 
