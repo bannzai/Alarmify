@@ -1,0 +1,219 @@
+# managed-by: ios-deploy-actions (bannzai/castle)
+name: ios-deploy
+
+# workflow_dispatch で手動起動する iOS 配布ワークフロー。
+# Alarmify を Release / arm64 実機向けにアーカイブし、IPA を書き出して TestFlight (App Store Connect) へアップロードする。
+# 署名は手動署名: Secrets の P12 証明書と App Store 用 provisioning profile を CI 上に復元して署名する。
+# cloud signing (自動署名) は API Key に Admin ロールが必須なため採用しない。
+# 方式の設計判断は ios-deploy-actions skill (bannzai/castle) の references/signing-design.md を参照。
+#
+# ios-deploy-actions skill のテンプレート既定は「main への push で自動起動 + workflow_dispatch」だが、
+# App Store Connect のアプリレコードと署名アセット (App ID / App Group / 証明書 / profile / Secrets) が
+# まだ無く、push 起動にすると main へのマージのたびに必ず失敗する run が出るため、現時点では
+# workflow_dispatch だけにしている。初回配布に成功したら push トリガを戻す
+# (手順: documents/ios-testflight-distribution.md「push トリガを有効に戻す」)
+on:
+  workflow_dispatch:
+
+env:
+  # ビルド番号 (CURRENT_PROJECT_VERSION) = github.run_number + offset。App Store Connect 上のビルド番号は単調増加が必要なため、
+  # ワークフローの作り直しや Xcode Cloud からの移行等で run_number が既存ビルド番号以下になる場合は、
+  # 既存の最大ビルド番号を超えるよう offset を増やす。
+  # Re-run では run_number が変わらず同じビルド番号になる。Upload to TestFlight まで進んで失敗した run は
+  # Re-run せず新しく dispatch する (アップロード済みと同じ番号の再送は拒否されるため)。
+  # Upload より前の step で失敗した run は、その番号がまだアップロードされていないため Re-run で復旧してよい
+  BUILD_NUMBER_OFFSET: 0
+  DEVELOPMENT_TEAM: "TQPN82UBBY"
+  PROJECT_PATH: "Alarmify.xcodeproj"
+  SCHEME: "Alarmify"
+  ARCHIVE_PATH: tmp/app.xcarchive
+  EXPORT_PATH: tmp/export
+
+# App Store Connect の認証は API Key で行うため書き込み権限は不要。actions: read は多重 dispatch 検出の run 一覧取得に使う
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-and-upload:
+    runs-on: macos-26
+    # 配布の資格情報 (P12 証明書 / provisioning profile / App Store Connect API key) は
+    # この environment の environment secrets に置き、environment のデプロイブランチ制限で
+    # デフォルトブランチからの起動だけに絞る。workflow_dispatch は --ref で任意の branch を指定できるため、
+    # 書き込み権限を持つ利用者が feature branch 上で改変した workflow とコードから本番の資格情報を使い、
+    # 未レビューの binary をアップロードできる経路をここで塞ぐ。
+    # environment 自体の作成とブランチ制限は ios-deploy-actions skill の scripts/setup-environment.sh で行う
+    environment: "ios-deploy"
+    timeout-minutes: 60
+    env:
+      ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+      ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+    steps:
+      # 配布は同時に 1 本だけ実行する。GitHub の concurrency は同一 group の pending を 1 件しか保持せず、
+      # 多重 dispatch で途中の pending run が黙ってキャンセルされ配布が失われるため使わない。
+      # 代わりに先行の未完了 run があれば即失敗し (多重起動の拒否)、先行 run の完了後に dispatch し直してもらう
+      - name: Reject concurrent dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 未完了の status を直接絞り込む。completed 込みの recent 一覧では、長時間未完了の run が
+          # 後続 dispatch に押し出されて一覧から消え、先行 run を見落として並行実行を許してしまう。
+          # requested / pending も未完了 status のため含める。これらの間に後発 run が runner を得ると並行配布になる
+          # 初回 dispatch は自分より古い run だけを数える (後発だけが失敗し、先行はそのまま走り切る)。
+          # Re-run は元の run ID を再利用するため同じ判定だと、失敗後に dispatch された新しい run が
+          # 実行中でも「自分より新しい」ため見落とす。Re-run では自分以外の未完了 run をすべて数える
+          if [ "${GITHUB_RUN_ATTEMPT:-1}" -gt 1 ]; then
+            select_expr='map(select(.databaseId != $me)) | length'
+          else
+            select_expr='map(select(.databaseId < $me)) | length'
+          fi
+          earlier=$(for status in requested pending queued in_progress waiting; do
+              gh run list --repo "$GITHUB_REPOSITORY" --workflow 'ios-deploy.yml' \
+                --status "$status" --limit 100 --json databaseId
+            done | jq -s --argjson me "$GITHUB_RUN_ID" "add | $select_expr")
+          if [ "$earlier" -gt 0 ]; then
+            echo "::error::ほかの ios-deploy run が ${earlier} 件未完了です。完了を待って新しく dispatch し直してください"
+            exit 1
+          fi
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - run: xcodebuild -version
+
+      # altool (Upload to TestFlight) が ~/.appstoreconnect/private_keys/AuthKey_<KEY_ID>.p8 を自動で探すためここに置く
+      - name: Restore App Store Connect API key
+        env:
+          ASC_API_KEY_P8_BASE64: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
+        run: |
+          [ -n "$ASC_API_KEY_ID" ] || { echo "::error::Secret ASC_API_KEY_ID が空です"; exit 1; }
+          [ -n "$ASC_API_KEY_ISSUER_ID" ] || { echo "::error::Secret ASC_API_KEY_ISSUER_ID が空です"; exit 1; }
+          [ -n "$ASC_API_KEY_P8_BASE64" ] || { echo "::error::Secret ASC_API_KEY_P8_BASE64 が空です"; exit 1; }
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo -n "$ASC_API_KEY_P8_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${ASC_API_KEY_ID}.p8
+
+      # P12 証明書のインポート (一時キーチェーンの作成・登録は action が行う)
+      - name: Check code signing secrets
+        env:
+          IOS_P12_CERTIFICATE_BASE64: ${{ secrets.IOS_P12_CERTIFICATE_BASE64 }}
+          IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+        run: |
+          [ -n "$IOS_P12_CERTIFICATE_BASE64" ] || { echo "::error::Secret IOS_P12_CERTIFICATE_BASE64 が空です"; exit 1; }
+          [ -n "$IOS_P12_PASSWORD" ] || { echo "::error::Secret IOS_P12_PASSWORD が空です"; exit 1; }
+
+      - uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7.0.0
+        with:
+          p12-file-base64: ${{ secrets.IOS_P12_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+
+      # Provisioning Profile のインストール (app 本体と、あれば extension の分)
+      - name: Install provisioning profiles
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64 }}
+          IOS_WIDGET_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_WIDGET_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          [ -n "$IOS_PROVISIONING_PROFILE_BASE64" ] || { echo "::error::Secret IOS_PROVISIONING_PROFILE_BASE64 が空です"; exit 1; }
+          [ -n "$IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64" ] || { echo "::error::Secret IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64 が空です"; exit 1; }
+          [ -n "$IOS_WIDGET_PROVISIONING_PROFILE_BASE64" ] || { echo "::error::Secret IOS_WIDGET_PROVISIONING_PROFILE_BASE64 が空です"; exit 1; }
+          # 従来の MobileDevice 配下に加え、Xcode 16 以降の走査先 (Developer/Xcode/UserData) にも置く
+          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          XCODE_PROFILE_DIR="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          mkdir -p "$PROFILE_DIR" "$XCODE_PROFILE_DIR"
+          echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_DIR/Alarmify_AppStore.mobileprovision"
+          cp "$PROFILE_DIR/Alarmify_AppStore.mobileprovision" "$XCODE_PROFILE_DIR/Alarmify_AppStore.mobileprovision"
+          echo -n "$IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_DIR/Alarmify_NotificationService_AppStore.mobileprovision"
+          cp "$PROFILE_DIR/Alarmify_NotificationService_AppStore.mobileprovision" "$XCODE_PROFILE_DIR/Alarmify_NotificationService_AppStore.mobileprovision"
+          echo -n "$IOS_WIDGET_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision"
+          cp "$PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision" "$XCODE_PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision"
+
+      - name: Resolve build number
+        run: |
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + BUILD_NUMBER_OFFSET))
+          echo "BUILD_NUMBER=${BUILD_NUMBER}" >> "$GITHUB_ENV"
+          echo "CURRENT_PROJECT_VERSION=${BUILD_NUMBER}"
+
+      # CURRENT_PROJECT_VERSION の上書きは全ターゲットに効くため、app と extension のビルド番号は常に一致する
+      # 署名は project.pbxproj の Release 設定 (CODE_SIGN_STYLE[sdk=iphoneos*] = Manual + PROVISIONING_PROFILE_SPECIFIER) に従う
+      - name: Archive
+        run: |
+          set -o pipefail
+          xcodebuild -project "$PROJECT_PATH" -scheme "$SCHEME" -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH"  \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            archive
+
+      # manageAppVersionAndBuildNumber=false: Xcode に export 時のビルド番号の自動採番をさせず、上で決めた run_number 由来の番号をそのまま使う
+      - name: Generate ExportOptions.plist
+        run: |
+          mkdir -p tmp
+          cat > tmp/ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>export</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.bannzai.Alarmify</key>
+              <string>Alarmify.AppStore</string>
+              <key>com.bannzai.Alarmify.NotificationService</key>
+              <string>Alarmify.NotificationService.AppStore</string>
+              <key>com.bannzai.Alarmify.Widget</key>
+              <string>Alarmify.Widget.AppStore</string>
+            </dict>
+            <key>teamID</key>
+            <string>${DEVELOPMENT_TEAM}</string>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          PLIST
+          cat tmp/ExportOptions.plist
+
+      - name: Export IPA
+        id: export
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist tmp/ExportOptions.plist
+          ls -la "$EXPORT_PATH"
+
+      - name: Upload to TestFlight
+        run: |
+          xcrun altool --upload-app \
+            -f "$EXPORT_PATH"/*.ipa \
+            -t ios \
+            --apiKey "$ASC_API_KEY_ID" \
+            --apiIssuer "$ASC_API_KEY_ISSUER_ID"
+
+      # IPA は障害調査・再確認用に、export 済みならアップロードの成否にかかわらず artifact に保存する
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: ${{ !cancelled() && steps.export.outcome == 'success' }}
+        with:
+          name: ios-ipa-${{ env.BUILD_NUMBER }}
+          path: ${{ env.EXPORT_PATH }}/*.ipa
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ~/.appstoreconnect/private_keys/AuthKey_*.p8 || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Alarmify_AppStore.mobileprovision || true
+          rm -f ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/Alarmify_AppStore.mobileprovision || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Alarmify_NotificationService_AppStore.mobileprovision || true
+          rm -f ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/Alarmify_NotificationService_AppStore.mobileprovision || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Alarmify_Widget_AppStore.mobileprovision || true
+          rm -f ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/Alarmify_Widget_AppStore.mobileprovision || true
