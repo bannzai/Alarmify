@@ -39,4 +39,30 @@ struct FirebaseIDTokenProvider: AccountIDTokenProvider {
         throw AccountDeletionError.authenticationUnavailable
 #endif
     }
+
+}
+
+/// 直前の試行で取得した ID トークンを保持する。
+/// 削除がサーバーで成功して応答だけが届かなかった場合、そのアカウントの refresh トークンは以後使えなくなるため、
+/// 取得し直せない再試行では前回のトークンを使う (ID トークンの有効期間内なら、冪等な削除をやり直せる)
+actor CachingAccountIDTokenProvider: AccountIDTokenProvider {
+    static let shared = CachingAccountIDTokenProvider()
+
+    private let base: AccountIDTokenProvider
+    private var idTokens: [String: String] = [:]
+
+    init(base: AccountIDTokenProvider = FirebaseIDTokenProvider()) {
+        self.base = base
+    }
+
+    func idToken(for credential: AccountCredential) async throws -> String {
+        do {
+            let idToken = try await base.idToken(for: credential)
+            idTokens[credential.userId] = idToken
+            return idToken
+        } catch {
+            guard let idToken = idTokens[credential.userId] else { throw error }
+            return idToken
+        }
+    }
 }

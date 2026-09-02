@@ -42,7 +42,7 @@ struct RemoteAccountDeletionService: AccountDeletionService {
 
     init(
         endpoint: URL = BackendEndpoint.deleteAccount,
-        idTokenProvider: AccountIDTokenProvider = FirebaseIDTokenProvider(),
+        idTokenProvider: AccountIDTokenProvider = CachingAccountIDTokenProvider.shared,
         session: URLSession = .shared
     ) {
         self.endpoint = endpoint

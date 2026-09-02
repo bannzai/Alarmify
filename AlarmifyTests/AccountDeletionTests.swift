@@ -1,3 +1,4 @@
+import os
 import XCTest
 @testable import Alarmify
 
@@ -85,6 +86,30 @@ final class AccountDeletionTests: XCTestCase {
         }
     }
 
+    /// 前回の削除がサーバーで成功して応答だけ失われた場合、refresh トークンは使えなくなる。
+    /// 再試行が認証で止まらないよう、前回取得した ID トークンを使い回す
+    func testIDTokenIsReusedWhenItCannotBeRefreshedAgain() async throws {
+        let base = OneShotIDTokenProvider()
+        let provider = CachingAccountIDTokenProvider(base: base)
+
+        let first = try await provider.idToken(for: credential)
+        let second = try await provider.idToken(for: credential)
+
+        XCTAssertEqual(first, "fresh-id-token")
+        XCTAssertEqual(second, "fresh-id-token")
+    }
+
+    func testIDTokenErrorIsPropagatedWhenNothingWasCached() async {
+        let provider = CachingAccountIDTokenProvider(base: FailingIDTokenProvider())
+
+        do {
+            _ = try await provider.idToken(for: credential)
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual(error as? AccountDeletionError, .authenticationExpired)
+        }
+    }
+
     /// refresh トークンは Keychain、uid は UserDefaults に保存されるが、呼び出し側からは 1 つの認証情報として扱える
     func testAccountStoreClearRemovesCredentialAndIsIdempotent() throws {
         try AccountStore.save(credential)
@@ -106,6 +131,22 @@ private struct StubIDTokenProvider: AccountIDTokenProvider {
 private struct FailingIDTokenProvider: AccountIDTokenProvider {
     func idToken(for credential: AccountCredential) async throws -> String {
         throw AccountDeletionError.authenticationExpired
+    }
+}
+
+/// 1 回目だけ ID トークンを返し、2 回目以降は refresh トークンが無効になった状況を再現するスタブ
+private final class OneShotIDTokenProvider: AccountIDTokenProvider, @unchecked Sendable {
+    private let issued = OSAllocatedUnfairLock(initialState: false)
+
+    func idToken(for credential: AccountCredential) async throws -> String {
+        let alreadyIssued = issued.withLock { issued -> Bool in
+            defer { issued = true }
+            return issued
+        }
+        if alreadyIssued {
+            throw AccountDeletionError.authenticationExpired
+        }
+        return "fresh-id-token"
     }
 }
 
