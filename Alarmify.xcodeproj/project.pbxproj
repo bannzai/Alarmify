@@ -50,11 +50,12 @@
 		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
 		B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */; };
 		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
+		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
+		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
 		374EED1D71657E5180388D53 /* RuntimeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602AF58BE146DD14334CC5B /* RuntimeEnvironment.swift */; };
 		A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B9A4C5AAAEA07357FF8E9 /* ProEntitlement.swift */; };
 		68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */; };
 		1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA252266FED4387C94D006A /* LegalLinks.swift */; };
-		91272CF6B137126A8EC15955 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301CCCBC9F10C42EA87DC03A /* SettingsPage.swift */; };
 		E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */; };
 		3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */; };
 		51D30E9B87C487D8AC02486A /* Alarmify.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 1F394EF477D8ABAB7349808A /* Alarmify.storekit */; };
@@ -145,6 +146,8 @@
 		CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClientTests.swift"; sourceTree = "<group>"; };
 		FA085358AAEA03A5EF70727B /* APITokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenTests.swift"; sourceTree = "<group>"; };
 		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
 		0A1786A7A7FD445AE490DDBA /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		1F394EF477D8ABAB7349808A /* Alarmify.storekit */ = {isa = PBXFileReference; path = Alarmify.storekit; sourceTree = "<group>"; };
 		2952B684BE6866DCF45EE2D7 /* StoreKitTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKitTest.framework; path = System/Library/Frameworks/StoreKitTest.framework; sourceTree = SDKROOT; };
@@ -152,7 +155,6 @@
 		060B9A4C5AAAEA07357FF8E9 /* ProEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlement.swift; sourceTree = "<group>"; };
 		68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPage.swift; sourceTree = "<group>"; };
 		6FA252266FED4387C94D006A /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
-		301CCCBC9F10C42EA87DC03A /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlementTests.swift; sourceTree = "<group>"; };
 		DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitConfigurationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -254,6 +256,7 @@
 				41C12046F78BFC5C7EFB55BC /* Account */,
 				F0B0BA3AA317B1253CEA0183 /* Debug */,
 				84B75E34FE2C970E0B34B5E2 /* Features */,
+				D0CA17BBA4161446FC3D6EE6 /* Settings */,
 				51B09AA13A9C71008D188621 /* Shared */,
 				E6573050F56C14CBE499622A /* Utils */,
 			);
@@ -263,6 +266,7 @@
 		9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */ = {
 			isa = PBXGroup;
 			children = (
+				59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
 				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
@@ -331,6 +335,14 @@
 			path = Debug;
 			sourceTree = "<group>";
 		};
+		D0CA17BBA4161446FC3D6EE6 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		84B75E34FE2C970E0B34B5E2 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -353,7 +365,6 @@
 			isa = PBXGroup;
 			children = (
 				6FA252266FED4387C94D006A /* LegalLinks.swift */,
-				301CCCBC9F10C42EA87DC03A /* SettingsPage.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -546,11 +557,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */,
+				E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */,
+				E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */,
+				3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
-				E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */,
-				3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,6 +586,7 @@
 				A1CA3951F407D3DB61AB41D2 /* RecipesView.swift in Sources */,
 				AB54F8297976C075A3928F98 /* IntegrationRecipe.swift in Sources */,
 				2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */,
+				ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */,
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
 				ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */,
@@ -596,7 +609,6 @@
 				68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */,
 				A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */,
 				374EED1D71657E5180388D53 /* RuntimeEnvironment.swift in Sources */,
-				91272CF6B137126A8EC15955 /* SettingsPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

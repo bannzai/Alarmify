@@ -7,6 +7,8 @@ export const collections = {
   apiTokens: "apiTokens",
   devices: "devices",
   alarms: "alarms",
+  /** 削除処理中のアカウントの目印 (`deletedAccounts/{uid}`) */
+  deletedAccounts: "deletedAccounts",
 } as const;
 
 export const timestampSchema = z.custom<Timestamp>(

@@ -26,5 +26,6 @@ If you cannot use the app, send an email to bannzai.app@gmail.com stating that y
 - The purchase history of in-app purchases is retained by RevenueCat, Inc. and Apple Inc. in accordance with each company's policy, for payment processing and refund handling. The purchase information held by the Provider is linked only to anonymous identifiers, and the linkage is removed when the account is deleted
 - Inquiry emails are retained as a record of the response for one year from receipt, and are then deleted
 - Deleted data included in server backups is erased through backup rotation within a maximum of 30 days after deletion
+- A record used to confirm that the deletion has completed (the account identifier only; it contains no other data) is normally erased automatically within 3 hours after deletion (if a cleanup run fails, it is retried every hour and the record is erased once a run succeeds)
 
 AlarmKit alarms already registered on your device are not cancelled by account deletion. Cancel them individually from the iPhone "Clock" app or from the alarm list in Alarmify. Uninstalling the app does not delete your account or the data on the servers.

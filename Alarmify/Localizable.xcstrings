@@ -61,6 +61,16 @@
         }
       }
     },
+    "Account ID" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント ID"
+          }
+        }
+      }
+    },
     "Add the 'Get Contents of URL' action and set the URL." : {
       "localizations" : {
         "ja" : {
@@ -87,12 +97,32 @@
     "AlarmKit" : {
       "shouldTranslate" : false
     },
+    "Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone に登録済みのアラームは残っています。不要な場合はアラーム一覧から取り消してください。"
+          }
+        }
+      }
+    },
     "Alerting > Contact points: add a Webhook contact point with the URL and HTTP Method POST." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alerting > Contact points で Webhook の通知先を追加し、URL と HTTP Method (POST) を設定します"
+          }
+        }
+      }
+    },
+    "All of your data on the server will be deleted. This cannot be undone." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー上のデータがすべて削除され、取り消せません。"
           }
         }
       }
@@ -182,7 +212,17 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取り消す"
+            "value" : "キャンセル"
+          }
+        }
+      }
+    },
+    "Cancel alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームを取り消す"
           }
         }
       }
@@ -233,6 +273,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "「configuration.yaml」に rest_command を定義し、Home Assistant を再起動します"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除する"
+          }
+        }
+      }
+    },
+    "Delete Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除"
+          }
+        }
+      }
+    },
+    "Delete your account?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除しますか？"
+          }
+        }
+      }
+    },
+    "Deleting your account permanently removes your API tokens, device information, and alarm history from the server. This cannot be undone.\n\nAlarms already scheduled on this iPhone are not cancelled. Cancel them individually from the alarm list." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除すると、サーバー上の API トークン・端末情報・アラーム履歴がすべて消え、取り消せません。\n\nこの iPhone に登録済みのアラームは解除されません。アラーム一覧から個別に取り消してください。"
+          }
+        }
+      }
+    },
+    "Deletion steps and the data that is deleted" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除の手順と削除されるデータ"
           }
         }
       }
@@ -303,6 +393,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無料"
+          }
+        }
+      }
+    },
+    "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ja"
+          }
+        }
+      }
+    },
+    "Include this account ID when you request deletion by email." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メールで削除を依頼する時は、このアカウント ID を書き添えてください。"
           }
         }
       }
@@ -979,6 +1089,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今月の無料枠を使い切りました"
+          }
+        }
+      }
+    },
+    "Your account has been deleted" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントを削除しました"
           }
         }
       }

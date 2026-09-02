@@ -14,6 +14,11 @@ export function userRef(firestore: Firestore, uid: string): DocumentReference<Do
   return firestore.collection(collections.users).doc(uid);
 }
 
+/** アカウント削除の目印 (`deletedAccounts/{uid}`)。存在する間はそのユーザーのデータを作り直さない */
+export function deletionMarkerRef(firestore: Firestore, uid: string): DocumentReference<DocumentData> {
+  return firestore.collection(collections.deletedAccounts).doc(uid);
+}
+
 export function newUserDocument(now: Date): User {
   const timestamp = Timestamp.fromDate(now);
   return {
