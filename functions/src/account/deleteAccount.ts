@@ -1,5 +1,5 @@
 import type { Auth } from "firebase-admin/auth";
-import { FieldValue, type Firestore } from "firebase-admin/firestore";
+import { FieldValue, type DocumentReference, type Firestore } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 import { collections, deletedAccountFields } from "../schema/index.js";
@@ -53,7 +53,7 @@ export async function deleteUserAccount(
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
   await tombstone.set({ [deletedAccountFields.requestedAt]: FieldValue.serverTimestamp() });
-  const authUserExisted = await deleteAuthUser(deps.auth, uid);
+  const authUserExisted = await deleteAuthUserOrWithdrawMarker(deps, uid, tombstone);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する。
@@ -133,6 +133,34 @@ export async function handleDeleteAccount(
   }
   const result = await deleteUserAccount(deps, uid);
   return { userId: uid, ...result };
+}
+
+/**
+ * Auth のユーザーを削除する。削除がエラーで終わった時は、ユーザーが残っているかを確かめて目印の扱いを決める:
+ * 残っていることが確認できたら削除は確定していないので目印を外してからエラーを返す
+ * (目印がある間は書き込みが拒否されるため、生きているアカウントを最大 3 時間止めない)。
+ * 消えていることが確認できたら応答が失われただけなので削除済みとして進める。確認もできなければ目印を残してエラーを返す
+ */
+async function deleteAuthUserOrWithdrawMarker(
+  deps: AccountDeletionDeps,
+  uid: string,
+  tombstone: DocumentReference,
+): Promise<boolean> {
+  try {
+    return await deleteAuthUser(deps.auth, uid);
+  } catch (error) {
+    let stillExists: boolean;
+    try {
+      stillExists = await authUserExists(deps.auth, uid);
+    } catch {
+      throw error;
+    }
+    if (!stillExists) {
+      return true;
+    }
+    await tombstone.delete();
+    throw error;
+  }
 }
 
 /** Firebase Auth のユーザーを削除する。既に存在しない場合は false を返して成功扱いにする */

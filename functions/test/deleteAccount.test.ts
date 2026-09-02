@@ -146,6 +146,48 @@ describe("アカウント削除", () => {
     expect(await authUserExists(uid)).toBe(false);
   });
 
+  it("Auth の削除に失敗してユーザーが残っている時は、目印を外してエラーを返す", async () => {
+    const uid = await signUpAnonymously();
+    await seedUserData(uid);
+    const failingDeps: AccountDeletionDeps = {
+      firestore: deps.firestore,
+      auth: {
+        getUser: (id) => auth.getUser(id),
+        deleteUser: async () => {
+          throw new Error("auth unavailable");
+        },
+      },
+    };
+
+    await expect(deleteUserAccount(failingDeps, uid)).rejects.toThrow("auth unavailable");
+
+    expect((await marker(uid).get()).exists).toBe(false);
+    expect(await remainingDocumentCount(uid)).toBe(4);
+    expect(await authUserExists(uid)).toBe(true);
+  });
+
+  it("Auth の削除の応答だけが失われた時は、削除済みとして掃除まで進める", async () => {
+    const uid = await signUpAnonymously();
+    await seedUserData(uid);
+    const lossyDeps: AccountDeletionDeps = {
+      firestore: deps.firestore,
+      auth: {
+        getUser: (id) => auth.getUser(id),
+        deleteUser: async (id) => {
+          await auth.deleteUser(id);
+          throw new Error("response lost");
+        },
+      },
+    };
+
+    const result = await deleteUserAccount(lossyDeps, uid);
+
+    expect(result).toEqual({ authUserExisted: true, userDocumentExisted: true });
+    expect(await remainingDocumentCount(uid)).toBe(0);
+    expect(await authUserExists(uid)).toBe(false);
+    expect((await marker(uid).get()).exists).toBe(true);
+  });
+
   it("目印がある間は、削除前の ID トークンで届いた書き込みがデータを作り直せない", async () => {
     const uid = await signUpAnonymously();
     await seedUserData(uid);
