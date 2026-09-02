@@ -31,7 +31,7 @@ Use the "Get Contents of URL" action. Any Shortcuts automation (arriving somewhe
 
 ## Ask for the delay each time
 
-Put an **Ask for Input** action (Number) before the URL action and use its result as the value of `fire_in`. One shortcut then covers "ring me in N minutes" for any N.
+Put an **Ask for Input** action (Number) before the URL action, then a **Calculate** action that multiplies the input by 60 (`fire_in` is in seconds), and use the calculation result as the value of `fire_in`. One shortcut then covers "ring me in N minutes" for any N.
 
 ## Fixed time instead of a delay
 

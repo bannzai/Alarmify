@@ -127,16 +127,6 @@
         }
       }
     },
-    "Chain with '||' to ring only when a command fails." : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「||」でつなぐと、コマンドが失敗した時だけ鳴ります"
-          }
-        }
-      }
-    },
     "Copy" : {
       "localizations" : {
         "ja" : {
@@ -167,12 +157,12 @@
         }
       }
     },
-    "Enable the notification on the monitors that should wake you, then press Test." : {
+    "Enable the notification on the monitors that should wake you, then press Test. UP events ring too, with an 'is up' title." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鳴らしたいモニターで通知を有効にし、Test で確認します"
+            "value" : "鳴らしたいモニターで通知を有効にし、Test で確認します。UP でも鳴ります (タイトルが「is up」になります)"
           }
         }
       }
@@ -397,12 +387,12 @@
         }
       }
     },
-    "Store the token as the repository secret 'ALARMIFY_TOKEN' (GitHub CLI, or Settings > Secrets and variables > Actions)." : {
+    "Store the token as the repository secret 'ALARMIFY_TOKEN'. 'gh secret set' prompts for the value, so the token stays out of your shell history." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トークンをリポジトリの secret「ALARMIFY_TOKEN」に登録します (GitHub CLI か、Settings > Secrets and variables > Actions)"
+            "value" : "トークンをリポジトリの secret「ALARMIFY_TOKEN」に登録します。「gh secret set」はプロンプトでトークンを貼り付けるため、シェルの履歴に残りません"
           }
         }
       }
@@ -427,6 +417,26 @@
         }
       }
     },
+    "To ring only when a command fails, keep its exit status in a variable and exit with it after sending the alarm, so CI still sees the failure." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗時だけ鳴らす時は終了ステータスを変数に取り、アラーム送信後にその値で exit します (CI が失敗を検知できるように)"
+          }
+        }
+      }
+    },
+    "Turn on Disable resolved message so a resolved alert does not ring again." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解決時にも鳴らないよう、Disable resolved message をオンにします"
+          }
+        }
+      }
+    },
     "Under Optional Webhook settings, enable Custom Payload and paste the template." : {
       "localizations" : {
         "ja" : {
@@ -447,12 +457,12 @@
         }
       }
     },
-    "Use Test on the contact point; your iPhone should ring within a few seconds." : {
+    "Use Test on the contact point; your iPhone should ring about a minute later." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通知先の Test で、数秒以内に iPhone が鳴ることを確認します"
+            "value" : "通知先の Test で、約 1 分後に iPhone が鳴ることを確認します"
           }
         }
       }

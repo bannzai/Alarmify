@@ -20,14 +20,14 @@ rest_command:
     headers:
       authorization: !secret alarmify_authorization
     content_type: "application/json"
-    payload: '{"fire_in": {{ fire_in | default(0) }}, "title": "{{ title | default("Home Assistant") }}"}'
+    payload: '{"fire_in": {{ fire_in | default(0) }}, "title": {{ title | default("Home Assistant") | to_json }}}'
 ```
 
-Restart Home Assistant (or reload the REST command integration) after editing.
+`to_json` JSON-encodes the title (including the surrounding quotes), so a title containing a quote or a backslash still produces a valid request body. Restart Home Assistant (or reload the REST command integration) after editing.
 
 ## 3. Call it from an automation
 
-Ring immediately when the front door opens between midnight and 6am:
+Ring (about a minute later, the API's minimum lead time) when the front door opens between midnight and 6am:
 
 ```yaml
 # automations.yaml
@@ -68,7 +68,7 @@ rest_command:
     headers:
       authorization: !secret alarmify_authorization
     content_type: "application/json"
-    payload: '{"fire_at": "{{ fire_at }}", "title": "{{ title }}"}'
+    payload: '{"fire_at": {{ fire_at | to_json }}, "title": {{ title | to_json }}}'
 ```
 
 ```yaml

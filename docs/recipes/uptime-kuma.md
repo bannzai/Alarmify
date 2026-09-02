@@ -12,12 +12,13 @@ Settings, Notifications, Setup Notification. Choose **Webhook** as the notificat
 | Post URL | `https://api.alarmify.app/v1/alarms` |
 | Request Body | **Custom Body** |
 
-Custom Body:
+Custom Body (a Liquid template; Uptime Kuma 1.23 or later):
 
 ```
+{% assign state = "down" %}{% if heartbeatJSON['status'] == 1 %}{% assign state = "up" %}{% endif %}
 {
   "fire_in": 0,
-  "title": "{{ monitorJSON['name'] }} is down"
+  "title": {{ monitorJSON['name'] | append: " is " | append: state | json }}
 }
 ```
 
@@ -30,7 +31,7 @@ Additional Headers:
 }
 ```
 
-`{{ monitorJSON['name'] }}` is the monitor name. `{{ msg }}` holds Uptime Kuma's own message if you prefer the full text (the API truncates titles to 100 characters).
+`monitorJSON['name']` is the monitor name and `heartbeatJSON['status']` is `0` for DOWN and `1` for UP, so the alarm title reads `Website is down` or `Website is up`. The `json` filter JSON-encodes the title (including the quotes), so a monitor name containing a quote still produces a valid body. `{{ msg | json }}` holds Uptime Kuma's own message if you prefer the full text (the API truncates titles to 100 characters).
 
 ## 2. Attach it to monitors
 
@@ -38,10 +39,10 @@ Enable the notification on the monitors that should wake you, or turn on **Defau
 
 ## 3. Test
 
-Press **Test** on the notification. Your iPhone should ring within a few seconds.
+Press **Test** on the notification. Your iPhone should ring about a minute later (the API's minimum lead time).
 
-## Ring only on DOWN
+## UP events also ring
 
-Uptime Kuma sends the same webhook for DOWN and UP. To ring only when a monitor goes down, use `{{ heartbeatJSON['status'] }}` in the title (0 is DOWN, 1 is UP) so you can tell them apart, or route the webhook through a small relay that drops the UP events. A dedicated field for status-based filtering is not part of the API.
+Uptime Kuma sends the same webhook for DOWN and UP and has no per-notification filter, so a recovery also rings, with the title `... is up`. To ring only when a monitor goes down, route the webhook through a small relay (a Cloudflare Worker, or a Home Assistant webhook trigger that calls the [Home Assistant recipe](./home-assistant.md)) that drops events whose `heartbeat.status` is `1`.
 
 Reference: [API reference](../api.md)

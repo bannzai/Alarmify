@@ -137,13 +137,13 @@ extension IntegrationRecipe {
                 Text("Put the curl call at the end of a script or in a crontab. 'fire_in' counts seconds from the request, so no date arithmetic is needed."),
                 // ja: トークンは環境変数 `ALARMIFY_TOKEN` に置き、コミットするファイルに書かないようにします
                 Text("Keep the token in the 'ALARMIFY_TOKEN' environment variable rather than in a file you commit."),
-                // ja: `||` でつなぐと、コマンドが失敗した時だけ鳴ります
-                Text("Chain with '||' to ring only when a command fails."),
+                // ja: 失敗時だけ鳴らす時は終了ステータスを変数に取り、アラーム送信後にその値で exit します (CI が失敗を検知できるように)
+                Text("To ring only when a command fails, keep its exit status in a variable and exit with it after sending the alarm, so CI still sees the failure."),
             ]
         case .githubActions:
             [
-                // ja: トークンをリポジトリの secret `ALARMIFY_TOKEN` に登録します (GitHub CLI か、Settings > Secrets and variables > Actions)
-                Text("Store the token as the repository secret 'ALARMIFY_TOKEN' (GitHub CLI, or Settings > Secrets and variables > Actions)."),
+                // ja: トークンをリポジトリの secret `ALARMIFY_TOKEN` に登録します。`gh secret set` はプロンプトでトークンを貼り付けるため、シェルの履歴に残りません
+                Text("Store the token as the repository secret 'ALARMIFY_TOKEN'. 'gh secret set' prompts for the value, so the token stays out of your shell history."),
                 // ja: workflow の末尾にステップを追加します。`if: always()` で失敗時にも鳴り、`if: failure()` なら失敗時だけ鳴ります
                 Text("Add the step at the end of the job. 'if: always()' also rings after a failure; 'if: failure()' rings only when something broke."),
             ]
@@ -173,8 +173,10 @@ extension IntegrationRecipe {
                 Text("Set Authentication Header Scheme to Bearer and paste the token into Credentials."),
                 // ja: Optional Webhook settings で Custom Payload を有効にし、テンプレートを貼り付けます
                 Text("Under Optional Webhook settings, enable Custom Payload and paste the template."),
-                // ja: 通知先の Test で、数秒以内に iPhone が鳴ることを確認します
-                Text("Use Test on the contact point; your iPhone should ring within a few seconds."),
+                // ja: 解決時にも鳴らないよう、Disable resolved message をオンにします
+                Text("Turn on Disable resolved message so a resolved alert does not ring again."),
+                // ja: 通知先の Test で、約 1 分後に iPhone が鳴ることを確認します
+                Text("Use Test on the contact point; your iPhone should ring about a minute later."),
             ]
         case .uptimeKuma:
             [
@@ -182,8 +184,8 @@ extension IntegrationRecipe {
                 Text("Settings > Notifications: add a Webhook notification with the Post URL."),
                 // ja: Request Body を Custom Body にしてテンプレートを貼り付け、Additional Headers にトークンを貼り付けます
                 Text("Set Request Body to Custom Body, paste the template, and paste the headers into Additional Headers."),
-                // ja: 鳴らしたいモニターで通知を有効にし、Test で確認します
-                Text("Enable the notification on the monitors that should wake you, then press Test."),
+                // ja: 鳴らしたいモニターで通知を有効にし、Test で確認します。UP でも鳴ります (タイトルが "is up" になります)
+                Text("Enable the notification on the monitors that should wake you, then press Test. UP events ring too, with an 'is up' title."),
             ]
         }
     }

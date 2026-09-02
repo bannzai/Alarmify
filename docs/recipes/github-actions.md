@@ -4,10 +4,11 @@ Ring your iPhone when a workflow finishes, or only when it fails. The token live
 
 ## 1. Store the token as a secret
 
-From the repository directory, with the GitHub CLI:
+From the repository directory, with the GitHub CLI. Omit `--body` so that `gh` prompts for the value: the token then never appears in your shell history or in the process list.
 
 ```sh
-gh secret set ALARMIFY_TOKEN --body "<API_TOKEN>"
+gh secret set ALARMIFY_TOKEN
+# ? Paste your secret: <API_TOKEN>
 ```
 
 Or in the browser: Settings, Secrets and variables, Actions, New repository secret, name `ALARMIFY_TOKEN`.

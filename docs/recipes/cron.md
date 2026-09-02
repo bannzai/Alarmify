@@ -43,11 +43,17 @@ curl -sS -X POST https://api.alarmify.app/v1/alarms \
 
 ## Ring only when a command fails
 
+Keep the command's exit status so that a CI job or a calling script still sees the failure after the alarm has been sent.
+
 ```sh
-./deploy.sh || curl -sS -X POST https://api.alarmify.app/v1/alarms \
-  -H "Authorization: Bearer $ALARMIFY_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"fire_in":0,"title":"Deploy failed"}'
+./deploy.sh; status=$?
+if [ "$status" -ne 0 ]; then
+  curl -sS -X POST https://api.alarmify.app/v1/alarms \
+    -H "Authorization: Bearer $ALARMIFY_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"fire_in":0,"title":"Deploy failed"}'
+fi
+exit "$status"
 ```
 
 ## crontab
@@ -55,11 +61,14 @@ curl -sS -X POST https://api.alarmify.app/v1/alarms \
 Wake up at 06:30 only on days when a long job has not finished by then: schedule the alarm from the job that is supposed to finish, and cancel it when it does.
 
 ```sh
+# Compute the next 06:30 in the server's time zone (GNU date; for macOS see "Ring at a fixed time" above)
+FIRE_AT=$(date -d 'tomorrow 06:30' +%Y-%m-%dT%H:%M:%S%:z)
+
 # Schedule the alarm when the job starts and keep the id
 ID=$(curl -sS -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer $ALARMIFY_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"fire_at":"2026-09-03T06:30:00+09:00","title":"Nightly job is still running"}' | jq -r .id)
+  -d "{\"fire_at\":\"$FIRE_AT\",\"title\":\"Nightly job is still running\"}" | jq -r .id)
 
 ./nightly-job.sh
 

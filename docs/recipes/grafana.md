@@ -18,21 +18,18 @@ Alerting, Contact points, Add contact point. Choose the **Webhook** integration 
 Under **Optional Webhook settings**, enable **Custom Payload** and paste:
 
 ```
-{
-  "fire_in": 0,
-  "title": "{{ .Status | toUpper }}: {{ .CommonLabels.alertname }}"
-}
+{{ coll.Dict "fire_in" 0 "title" (printf "%s: %s" (.Status | toUpper) .CommonLabels.alertname) | data.ToJSON }}
 ```
 
-`fire_in: 0` rings as soon as the push arrives, so the alarm follows the alert without any date arithmetic in the template. `{{ .Status }}` is `firing` or `resolved`; `{{ .CommonLabels.alertname }}` is the alert rule name.
+`coll.Dict` and `data.ToJSON` build the JSON, so an alert name containing a quote or a backslash is escaped correctly. `fire_in: 0` rings about a minute after the alert (the API's minimum lead time) without any date arithmetic in the template. `.Status` is `firing` or `resolved`; `.CommonLabels.alertname` is the alert rule name.
 
-## 3. Ring only for firing alerts
+## 3. Do not ring when the alert resolves
 
-A resolved notification would also ring. Either add a notification policy that routes only firing alerts to this contact point, or send a title that makes the difference visible and mute the resolved branch in the policy. If your Grafana version cannot filter resolved notifications for a contact point, use the **Disable resolved message** option on the contact point.
+Grafana sends a second notification when the alert resolves, which would ring again. Turn on **Disable resolved message** on the contact point so only firing alerts reach Alarmify. If you do want a resolved alarm, leave it off; the title starts with `RESOLVED:` so you can tell them apart.
 
 ## Test it
 
-Contact points, the contact point's menu, **Test**. Send a test notification; your iPhone should ring within a few seconds with the title `FIRING: TestAlert`.
+Contact points, the contact point's menu, **Test**. Send a test notification; your iPhone should ring about a minute later with the title `FIRING: TestAlert`.
 
 ## Older Grafana without Custom Payload
 

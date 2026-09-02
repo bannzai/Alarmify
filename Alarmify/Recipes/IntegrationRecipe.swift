@@ -59,19 +59,24 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                   -H "Content-Type: application/json" \\
                   -d '{"fire_in":300,"title":"Backup finished"}'
                 """),
-                Snippet(label: "crontab", body: """
+                Snippet(label: "Ring only when a command fails", body: """
                 export ALARMIFY_TOKEN="\(Self.apiTokenMarker)"
-                ./deploy.sh || curl -sS -X POST \(endpoint) \\
-                  -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
-                  -H "Content-Type: application/json" \\
-                  -d '{"fire_in":0,"title":"Deploy failed"}'
+                ./deploy.sh; status=$?
+                if [ "$status" -ne 0 ]; then
+                  curl -sS -X POST \(endpoint) \\
+                    -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
+                    -H "Content-Type: application/json" \\
+                    -d '{"fire_in":0,"title":"Deploy failed"}'
+                fi
+                exit "$status"
                 """),
             ]
         case .githubActions:
             return [
                 Snippet(label: "gh secret set", body: """
-                gh secret set ALARMIFY_TOKEN --body "\(Self.apiTokenMarker)"
+                gh secret set ALARMIFY_TOKEN
                 """),
+                Snippet(label: "API token (paste at the prompt)", body: Self.apiTokenMarker),
                 Snippet(label: ".github/workflows/deploy.yml", body: """
                       - name: Ring my iPhone
                         if: always()
@@ -97,7 +102,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                     headers:
                       authorization: !secret alarmify_authorization
                     content_type: "application/json"
-                    payload: '{"fire_in": {{ fire_in | default(0) }}, "title": "{{ title | default("Home Assistant") }}"}'
+                    payload: '{"fire_in": {{ fire_in | default(0) }}, "title": {{ title | default("Home Assistant") | to_json }}}'
                 """),
                 Snippet(label: "automations.yaml", body: """
                     - action: rest_command.alarmify_alarm
@@ -120,19 +125,17 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                 Snippet(label: "URL", body: endpoint),
                 Snippet(label: "Authentication Header Credentials", body: Self.apiTokenMarker),
                 Snippet(label: "Custom Payload", body: """
-                {
-                  "fire_in": 0,
-                  "title": "{{ .Status | toUpper }}: {{ .CommonLabels.alertname }}"
-                }
+                {{ coll.Dict "fire_in" 0 "title" (printf "%s: %s" (.Status | toUpper) .CommonLabels.alertname) | data.ToJSON }}
                 """),
             ]
         case .uptimeKuma:
             return [
                 Snippet(label: "Post URL", body: endpoint),
                 Snippet(label: "Custom Body", body: """
+                {% assign state = "down" %}{% if heartbeatJSON['status'] == 1 %}{% assign state = "up" %}{% endif %}
                 {
                   "fire_in": 0,
-                  "title": "{{ monitorJSON['name'] }} is down"
+                  "title": {{ monitorJSON['name'] | append: " is " | append: state | json }}
                 }
                 """),
                 Snippet(label: "Additional Headers", body: """

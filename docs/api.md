@@ -34,11 +34,13 @@ Content-Type: application/json
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `fire_at` | string (ISO 8601) | one of `fire_at` / `fire_in` | Absolute time to ring. Must be in the future. |
-| `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request. `0` rings as soon as the push arrives. Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
+| `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request. `0` rings as soon as possible (see the lead time below). Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
 | `title` | string | no | Shown on the alarm. Up to 100 characters; longer titles are truncated. Defaults to `Alarmify`. |
 | `id` | string (UUID) | no | Your own identifier for the alarm. Sending the same `id` again replaces the existing alarm instead of creating a second one, so retries are safe. When omitted the server generates one. |
 
 Send exactly one of `fire_at` and `fire_in`.
+
+**Lead time.** The alarm is always scheduled at least 60 seconds after the server receives the request, so the push can reach the phone before the alarm time (an AlarmKit alarm whose time has already passed cannot be registered). `fire_in` values below 60 and `fire_at` values less than 60 seconds ahead are moved to that minimum; the response shows the effective `fire_at`. In practice `fire_in: 0` rings about a minute after the request.
 
 ```sh
 curl -X POST https://api.alarmify.app/v1/alarms \
@@ -120,6 +122,6 @@ Requests are rate limited to 60 per minute per token on both plans.
 
 ## Delivery and timing
 
-- The alarm is registered on the iPhone as soon as the push arrives, usually within a few seconds. A `201` means the server accepted the request and queued the push, not that the phone has registered the alarm yet.
+- The alarm is registered on the iPhone as soon as the push arrives, usually within a few seconds; the alarm time itself is at least 60 seconds after the request (see the lead time above). A `201` means the server accepted the request and queued the push, not that the phone has registered the alarm yet.
 - If the iPhone is offline, the push is delivered when it reconnects. An alarm whose `fire_at` has already passed by then is dropped.
 - AlarmKit alarms ring through Silent mode and Focus and show on the lock screen. They require iOS 26 or later.
