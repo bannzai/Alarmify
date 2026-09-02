@@ -123,10 +123,10 @@ Unexpected server failures use `500` with `"code": "internal"`.
 | --- | --- | --- |
 | Alarms per calendar month | 20 | Unlimited |
 | API tokens | 1 | Multiple (one per system) |
-| Devices per account | 1 | Multiple |
+| Devices per account | 20 | 20 |
 | Alarm history in the app | Recent alarms | 30 days |
 
-Requests are rate limited to 60 per minute per token on both plans. Alarm records (for history and cancellation) are kept for 30 days after the alarm fires or is cancelled.
+A plan-specific device limit is not enforced yet; both plans share the same cap of 20 registered devices. Requests are rate limited to 60 per minute per token on both plans. Alarm records (for history and cancellation) are kept for 30 days after the alarm fires or is cancelled.
 
 ## Delivery and timing
 

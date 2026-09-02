@@ -4,10 +4,10 @@ The simplest integration: one `curl` call. Put it at the end of any script, or i
 
 ## Ring in 5 minutes
 
-`fire_in` counts seconds from the moment the server receives the request, so you do not have to compute a date.
+`fire_in` counts seconds from the moment the server receives the request, so you do not have to compute a date. `--fail-with-body` makes `curl` exit non-zero (and print the API's error body) when the token is invalid, the monthly quota is used up, or the API returns an error, so a script or cron job does not report success without an alarm.
 
 ```sh
-curl -sS -X POST https://api.alarmify.app/v1/alarms \
+curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer <API_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"fire_in":300,"title":"Backup finished"}'
@@ -32,7 +32,7 @@ FIRE_AT=$(date -u -v+10M +%Y-%m-%dT%H:%M:%SZ)
 Then send it:
 
 ```sh
-curl -sS -X POST https://api.alarmify.app/v1/alarms \
+curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer <API_TOKEN>" \
   -H "Content-Type: application/json" \
   -d "{\"fire_at\":\"$FIRE_AT\",\"title\":\"Backup finished\"}"
@@ -44,7 +44,7 @@ Export the token once (for example in `~/.profile` or in your CI's secret store)
 
 ```sh
 export ALARMIFY_TOKEN="<API_TOKEN>"
-curl -sS -X POST https://api.alarmify.app/v1/alarms \
+curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer $ALARMIFY_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"fire_in":0,"title":"Job failed"}'

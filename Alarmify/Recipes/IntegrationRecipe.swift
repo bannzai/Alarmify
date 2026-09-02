@@ -58,7 +58,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
         case .shell:
             return [
                 Snippet(label: "curl", body: """
-                curl -sS -X POST \(endpoint) \\
+                curl -sS --fail-with-body -X POST \(endpoint) \\
                   -H "Authorization: Bearer \(Self.apiTokenMarker)" \\
                   -H "Content-Type: application/json" \\
                   -d '{"fire_in":300,"title":"Backup finished"}'
