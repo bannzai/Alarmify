@@ -44,6 +44,10 @@ final class AccountSession {
     /// 起動時のほか、前面復帰と画面からの再試行でも呼ぶ (一過性のネットワークエラーで永久にサインインできないままにしないため)
     func signIn() async {
         if let user = Auth.auth().currentUser {
+            // 再インストール後は keychain のアカウントだけが残り App Group の値は消えるため、どの接続先のものかをここで記録し直す
+            if DeveloperMenu.authenticatedBackend == nil {
+                DeveloperMenu.authenticatedBackend = settings.backend
+            }
             uid = user.uid
             signInError = nil
             await registerDeviceIfPossible()
@@ -77,14 +81,16 @@ final class AccountSession {
     /// 開発者メニューからの設定変更を反映する。
     /// 接続先の変更は Firebase Auth の向き先を伴うため保存だけ行い、反映は次の起動に委ねる
     /// (今の実行中に差し替えると、本番の ID トークンをエミュレータへ送る等のちぐはぐな組み合わせになる)
-    func apply(settings: DeveloperSettings) {
+    func apply(settings: DeveloperSettings) async {
         let backendChanged = settings.backend != self.settings.backend
         DeveloperMenu.settings = settings
         backendChangePendingRestart = backendChanged
         guard !backendChanged else { return }
         self.settings = settings
         apiClient = Self.makeAPIClient(settings: settings)
+        // スタブで受けていた登録は実クライアントには届いていないため、差し替え後の相手へ登録し直す
         deviceRegistration = .notRegistered
+        await registerDeviceIfPossible()
     }
 
     /// API トークン画面が使う呼び出し口。設定に応じた実装を返す

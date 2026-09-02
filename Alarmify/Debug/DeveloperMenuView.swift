@@ -38,7 +38,7 @@ struct DeveloperMenuView: View {
 
             Section {
                 Button {
-                    session.apply(settings: settings)
+                    Task { await session.apply(settings: settings) }
                 } label: {
                     // ja: 設定を反映する
                     Text("Apply")
