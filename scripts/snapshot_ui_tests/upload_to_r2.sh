@@ -106,6 +106,10 @@ upload_to_r2() {
   local curl_config
   curl_config=$(mktemp) || return 1
   chmod 600 "$curl_config"
+  # 転送中 (最長 120 秒) に SIGTERM / SIGINT で止められても認証情報ファイルを残さないよう、シグナルで消してから終了する。
+  # 関数内で設定するとシェル全体の trap を上書きするため、片付けが済んだら解除する
+  trap 'rm -f "$curl_config"; exit 143' TERM
+  trap 'rm -f "$curl_config"; exit 130' INT
   printf 'user = "%s:%s"\n' "$R2_ACCESS_KEY_ID" "$R2_SECRET_ACCESS_KEY" > "$curl_config"
 
   # アップロード実行。接続 10 秒・全体 120 秒で打ち切る (ハングした転送で撮影フロー全体を止めないための上限)。
@@ -121,6 +125,7 @@ upload_to_r2() {
     -H "Content-Type: image/png" \
     --data-binary "@${file_path}") || curl_status=$?
   rm -f "$curl_config"
+  trap - TERM INT
 
   echo "$response"
   # curl は 403/500 でも exit 0 を返すため、最終行の HTTP ステータスでも成否を判定する

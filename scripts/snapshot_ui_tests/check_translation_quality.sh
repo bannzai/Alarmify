@@ -261,10 +261,12 @@ for feature_page in $feature_pages; do
     continue
   fi
 
-  # README.mdからソースパスを取得
+  # README.md (organize_screenshots.sh が生成するソースパスのメタデータ) からソースパスを取得する。
+  # 無い場合は比較を黙って飛ばさず、欠落として収集して最後に非ゼロで終了する (画像だけコピーした状態を検査済みと誤認しない)
   readme_file="$feature_page_dir/README.md"
   if [ ! -f "$readme_file" ]; then
-    echo "Warning: README.md not found, skipping $feature_page"
+    echo "  Error: README.md (ソースパスのメタデータ) がありません: $feature_page_dir"
+    missing_baselines+="  - ${feature_page} (README.md missing)"$'\n'
     continue
   fi
   
