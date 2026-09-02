@@ -50,13 +50,27 @@ export const canonicalUuidSchema = z
 
 /**
  * 外部サービス向け: POST /v1/alarms
- * id は呼び出し側が付けるアラームの識別子。再送で同じ id が来た時に、二重登録せず同じアラームを返すために使う
+ * id は呼び出し側が付けるアラームの識別子。再送で同じ id が来た時に、二重登録せず同じアラームを返すために使う。
+ * 発火時刻は fire_at (絶対時刻) か fire_in (受信からの秒数) のどちらか一方で指定する。
+ * fire_in は、テンプレートで日時を計算できない連携先 (Grafana / Uptime Kuma / ショートカット等) のためにある (docs/api.md)
  */
-export const createAlarmRequestSchema = z.object({
-  id: canonicalUuidSchema.optional(),
-  fire_at: isoDateTimeSchema,
-  title: z.string().min(1).max(200).optional(),
-});
+export const createAlarmRequestSchema = z
+  .object({
+    id: canonicalUuidSchema.optional(),
+    fire_at: isoDateTimeSchema.optional(),
+    // 上限は fire_at と同じ 365 日 (externalApi.ts の MAX_FIRE_AT_AHEAD_DAYS)。Date の範囲を超える値で内部エラーにしない
+    fire_in: z
+      .number()
+      .int()
+      .min(0)
+      .max(365 * 24 * 60 * 60)
+      .optional(),
+    title: z.string().min(1).max(200).optional(),
+  })
+  .refine((value) => (value.fire_at !== undefined) !== (value.fire_in !== undefined), {
+    message: "fire_at と fire_in のどちらか一方を指定してください",
+    path: ["fire_at"],
+  });
 export type CreateAlarmRequest = z.infer<typeof createAlarmRequestSchema>;
 
 /** アプリ向け: POST /v1/devices */
