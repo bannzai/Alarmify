@@ -10,5 +10,10 @@ tmp/
 .mcp.json
 # bundler のローカルインストール先 (~/.bundle/config の path=vendor/bundle が作る)
 vendor/bundle/
+node_modules/
+functions/lib/
+# Firebase CLI / Emulator Suite が作るログとキャッシュ
+.firebase/
+*-debug.log
 # RevenueCat の実キー (appl_) を置くローカル上書き。実値をコミットしないため追跡しない (Config.xcconfig のコメント参照)
 Config.local.xcconfig

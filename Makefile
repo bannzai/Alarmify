@@ -9,13 +9,13 @@ BUNDLE_ID := com.bannzai.Alarmify
 FIREBASE_ALIAS ?= prod
 # firebase-tools は .github/workflows/functions-deploy.yml と同じバージョンに固定する (CLI 更新で挙動が変わらないように)
 FIREBASE_TOOLS_VERSION := 15.28.2
-# デプロイ対象を絞る場合の関数名 (カンマ区切り。例: FUNCTIONS=v1-alarms-create,v1-alarms-cancel)。空なら functions 全体。
+# デプロイ対象を絞る場合の関数名 (カンマ区切り。例: FUNCTIONS=appApi,alarmsApi)。空なら functions 全体。
 # firebase の部分デプロイは対象ごとに functions: の接頭辞が要るため、recipe 側で付け直す
 FUNCTIONS ?=
 SIMULATOR_UDID ?= $(shell SCRIPT_QUIET=1 sim-boot | sed -n 's/^DEVICE_UDID=//p' | tail -n 1)
 DESTINATION ?= platform=iOS Simulator,id=$(SIMULATOR_UDID)
 
-.PHONY: build-ios device install-device ios test clean deploy-functions
+.PHONY: build-ios device install-device ios test test-functions emulators clean deploy-functions
 
 # Simulator 向けビルド。generic destination なら simulator の起動なしでビルドできる
 build-ios:
@@ -52,6 +52,16 @@ test:
 	[ -n "$$destination" ] && [ "$$destination" != "platform=iOS Simulator,id=" ] || { echo "Error: sim-boot でSimulatorを解決できません (sim-bootがPATHにあるか確認するか、DESTINATION='<destination>'またはSIMULATOR_UDID=<UDID>を指定してください)" >&2; exit 1; }; \
 	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -derivedDataPath $(DERIVED_DATA) -destination "$$destination" CODE_SIGNING_ALLOWED=NO test
 
+# Firebase Functions のテスト。Firestore エミュレータ (demo-alarmify) 上で実行する
+test-functions:
+	@[ -d functions/node_modules ] || npm --prefix functions ci
+	npm --prefix functions test
+
+# Firebase Emulator Suite (Firestore / Auth) を起動する
+emulators:
+	@[ -d functions/node_modules ] || npm --prefix functions ci
+	npm --prefix functions run emulators
+
 clean:
 	rm -rf $(DERIVED_DATA)
 
@@ -63,7 +73,7 @@ deploy-functions:
 	[ -n "$$alias_name" ] || { echo "Error: FIREBASE_ALIAS が空です (例: make deploy-functions FIREBASE_ALIAS=prod)" >&2; exit 1; }; \
 	project_id=$$(jq -r --arg alias "$$alias_name" '.projects[$$alias] // empty' .firebaserc); \
 	[ -n "$$project_id" ] || { echo "Error: .firebaserc に alias '$$alias_name' がありません" >&2; exit 1; }; \
-	[ -d functions ] || { echo "Error: functions/ がありません (バックエンドの雛形は issue #2 で追加する)" >&2; exit 1; }; \
+	[ -d functions ] || { echo "Error: functions/ がありません" >&2; exit 1; }; \
 	if [ -n "$(FUNCTIONS)" ]; then \
 		target=$$(printf '%s' "$(FUNCTIONS)" | awk -F',' '{for (i = 1; i <= NF; i++) { gsub(/^[ \t]+|[ \t]+$$/, "", $$i); if ($$i != "") printf "%sfunctions:%s", (n++ ? "," : ""), $$i }}'); \
 		[ -n "$$target" ] || { echo "Error: FUNCTIONS の指定が空です" >&2; exit 1; }; \
