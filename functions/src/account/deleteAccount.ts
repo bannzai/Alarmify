@@ -26,11 +26,15 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   const userDocument = firestore.doc(userDocumentPath(uid));
   const snapshot = await userDocument.get();
 
+  // 先に Auth のユーザーを消し、以後この uid で新しくサインイン・トークン更新できない状態にしてからデータを消す。
+  // 発行済みで未失効の ID トークンによる書き込み (配送先の登録等) が残る窓は、アプリ向け API の書き込み側が
+  // Auth のユーザーの存在を確認して拒否することで閉じる (バックエンド雛形の実装で担う)
+  const authUserExisted = await deleteAuthUser(uid);
+
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
   // ドキュメントが存在しなくてもサブコレクションだけが残っている場合があるため、存在確認とは無関係に必ず実行する
   await firestore.recursiveDelete(userDocument);
 
-  const authUserExisted = await deleteAuthUser(uid);
   // 削除したアカウントの識別子 (uid) はログにも残さない (ログの保持期間だけ識別可能なデータが残るため)
   logger.info("Deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
 

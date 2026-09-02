@@ -100,17 +100,29 @@ final class AccountSession {
     /// 端末内の AlarmKit のアラームには触れない (公開している削除手順の記載と揃える)。
     /// サーバーの削除に失敗した場合はサインイン状態を変えずにエラーを投げる (削除できていないアカウントを画面から消さない)
     func deleteAccount() async throws {
-        try await apiClient.deleteAccount()
-        // 削除済みのユーザーの認証状態を keychain に残さない。サーバー側は消えているため、失敗してもログに残して先へ進む
         do {
-            try Auth.auth().signOut()
-        } catch {
-            Logger.push.error("Signing out after account deletion failed: \(error.localizedDescription)")
+            try await apiClient.deleteAccount()
+        } catch where Self.isAccountAlreadyGone(error) {
+            // 前回の削除がサーバーで成功して応答だけ失われた後の再試行。Auth のユーザーが無いため ID トークンを
+            // 取得し直せず Callable まで届かないが、削除自体は完了しているので端末側の状態だけ揃える
         }
+        // スタブは実際には何も削除していないため、Firebase Auth の実アカウントを捨てない (画面のフローの確認だけに使う)
+        guard !settings.stubAPIClient else { return }
+        // 削除済みのユーザーの認証状態を keychain に残さない。消せなかった場合はそのユーザーで signIn() し直してしまうため先へ進まない
+        try Auth.auth().signOut()
         DeveloperMenu.authenticatedBackend = nil
         uid = nil
         deviceRegistration = .notRegistered
         await signIn()
+    }
+
+    /// ID トークンの取得時にサーバー側のアカウントが既に無いと判明したか。
+    /// Firebase Auth は refresh で user-not-found を受けるとそのユーザーをサインアウトするため、未サインインもこの状態に含める
+    private static func isAccountAlreadyGone(_ error: Error) -> Bool {
+        if case .notSignedIn? = error as? AlarmifyAPIError { return true }
+        let nsError = error as NSError
+        guard nsError.domain == AuthErrorDomain else { return false }
+        return nsError.code == AuthErrorCode.userNotFound.rawValue || nsError.code == AuthErrorCode.userTokenExpired.rawValue
     }
 
     private func registerDeviceIfPossible() async {
