@@ -11,7 +11,7 @@ Alarmify の課金設計は Freemium + サブスクリプション (`documents/P
 API キーの扱いにも制約がある。本リポジトリは public のため、App Store 用の public API key (`appl_`) をソースやプロジェクト設定にコミットできない。一方でキーが無いビルド (CI・コントリビューターの手元) もビルドが通る必要がある。
 
 ## Decision
-課金は RevenueCat SDK (`purchases-ios-spm`) で行い、entitlement `pro` の判定を UserDefaults にキャッシュする。キャッシュには失効日時と、RevenueCat がその判定を行った時刻 (`CustomerInfo.requestDate`) も併せて保存し、参照時に `cachedProActive(active:expirationDate:evaluatedAt:now:)` で現在時刻と突き合わせて判定する。失効日時を過ぎていても、RevenueCat が失効日時以降に有効と判定していた場合 (Apple の請求猶予期間など、RevenueCat 側が正を持つ延長) はその判定を尊重して有効のままにする。RevenueCat の公式ドキュメントは猶予期間中の `expirationDate` の扱いを明記していないため、失効日時だけで無効に倒さない。キャッシュの更新は `customerInfoStream` の監視・購入直後・復元直後の 3 経路すべてで `ProEntitlement.cacheEntitlement(customerInfo:)` に集約する。
+課金は RevenueCat SDK (`purchases-ios-spm`) で行い、entitlement `pro` の判定を UserDefaults にキャッシュする。キャッシュには失効日時も併せて保存し、参照時に `cachedProActive(active:expirationDate:now:)` で現在時刻と突き合わせて判定する。保存する失効日時は `effectiveExpirationDate(expirationDate:gracePeriodExpiresDate:)` で決め、購読が Apple の請求猶予期間にある間は RevenueCat の `SubscriptionInfo.gracePeriodExpiresDate` (ストアが正を持つ猶予期間の終了日時) を失効日時として扱う。RevenueCat の公式ドキュメントは猶予期間中の `EntitlementInfo.expirationDate` の扱いを明記していないため、entitlement の失効日時だけで無効に倒さず、猶予期間の境界も日数の推定ではなくストアの値を使う。キャッシュの更新は `customerInfoStream` の監視・購入直後・復元直後の 3 経路すべてで `ProEntitlement.cacheEntitlement(customerInfo:)` に集約する。
 
 API キーは `Config.xcconfig` の `REVENUECAT_API_KEY` を Info.plist の `RevenueCatAPIKey` へ流し込み、`ProEntitlement.revenueCatAPIKey` が読み取る。実キーは gitignore した `Config.local.xcconfig` で上書きする。キーが空の環境では `Purchases.configure` を呼ばず、ペイウォールは価格を表示せずに再読み込みの導線を出す。Release ビルドで `appl_` 以外のキーだった場合は `scripts/check_release_revenuecat_key.sh` がビルドを失敗させる。
 
@@ -26,6 +26,6 @@ API キーは `Config.xcconfig` の `REVENUECAT_API_KEY` を Info.plist の `Rev
 
 **悪い点 / 引き受けるリスク:**
 - キャッシュはあくまで最後に観測した RevenueCat の状態で、サーバー側の無料枠判定 (#2) との整合は別途 entitlement をバックエンドへ連携して取る必要がある
-- アプリを閉じている間に失効し、その後に請求猶予期間へ入った場合は、次に RevenueCat と同期するまで無効 (Free) として扱う (オフラインでは無効側に倒す)
+- 猶予期間の終了日時は最後に RevenueCat と同期した時点の値で、アプリを閉じている間に猶予期間へ入った場合は次に同期するまで無効 (Free) として扱う (オフラインでは無効側に倒す)
 - キーが空の環境ではペイウォールの購入導線を一切表示できないため、購入フローの検証には Test Store か実ストアのキーが要る
 - StoreKit Testing は simulator の runtime に依存する。iOS 26.5 の simulator では `xcodebuild test` 経由で機能しないため、該当 runtime ではテストを skip する

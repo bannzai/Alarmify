@@ -2,53 +2,53 @@ import XCTest
 
 @testable import Alarmify
 
-/// entitlement キャッシュの有効判定 (cachedProActive) のテスト。
+/// entitlement キャッシュの有効判定 (cachedProActive) と、キャッシュする失効日時の決定 (effectiveExpirationDate) のテスト。
 /// 購読はアプリ停止中に失効し得るため、保存した active をそのまま信じると失効後も Pro のまま見えてしまう。
-/// 一方で失効日時を過ぎていても RevenueCat が有効と判定した (請求猶予期間など) 場合はその判定を尊重する
+/// 一方で請求猶予期間中は expirationDate を過ぎてもアクセスが続くため、猶予期間の終了日時を失効日時として扱う
 final class ProEntitlementTests: XCTestCase {
     private let now = Date(timeIntervalSince1970: 1_700_000_000)
 
-    /// 未購入は失効日時・判定時刻の有無によらず false
+    /// 未購入は失効日時の有無によらず false
     func testInactiveIsNotPro() {
-        XCTAssertFalse(cachedProActive(active: false, expirationDate: nil, evaluatedAt: nil, now: now))
-        XCTAssertFalse(cachedProActive(active: false, expirationDate: now.addingTimeInterval(60), evaluatedAt: now, now: now))
+        XCTAssertFalse(cachedProActive(active: false, expirationDate: nil, now: now))
+        XCTAssertFalse(cachedProActive(active: false, expirationDate: now.addingTimeInterval(60), now: now))
     }
 
     /// 失効日時が未来なら有効
     func testActiveBeforeExpirationIsPro() {
-        XCTAssertTrue(cachedProActive(active: true, expirationDate: now.addingTimeInterval(60), evaluatedAt: nil, now: now))
+        XCTAssertTrue(cachedProActive(active: true, expirationDate: now.addingTimeInterval(60), now: now))
     }
 
-    /// 失効日時を過ぎ、RevenueCat の判定が失効日時より前なら、保存された active が true でも無効
-    func testActiveAfterExpirationEvaluatedBeforeExpirationIsNotPro() {
-        let expiration = now.addingTimeInterval(-60)
-        XCTAssertFalse(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: expiration.addingTimeInterval(-3600), now: now))
-        XCTAssertFalse(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: nil, now: now))
+    /// 失効日時を過ぎていたら、保存された active が true でも無効
+    func testActiveAfterExpirationIsNotPro() {
+        XCTAssertFalse(cachedProActive(active: true, expirationDate: now.addingTimeInterval(-60), now: now))
     }
 
-    /// 失効日時を過ぎていても、RevenueCat が失効日時以降に有効と判定していれば (請求猶予期間) 有効のまま
-    func testActiveAfterExpirationEvaluatedAfterExpirationIsPro() {
-        let expiration = now.addingTimeInterval(-60)
-        XCTAssertTrue(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: expiration, now: now))
-        XCTAssertTrue(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: now.addingTimeInterval(-30), now: now))
-    }
-
-    /// 失効日時以降の有効判定も、その判定から proEntitlementGracePeriodMax を過ぎたら無効に倒す
-    /// (請求の回復に失敗して無効になった時にアプリが停止・オフラインでも、Pro が無期限に残らない)
-    func testActiveObservationAfterExpirationExpiresAfterGracePeriodMax() {
-        let expiration = now.addingTimeInterval(-60)
-        let evaluatedAt = expiration
-        XCTAssertTrue(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: evaluatedAt, now: evaluatedAt.addingTimeInterval(proEntitlementGracePeriodMax - 1)))
-        XCTAssertFalse(cachedProActive(active: true, expirationDate: expiration, evaluatedAt: evaluatedAt, now: evaluatedAt.addingTimeInterval(proEntitlementGracePeriodMax)))
-    }
-
-    /// 失効日時ちょうどは失効済みとして扱う (判定時刻がそれより前の場合)
+    /// 失効日時ちょうどは失効済みとして扱う
     func testActiveAtExpirationIsNotPro() {
-        XCTAssertFalse(cachedProActive(active: true, expirationDate: now, evaluatedAt: now.addingTimeInterval(-1), now: now))
+        XCTAssertFalse(cachedProActive(active: true, expirationDate: now, now: now))
     }
 
     /// 失効日時が無い (買い切り) 場合は active をそのまま使う
     func testActiveWithoutExpirationIsPro() {
-        XCTAssertTrue(cachedProActive(active: true, expirationDate: nil, evaluatedAt: nil, now: now))
+        XCTAssertTrue(cachedProActive(active: true, expirationDate: nil, now: now))
+    }
+
+    /// 猶予期間が無ければ entitlement の失効日時をそのまま使う
+    func testEffectiveExpirationWithoutGracePeriod() {
+        XCTAssertEqual(effectiveExpirationDate(expirationDate: now, gracePeriodExpiresDate: nil), now)
+        XCTAssertNil(effectiveExpirationDate(expirationDate: nil, gracePeriodExpiresDate: nil))
+    }
+
+    /// 猶予期間の終了日時が失効日時より後なら、猶予期間の終了日時を失効日時として扱う (猶予期間中も Pro のまま)
+    func testEffectiveExpirationUsesLaterGracePeriodEnd() {
+        let graceEnd = now.addingTimeInterval(16 * 24 * 60 * 60)
+        XCTAssertEqual(effectiveExpirationDate(expirationDate: now, gracePeriodExpiresDate: graceEnd), graceEnd)
+        XCTAssertEqual(effectiveExpirationDate(expirationDate: nil, gracePeriodExpiresDate: graceEnd), graceEnd)
+    }
+
+    /// 猶予期間の終了日時が失効日時より前 (更新済みで古い猶予期間が残っている等) なら失効日時を使う
+    func testEffectiveExpirationIgnoresEarlierGracePeriodEnd() {
+        XCTAssertEqual(effectiveExpirationDate(expirationDate: now, gracePeriodExpiresDate: now.addingTimeInterval(-60)), now)
     }
 }
