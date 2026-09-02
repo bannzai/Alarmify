@@ -1,0 +1,346 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "6 connected": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "6 件を連携中"
+          }
+        }
+      }
+    },
+    "Backup finished": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップ完了"
+          }
+        }
+      }
+    },
+    "CPU over 90%": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CPU 使用率 90% 超"
+          }
+        }
+      }
+    },
+    "Cancel or change\nfrom your server": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取り消しも変更も\nサーバーから"
+          }
+        }
+      }
+    },
+    "Cancelled by API": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "API から取り消し"
+          }
+        }
+      }
+    },
+    "Connects\nwith anything": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "何とでも\nつながる"
+          }
+        }
+      }
+    },
+    "Daily standup": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "朝会"
+          }
+        }
+      }
+    },
+    "Deploy finished": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デプロイ完了"
+          }
+        }
+      }
+    },
+    "Do Not Disturb": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "おやすみモード"
+          }
+        }
+      }
+    },
+    "Every alarm keeps a history you can check in the app": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録と発火の履歴は\nアプリで確認できる"
+          }
+        }
+      }
+    },
+    "Fired at 1:12": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1:12 に発火"
+          }
+        }
+      }
+    },
+    "Fired at 3:07": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3:07 に発火"
+          }
+        }
+      }
+    },
+    "Front door opened": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "玄関のドアが開いた"
+          }
+        }
+      }
+    },
+    "GitHub Actions, Home Assistant, cron, Zapier and plain curl": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Actions も Home Assistant も\ncron も curl も"
+          }
+        }
+      }
+    },
+    "History": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴"
+          }
+        }
+      }
+    },
+    "New order": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新規注文"
+          }
+        }
+      }
+    },
+    "Next alarm": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次のアラーム"
+          }
+        }
+      }
+    },
+    "Not a notification but a real alarm you cannot miss": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通知ではなく\n見逃せない本物のアラーム"
+          }
+        }
+      }
+    },
+    "One HTTP request and your iPhone rings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP リクエストひとつで\niPhone のアラームが鳴る"
+          }
+        }
+      }
+    },
+    "One POST is all\nit takes": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POST ひとつで\n登録完了"
+          }
+        }
+      }
+    },
+    "Request": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リクエスト"
+          }
+        }
+      }
+    },
+    "Rescheduled to 7:30": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7:30 に変更"
+          }
+        }
+      }
+    },
+    "Response": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レスポンス"
+          }
+        }
+      }
+    },
+    "Rings through\nSilent and Focus": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サイレントも\n集中モードも突破"
+          }
+        }
+      }
+    },
+    "Scheduled for today at 3:07": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日 3:07 に登録済み"
+          }
+        }
+      }
+    },
+    "Send a time and a title and Alarmify does the rest": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時刻とタイトルを送るだけで\nあとは Alarmify が届ける"
+          }
+        }
+      }
+    },
+    "Server down": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバーダウン"
+          }
+        }
+      }
+    },
+    "Silent": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消音"
+          }
+        }
+      }
+    },
+    "Sources": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "連携元"
+          }
+        }
+      }
+    },
+    "Stop": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止"
+          }
+        }
+      }
+    },
+    "Test alarm": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テストアラーム"
+          }
+        }
+      }
+    },
+    "Today": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日"
+          }
+        }
+      }
+    },
+    "Tuesday, September 2": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9月2日 火曜日"
+          }
+        }
+      }
+    },
+    "Webhooks become\nreal alarms": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Webhook を\n本物のアラームに"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

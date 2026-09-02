@@ -8,7 +8,16 @@ struct AlarmifyApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if isSnapshotUITest {
+                // 多言語スクリーンショット撮影では撮影対象 (本番画面の Preview) の一覧を直接表示する
+                SnapshotUITestPage()
+            } else {
+                ContentView()
+            }
+            #else
             ContentView()
+            #endif
         }
     }
 }

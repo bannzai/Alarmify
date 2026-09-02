@@ -10,3 +10,9 @@ tmp/
 .mcp.json
 # bundler のローカルインストール先 (~/.bundle/config の path=vendor/bundle が作る)
 vendor/bundle/
+
+# スクリーンショット生成の中間出力先 (コミットしない)。apply_variant.sh で配置した fastlane/screenshots/ はコミット対象
+artifacts/
+scripts/generate_screenshots/artifacts/
+scripts/generate_screenshots/temp_screenshots/
+scripts/snapshot_ui_tests/screenshots/

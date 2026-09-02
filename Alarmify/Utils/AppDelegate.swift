@@ -9,6 +9,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        // 多言語スクリーンショット撮影中は、撮影画面の上に通知の許可ダイアログが被らないよう登録を行わない
+        if isSnapshotUITest { return true }
         // visible push (検証方式 1) の表示許可。許可の有無に関わらずデバイストークンは取得できる
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, error in
             if let error {
