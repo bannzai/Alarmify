@@ -3,9 +3,10 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
 import { setGlobalOptions } from "firebase-functions";
-import { onRequest } from "firebase-functions/https";
+import { onCall, onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 import { onSchedule } from "firebase-functions/scheduler";
+import { handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { deleteExpiredAlarms } from "./lib/cleanup.js";
@@ -39,4 +40,24 @@ export const alarmsApi = onRequest(createExternalApi(createDeps()));
 export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
   const deleted = await deleteExpiredAlarms(createDeps());
   logger.info("deleted expired alarms", { deleted });
+});
+
+/**
+ * 呼び出し元自身のアカウントとサーバー上のデータを削除する Callable。
+ * App Store Review Guideline 5.1.1 (v) の「アプリ内からのアカウント削除」に対応する。
+ * App Check の強制はアプリ側の App Attest 導入 (#4) と合わせて有効にする
+ */
+export const deleteAccount = onCall((request) =>
+  handleDeleteAccount({ firestore: getFirestore(), auth: getAuth() }, request),
+);
+
+/**
+ * アカウント削除の掃除が途中で失敗した分を完了させる定期実行。
+ * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す
+ */
+export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async () => {
+  const result = await sweepDeletedAccounts({ firestore: getFirestore(), auth: getAuth() }, new Date());
+  if (result.failed > 0) {
+    throw new Error(`${result.failed} deleted account(s) could not be swept`);
+  }
 });

@@ -22,29 +22,31 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - run: xcodebuild -version
       - name: Build
         run: |
           set -o pipefail
           xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO build
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES build
       # スクリーンショット基盤 (AppStoreScreenshots / 各 UITest) のコンパイル腐敗を検出する。UITest の実行はしない
       - name: Build screenshot targets
         run: |
           set -o pipefail
           xcodebuild build-for-testing -project Alarmify.xcodeproj -scheme AppStoreScreenshotsUITests \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
           xcodebuild build-for-testing -project Alarmify.xcodeproj -scheme AlarmifySnapshotUITests \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
       - name: Test
         run: |
           set -o pipefail
           xcodebuild -project Alarmify.xcodeproj -scheme Alarmify \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
-            CODE_SIGNING_ALLOWED=NO test
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES test
 
   # Firebase Functions (バックエンド) の lint とエミュレータ上のテスト
   functions:

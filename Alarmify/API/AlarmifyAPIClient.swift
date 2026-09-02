@@ -11,6 +11,8 @@ protocol AlarmifyAPIClient: Sendable {
     func issueAPIToken() async throws -> IssuedAPIToken
     /// API トークンを失効させる
     func revokeAPIToken(id: String) async throws
+    /// 呼び出し元自身のアカウントとサーバー上のデータ (API トークン・配送先・アラーム履歴) を削除する
+    func deleteAccount() async throws
 }
 
 /// URLSession で Cloud Functions のアプリ向け API を叩く実装。
@@ -54,6 +56,26 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         _ = try await send(method: "DELETE", path: "/v1/me/apiTokens/\(Self.escaped(id))", body: nil)
     }
 
+    /// Callable 関数のプロトコル (`{"data": ...}` を POST し、成功時は `{"result": ...}`、失敗時は `{"error": {"message": ...}}`) で呼ぶ。
+    /// 削除対象は ID トークンの uid でサーバーが決めるため、パラメータは送らない。
+    /// 成功の判定はステータスコードだけでなく `result` の中身で行う (プロキシ等が 200 を返しても、削除していないのに成功扱いにしない)
+    func deleteAccount() async throws {
+        let data = try await send(method: "POST", url: backend.deleteAccountURL, body: ["data": [String: String]()])
+        _ = try decode(CallableResponse<DeleteAccountResult>.self, from: data).result
+    }
+
+    /// Callable 関数の成功応答
+    private struct CallableResponse<Result: Decodable>: Decodable {
+        let result: Result
+    }
+
+    /// `deleteAccount` の応答。削除した uid と、削除前にサーバーにデータが存在したか
+    private struct DeleteAccountResult: Decodable {
+        let userId: String
+        let authUserExisted: Bool
+        let userDocumentExisted: Bool
+    }
+
     /// パスの 1 セグメントに埋め込める形へエスケープする。`/` も含めて escape し、URL 組み立て側では再エスケープしない
     /// (サーバーが採番する id に何が入るかはクライアントからは決められないため)
     static func escaped(_ pathComponent: String) -> String {
@@ -74,10 +96,14 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         let error: Body
     }
 
-    private func send(method: String, path: String, body: [String: String]?) async throws -> Data {
+    private func send(method: String, path: String, body: [String: Any]?) async throws -> Data {
+        try await send(method: method, url: Self.url(baseURL: backend.baseURL, percentEncodedPath: path), body: body)
+    }
+
+    private func send(method: String, url: URL, body: [String: Any]?) async throws -> Data {
         guard let token = try await idToken() else { throw AlarmifyAPIError.notSignedIn }
 
-        var request = URLRequest(url: Self.url(baseURL: backend.baseURL, percentEncodedPath: path))
+        var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let body {
