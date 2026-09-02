@@ -16,6 +16,16 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 - デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
 
+## Firestore のルールをデプロイする
+
+`firestore.rules` (全パス deny) と `firestore.indexes.json` は `--only functions` では配布されないため、初回と変更時に別途デプロイする。ローカルから:
+
+```sh
+make deploy-firestore                                  # alias prod (= alarmify-prod) へルールとインデックスをデプロイ
+```
+
+デプロイ専用サービスアカウントの IAM は Functions と共通 (下記)。GitHub Actions からの経路は Functions の workflow と同じ認証で追加できるが、変更頻度が低いためローカルからのデプロイを正とする。
+
 ## ローカルからデプロイする
 
 ```sh

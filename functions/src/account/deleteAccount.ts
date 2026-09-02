@@ -59,14 +59,24 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
 }
 
 /**
+ * 目印を置いてからこの時間が経つまでは、Callable がまだ削除の途中とみなして sweep が触れない
+ * (Callable の実行は数秒で終わるため、目印の作成と Auth の削除の間に sweep が割り込んで目印を取り下げないようにする)
+ */
+export const deletionMarkerMinimumAgeMs = 10 * 60 * 1000;
+
+/**
  * Auth の削除後に掃除が途中で失敗したアカウント (`deletedAccounts/{uid}` が残っているもの) の削除を完了させる。
  * Auth のユーザーがまだ存在する目印は、削除が確定する前に失敗したものなので、データに触れずに目印だけ取り下げる。
  * 1 件の失敗で残りを止めない (失敗した目印は次回の実行でまた対象になる)。
  * 1 回の実行で処理する件数に上限を設ける (.claude/rules/firestore-db-rules.md)。処理結果の件数を返す
  */
-export async function sweepDeletedAccounts(limit: number): Promise<SweepDeletedAccountsResult> {
+export async function sweepDeletedAccounts(limit: number, now: Date = new Date()): Promise<SweepDeletedAccountsResult> {
   const firestore = getFirestore();
-  const tombstones = await firestore.collection(deletedAccountsCollectionId).limit(limit).get();
+  const tombstones = await firestore
+    .collection(deletedAccountsCollectionId)
+    .where("requestedAt", "<=", new Date(now.getTime() - deletionMarkerMinimumAgeMs))
+    .limit(limit)
+    .get();
   const result: SweepDeletedAccountsResult = { completed: 0, withdrawn: 0, failed: 0 };
   for (const tombstone of tombstones.docs) {
     const uid = tombstone.id;

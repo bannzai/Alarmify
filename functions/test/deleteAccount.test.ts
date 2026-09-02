@@ -3,7 +3,7 @@ import { deleteApp, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { deleteUserAccount, sweepDeletedAccounts } from "../src/account/deleteAccount";
+import { deleteUserAccount, deletionMarkerMinimumAgeMs, sweepDeletedAccounts } from "../src/account/deleteAccount";
 import {
   deletedAccountDocumentPath,
   deletedAccountsCollectionId,
@@ -88,6 +88,9 @@ async function callDeleteAccount(idToken?: string): Promise<{ status: number; bo
   return { status: response.status, body: await response.json() };
 }
 
+/** sweep の対象になる、十分に古い目印の作成時刻 */
+const staleRequestedAt = new Date(Date.now() - deletionMarkerMinimumAgeMs - 60_000);
+
 describe("deleteAccount", () => {
   beforeAll(() => {
     for (const variable of ["FIRESTORE_EMULATOR_HOST", "FIREBASE_AUTH_EMULATOR_HOST"]) {
@@ -125,7 +128,7 @@ describe("deleteAccount", () => {
     // Auth の削除後に掃除が失敗した状態: 目印が残り、配下のデータと Auth のユーザーが残っている
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
-    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: staleRequestedAt });
     const untouched = await signUpAnonymously();
     await seedUserData(untouched.uid);
 
@@ -146,7 +149,7 @@ describe("deleteAccount", () => {
     // Auth の削除前に失敗して目印だけ残った状態: ユーザーもデータもそのまま
     const { uid } = await signUpAnonymously();
     await seedUserData(uid);
-    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: staleRequestedAt });
 
     const swept = await sweepDeletedAccounts(10);
 
@@ -154,6 +157,19 @@ describe("deleteAccount", () => {
     expect(await remainingDocumentCount(uid)).toBe(4);
     expect((await auth.getUser(uid)).uid).toBe(uid);
     expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
+  });
+
+  it("leaves a fresh marker alone because its deletion may still be in progress", async () => {
+    // Callable が目印を置いた直後 (Auth の削除前) に sweep が走った状態
+    const { uid } = await signUpAnonymously();
+    await seedUserData(uid);
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+
+    const swept = await sweepDeletedAccounts(10);
+
+    expect(swept).toEqual({ completed: 0, withdrawn: 0, failed: 0 });
+    expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(true);
+    expect(await remainingDocumentCount(uid)).toBe(4);
   });
 
   it("succeeds without changing anything when the account is already deleted", async () => {

@@ -18,7 +18,7 @@ FUNCTIONS ?=
 SIMULATOR_UDID ?= $(shell SCRIPT_QUIET=1 sim-boot | sed -n 's/^DEVICE_UDID=//p' | tail -n 1)
 DESTINATION ?= platform=iOS Simulator,id=$(SIMULATOR_UDID)
 
-.PHONY: build-ios device install-device ios test clean deploy-functions
+.PHONY: build-ios device install-device ios test clean deploy-functions deploy-firestore
 
 # Simulator 向けビルド。generic destination なら simulator の起動なしでビルドできる
 build-ios:
@@ -73,3 +73,14 @@ deploy-functions:
 	else target="functions"; fi; \
 	echo "デプロイ先: alias=$$alias_name project=$$project_id target=$$target"; \
 	npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive
+
+# Firestore のルールとインデックス (firestore.rules / firestore.indexes.json) をデプロイする。
+# ルールはクライアントからの直接アクセスを全パス deny にする防御のため、functions とは別に明示的にデプロイする
+deploy-firestore:
+	@set -e; \
+	alias_name="$(FIREBASE_ALIAS)"; \
+	[ -n "$$alias_name" ] || { echo "Error: FIREBASE_ALIAS が空です (例: make deploy-firestore FIREBASE_ALIAS=prod)" >&2; exit 1; }; \
+	project_id=$$(jq -r --arg alias "$$alias_name" '.projects[$$alias] // empty' .firebaserc); \
+	[ -n "$$project_id" ] || { echo "Error: .firebaserc に alias '$$alias_name' がありません" >&2; exit 1; }; \
+	echo "デプロイ先: alias=$$alias_name project=$$project_id target=firestore"; \
+	npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only firestore --project "$$alias_name" --non-interactive
