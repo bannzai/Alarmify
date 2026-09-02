@@ -106,10 +106,14 @@ for lang in $required_langs; do
   fi
   for device in "${device_list[@]}"; do
     display_type=$(get_display_type "$device")
-    actual_count=$(ls -1 "$lang_dir"*_"${display_type}"_*.png 2>/dev/null | wc -l | tr -d ' ')
-    if [ "$actual_count" -ne "$expected_count" ]; then
-      incomplete+="  - ${lang} (${display_type}): ${actual_count}/${expected_count} 枚"$'\n'
-    fi
+    # 枚数だけの照合だと、番号の付け替えで残った古い PNG が欠けた分を埋めて「揃っている」と誤判定するため、
+    # 期待するインデックスのファイル名を 1 つずつ確認する
+    for ((variant_index = 0; variant_index < expected_count; variant_index++)); do
+      expected_file="$lang_dir${variant_index}_${display_type}_${variant_index}.png"
+      if [ ! -f "$expected_file" ]; then
+        incomplete+="  - ${lang} (${display_type}): $(basename "$expected_file") がありません"$'\n'
+      fi
+    done
   done
 done
 

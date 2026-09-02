@@ -251,6 +251,7 @@ analysis_failures=""
 issue_creation_failures=""
 missing_baselines=""
 missing_comparisons=""
+attachment_failures=""
 
 # 繰り返しのupload処理では途中でエラーが起きても処理は継続して欲しい
 set +e
@@ -513,10 +514,13 @@ issue-${lang}.md ファイルは作成せず、「翻訳に問題は見つかり
             issue_number=$(echo "$issue_url" | grep -oE '[0-9]+$')
             if [ -n "$issue_number" ]; then
               # 画像をIssueにアップロード
+              # 添付に失敗すると Issue には gitignore 済みのローカルパスしか残らず、再実行も重複判定で飛ばすため、
+              # 警告で済ませず失敗として集計して最後に非ゼロで終了する (該当 Issue は報告に載せ、手で画像を添える)
               if upload_screenshot_to_issue "$issue_number" "$ja_png" "$lang_png" "$feature_page" "$index"; then
                 echo "    Successfully uploaded screenshots to issue #$issue_number"
               else
-                echo "    Warning: Failed to upload screenshots, but continuing..."
+                echo "    Error: Failed to upload screenshots to issue #$issue_number"
+                attachment_failures+="  - ${feature_page}/${index}/${lang}: $issue_url"$'\n'
               fi
 
               echo "    Adding @claude comment to issue #$issue_number"
@@ -564,6 +568,11 @@ fi
 if [ -n "$issue_creation_failures" ]; then
   sep "ERROR: GitHub Issue creation failed for:"
   echo "$issue_creation_failures"
+  check_failed=true
+fi
+if [ -n "$attachment_failures" ]; then
+  sep "ERROR: Screenshot attachment failed for (Issue は作成済み。画像を手で添付してください):"
+  echo "$attachment_failures"
   check_failed=true
 fi
 if [ "$check_failed" = true ]; then

@@ -59,8 +59,8 @@ struct MockAPIRequestScreen: View {
             HStack(spacing: 14) {
                 MockSymbolTile(systemName: "bell.fill")
                 VStack(alignment: .leading, spacing: 5) {
-                    // ja: デプロイ完了
-                    Text("Deploy finished")
+                    // 送信元が付けたタイトルは翻訳されずそのまま届くため、上のリクエスト・レスポンスと同じ値を verbatim で出す
+                    Text(verbatim: "Deploy finished")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.paper)
                     // ja: 今日 3:07 に登録済み
