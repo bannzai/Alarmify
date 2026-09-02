@@ -20,7 +20,8 @@ final class APITokenModel {
         self.session = session ?? .shared
     }
 
-    /// 発行直後のトークンをそのまま使える curl の例。未発行なら nil
+    /// 発行直後のトークンをそのまま使える curl の例。未発行なら nil。
+    /// fire_at は呼ばれた瞬間の 5 分後になるため、コピーする時はその場で読み直す
     var curlExample: String? {
         guard let issued else { return nil }
         return APITokenUsageExample.curl(

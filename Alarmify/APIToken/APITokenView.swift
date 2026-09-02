@@ -2,6 +2,7 @@ import SwiftUI
 
 /// API トークンの一覧・発行・失効を行う画面。デザイン受領前の仮 UI
 struct APITokenView: View {
+    @State private var session = AccountSession.shared
     @State private var model = APITokenModel()
 
     var body: some View {
@@ -25,7 +26,8 @@ struct APITokenView: View {
                         .textSelection(.enabled)
                         .accessibilityIdentifier("api_token_curl")
                     Button {
-                        UIPasteboard.general.string = curlExample
+                        // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
+                        UIPasteboard.general.string = model.curlExample
                     } label: {
                         // ja: curl の例をコピーする
                         Text("Copy curl example")
@@ -97,7 +99,8 @@ struct APITokenView: View {
         }
         // ja: API トークン
         .navigationTitle(Text("API tokens"))
-        .task { await model.load() }
+        // サインイン完了前に開いた場合や前面復帰でサインインし直した場合に、一覧を読み直す
+        .task(id: session.uid) { await model.load() }
         .refreshable { await model.load() }
     }
 }
