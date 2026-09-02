@@ -149,8 +149,8 @@ struct ContentView: View {
 
                 Section {
                     NavigationLink {
-                        // API トークンの発行 (#3) が入るまではプレースホルダ入りのスニペットを表示する
-                        RecipesView(apiToken: nil)
+                        // 発行済みトークンの平文は発行直後の API トークン画面にしか無いため、ここからはプレースホルダ入りで表示する
+                        RecipesView(apiToken: nil, backend: session.settings.backend)
                     } label: {
                         // ja: 連携レシピ
                         Label("Integration recipes", systemImage: "link")

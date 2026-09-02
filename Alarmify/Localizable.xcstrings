@@ -287,6 +287,16 @@
         }
       }
     },
+    "Integration recipes with this token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このトークン入りの連携レシピ"
+          }
+        }
+      }
+    },
     "Issue a token" : {
       "localizations" : {
         "ja" : {

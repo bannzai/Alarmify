@@ -15,14 +15,23 @@ curl -sS -X POST https://api.alarmify.app/v1/alarms \
 
 ## Ring at a fixed time
 
-Use `fire_at` with an ISO 8601 time. `date` can produce it for you.
+Use `fire_at` with an ISO 8601 time. `date` can produce it for you; pick the variant for your platform.
+
+GNU date (Linux):
 
 ```sh
-# GNU date (Linux)
 FIRE_AT=$(date -u -d '+10 minutes' +%Y-%m-%dT%H:%M:%SZ)
-# BSD date (macOS)
-FIRE_AT=$(date -u -v+10M +%Y-%m-%dT%H:%M:%SZ)
+```
 
+BSD date (macOS):
+
+```sh
+FIRE_AT=$(date -u -v+10M +%Y-%m-%dT%H:%M:%SZ)
+```
+
+Then send it:
+
+```sh
 curl -sS -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer <API_TOKEN>" \
   -H "Content-Type: application/json" \
@@ -43,10 +52,10 @@ curl -sS -X POST https://api.alarmify.app/v1/alarms \
 
 ## Ring only when a command fails
 
-Keep the command's exit status so that a CI job or a calling script still sees the failure after the alarm has been sent.
+Keep the command's exit status so that a CI job or a calling script still sees the failure after the alarm has been sent. Running the command inside `if` also keeps a shell with `set -e` from exiting before the alarm is sent.
 
 ```sh
-./deploy.sh; status=$?
+if ./deploy.sh; then status=0; else status=$?; fi
 if [ "$status" -ne 0 ]; then
   curl -sS -X POST https://api.alarmify.app/v1/alarms \
     -H "Authorization: Bearer $ALARMIFY_TOKEN" \
@@ -61,8 +70,10 @@ exit "$status"
 Wake up at 06:30 only on days when a long job has not finished by then: schedule the alarm from the job that is supposed to finish, and cancel it when it does.
 
 ```sh
-# Compute the next 06:30 in the server's time zone (GNU date; for macOS see "Ring at a fixed time" above)
-FIRE_AT=$(date -d 'tomorrow 06:30' +%Y-%m-%dT%H:%M:%S%:z)
+# Next 06:30 in the server's time zone: today if it has not passed yet, otherwise tomorrow (GNU date)
+next=$(date -d '06:30' +%s)
+[ "$next" -gt "$(date +%s)" ] || next=$((next + 86400))
+FIRE_AT=$(date -d "@$next" +%Y-%m-%dT%H:%M:%S%:z)
 
 # Schedule the alarm when the job starts and keep the id
 ID=$(curl -sS -X POST https://api.alarmify.app/v1/alarms \

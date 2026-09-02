@@ -4,13 +4,15 @@ import SwiftUI
 /// apiToken が nil (未発行) の間はプレースホルダを埋め込んで表示する
 struct RecipesView: View {
     let apiToken: String?
+    /// スニペットのエンドポイントに使う接続先
+    let backend: AlarmifyBackend
 
     var body: some View {
         List {
             Section {
                 ForEach(IntegrationRecipe.allCases) { recipe in
                     NavigationLink {
-                        RecipeDetailView(recipe: recipe, apiToken: apiToken)
+                        RecipeDetailView(recipe: recipe, apiToken: apiToken, backend: backend)
                     } label: {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(verbatim: recipe.displayName)
@@ -44,6 +46,7 @@ struct RecipesView: View {
 struct RecipeDetailView: View {
     let recipe: IntegrationRecipe
     let apiToken: String?
+    let backend: AlarmifyBackend
 
     var body: some View {
         List {
@@ -62,7 +65,7 @@ struct RecipeDetailView: View {
                 Text("Steps")
             }
 
-            ForEach(Array(recipe.snippets(apiToken: apiToken).enumerated()), id: \.element.id) { index, snippet in
+            ForEach(Array(recipe.snippets(apiToken: apiToken, backend: backend).enumerated()), id: \.element.id) { index, snippet in
                 Section {
                     ScrollView(.horizontal) {
                         Text(verbatim: snippet.body)
@@ -193,12 +196,12 @@ extension IntegrationRecipe {
 
 #Preview("Recipes") {
     NavigationStack {
-        RecipesView(apiToken: "alm_example_token")
+        RecipesView(apiToken: "alm_example_token", backend: .production)
     }
 }
 
 #Preview("GitHub Actions") {
     NavigationStack {
-        RecipeDetailView(recipe: .githubActions, apiToken: "alm_example_token")
+        RecipeDetailView(recipe: .githubActions, apiToken: "alm_example_token", backend: .production)
     }
 }

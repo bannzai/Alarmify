@@ -18,8 +18,6 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
         var id: String { label }
     }
 
-    /// アラーム登録 API のエンドポイント。バックエンド (#2) が未実装のため、LP (docs/index.html) と同じ予定のホスト名
-    static let endpoint = "https://api.alarmify.app/v1/alarms"
     /// API トークン未発行時にスニペットへ埋め込むプレースホルダ (docs/recipes/ と同じ表記)
     static let apiTokenPlaceholder = "<API_TOKEN>"
     /// スニペットのテンプレート内でトークンを差し込む位置
@@ -42,14 +40,20 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
         return URL(string: Self.documentationBaseURL + slug)!
     }
 
-    /// トークンを埋め込んだスニペット。apiToken が nil (未発行) ならプレースホルダを埋め込む
-    func snippets(apiToken: String?) -> [Snippet] {
-        let token = apiToken ?? Self.apiTokenPlaceholder
-        return templates.map { Snippet(label: $0.label, body: $0.body.replacingOccurrences(of: Self.apiTokenMarker, with: token)) }
+    /// アラーム登録 API のエンドポイント。アプリが接続しているバックエンドの baseURL 配下 (docs/ は公開予定のホスト名で書いている)
+    static func endpoint(for backend: AlarmifyBackend) -> String {
+        backend.baseURL.absoluteString + "/v1/alarms"
     }
 
-    private var templates: [Snippet] {
-        let endpoint = Self.endpoint
+    /// トークンとエンドポイントを埋め込んだスニペット。apiToken が nil (未発行) ならプレースホルダを埋め込む
+    func snippets(apiToken: String?, backend: AlarmifyBackend) -> [Snippet] {
+        let token = apiToken ?? Self.apiTokenPlaceholder
+        return templates(endpoint: Self.endpoint(for: backend)).map {
+            Snippet(label: $0.label, body: $0.body.replacingOccurrences(of: Self.apiTokenMarker, with: token))
+        }
+    }
+
+    private func templates(endpoint: String) -> [Snippet] {
         switch self {
         case .shell:
             return [
@@ -61,7 +65,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                 """),
                 Snippet(label: "Ring only when a command fails", body: """
                 export ALARMIFY_TOKEN="\(Self.apiTokenMarker)"
-                ./deploy.sh; status=$?
+                if ./deploy.sh; then status=0; else status=$?; fi
                 if [ "$status" -ne 0 ]; then
                   curl -sS -X POST \(endpoint) \\
                     -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
@@ -82,11 +86,13 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                         if: always()
                         env:
                           ALARMIFY_TOKEN: ${{ secrets.ALARMIFY_TOKEN }}
+                          WORKFLOW: ${{ github.workflow }}
+                          STATUS: ${{ job.status }}
                         run: |
-                          curl -sS -X POST \(endpoint) \\
+                          curl -sS --fail-with-body -X POST \(endpoint) \\
                             -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
                             -H "Content-Type: application/json" \\
-                            -d "{\\"fire_in\\":0,\\"title\\":\\"${{ github.workflow }}: ${{ job.status }}\\"}"
+                            -d "$(jq -cn --arg title "$WORKFLOW: $STATUS" '{fire_in: 0, title: $title}')"
                 """),
             ]
         case .homeAssistant:

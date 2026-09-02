@@ -32,6 +32,13 @@ struct APITokenView: View {
                         // ja: curl の例をコピーする
                         Text("Copy curl example")
                     }
+                    NavigationLink {
+                        RecipesView(apiToken: issued.secret, backend: session.settings.backend)
+                    } label: {
+                        // ja: このトークン入りの連携レシピ
+                        Text("Integration recipes with this token")
+                    }
+                    .accessibilityIdentifier("api_token_recipes")
                     Button {
                         model.dismissIssued()
                     } label: {
