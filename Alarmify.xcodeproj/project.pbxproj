@@ -50,6 +50,8 @@
 		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
 		B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */; };
 		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
+		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
+		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,8 @@
 		CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClientTests.swift"; sourceTree = "<group>"; };
 		FA085358AAEA03A5EF70727B /* APITokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenTests.swift"; sourceTree = "<group>"; };
 		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -222,6 +226,7 @@
 				59154B5C415BFDDA5030DCF5 /* APIToken */,
 				41C12046F78BFC5C7EFB55BC /* Account */,
 				F0B0BA3AA317B1253CEA0183 /* Debug */,
+				D0CA17BBA4161446FC3D6EE6 /* Settings */,
 				51B09AA13A9C71008D188621 /* Shared */,
 				E6573050F56C14CBE499622A /* Utils */,
 			);
@@ -231,6 +236,7 @@
 		9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */ = {
 			isa = PBXGroup;
 			children = (
+				59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
 				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
@@ -293,6 +299,14 @@
 				B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */,
 			);
 			path = Debug;
+			sourceTree = "<group>";
+		};
+		D0CA17BBA4161446FC3D6EE6 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -448,6 +462,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */,
+				E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
@@ -474,6 +489,7 @@
 				A1CA3951F407D3DB61AB41D2 /* RecipesView.swift in Sources */,
 				AB54F8297976C075A3928F98 /* IntegrationRecipe.swift in Sources */,
 				2B2B390B687C0CC5CC8CC7BC /* AlarmKitScheduler.swift in Sources */,
+				ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */,
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
 				ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */,

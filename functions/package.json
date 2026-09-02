@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
-    "test": "npm run typecheck && firebase emulators:exec --only firestore --project demo-alarmify \"vitest run\"",
+    "test": "npm run typecheck && firebase emulators:exec --only firestore,auth --project demo-alarmify \"vitest run\"",
     "emulators": "npm run build && firebase emulators:start --only functions,firestore,auth --project demo-alarmify"
   },
   "dependencies": {

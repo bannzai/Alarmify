@@ -27,4 +27,10 @@ actor StubAlarmifyAPIClient: AlarmifyAPIClient {
     func revokeAPIToken(id: String) async throws {
         tokens.removeAll { $0.id == id }
     }
+
+    /// メモリ上のデータを消すだけで、Firebase Auth の実アカウントには触れない (AccountSession 側でスタブ時のサインアウトを省く)
+    func deleteAccount() async throws {
+        tokens.removeAll()
+        registeredFCMRegistrationToken = nil
+    }
 }

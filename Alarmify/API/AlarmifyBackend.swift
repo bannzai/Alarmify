@@ -6,37 +6,40 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
     case production
     case emulator
 
-    /// API のベース URL。アプリ向け・外部サービス向けのどちらのパスもこの下にある
-    var baseURL: URL {
+    /// Cloud Functions (asia-northeast1) のルート。各関数はこの直下に並ぶ
+    var functionsBaseURL: URL {
         switch self {
         case .production:
-            // Cloud Functions gen2 の HTTPS 関数 `api` (asia-northeast1)
-            return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net/api")!
+            return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net")!
         case .emulator:
-            // Functions エミュレータの既定ポート。simulator からは 127.0.0.1 で Mac のローカルに届く
-            return URL(string: "http://127.0.0.1:5001/demo-alarmify/asia-northeast1/api")!
+            // ポートは firebase.json の emulators.functions.port と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
+            return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1")!
         }
+    }
+
+    /// アプリ向け API のベース URL (HTTPS 関数 `api`)
+    var baseURL: URL {
+        functionsBaseURL.appending(path: "api")
     }
 
     /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
     /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `baseURL` とは別の関数として公開されている
     var alarmsAPIBaseURL: URL {
-        switch self {
-        case .production:
-            return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi")!
-        case .emulator:
-            // Functions エミュレータのポートは firebase.json の emulators.functions.port
-            return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/alarmsApi")!
-        }
+        functionsBaseURL.appending(path: "alarmsApi")
     }
 
-    /// Firebase Auth エミュレータのホストとポート。production では nil
+    /// アカウント削除の Callable 関数 `deleteAccount`
+    var deleteAccountURL: URL {
+        functionsBaseURL.appending(path: "deleteAccount")
+    }
+
+    /// Firebase Auth エミュレータのホストとポート (firebase.json の emulators.auth と揃える)。production では nil
     var authEmulator: (host: String, port: Int)? {
         switch self {
         case .production:
             return nil
         case .emulator:
-            return ("127.0.0.1", 9099)
+            return ("127.0.0.1", 9410)
         }
     }
 }
