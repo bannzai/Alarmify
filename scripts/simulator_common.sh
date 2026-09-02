@@ -57,13 +57,6 @@ ensure_simulator_exists() {
   # grep -q は最初のマッチで早期終了し、出力の多い環境では simctl 側が SIGPIPE で非0終了する。
   # 呼び出し元スクリプトが set -o pipefail のためパイプ全体が失敗扱いになり、
   # 既存シミュレータを「存在しない」と誤判定して重複作成してしまうので -q は使わない
-  if xcrun simctl list devices "iOS ${os_marketing_version}" | grep "${sim_name} (" > /dev/null; then
-    echo "シミュレータ '${sim_name}' は既に存在します。作成をスキップします。"
-    return 0
-  fi
-
-  echo "シミュレータ '${sim_name}' が見つかりません。自動作成します。"
-
   # デバイスタイプIDを取得
   # DESTINATION_SIM_NAME で「issue-13-13PM」のような専用名を使う場合、
   # 専用名はデバイスタイプ名と一致しないため、検索には DESTINATION_SIM_DEVICE_TYPE
@@ -82,9 +75,28 @@ ensure_simulator_exists() {
   fi
   echo "デバイスタイプID: ${device_type_id}"
 
-  # ランタイムIDを取得 (存在確認で特定済みのランタイム行の末尾フィールド)
+  # 該当シミュレータが存在するか確認し、存在する場合は機種 (デバイスタイプ) も照合する。
+  # 専用名 (DESTINATION_SIM_NAME) を別の機種で使い回すと、要求した表示サイズと違う解像度で撮影されて
+  # ファイル名の表示サイズ名と食い違うため、名前と OS だけで再利用せず機種が違えば失敗させる。
+  # 対象 OS のランタイムに絞るのは、同名デバイスが別ランタイムにだけ存在するケースを「存在する」と誤判定しないため
   local runtime_id
   runtime_id=$(echo "$runtime_line" | awk '{print $NF}')
+  local existing_device_type
+  # (simctl list -j devices に検索語を渡すとランタイム識別子では絞れず空になるため、全件を取ってから jq で絞る)
+  existing_device_type=$(xcrun simctl list -j devices | jq -r --arg name "$sim_name" --arg runtime "$runtime_id" \
+    '.devices[$runtime] // [] | map(select(.name == $name)) | .[0].deviceTypeIdentifier // empty')
+  if [ -n "$existing_device_type" ]; then
+    if [ "$existing_device_type" != "$device_type_id" ]; then
+      echo "エラー: シミュレータ '${sim_name}' は既に存在しますが機種が違います (既存: ${existing_device_type}, 要求: ${device_type_id})。" >&2
+      echo "       別の DESTINATION_SIM_NAME を指定するか、既存のシミュレータを削除してください (xcrun simctl delete \"${sim_name}\")。" >&2
+      return 1
+    fi
+    echo "シミュレータ '${sim_name}' は既に存在します。作成をスキップします。"
+    return 0
+  fi
+
+  echo "シミュレータ '${sim_name}' が見つかりません。自動作成します。"
+
   echo "ランタイムID: ${runtime_id}"
 
   # シミュレータを作成

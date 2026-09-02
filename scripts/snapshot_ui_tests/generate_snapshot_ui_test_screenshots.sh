@@ -169,29 +169,56 @@ fi
 # 進行ログを見やすく
 sep() { printf '\n==== %s ====\n' "$*"; }
 
+# 対象言語リストを返す関数 (未指定時の全言語は AlarmifySnapshotUITests/Languages.swift の
+# languageCodeAndLanguageWithRegion から読み取り、Swift 側と二重管理しない)
+target_languages_list() {
+  if [ -n "$LANGUAGES" ]; then
+    echo "$LANGUAGES" | tr ',' '\n' | tr -d ' ' | grep -v '^$'
+  else
+    sed -nE 's/^[[:space:]]*\("([A-Za-z-]+)",.*/\1/p' AlarmifySnapshotUITests/Languages.swift
+  fi
+}
+
+# テストファイルが撮影する Preview の個数を返す関数。テスト側の `let previewCount = N` が SSOT で、
+# 一覧の SnapshotUITest<...>(previewCount:) と同じ値を持つ
+preview_count_of() {
+  local test_file=$1
+  local count
+  count=$(sed -nE 's/^[[:space:]]*let previewCount = ([0-9]+).*/\1/p' "$test_file" | head -1)
+  echo "${count:-1}"
+}
+
 # 対象言語分のスクリーンショット PNG が揃っているかを判定する関数。
-# ディレクトリ構造 {テストクラス}/{インデックス}/{言語}.png のうち、現状すべてのテストが
-# Preview 1 件 (インデックス 0) のため、インデックス 0 の言語ファイルで判定する
+# ディレクトリ構造 {テストクラス}/{インデックス}/{言語}.png を、テストの previewCount 分の全インデックスで検証する
+# (インデックス 0 だけで判定すると、複数 Preview のテストで 1 枚目だけ残った状態を完了と誤判定する)
 snapshot_screenshots_complete() {
   local screenshot_dir=$1
+  local test_file=$2
   [ -d "$screenshot_dir" ] || return 1
 
-  # 対象言語リスト (未指定時の全言語は AlarmifySnapshotUITests/Languages.swift の
-  # languageCodeAndLanguageWithRegion から読み取り、Swift 側と二重管理しない)
-  local target_languages
-  if [ -n "$LANGUAGES" ]; then
-    IFS=',' read -ra target_languages <<< "$LANGUAGES"
-  else
-    target_languages=($(sed -nE 's/^[[:space:]]*\("([A-Za-z-]+)",.*/\1/p' AlarmifySnapshotUITests/Languages.swift))
-  fi
-
-  for lang in "${target_languages[@]}"; do
-    lang=$(echo "$lang" | tr -d ' ')
-    if [ ! -f "$screenshot_dir/0/${lang}.png" ]; then
-      return 1
-    fi
+  local preview_count
+  preview_count=$(preview_count_of "$test_file")
+  local index lang
+  for ((index = 0; index < preview_count; index++)); do
+    for lang in $(target_languages_list); do
+      if [ ! -f "$screenshot_dir/$index/${lang}.png" ]; then
+        return 1
+      fi
+    done
   done
   return 0
+}
+
+# --overwrite 時に、対象テストの既存出力のうち対象言語分だけを削除する関数。
+# ディレクトリごと消すと -l en --overwrite で ja.png (翻訳チェックの基準画像) まで失われるため、
+# 選択した言語のファイルに限定する (言語未指定時は全言語が対象になる)
+remove_snapshot_outputs() {
+  local screenshot_dir=$1
+  [ -d "$screenshot_dir" ] || return 0
+  local lang
+  for lang in $(target_languages_list); do
+    find "$screenshot_dir" -mindepth 2 -maxdepth 2 -type f -name "${lang}.png" -delete
+  done
 }
 
 sep "Preparing screenshots directory"
@@ -256,16 +283,16 @@ for test_file in $test_files; do
   test_class=$(basename "$test_file" .swift)
   screenshot_dir="scripts/snapshot_ui_tests/screenshots/$test_class"
   
-  # --overwrite の場合は既存のスクリーンショットを削除して再撮影する
+  # --overwrite の場合は既存のスクリーンショット (対象言語分) を削除して再撮影する
   # (翻訳・画面の変更後に、古い画像がスキップ判定で残り続けないようにする)
   if [ "$OVERWRITE" = true ]; then
-    rm -rf "$screenshot_dir"
+    remove_snapshot_outputs "$screenshot_dir"
   fi
 
   # 対象言語分のスクリーンショット PNG が既に揃っている場合はスキップする。
   # ディレクトリの存在だけで判定すると、別言語での追加実行 (-l ja の後の -l en) や
   # 中断で部分的に残ったディレクトリが永続的な成功扱いになるため、PNG の実在で判定する
-  if snapshot_screenshots_complete "$screenshot_dir"; then
+  if snapshot_screenshots_complete "$screenshot_dir" "$test_file"; then
     sep "Skipping test: $test_file (screenshots already exist in $screenshot_dir)"
     continue
   fi
@@ -311,7 +338,7 @@ for test_file in $test_files; do
 
     # 抽出・整理の失敗 (xcresulttool の形式不整合等) は個別の exit code では拾い切れないため、
     # 対象言語分の PNG が実際に揃ったかで最終検証し、欠落していれば失敗として収集する
-    if ! snapshot_screenshots_complete "$screenshot_dir"; then
+    if ! snapshot_screenshots_complete "$screenshot_dir" "$test_file"; then
       failed_tests+="  - $test_class (missing screenshots after extraction)"$'\n'
     fi
   else

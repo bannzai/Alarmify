@@ -204,6 +204,16 @@ filter_test_files() {
   echo "$filtered" | sort -u | grep -v '^$'
 }
 
+# 対象言語リストを返す関数。未指定時の全言語は撮影言語の SSOT (AppStoreScreenshotsUITests/Languages.swift) から
+# 読み取り、apply_variant.sh と同じ根拠で判定する (固定リストだと言語追加時に欠落を完了と誤判定する)
+target_languages_list() {
+  if [ -n "$LANGUAGES" ]; then
+    echo "$LANGUAGES" | tr ',' '\n' | tr -d ' ' | grep -v '^$'
+  else
+    sed -n 's/^ *("\([^"]*\)",.*/\1/p' AppStoreScreenshotsUITests/Languages.swift
+  fi
+}
+
 # テストのスクリーンショットが全言語分揃っているかチェックする関数
 # 全ファイルが存在する場合は 0（true）を返す
 is_test_complete() {
@@ -214,16 +224,8 @@ is_test_complete() {
   local variant_index=$(get_variant_index "$screenshot_number")
   local expected_file="${variant_index}_${SCREENSHOT_DISPLAY_TYPE}_${variant_index}.png"
 
-  # 対象言語リストを決定 (未指定時の全言語は AppStoreScreenshotsUITests/Languages.swift と揃える)
-  local target_languages
-  if [ -n "$LANGUAGES" ]; then
-    IFS=',' read -ra target_languages <<< "$LANGUAGES"
-  else
-    target_languages=(ja en)
-  fi
-
-  for lang in "${target_languages[@]}"; do
-    lang=$(echo "$lang" | tr -d ' ')
+  local lang
+  for lang in $(target_languages_list); do
     local fastlane_lang=$(map_language_to_fastlane "$lang")
     local output_file="$VARIANT_OUTPUT_BASE_DIR/_variant-${variant_name}/${fastlane_lang}/${expected_file}"
     if [ ! -f "$output_file" ]; then
@@ -244,15 +246,8 @@ remove_test_outputs() {
   local variant_index=$(get_variant_index "$screenshot_number")
   local expected_file="${variant_index}_${SCREENSHOT_DISPLAY_TYPE}_${variant_index}.png"
 
-  local target_languages
-  if [ -n "$LANGUAGES" ]; then
-    IFS=',' read -ra target_languages <<< "$LANGUAGES"
-  else
-    target_languages=(ja en)
-  fi
-
-  for lang in "${target_languages[@]}"; do
-    lang=$(echo "$lang" | tr -d ' ')
+  local lang
+  for lang in $(target_languages_list); do
     local fastlane_lang=$(map_language_to_fastlane "$lang")
     rm -f "$VARIANT_OUTPUT_BASE_DIR/_variant-${variant_name}/${fastlane_lang}/${expected_file}"
   done
