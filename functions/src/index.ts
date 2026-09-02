@@ -32,5 +32,8 @@ export const deleteAccount = onCall({ region }, async (request) => {
  * デプロイには Cloud Scheduler の権限が要る (documents/functions-deploy.md の `--scheduler`)
  */
 export const sweepDeletedAccountsHourly = onSchedule({ region, schedule: "every 60 minutes" }, async () => {
-  await sweepDeletedAccounts(100);
+  const result = await sweepDeletedAccounts(100);
+  if (result.failed > 0) {
+    throw new Error(`${result.failed} deleted account(s) could not be swept`);
+  }
 });

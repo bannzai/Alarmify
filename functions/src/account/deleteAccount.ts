@@ -32,9 +32,19 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // Auth のユーザーより先に消すのは、ここで失敗しても呼び出し元が同じ認証情報で再試行できるようにするため
   await firestore.recursiveDelete(userDocument);
 
-  // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ
+  // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
+  // Auth の削除が完了するまでは削除を確定させない: 失敗したら目印を外し、外せなくても sweep 側が Auth の残存を見て取り下げる
+  // (呼び出し元にエラーを返した後で、裏で消してしまわないため)
   await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
-  const authUserExisted = await deleteAuthUser(uid);
+  let authUserExisted: boolean;
+  try {
+    authUserExisted = await deleteAuthUser(uid);
+  } catch (error) {
+    await tombstone.delete().catch((deleteError: unknown) => {
+      logger.error("Removing the deletion marker after a failed Auth deletion failed", { error: String(deleteError) });
+    });
+    throw error;
+  }
 
   // 1 回目の sweep と並行して届いた書き込み (配送先の登録等) を、この uid でサインインし直せなくなった後にもう一度消す。
   // これ以降に届き得るのは発行済みで未失効の ID トークンによる書き込みだけで、その窓はアプリ向け API の
@@ -50,21 +60,57 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
 
 /**
  * Auth の削除後に掃除が途中で失敗したアカウント (`deletedAccounts/{uid}` が残っているもの) の削除を完了させる。
- * 1 回の実行で処理する件数に上限を設ける (.claude/rules/firestore-db-rules.md)。処理した件数を返す
+ * Auth のユーザーがまだ存在する目印は、削除が確定する前に失敗したものなので、データに触れずに目印だけ取り下げる。
+ * 1 件の失敗で残りを止めない (失敗した目印は次回の実行でまた対象になる)。
+ * 1 回の実行で処理する件数に上限を設ける (.claude/rules/firestore-db-rules.md)。処理結果の件数を返す
  */
-export async function sweepDeletedAccounts(limit: number): Promise<number> {
+export async function sweepDeletedAccounts(limit: number): Promise<SweepDeletedAccountsResult> {
   const firestore = getFirestore();
   const tombstones = await firestore.collection(deletedAccountsCollectionId).limit(limit).get();
+  const result: SweepDeletedAccountsResult = { completed: 0, withdrawn: 0, failed: 0 };
   for (const tombstone of tombstones.docs) {
     const uid = tombstone.id;
-    await firestore.recursiveDelete(firestore.doc(userDocumentPath(uid)));
-    await deleteAuthUser(uid);
-    await tombstone.ref.delete();
+    try {
+      if (await authUserExists(uid)) {
+        await tombstone.ref.delete();
+        result.withdrawn += 1;
+        continue;
+      }
+      await firestore.recursiveDelete(firestore.doc(userDocumentPath(uid)));
+      await tombstone.ref.delete();
+      result.completed += 1;
+    } catch (error) {
+      result.failed += 1;
+      logger.error("Sweeping a deleted account failed", { error: String(error) });
+    }
   }
   if (tombstones.size > 0) {
-    logger.info("Swept deleted accounts", { count: tombstones.size });
+    logger.info("Swept deleted accounts", result);
   }
-  return tombstones.size;
+  return result;
+}
+
+/** sweepDeletedAccounts の処理結果 */
+export interface SweepDeletedAccountsResult {
+  /** 配下のデータを消して目印を外した件数 */
+  completed: number;
+  /** Auth のユーザーが残っていたため、目印だけ取り下げた件数 */
+  withdrawn: number;
+  /** 失敗して次回に持ち越した件数 */
+  failed: number;
+}
+
+/** Firebase Auth にユーザーが存在するか */
+async function authUserExists(uid: string): Promise<boolean> {
+  try {
+    await getAuth().getUser(uid);
+    return true;
+  } catch (error) {
+    if (isUserNotFound(error)) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 /** Firebase Auth のユーザーを削除する。既に存在しない場合は false を返して成功扱いにする */

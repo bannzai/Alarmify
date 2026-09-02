@@ -9,11 +9,11 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 | `default` | `demo-alarmify` | ローカルのエミュレータ専用 (実プロジェクトではない) |
 | `prod` | `alarmify-prod` | 本番 (asia-northeast1) |
 
-## 現状: functions/ がまだ無い
+## デプロイの前提
 
-バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/issues/2 で追加する。それまで `make deploy-functions` は `functions/ がありません` で止まり、workflow も `npm ci` で失敗する。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) だけが先に整備してある状態で、次の 2 つは未実施:
+バックエンドの実装は `functions/` と `firebase.json` にある (アカウント削除の `deleteAccount` と、その掃除の定期実行 `sweepDeletedAccountsHourly`。外部サービス向けの API は https://github.com/bannzai/Alarmify/issues/2 で追加する)。初回のデプロイ前に次の 2 つを済ませる:
 
-- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)
+- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
 
 ## ローカルからデプロイする
@@ -50,14 +50,14 @@ gh run watch "$RUN_ID"
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 
 # 付与内容の確認 → 適用 (冪等)
-bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --dry-run
-bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa
+bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --scheduler --dry-run
+bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/grant-deploy-iam.sh --project alarmify-prod --create-sa --scheduler
 
 # 付与後、すべて [OK] になることを確認する (IAM の反映に数分かかることがある)
 bash ~/.agents/skills/firebase-functions-deploy-iam-setup/scripts/check-deploy-iam.sh --project alarmify-prod
 ```
 
-`onSchedule` の関数をデプロイ対象に含める時は `--scheduler` を足す (`roles/cloudscheduler.admin` が追加される)。`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) が `onSchedule` のため、初回のデプロイ前に付与しておく。
+`--scheduler` は `onSchedule` の関数 (`sweepDeletedAccountsHourly`) のデプロイに要る `roles/cloudscheduler.admin` を追加する。
 
 ## Secret を登録する
 

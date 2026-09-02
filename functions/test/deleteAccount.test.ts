@@ -129,15 +129,31 @@ describe("deleteAccount", () => {
     const untouched = await signUpAnonymously();
     await seedUserData(untouched.uid);
 
+    // 削除が確定した (Auth のユーザーが消えている) 状態にする
+    await auth.deleteUser(uid);
+
     const swept = await sweepDeletedAccounts(10);
 
-    expect(swept).toBe(1);
+    expect(swept).toEqual({ completed: 1, withdrawn: 0, failed: 0 });
     expect(await remainingDocumentCount(uid)).toBe(0);
-    await expect(auth.getUser(uid)).rejects.toMatchObject({ code: "auth/user-not-found" });
     expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
     // 目印の無いアカウントには触れない
     expect(await remainingDocumentCount(untouched.uid)).toBe(4);
     expect((await auth.getUser(untouched.uid)).uid).toBe(untouched.uid);
+  });
+
+  it("withdraws the marker of an account whose Auth deletion did not complete", async () => {
+    // Auth の削除前に失敗して目印だけ残った状態: ユーザーもデータもそのまま
+    const { uid } = await signUpAnonymously();
+    await seedUserData(uid);
+    await firestore.doc(deletedAccountDocumentPath(uid)).set({ requestedAt: new Date() });
+
+    const swept = await sweepDeletedAccounts(10);
+
+    expect(swept).toEqual({ completed: 0, withdrawn: 1, failed: 0 });
+    expect(await remainingDocumentCount(uid)).toBe(4);
+    expect((await auth.getUser(uid)).uid).toBe(uid);
+    expect((await firestore.doc(deletedAccountDocumentPath(uid)).get()).exists).toBe(false);
   });
 
   it("succeeds without changing anything when the account is already deleted", async () => {
