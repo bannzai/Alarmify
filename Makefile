@@ -8,7 +8,7 @@ BUNDLE_ID := com.bannzai.Alarmify
 SIMULATOR_UDID ?= $(shell SCRIPT_QUIET=1 sim-boot | sed -n 's/^DEVICE_UDID=//p' | tail -n 1)
 DESTINATION ?= platform=iOS Simulator,id=$(SIMULATOR_UDID)
 
-.PHONY: build-ios device install-device ios test clean
+.PHONY: build-ios device install-device ios test test-functions emulators clean
 
 # Simulator 向けビルド。generic destination なら simulator の起動なしでビルドできる
 build-ios:
@@ -44,6 +44,16 @@ test:
 	destination="$(DESTINATION)"; \
 	[ -n "$$destination" ] && [ "$$destination" != "platform=iOS Simulator,id=" ] || { echo "Error: sim-boot でSimulatorを解決できません (sim-bootがPATHにあるか確認するか、DESTINATION='<destination>'またはSIMULATOR_UDID=<UDID>を指定してください)" >&2; exit 1; }; \
 	xcodebuild -project $(XCODEPROJ) -scheme $(SCHEME) -derivedDataPath $(DERIVED_DATA) -destination "$$destination" CODE_SIGNING_ALLOWED=NO test
+
+# Firebase Functions のテスト。Firestore エミュレータ (demo-alarmify) 上で実行する
+test-functions:
+	@[ -d functions/node_modules ] || npm --prefix functions ci
+	npm --prefix functions test
+
+# Firebase Emulator Suite (Firestore / Auth) を起動する
+emulators:
+	@[ -d functions/node_modules ] || npm --prefix functions ci
+	npm --prefix functions run emulators
 
 clean:
 	rm -rf $(DERIVED_DATA)
