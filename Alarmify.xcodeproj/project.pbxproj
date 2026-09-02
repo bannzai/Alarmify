@@ -425,6 +425,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Alarmify/Alarmify.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Alarmify/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -435,6 +437,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.AppStore";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -462,6 +465,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = AlarmifyNotificationService/AlarmifyNotificationService.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -470,6 +475,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.NotificationService;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.NotificationService.AppStore";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -564,6 +570,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = AlarmifyWidget/AlarmifyWidget.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
@@ -573,6 +581,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.Widget;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.Widget.AppStore";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

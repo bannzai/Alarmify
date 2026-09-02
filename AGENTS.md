@@ -21,6 +21,11 @@
 - AlarmKit の発火確認は「1〜2 分後のアラーム」で行う。発火判定は画面表示で行う (simulator は sound `.default` だと鳴らない癖がある)
 - 実機確認: `make install-device` (接続中の実機へ install + launch)。APNs のデバイストークン取得・実 push の受信・App terminated / Device locked 状態の挙動は実機でしか検証できない
 
+## 配布とデプロイ
+
+- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
+- Functions のデプロイはローカルが `make deploy-functions`、CI が `.github/workflows/functions-deploy.yml` (workflow_dispatch)。デプロイ先は `.firebaserc` の alias で明示する。手順は `documents/functions-deploy.md`
+
 ## 公開サイトとバックエンド
 
 - `docs/` は GitHub Pages (main の `/docs`) で配信する LP と法務ドキュメント。LP の検証は `bash ~/.agents/skills/landing-page-builder/scripts/verify-lp.sh --app-store-support --has-account docs/index.html`
