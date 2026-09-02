@@ -9,6 +9,7 @@ import {
 } from "../src/lib/apiToken.js";
 import { monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
+import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
 
 describe("API トークン", () => {
   it("平文は接頭辞つきで、毎回異なる", () => {
@@ -101,5 +102,51 @@ describe("push payload", () => {
     expect(parsePushDeliveryMode("notification-service")).toBe("notification-service");
     expect(parsePushDeliveryMode(undefined)).toBe("notification-service");
     expect(parsePushDeliveryMode("unknown")).toBe("notification-service");
+  });
+});
+
+describe("レート制限", () => {
+  it("ウィンドウ内は上限まで通し、超えたら拒否する", () => {
+    let now = new Date("2026-09-02T00:00:00Z");
+    const limiter = createRateLimiter({ limit: 2, windowMs: 1000, now: () => now });
+    expect(limiter.consume("a")).toBe(true);
+    expect(limiter.consume("a")).toBe(true);
+    expect(limiter.consume("a")).toBe(false);
+    // キーが違えば独立して数える
+    expect(limiter.consume("b")).toBe(true);
+    // ウィンドウが変われば数え直す
+    now = new Date(now.getTime() + 1000);
+    expect(limiter.consume("a")).toBe(true);
+  });
+
+  it("保持するキーは上限を超えない", () => {
+    const now = new Date("2026-09-02T00:00:00Z");
+    const limiter = createRateLimiter({ limit: 1, windowMs: 60_000, now: () => now, maxKeys: 2 });
+    for (let index = 0; index < 10; index += 1) {
+      expect(limiter.consume(`key-${index}`)).toBe(true);
+    }
+    // 追い出された古いキーは数え直しになるが、上限を超えたキーは拒否され続ける
+    expect(limiter.consume("key-9")).toBe(false);
+  });
+});
+
+describe("直近に見たキー", () => {
+  it("期限が切れたら忘れる", () => {
+    let now = new Date("2026-09-02T00:00:00Z");
+    const known = createRecentKeys({ now: () => now, ttlMs: 1000, maxKeys: 10 });
+    known.add("token");
+    expect(known.has("token")).toBe(true);
+    now = new Date(now.getTime() + 1000);
+    expect(known.has("token")).toBe(false);
+  });
+
+  it("件数の上限を超えたら古いものから忘れる", () => {
+    const now = new Date("2026-09-02T00:00:00Z");
+    const known = createRecentKeys({ now: () => now, ttlMs: 60_000, maxKeys: 2 });
+    known.add("first");
+    known.add("second");
+    known.add("third");
+    expect(known.has("first")).toBe(false);
+    expect(known.has("third")).toBe(true);
   });
 });

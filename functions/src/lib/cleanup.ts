@@ -20,6 +20,13 @@ export async function deleteExpiredAlarms(
   deps: Deps,
   { batchSize = CLEANUP_BATCH_SIZE, maxBatches = CLEANUP_MAX_BATCHES }: CleanupOptions = {},
 ): Promise<number> {
+  // WriteBatch の書き込み数の上限は 500 (Firestore の制限)。超えると commit が失敗して期限切れが残る
+  if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > CLEANUP_BATCH_SIZE) {
+    throw new RangeError(`batchSize は 1〜${CLEANUP_BATCH_SIZE} の整数で指定してください`);
+  }
+  if (!Number.isInteger(maxBatches) || maxBatches < 1 || maxBatches > CLEANUP_MAX_BATCHES) {
+    throw new RangeError(`maxBatches は 1〜${CLEANUP_MAX_BATCHES} の整数で指定してください`);
+  }
   let deleted = 0;
   for (let batch = 0; batch < maxBatches; batch += 1) {
     const snapshot = await deps.firestore

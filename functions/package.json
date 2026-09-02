@@ -11,7 +11,7 @@
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
     "test": "npm run typecheck && firebase emulators:exec --only firestore --project demo-alarmify \"vitest run\"",
-    "emulators": "firebase emulators:start --only firestore,auth --project demo-alarmify"
+    "emulators": "npm run build && firebase emulators:start --only functions,firestore,auth --project demo-alarmify"
   },
   "dependencies": {
     "express": "^5.2.1",

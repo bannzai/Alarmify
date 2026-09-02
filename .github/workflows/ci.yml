@@ -4,6 +4,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# チェックアウトとビルドしかしないため、トークンには読み取りだけを与える
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -41,7 +45,10 @@ jobs:
       run:
         working-directory: functions
     steps:
+      # npm ci が依存パッケージのインストールスクリプトを実行するため、チェックアウトの認証情報を残さない
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22

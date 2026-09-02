@@ -1,18 +1,19 @@
 import { randomUUID } from "node:crypto";
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import { Timestamp } from "firebase-admin/firestore";
-import { isApiTokenFormat, parseBearerToken } from "../lib/apiToken.js";
+import { hashApiToken, isApiTokenFormat, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { monthKey, planLimits } from "../lib/plan.js";
 import { alarmActionOf, buildAlarmMessage, type PushResult } from "../lib/push.js";
-import { createRateLimiter, type RateLimit } from "../lib/rateLimit.js";
+import { createRateLimiter, createRecentKeys, type RateLimit } from "../lib/rateLimit.js";
 import {
   expiresAfter,
   expiresAtOf,
   findUserByApiToken,
   listDevices,
   userRef,
+  type RegisteredDevice,
 } from "../lib/store.js";
 import {
   collections,
@@ -52,9 +53,21 @@ function tooManyRequests(): ApiError {
   return new ApiError(429, "rate_limited", "リクエストが多すぎます。しばらく待って再試行してください");
 }
 
+/**
+ * 実在が確認できたトークンを覚えておく時間と件数。
+ * 認証そのものは毎回 Firestore で行うため、失効は即座に効く。ここで覚えるのはレート制限の枠の振り分けだけ
+ */
+const KNOWN_TOKEN_TTL_MS = 10 * 60 * 1000;
+const KNOWN_TOKEN_MAX_KEYS = 1_000;
+
 function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
-  const globalLimiter = createRateLimiter({ ...options.globalRateLimit, now: deps.now });
+  const unknownTokenLimiter = createRateLimiter({ ...options.globalRateLimit, now: deps.now });
   const tokenLimiter = createRateLimiter({ ...options.tokenRateLimit, now: deps.now });
+  const knownTokens = createRecentKeys({
+    now: deps.now,
+    ttlMs: KNOWN_TOKEN_TTL_MS,
+    maxKeys: KNOWN_TOKEN_MAX_KEYS,
+  });
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const plainToken = parseBearerToken(req.header("authorization"));
@@ -63,7 +76,10 @@ function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
       next(new ApiError(401, "unauthenticated", "Authorization: Bearer <API トークン> が必要です"));
       return;
     }
-    if (!globalLimiter.consume("all")) {
+    // 実在が未確認のトークンだけを共有の枠で数える。既知のトークンの呼び出しが、
+    // でたらめなトークンの大量送信で 429 になるのを避ける
+    const tokenHash = hashApiToken(plainToken);
+    if (!knownTokens.has(tokenHash) && !unknownTokenLimiter.consume("unknown")) {
       next(tooManyRequests());
       return;
     }
@@ -72,6 +88,7 @@ function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
       next(new ApiError(401, "unauthenticated", "API トークンが無効です"));
       return;
     }
+    knownTokens.add(tokenHash);
     if (!tokenLimiter.consume(`${resolved.uid}/${resolved.tokenId}`)) {
       next(tooManyRequests());
       return;
@@ -85,12 +102,16 @@ function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
   };
 }
 
+/**
+ * 登録済みの端末へ push を送る。
+ * 配送の失敗で登録そのものを失敗させると、呼び出し側が id を受け取れないまま再試行して二重登録になるため、
+ * 例外は結果として持ち帰る
+ */
 async function deliver(
   deps: Deps,
-  uid: string,
+  devices: RegisteredDevice[],
   alarm: { id: string; action: "schedule" | "cancel"; fireAt: Date | null; title: string | null },
 ): Promise<PushResult> {
-  const devices = await listDevices(deps.firestore, uid);
   const mode = deps.pushDeliveryMode();
   const messages = devices.map((device) =>
     buildAlarmMessage({
@@ -102,7 +123,16 @@ async function deliver(
       mode,
     }),
   );
-  return deps.sendPush(messages);
+  try {
+    return await deps.sendPush(messages);
+  } catch (error) {
+    console.error("push delivery failed", error);
+    return {
+      successCount: 0,
+      failureCount: devices.length,
+      errors: [error instanceof Error ? error.message : "unknown"],
+    };
+  }
 }
 
 interface AlarmState {
@@ -199,23 +229,23 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     const userDocRef = userRef(deps.firestore, uid);
     const alarmRef = userDocRef.collection(collections.alarms).doc(alarmId);
 
-    // 月間上限の判定と書き込みを同じトランザクションで行う。上限を消費するのは新規登録の時だけ
+    // 月間上限の判定と書き込みを同じトランザクションで行う。
+    // 上限を消費しないのは「同じ内容の再送」だけで、内容が変わる再スケジュールと取り消しからの再登録は消費する
     const created = await deps.firestore.runTransaction(async (transaction) => {
       const userSnapshot = await transaction.get(userDocRef);
       if (!userSnapshot.exists) {
         throw new ApiError(404, "not_found", "ユーザーが見つかりません");
       }
       const alarmSnapshot = await transaction.get(alarmRef);
-      if (alarmSnapshot.exists) {
-        transaction.update(alarmRef, {
-          title,
-          fireAt: Timestamp.fromDate(fireAt),
-          status: "scheduled",
-          updatedAt: Timestamp.fromDate(now),
-          expiresAt: expiresAtOf(now, fireAt),
-        });
+      const isSameRequest =
+        alarmSnapshot.exists &&
+        alarmSnapshot.get("status") === "scheduled" &&
+        (alarmSnapshot.get("fireAt") as Timestamp).toMillis() === fireAt.getTime() &&
+        (((alarmSnapshot.get("title") as string | null) ?? null) === title);
+      if (isSameRequest) {
         return false;
       }
+
       const user = userSchema.parse(userSnapshot.data());
       const currentMonth = monthKey(now);
       const used =
@@ -232,6 +262,17 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         monthlyUsage: { month: currentMonth, scheduledAlarmCount: used + 1 },
         updatedAt: Timestamp.fromDate(now),
       });
+
+      if (alarmSnapshot.exists) {
+        transaction.update(alarmRef, {
+          title,
+          fireAt: Timestamp.fromDate(fireAt),
+          status: "scheduled",
+          updatedAt: Timestamp.fromDate(now),
+          expiresAt: expiresAtOf(now, fireAt),
+        });
+        return false;
+      }
       const alarm: Alarm = {
         title,
         fireAt: Timestamp.fromDate(fireAt),
@@ -251,7 +292,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       fireAt,
       title,
     });
-    const delivery = await deliver(deps, uid, {
+    const delivery = await deliver(deps, devices, {
       id: alarmId,
       action: alarmActionOf(state.status),
       fireAt: state.status === "canceled" ? null : state.fireAt,
@@ -286,12 +327,14 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       fireAt: (snapshot.get("fireAt") as Timestamp).toDate(),
       title: (snapshot.get("title") as string | null) ?? null,
     });
-    const delivery = await deliver(deps, uid, {
+    const delivery = await deliver(deps, await listDevices(deps.firestore, uid), {
       id: alarmId,
       action: alarmActionOf(state.status),
       fireAt: state.status === "canceled" ? null : state.fireAt,
       title: state.title,
     });
+    await recordDelivery(deps, uid, alarmId, delivery);
+
     res.status(200).json(alarmResponse(alarmId, state, delivery));
   });
 

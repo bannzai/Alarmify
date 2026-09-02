@@ -42,16 +42,22 @@ export interface TestContext {
   sentBatches: Message[][];
   setNow(date: Date): void;
   failNextPush(): void;
+  throwNextPush(): void;
 }
 
 export function createTestContext(uid = "test-uid"): TestContext {
   let now = TEST_NOW;
   let failNext = false;
+  let throwNext = false;
   const sentBatches: Message[][] = [];
   const deps: Deps = {
     firestore: testFirestore(),
     sendPush: async (messages) => {
       sentBatches.push(messages);
+      if (throwNext) {
+        throwNext = false;
+        throw new Error("fcm unavailable");
+      }
       if (failNext) {
         failNext = false;
         return { successCount: 0, failureCount: messages.length, errors: ["messaging/invalid-registration-token"] };
@@ -76,6 +82,9 @@ export function createTestContext(uid = "test-uid"): TestContext {
     },
     failNextPush: () => {
       failNext = true;
+    },
+    throwNextPush: () => {
+      throwNext = true;
     },
   };
 }

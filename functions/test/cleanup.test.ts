@@ -51,6 +51,11 @@ describe("保持期間を過ぎたアラームの削除", () => {
     expect(await deleteExpiredAlarms(context.deps, options)).toBe(0);
   });
 
+  it("WriteBatch の上限を超える batchSize は受け付けない", async () => {
+    await expect(deleteExpiredAlarms(context.deps, { batchSize: 501 })).rejects.toThrow(RangeError);
+    await expect(deleteExpiredAlarms(context.deps, { maxBatches: 0 })).rejects.toThrow(RangeError);
+  });
+
   it("バッチサイズを超える件数も 1 回の実行で削除しきる", async () => {
     for (const index of [1, 2, 3, 4, 5]) {
       await seedAlarm(`expired-${index}`, new Date(TEST_NOW.getTime() - 1000));
