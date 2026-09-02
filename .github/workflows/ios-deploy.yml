@@ -147,6 +147,14 @@ jobs:
           echo -n "$IOS_WIDGET_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision"
           cp "$PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision" "$XCODE_PROFILE_DIR/Alarmify_Widget_AppStore.mobileprovision"
 
+      # Release ビルドは Build Phase (scripts/check_release_revenuecat_key.sh) が RevenueCat の App Store 用キー (appl_) を
+      # 要求する。ローカルでは gitignore した Config.local.xcconfig から渡すが、クリーンな runner には無いため
+      # environment secret から xcodebuild の引数で渡す。archive の前に同じスクリプトで検査し、キー未登録なら早く止める
+      - name: Check RevenueCat API key
+        env:
+          REVENUECAT_API_KEY: ${{ secrets.REVENUECAT_API_KEY }}
+        run: CONFIGURATION=Release bash scripts/check_release_revenuecat_key.sh
+
       - name: Resolve build number
         run: |
           BUILD_NUMBER=$((GITHUB_RUN_NUMBER + BUILD_NUMBER_OFFSET))
@@ -156,12 +164,15 @@ jobs:
       # CURRENT_PROJECT_VERSION の上書きは全ターゲットに効くため、app と extension のビルド番号は常に一致する
       # 署名は project.pbxproj の Release 設定 (CODE_SIGN_STYLE[sdk=iphoneos*] = Manual + PROVISIONING_PROFILE_SPECIFIER) に従う
       - name: Archive
+        env:
+          REVENUECAT_API_KEY: ${{ secrets.REVENUECAT_API_KEY }}
         run: |
           set -o pipefail
           xcodebuild -project "$PROJECT_PATH" -scheme "$SCHEME" -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$ARCHIVE_PATH"  \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            REVENUECAT_API_KEY="$REVENUECAT_API_KEY" \
             archive
 
       # manageAppVersionAndBuildNumber=false: Xcode に export 時のビルド番号の自動採番をさせず、上で決めた run_number 由来の番号をそのまま使う

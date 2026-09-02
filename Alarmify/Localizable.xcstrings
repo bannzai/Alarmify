@@ -1,6 +1,26 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ / month" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月 %@"
+          }
+        }
+      }
+    },
+    "%@ / year" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年 %@"
+          }
+        }
+      }
+    },
     "A rest_command you can call from any automation" : {
       "localizations" : {
         "ja" : {
@@ -367,6 +387,16 @@
         }
       }
     },
+    "Free" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料"
+          }
+        }
+      }
+    },
     "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
       "localizations" : {
         "ja" : {
@@ -447,6 +477,26 @@
         }
       }
     },
+    "Legal" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "法務情報"
+          }
+        }
+      }
+    },
+    "Legal Notice" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "特定商取引法に基づく表記"
+          }
+        }
+      }
+    },
     "Lets you exercise issuing and revoking tokens without a running backend." : {
       "localizations" : {
         "ja" : {
@@ -463,6 +513,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登録済みのアラームはありません"
+          }
+        }
+      }
+    },
+    "No purchases to restore were found." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元できる購入が見つかりませんでした。"
           }
         }
       }
@@ -560,6 +620,69 @@
         }
       }
     },
+    "Plan" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プラン"
+          }
+        }
+      }
+    },
+    "Plans" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プラン"
+          }
+        }
+      }
+    },
+    "Prices couldn't be loaded" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "価格を読み込めませんでした"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーポリシー"
+          }
+        }
+      }
+    },
+    "Pro" : {
+      "shouldTranslate" : false
+    },
+    "Purchases aren't ready yet. Please try again later." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入はまだ準備できていません。しばらくしてからお試しください。"
+          }
+        }
+      }
+    },
+    "Purchases couldn't be restored." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を復元できませんでした。"
+          }
+        }
+      }
+    },
     "Put the Authorization header value in 'secrets.yaml'." : {
       "localizations" : {
         "ja" : {
@@ -610,12 +733,32 @@
         }
       }
     },
+    "Reload prices" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "料金を再読み込み"
+          }
+        }
+      }
+    },
     "Restart the app to switch the backend." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "接続先の変更はアプリを再起動すると反映されます。"
+          }
+        }
+      }
+    },
+    "Restore Purchases" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を復元"
           }
         }
       }
@@ -720,6 +863,16 @@
         }
       }
     },
+    "Show the free quota paywall" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料枠の上限のペイウォールを表示"
+          }
+        }
+      }
+    },
     "Signing in" : {
       "localizations" : {
         "ja" : {
@@ -760,6 +913,26 @@
         }
       }
     },
+    "Subscription" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "課金"
+          }
+        }
+      }
+    },
+    "Terms of Use" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約"
+          }
+        }
+      }
+    },
     "Test alarm" : {
       "localizations" : {
         "ja" : {
@@ -776,6 +949,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "「URL の内容を取得」アクションで鳴らす"
+          }
+        }
+      }
+    },
+    "The free plan includes one token and up to 20 alarms a month" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランではトークン 1 つ・月 20 回までアラームを登録できます"
+          }
+        }
+      }
+    },
+    "The purchase couldn't be completed." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を完了できませんでした。"
+          }
+        }
+      }
+    },
+    "The purchase finished, but Pro couldn't be confirmed. Please try restoring purchases later." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入は完了しましたが、Pro の反映を確認できませんでした。時間をおいて購入の復元をお試しください。"
           }
         }
       }
@@ -840,6 +1043,26 @@
         }
       }
     },
+    "Unlock a token per service, unlimited alarm scheduling, alarm history, and delivery to multiple devices" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスごとのトークン、無制限のアラーム登録、アラーム履歴、複数端末への配送を解放します"
+          }
+        }
+      }
+    },
+    "Upgrade to Pro" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro にアップグレード"
+          }
+        }
+      }
+    },
     "Use a stubbed API client" : {
       "localizations" : {
         "ja" : {
@@ -856,6 +1079,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知先の Test で、1 分以内に iPhone が鳴ることを確認します"
+          }
+        }
+      }
+    },
+    "You've used up this month's free quota" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今月の無料枠を使い切りました"
           }
         }
       }

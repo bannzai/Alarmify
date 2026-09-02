@@ -1,0 +1,146 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "ja_JP",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "A1000001",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "B1000001",
+      "localizations" : [
+        {
+          "description" : "Pro",
+          "displayName" : "Pro",
+          "locale" : "ja_JP"
+        }
+      ],
+      "name" : "Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "450",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "S1000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します",
+              "displayName" : "Pro (月額)",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "alarmify_pro_monthly_450yen",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Alarmify Pro Monthly",
+          "subscriptionGroupID" : "B1000001",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2300",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "S1000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します",
+              "displayName" : "Pro (年額)",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "alarmify_pro_annual_2300yen",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Alarmify Pro Annual",
+          "subscriptionGroupID" : "B1000001",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

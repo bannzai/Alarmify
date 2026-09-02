@@ -52,6 +52,15 @@
 		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
 		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
 		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
+		374EED1D71657E5180388D53 /* RuntimeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602AF58BE146DD14334CC5B /* RuntimeEnvironment.swift */; };
+		A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B9A4C5AAAEA07357FF8E9 /* ProEntitlement.swift */; };
+		68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */; };
+		1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA252266FED4387C94D006A /* LegalLinks.swift */; };
+		E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */; };
+		3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */; };
+		51D30E9B87C487D8AC02486A /* Alarmify.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 1F394EF477D8ABAB7349808A /* Alarmify.storekit */; };
+		FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */; };
+		A5CF3A8BE4ED35D95C0EF1F1 /* StoreKitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2952B684BE6866DCF45EE2D7 /* StoreKitTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +148,15 @@
 		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
+		0A1786A7A7FD445AE490DDBA /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		1F394EF477D8ABAB7349808A /* Alarmify.storekit */ = {isa = PBXFileReference; path = Alarmify.storekit; sourceTree = "<group>"; };
+		2952B684BE6866DCF45EE2D7 /* StoreKitTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKitTest.framework; path = System/Library/Frameworks/StoreKitTest.framework; sourceTree = SDKROOT; };
+		3602AF58BE146DD14334CC5B /* RuntimeEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeEnvironment.swift; sourceTree = "<group>"; };
+		060B9A4C5AAAEA07357FF8E9 /* ProEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlement.swift; sourceTree = "<group>"; };
+		68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPage.swift; sourceTree = "<group>"; };
+		6FA252266FED4387C94D006A /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
+		A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlementTests.swift; sourceTree = "<group>"; };
+		DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitConfigurationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +166,15 @@
 			files = (
 				B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */,
 				96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */,
+				FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		32C79F89535C83FA893008F3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5CF3A8BE4ED35D95C0EF1F1 /* StoreKitTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +195,8 @@
 		36EAC6766A29B7DEDF68133A = {
 			isa = PBXGroup;
 			children = (
+				0A1786A7A7FD445AE490DDBA /* Config.xcconfig */,
+				1F394EF477D8ABAB7349808A /* Alarmify.storekit */,
 				75D54258EC60BB38497012C1 /* Alarmify */,
 				4F913C6C48213E5F27C23669 /* AlarmifyNotificationService */,
 				9C8DDE7C8AFFE6DCCE976D73 /* AlarmifyTests */,
@@ -226,6 +255,7 @@
 				59154B5C415BFDDA5030DCF5 /* APIToken */,
 				41C12046F78BFC5C7EFB55BC /* Account */,
 				F0B0BA3AA317B1253CEA0183 /* Debug */,
+				84B75E34FE2C970E0B34B5E2 /* Features */,
 				D0CA17BBA4161446FC3D6EE6 /* Settings */,
 				51B09AA13A9C71008D188621 /* Shared */,
 				E6573050F56C14CBE499622A /* Utils */,
@@ -241,6 +271,9 @@
 				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
 				FA085358AAEA03A5EF70727B /* APITokenTests.swift */,
+				A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */,
+				2952B684BE6866DCF45EE2D7 /* StoreKitTest.framework */,
+				DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */,
 			);
 			path = AlarmifyTests;
 			sourceTree = "<group>";
@@ -250,6 +283,7 @@
 			children = (
 				247CF42D4F40787F4C65182A /* AppDelegate.swift */,
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
+				3602AF58BE146DD14334CC5B /* RuntimeEnvironment.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -309,6 +343,32 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		84B75E34FE2C970E0B34B5E2 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				8B2098D2148A1EC74F194BDA /* Purchase */,
+				DBBF5B49C2B6E704C28BE1CA /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		8B2098D2148A1EC74F194BDA /* Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */,
+				060B9A4C5AAAEA07357FF8E9 /* ProEntitlement.swift */,
+			);
+			path = Purchase;
+			sourceTree = "<group>";
+		};
+		DBBF5B49C2B6E704C28BE1CA /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				6FA252266FED4387C94D006A /* LegalLinks.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -317,6 +377,8 @@
 			buildConfigurationList = 01C1D10850E4168732CBD5FE /* Build configuration list for PBXNativeTarget "AlarmifyTests" */;
 			buildPhases = (
 				18396ED1DB6167B02CA77DD5 /* Sources */,
+				32C79F89535C83FA893008F3 /* Frameworks */,
+				B9B87441C7D3A25EAC6A7F3F /* Resources */,
 			);
 			buildRules = (
 			);
@@ -338,6 +400,7 @@
 				4649D5FE6B8C40F98F7021CA /* Frameworks */,
 				CB5D0521BF03DA354F13FCF5 /* Resources */,
 				CDC5F1D8F67B4C35816FC00E /* Embed Foundation Extensions */,
+				F066B638D231739966C67F7E /* Check RevenueCat API key for Release */,
 			);
 			buildRules = (
 			);
@@ -349,6 +412,7 @@
 			packageProductDependencies = (
 				78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */,
 				01958D05CA8D55574EE318D0 /* FirebaseMessaging */,
+				29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */,
 			);
 			productName = Alarmify;
 			productReference = B4CBF45DA44727442FBE4178 /* Alarmify.app */;
@@ -428,6 +492,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				0C2E434DF069FBBC1E0AD4CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
@@ -454,7 +519,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9B87441C7D3A25EAC6A7F3F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				51D30E9B87C487D8AC02486A /* Alarmify.storekit in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F066B638D231739966C67F7E /* Check RevenueCat API key for Release */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check RevenueCat API key for Release";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  bash \"${SRCROOT}/scripts/check_release_revenuecat_key.sh\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		18396ED1DB6167B02CA77DD5 /* Sources */ = {
@@ -463,6 +558,8 @@
 			files = (
 				52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */,
 				E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */,
+				E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */,
+				3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
@@ -508,6 +605,10 @@
 				D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */,
 				BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */,
 				0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */,
+				1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */,
+				68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */,
+				A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */,
+				374EED1D71657E5180388D53 /* RuntimeEnvironment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,6 +662,7 @@
 		};
 		208AE43C4525D98D7ABB39BC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A1786A7A7FD445AE490DDBA /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Alarmify/Alarmify.entitlements;
@@ -623,6 +725,7 @@
 		};
 		68B95331C5E23E8F1E6A5A04 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A1786A7A7FD445AE490DDBA /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Alarmify/Alarmify.entitlements;
@@ -891,6 +994,14 @@
 				minimumVersion = 12.18.0;
 			};
 		};
+		0C2E434DF069FBBC1E0AD4CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.83.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -903,6 +1014,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C2E434DF069FBBC1E0AD4CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

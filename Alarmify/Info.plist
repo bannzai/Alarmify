@@ -11,6 +11,10 @@
 	<string>Used to schedule and ring alarms triggered by your external services.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<!-- RevenueCat SDK に渡す public API key。実値は Config.xcconfig / Config.local.xcconfig から流し込む
+	     (キーの置き場所と取得方法は Config.xcconfig のコメント参照) -->
+	<key>RevenueCatAPIKey</key>
+	<string>$(REVENUECAT_API_KEY)</string>
 	<!-- 検証方式 2 (Silent / Background Push) の受信に必要 -->
 	<key>UIBackgroundModes</key>
 	<array>
