@@ -70,6 +70,6 @@ enum APITokenUsageExample {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         let fireAt = formatter.string(from: fireDate)
         let body = "{\"fire_at\":\"\(fireAt)\",\"title\":\"\(title)\"}"
-        return "curl -X POST \(backend.alarmsBaseURL.absoluteString)/v1/alarms -H 'Authorization: Bearer \(secret)' -H 'Content-Type: application/json' -d '\(body)'"
+        return "curl -X POST \(backend.alarmsAPIBaseURL.absoluteString)/v1/alarms -H 'Authorization: Bearer \(secret)' -H 'Content-Type: application/json' -d '\(body)'"
     }
 }

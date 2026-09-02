@@ -12,8 +12,8 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         functionURL(name: "appApi")
     }
 
-    /// 外部サービス向け API (`alarmsApi`) のベース URL。API トークンを `Authorization: Bearer` に設定して呼ぶ
-    var alarmsBaseURL: URL {
+    /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL
+    var alarmsAPIBaseURL: URL {
         functionURL(name: "alarmsApi")
     }
 
@@ -23,6 +23,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         case .production:
             return nil
         case .emulator:
+            // ポートは firebase.json の emulators.auth.port
             return ("127.0.0.1", 9410)
         }
     }
@@ -33,7 +34,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
             // Cloud Functions gen2 の HTTPS 関数 (asia-northeast1)
             return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net/\(name)")!
         case .emulator:
-            // ポートは firebase.json の emulators 設定に合わせる。simulator からは 127.0.0.1 で Mac のローカルに届く
+            // ポートは firebase.json の emulators.functions.port。simulator からは 127.0.0.1 で Mac のローカルに届く
             return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/\(name)")!
         }
     }

@@ -21,7 +21,7 @@ struct DeveloperMenuView: View {
                 Text(settings.backend.appBaseURL.absoluteString)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
-                Text(settings.backend.alarmsBaseURL.absoluteString)
+                Text(settings.backend.alarmsAPIBaseURL.absoluteString)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
             } header: {
