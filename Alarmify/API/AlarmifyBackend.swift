@@ -17,13 +17,13 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         }
     }
 
-    /// アプリ向け API のベース URL (HTTPS 関数 `api`)
-    var baseURL: URL {
-        functionsBaseURL.appending(path: "api")
+    /// アプリ向け API のベース URL (HTTPS 関数 `appApi`)。Firebase Auth の ID トークンで認証する
+    var appBaseURL: URL {
+        functionsBaseURL.appending(path: "appApi")
     }
 
     /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
-    /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `baseURL` とは別の関数として公開されている
+    /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `appBaseURL` とは別の関数として公開されている
     var alarmsAPIBaseURL: URL {
         functionsBaseURL.appending(path: "alarmsApi")
     }

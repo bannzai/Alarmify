@@ -20,7 +20,11 @@ struct DeveloperMenuView: View {
                     Text("Backend")
                 }
                 .accessibilityIdentifier("debug_backend")
-                Text(settings.backend.baseURL.absoluteString)
+                // アプリ向け (appApi) と外部サービス向け (alarmsApi) は別の関数のため、両方の接続先を出す
+                Text(settings.backend.appBaseURL.absoluteString)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                Text(settings.backend.alarmsAPIBaseURL.absoluteString)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
             } header: {
