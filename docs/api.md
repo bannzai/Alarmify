@@ -36,9 +36,11 @@ Content-Type: application/json
 | `fire_at` | string (ISO 8601) | one of `fire_at` / `fire_in` | Absolute time to ring. Must be in the future. |
 | `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request. `0` rings as soon as possible (see the lead time below). Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
 | `title` | string | no | Shown on the alarm. Up to 100 characters; longer titles are truncated. Defaults to `Alarmify`. |
-| `id` | string (UUID) | no | Your own identifier for the alarm. Sending the same `id` again replaces the existing alarm instead of creating a second one, so retries are safe. When omitted the server generates one. |
+| `id` | string (UUID) | no | Your own identifier for the alarm. Sending the same `id` again replaces the existing alarm instead of creating a second one, so a retry never rings twice. When omitted the server generates one. |
 
 Send exactly one of `fire_at` and `fire_in`.
+
+**Retries.** A repeated request with the same `id` replaces the alarm with the schedule in the new request. With `fire_in` the delay is measured from the new request, so a retry of a timed-out request would move the alarm later. If the exact time matters, compute `fire_at` once and send that same value on every retry.
 
 **Lead time.** The alarm is always scheduled at least 60 seconds after the server receives the request, so the push can reach the phone before the alarm time (an AlarmKit alarm whose time has already passed cannot be registered). `fire_in` values below 60 and `fire_at` values less than 60 seconds ahead are moved to that minimum; the response shows the effective `fire_at`. In practice `fire_in: 0` rings about a minute after the request.
 

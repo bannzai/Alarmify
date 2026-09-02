@@ -67,10 +67,10 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
                 export ALARMIFY_TOKEN="\(Self.apiTokenMarker)"
                 if ./deploy.sh; then status=0; else status=$?; fi
                 if [ "$status" -ne 0 ]; then
-                  curl -sS -X POST \(endpoint) \\
+                  curl -sS --fail-with-body -X POST \(endpoint) \\
                     -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
                     -H "Content-Type: application/json" \\
-                    -d '{"fire_in":0,"title":"Deploy failed"}'
+                    -d '{"fire_in":0,"title":"Deploy failed"}' || echo "alarm request failed" >&2
                 fi
                 exit "$status"
                 """),
@@ -138,7 +138,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
             return [
                 Snippet(label: "Post URL", body: endpoint),
                 Snippet(label: "Custom Body", body: """
-                {% assign state = "down" %}{% if heartbeatJSON['status'] == 1 %}{% assign state = "up" %}{% endif %}
+                {% case heartbeatJSON['status'] %}{% when 0 %}{% assign state = "down" %}{% when 1 %}{% assign state = "up" %}{% when 2 %}{% assign state = "pending" %}{% else %}{% assign state = "in maintenance" %}{% endcase %}
                 {
                   "fire_in": 0,
                   "title": {{ monitorJSON['name'] | append: " is " | append: state | json }}

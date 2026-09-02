@@ -57,10 +57,10 @@ Keep the command's exit status so that a CI job or a calling script still sees t
 ```sh
 if ./deploy.sh; then status=0; else status=$?; fi
 if [ "$status" -ne 0 ]; then
-  curl -sS -X POST https://api.alarmify.app/v1/alarms \
+  curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
     -H "Authorization: Bearer $ALARMIFY_TOKEN" \
     -H "Content-Type: application/json" \
-    -d '{"fire_in":0,"title":"Deploy failed"}'
+    -d '{"fire_in":0,"title":"Deploy failed"}' || echo "alarm request failed" >&2
 fi
 exit "$status"
 ```
@@ -70,16 +70,20 @@ exit "$status"
 Wake up at 06:30 only on days when a long job has not finished by then: schedule the alarm from the job that is supposed to finish, and cancel it when it does.
 
 ```sh
-# Next 06:30 in the server's time zone: today if it has not passed yet, otherwise tomorrow (GNU date)
+# Next 06:30 in the server's time zone: today if it has not passed yet, otherwise tomorrow
+# (GNU date; "tomorrow 06:30" is a calendar date, so it stays 06:30 across DST changes)
 next=$(date -d '06:30' +%s)
-[ "$next" -gt "$(date +%s)" ] || next=$((next + 86400))
+[ "$next" -gt "$(date +%s)" ] || next=$(date -d 'tomorrow 06:30' +%s)
 FIRE_AT=$(date -d "@$next" +%Y-%m-%dT%H:%M:%S%:z)
 
-# Schedule the alarm when the job starts and keep the id
-ID=$(curl -sS -X POST https://api.alarmify.app/v1/alarms \
+# Schedule the alarm before the job starts; do not start the job if the alarm was not accepted
+response=$(curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
   -H "Authorization: Bearer $ALARMIFY_TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"fire_at\":\"$FIRE_AT\",\"title\":\"Nightly job is still running\"}" | jq -r .id)
+  -d "$(jq -cn --arg fire_at "$FIRE_AT" '{fire_at: $fire_at, title: "Nightly job is still running"}')") \
+  || { echo "alarm request failed: $response" >&2; exit 1; }
+ID=$(jq -r '.id // empty' <<<"$response")
+[ -n "$ID" ] || { echo "no alarm id in response: $response" >&2; exit 1; }
 
 ./nightly-job.sh
 
