@@ -172,6 +172,27 @@ describe("deleteAccount", () => {
     expect((await marker.get()).exists).toBe(true);
   });
 
+  it("keeps the marker that an overlapping deletion rewrote while finishing its own", async () => {
+    // 同じ uid の削除が重なり、後の呼び出しが目印を置き直した後に先の呼び出しが終わった状態
+    const { uid } = await signUpAnonymously();
+    await seedUserData(uid);
+    const marker = firestore.doc(deletedAccountDocumentPath(uid));
+    const deletion = deleteUserAccount(uid);
+    // deleteUserAccount が目印を置いたのを待ってから、別の呼び出しとして目印を置き直す
+    for (let attempt = 0; !(await marker.get()).exists; attempt += 1) {
+      if (attempt >= 200) throw new Error("deleteUserAccount did not write the marker in time");
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    await marker.set({ requestedAt: new Date() });
+
+    await deletion;
+
+    expect(await remainingDocumentCount(uid)).toBe(0);
+    await expect(auth.getUser(uid)).rejects.toMatchObject({ code: "auth/user-not-found" });
+    // 置き直された目印は残り、sweep が後で掃除の完了を確認する
+    expect((await marker.get()).exists).toBe(true);
+  });
+
   it("leaves a fresh marker alone because its deletion may still be in progress", async () => {
     // Callable が目印を置いた直後 (Auth の削除前) に sweep が走った状態
     const { uid } = await signUpAnonymously();

@@ -33,7 +33,7 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // Auth を消すとこの uid では再試行できなくなるため、その前に目印を置き、以降の失敗は sweepDeletedAccounts が引き継ぐ。
   // Auth の削除がエラーで終わっても目印はそのまま残す。応答が失われただけで削除は済んでいる可能性があり、
   // sweep が Auth の有無を見て、残っていれば取り下げ・消えていれば掃除を完了させる
-  await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
+  const marked = await tombstone.set({ requestedAt: FieldValue.serverTimestamp() });
   const authUserExisted = await deleteAuthUser(uid);
 
   // recursiveDelete はドキュメント本体とすべてのサブコレクションを消す。
@@ -41,7 +41,13 @@ export async function deleteUserAccount(uid: string): Promise<DeleteUserAccountR
   // これ以降に届き得るのは発行済みで未失効の ID トークンによる書き込みだけで、その窓はアプリ向け API の
   // 書き込み側が Auth のユーザーの存在を確認して拒否することで閉じる (バックエンド雛形の実装で担う)
   await firestore.recursiveDelete(userDocument);
-  await tombstone.delete();
+  // 目印はこの呼び出しが置いた版に限って消す。同じ uid の呼び出しが重なって目印を置き直していた場合は、
+  // その呼び出しの掃除がまだ終わっていない可能性があるため残す (precondition の失敗は正常系)
+  await tombstone.delete({ lastUpdateTime: marked.writeTime }).catch((error: unknown) => {
+    if (!isFailedPrecondition(error)) {
+      throw error;
+    }
+  });
 
   // 削除したアカウントの識別子 (uid) はログにも残さない (ログの保持期間だけ識別可能なデータが残るため)
   logger.info("Deleted account", { authUserExisted, userDocumentExisted: snapshot.exists });
@@ -128,6 +134,13 @@ async function deleteAuthUser(uid: string): Promise<boolean> {
     }
     throw error;
   }
+}
+
+/** Firestore の precondition (lastUpdateTime 等) が満たされなかったエラーか (gRPC の FAILED_PRECONDITION = 9) */
+function isFailedPrecondition(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const code = (error as { code?: unknown }).code;
+  return code === 9 || code === "failed-precondition";
 }
 
 function isUserNotFound(error: unknown): boolean {
