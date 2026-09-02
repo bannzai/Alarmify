@@ -79,6 +79,17 @@ struct ContentView: View {
                     Text("APNs device token")
                 }
 
+                Section {
+                    NavigationLink {
+                        // API トークンの発行 (#3) が入るまではプレースホルダ入りのスニペットを表示する
+                        RecipesView(apiToken: nil)
+                    } label: {
+                        // ja: 連携レシピ
+                        Label("Integration recipes", systemImage: "link")
+                    }
+                    .accessibilityIdentifier("open_recipes")
+                }
+
                 if let errorMessage {
                     Section {
                         Text(errorMessage)

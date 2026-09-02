@@ -1,11 +1,71 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "A rest_command you can call from any automation" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "任意のオートメーションから呼べる rest_command"
+          }
+        }
+      }
+    },
+    "A webhook contact point that rings when an alert fires" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラートの発火時に鳴らす Webhook 通知先"
+          }
+        }
+      }
+    },
+    "A webhook notification that rings when a monitor goes down" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モニターがダウンした時に鳴らす Webhook 通知"
+          }
+        }
+      }
+    },
+    "Add the 'Get Contents of URL' action and set the URL." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「URL の内容を取得」アクションを追加し、URL を設定します"
+          }
+        }
+      }
+    },
+    "Add the step at the end of the job. 'if: always()' also rings after a failure; 'if: failure()' rings only when something broke." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "job の末尾にステップを追加します。「if: always()」で失敗時にも鳴り、「if: failure()」なら失敗時だけ鳴ります"
+          }
+        }
+      }
+    },
     "Alarmify" : {
       "shouldTranslate" : false
     },
     "AlarmKit" : {
       "shouldTranslate" : false
+    },
+    "Alerting > Contact points: add a Webhook contact point with the URL and HTTP Method POST." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points で Webhook の通知先を追加し、URL と HTTP Method (POST) を設定します"
+          }
+        }
+      }
     },
     "Allow alarms" : {
       "localizations" : {
@@ -13,6 +73,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アラームの権限を許可する"
+          }
+        }
+      }
+    },
+    "API reference" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API リファレンス"
           }
         }
       }
@@ -37,12 +107,52 @@
         }
       }
     },
+    "Call 'rest_command.alarmify_alarm' from an automation's actions with 'fire_in' and 'title'." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オートメーションの actions から「rest_command.alarmify_alarm」を「fire_in」と「title」付きで呼びます"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "取り消す"
+          }
+        }
+      }
+    },
+    "Chain with '||' to ring only when a command fails." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「||」でつなぐと、コマンドが失敗した時だけ鳴ります"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コピー"
+          }
+        }
+      }
+    },
+    "Define the rest_command in 'configuration.yaml' and restart Home Assistant." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「configuration.yaml」に rest_command を定義し、Home Assistant を再起動します"
           }
         }
       }
@@ -57,12 +167,52 @@
         }
       }
     },
+    "Enable the notification on the monitors that should wake you, then press Test." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鳴らしたいモニターで通知を有効にし、Test で確認します"
+          }
+        }
+      }
+    },
     "Error" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "エラー"
+          }
+        }
+      }
+    },
+    "Integration recipes" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連携レシピ"
+          }
+        }
+      }
+    },
+    "Issue an API token to see these snippets with your token filled in." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API トークンを発行すると、スニペットにトークンが埋め込まれた状態で表示されます"
+          }
+        }
+      }
+    },
+    "Keep the token in the 'ALARMIFY_TOKEN' environment variable rather than in a file you commit." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンは環境変数「ALARMIFY_TOKEN」に置き、コミットするファイルに書かないようにします"
           }
         }
       }
@@ -97,12 +247,62 @@
         }
       }
     },
+    "One curl line for scripts, crontab and CI jobs" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スクリプト・crontab・CI から 1 行の curl で鳴らす"
+          }
+        }
+      }
+    },
+    "Open this recipe on the web" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web でこのレシピを見る"
+          }
+        }
+      }
+    },
     "Permission" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "権限"
+          }
+        }
+      }
+    },
+    "Put the Authorization header value in 'secrets.yaml'." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「secrets.yaml」に Authorization ヘッダーの値を置きます"
+          }
+        }
+      }
+    },
+    "Put the curl call at the end of a script or in a crontab. 'fire_in' counts seconds from the request, so no date arithmetic is needed." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スクリプトの末尾や crontab に curl を置きます。「fire_in」は受信からの秒数なので日時の計算は不要です"
+          }
+        }
+      }
+    },
+    "Ring when a workflow finishes or fails" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "workflow の完了・失敗時に鳴らす"
           }
         }
       }
@@ -127,12 +327,82 @@
         }
       }
     },
+    "Set Authentication Header Scheme to Bearer and paste the token into Credentials." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication Header Scheme を Bearer にし、Credentials にトークンを貼り付けます"
+          }
+        }
+      }
+    },
+    "Set Method to POST and add the Authorization and Content-Type headers." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メソッドを POST にし、ヘッダーに Authorization と Content-Type を追加します"
+          }
+        }
+      }
+    },
+    "Set Request Body to Custom Body, paste the template, and paste the headers into Additional Headers." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Body を Custom Body にしてテンプレートを貼り付け、Additional Headers にトークンを貼り付けます"
+          }
+        }
+      }
+    },
+    "Set Request Body to JSON and add 'fire_in' (Number) and 'title' (Text)." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要求本文を JSON にし、「fire_in」(数値) と「title」(テキスト) を追加します"
+          }
+        }
+      }
+    },
+    "Settings > Notifications: add a Webhook notification with the Post URL." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings > Notifications で Webhook 通知を追加し、Post URL を設定します"
+          }
+        }
+      }
+    },
+    "Steps" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手順"
+          }
+        }
+      }
+    },
     "Stop" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "止める"
+          }
+        }
+      }
+    },
+    "Store the token as the repository secret 'ALARMIFY_TOKEN' (GitHub CLI, or Settings > Secrets and variables > Actions)." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンをリポジトリの secret「ALARMIFY_TOKEN」に登録します (GitHub CLI か、Settings > Secrets and variables > Actions)"
           }
         }
       }
@@ -147,12 +417,42 @@
         }
       }
     },
+    "The 'Get Contents of URL' action, for Shortcuts automations" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「URL の内容を取得」アクションで鳴らす"
+          }
+        }
+      }
+    },
+    "Under Optional Webhook settings, enable Custom Payload and paste the template." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional Webhook settings で Custom Payload を有効にし、テンプレートを貼り付けます"
+          }
+        }
+      }
+    },
     "Unknown" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "不明"
+          }
+        }
+      }
+    },
+    "Use Test on the contact point; your iPhone should ring within a few seconds." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知先の Test で、数秒以内に iPhone が鳴ることを確認します"
           }
         }
       }
