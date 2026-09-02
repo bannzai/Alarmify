@@ -12,7 +12,7 @@ AppStoreScreenshotsUITests を実行して、App Store 用スクリーンショ�
 
 ## スクリプト構成
 
-```
+```text
 scripts/generate_screenshots/
 ├── README.md                          # このファイル
 ├── appstore_screenshot_env.sh         # 環境変数・共通関数 (バリアント定義・撮影デバイス定義・言語マッピング・シミュレータ自動作成)
@@ -49,9 +49,9 @@ scripts/generate_screenshots/
 | --- | --- |
 | 1 | Webhook が本物のアラームになる |
 | 2 | サイレントモード・集中モードを突破して鳴る |
-| 3 | CI・監視・ホームオートメーションなど何とでもつながる |
+| 3 | 何とでもつながる (連携レシピ画面: GitHub Actions / Home Assistant / Shortcuts / Grafana / Uptime Kuma / cron) |
 | 4 | POST ひとつでアラームを登録できる |
-| 5 | サーバーから取り消し・時刻変更ができる |
+| 5 | API トークンは手元で管理できる (API トークン画面: 発行・コピー・失効) |
 
 訴求軸のバリアントを追加する時は 5 枚単位で番号帯を割り当て (6〜10 が次のバリアント、...)、対応する
 `AppStoreScreenshots/Sources/Layouts/` のレイアウト・ページと

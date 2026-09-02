@@ -17,7 +17,7 @@ AlarmifySnapshotUITests を実行して、多言語UIの翻訳検証用スクリ
 
 **環境変数:**
 - `SCHEME`: AlarmifySnapshotUITests
-- `DESTINATION`: iPhone 17 Pro Max
+- `DESTINATION`: iPhone 13 Pro Max (`DESTINATION_SIM_NAME` で上書き可能)
 - `DERIVED_DATA_PATH`: artifacts/snapshot_ui_test/derived_data
 
 **共通関数:**
@@ -149,11 +149,11 @@ AlarmifySnapshotUITests を build-for-testing でビルド。
 1. `Alarmify/Features/SnapshotUITest/SnapshotUITestPage.swift` に `SnapshotUITest<{PreviewType}>()` の行を追加
 2. `AlarmifySnapshotUITests/Features/{Feature}/{Page}SnapshotUITest.swift` を既存ファイルを雛形に作成
 
-注意: 各 Preview は `PersistenceController.shared.container` (in-memory) を共有するため、
-SnapshotUITestPage の wrapper は Preview 本体の評価を表示時まで遅延させて
-(`SnapshotUITestLazyPreview`)、撮影対象以外のサンプルデータ挿入が走らないようにしている。
-新しい Preview が複数の Preview を持つ場合は wrapper の `previewCount` 引数に個数を渡す。
-Preview のシーディング自体も「空の時だけ挿入」で冪等化しておくこと (body の再評価対策)。
+注意: SnapshotUITestPage の wrapper は Preview 本体の評価を表示時まで遅延させる
+(`SnapshotUITestLazyPreview`)。一覧の描画時に全 Preview の body を評価しないためで、
+撮影対象以外の Preview が持つ副作用 (サンプルデータの用意等) が走らない。
+新しい Preview が複数の Preview を持つ場合は wrapper の `previewCount` 引数と、
+対応する SnapshotUITest の `previewCount` の両方に個数を渡す。
 
 ### 2. スクリーンショット生成
 

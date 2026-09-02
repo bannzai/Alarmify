@@ -76,6 +76,11 @@ USE_CLAUDE=false
 while [[ $# -gt 0 ]]; do
   case $1 in
     -n)
+      # 数値以外だと上限の比較が失敗して (set +e 下で) 上限なしに起票してしまうため、正の整数だけ受け付ける
+      if ! [[ "${2:-}" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: -n には正の整数を指定してください: '${2:-}'" >&2
+        exit 1
+      fi
       MAX_ISSUES="$2"
       shift 2
       ;;

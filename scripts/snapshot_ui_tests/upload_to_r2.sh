@@ -94,8 +94,11 @@ upload_to_r2() {
   local endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
   local url="${endpoint}/${R2_BUCKET_NAME}/${object_key}"
 
-  # curl の --aws-sigv4 が使えるかチェック
-  if ! curl --help all 2>/dev/null | grep -q -- "--aws-sigv4"; then
+  # curl の --aws-sigv4 が使えるかチェック。grep -q は最初の一致で閉じるため、pipefail 下では
+  # curl が SIGPIPE で非ゼロになり対応済みでも失敗と判定される。出力を変数に取ってから検索する
+  local curl_help
+  curl_help=$(curl --help all 2>/dev/null || true)
+  if ! grep -q -- "--aws-sigv4" <<< "$curl_help"; then
     echo "Error: your curl does not support --aws-sigv4" >&2
     echo "       Please update curl (7.75+ required) or install via Homebrew: brew install curl" >&2
     return 1

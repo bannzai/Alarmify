@@ -12,10 +12,10 @@
 #
 # 引数:
 #   $1: VARIANT_NAME - 適用するバリアント名
-#       有効な値: ink (バリアントの一覧は appstore_screenshot_env.sh の get_variant_name が正)
+#       有効な値: signal (バリアントの一覧は appstore_screenshot_env.sh の get_variant_name が正)
 #
 # 例:
-#   $ ./scripts/generate_screenshots/apply_variant.sh ink
+#   $ ./scripts/generate_screenshots/apply_variant.sh signal
 #
 set -euo pipefail
 

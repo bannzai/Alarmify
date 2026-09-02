@@ -23,7 +23,7 @@
 #    $ ./scripts/snapshot_ui_tests/generate_snapshot_ui_test_screenshots.sh -b 2 -n 1 --skip-build
 #
 # 6. ヘルプを表示:
-#    $ ./scripts/snapshot_ui_test/generate_snapshot_ui_test_screenshots.sh --help
+#    $ ./scripts/snapshot_ui_tests/generate_snapshot_ui_test_screenshots.sh --help
 #
 # 【具体的な用途】
 # - リリース前の多言語UIチェック
@@ -100,10 +100,19 @@ OVERWRITE=false
 while [[ $# -gt 0 ]]; do
   case $1 in
     -n)
+      # 数値以外だと head -n が失敗して対象が空になり、選択なしのエラーで止まるだけで原因が分かりにくいため、正の整数だけ受け付ける
+      if ! [[ "${2:-}" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: -n には正の整数を指定してください: '${2:-}'" >&2
+        exit 1
+      fi
       MAX_TESTS="$2"
       shift 2
       ;;
     -b)
+      if ! [[ "${2:-}" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: -b には正の整数を指定してください: '${2:-}'" >&2
+        exit 1
+      fi
       BEGIN_INDEX="$2"
       shift 2
       ;;

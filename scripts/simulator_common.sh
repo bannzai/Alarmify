@@ -65,7 +65,8 @@ ensure_simulator_exists() {
   local device_type_search
   device_type_search=$(echo "$device_type_name" | tr ' ' '-')
   local device_type_id
-  device_type_id=$(xcrun simctl list devicetypes | grep -i "$device_type_search" | head -1 | sed -E 's/.*\(([^)]+)\).*/\1/')
+  # head -1 が先に閉じると grep が SIGPIPE で非ゼロになり、呼び出し元の pipefail で失敗扱いになるため、不一致・SIGPIPE は空文字に落とす
+  device_type_id=$(xcrun simctl list devicetypes | { grep -i "$device_type_search" || true; } | head -1 | sed -E 's/.*\(([^)]+)\).*/\1/')
 
   if [ -z "$device_type_id" ]; then
     echo "エラー: デバイスタイプ '${device_type_name}' が見つかりません。" >&2

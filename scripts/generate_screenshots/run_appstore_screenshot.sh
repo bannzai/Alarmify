@@ -42,6 +42,9 @@ fi
 # SNAPSHOT_LANGUAGES として環境変数を引き渡す
 if [ -n "$LANGUAGES" ]; then
   export TEST_RUNNER_SNAPSHOT_LANGUAGES="$LANGUAGES"
+else
+  # 引数省略 = 全言語。呼び出し元の環境から継承した絞り込みが残ると一部の言語しか撮れず、完了判定と食い違うため解除する
+  unset TEST_RUNNER_SNAPSHOT_LANGUAGES
 fi
 
 # 既存の結果バンドルを削除（xcodebuildエラー回避）
