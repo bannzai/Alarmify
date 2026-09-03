@@ -260,6 +260,10 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
+/// ContentView の Preview。多言語スクリーンショット撮影 (AlarmifySnapshotUITests) が
+/// SnapshotUITestPage 経由で参照するため、#Preview マクロではなく型名を持つ PreviewProvider で定義する
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }

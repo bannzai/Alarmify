@@ -25,6 +25,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                 Logger.push.error("Signing out for backend switch failed: \(error.localizedDescription)")
             }
         }
+        // 多言語スクリーンショット撮影中は、撮影画面の上に通知の許可ダイアログが被らないよう登録を行わない。
+        // Messaging の delegate も付けない (キャッシュ済みの FCM トークンで didReceiveRegistrationToken が呼ばれ、
+        // 撮影前に消したトークンの再保存と配送先の登録が走って表示が端末の状態に依存するため)
+        if isSnapshotUITest { return true }
         Messaging.messaging().delegate = self
 
         UNUserNotificationCenter.current().delegate = self

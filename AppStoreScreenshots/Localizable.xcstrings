@@ -1,0 +1,336 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A rest_command you can call from any automation": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "任意のオートメーションから呼べる rest_command"
+          }
+        }
+      }
+    },
+    "A webhook contact point that rings when an alert fires": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アラートの発火時に鳴らす Webhook 通知先"
+          }
+        }
+      }
+    },
+    "A webhook notification that rings when a monitor goes down": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モニターがダウンした時に鳴らす Webhook 通知"
+          }
+        }
+      }
+    },
+    "API reference": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "API リファレンス"
+          }
+        }
+      }
+    },
+    "API tokens": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "API トークン"
+          }
+        }
+      }
+    },
+    "Connects\nwith anything": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "何とでも\nつながる"
+          }
+        }
+      }
+    },
+    "Copy curl example": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "curl の例をコピーする"
+          }
+        }
+      }
+    },
+    "Copy token": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンをコピーする"
+          }
+        }
+      }
+    },
+    "Do Not Disturb": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "おやすみモード"
+          }
+        }
+      }
+    },
+    "Integration recipes": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "連携レシピ"
+          }
+        }
+      }
+    },
+    "Integration recipes with this token": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このトークン入りの連携レシピ"
+          }
+        }
+      }
+    },
+    "Issue a token": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンを発行する"
+          }
+        }
+      }
+    },
+    "Issue it in the app and revoke it whenever you like": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリで発行して\nいつでも失効できる"
+          }
+        }
+      }
+    },
+    "Issued token": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発行したトークン"
+          }
+        }
+      }
+    },
+    "Not a notification but a real alarm you cannot miss": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通知ではなく\n見逃せない本物のアラーム"
+          }
+        }
+      }
+    },
+    "One HTTP request and your iPhone rings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP リクエストひとつで\niPhone のアラームが鳴る"
+          }
+        }
+      }
+    },
+    "One POST is all\nit takes": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POST ひとつで\n登録完了"
+          }
+        }
+      }
+    },
+    "One curl line for scripts, crontab and CI jobs": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スクリプト・crontab・CI から 1 行の curl で鳴らす"
+          }
+        }
+      }
+    },
+    "Ready-made recipes for GitHub Actions, Home Assistant, Grafana and more": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Actions や Home Assistant の\nレシピをコピーするだけ"
+          }
+        }
+      }
+    },
+    "Request": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リクエスト"
+          }
+        }
+      }
+    },
+    "Response": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レスポンス"
+          }
+        }
+      }
+    },
+    "Ring when a workflow finishes or fails": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "workflow の完了・失敗時に鳴らす"
+          }
+        }
+      }
+    },
+    "Rings through\nSilent and Focus": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サイレントも\n集中モードも突破"
+          }
+        }
+      }
+    },
+    "Scheduled for today at 3:07": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日 3:07 に登録済み"
+          }
+        }
+      }
+    },
+    "Send a time and a title and Alarmify does the rest": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時刻とタイトルを送るだけで\nあとは Alarmify が届ける"
+          }
+        }
+      }
+    },
+    "Silent": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消音"
+          }
+        }
+      }
+    },
+    "Stop": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止"
+          }
+        }
+      }
+    },
+    "The 'Get Contents of URL' action, for Shortcuts automations": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「URL の内容を取得」アクションで鳴らす"
+          }
+        }
+      }
+    },
+    "This value is shown only once. Save it into your service before closing.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この値を見られるのは今だけです。外部サービスに設定してから閉じてください。"
+          }
+        }
+      }
+    },
+    "Tokens": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発行済みのトークン"
+          }
+        }
+      }
+    },
+    "Tokens you\ncontrol": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンは\n手元で管理"
+          }
+        }
+      }
+    },
+    "Webhooks become\nreal alarms": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Webhook を\n本物のアラームに"
+          }
+        }
+      }
+    },
+    "Wednesday, September 2": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9月2日 水曜日"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

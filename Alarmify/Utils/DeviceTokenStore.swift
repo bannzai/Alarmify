@@ -21,4 +21,11 @@ enum DeviceTokenStore {
     static func loadFCMRegistrationToken() -> String? {
         AppGroup.userDefaults.string(forKey: fcmKey)
     }
+
+    /// 保存済みのトークンをすべて消す。多言語スクリーンショット撮影の前に、
+    /// 以前の実行で残ったトークンが画像に写らないようにするために使う
+    static func removeAll() {
+        AppGroup.userDefaults.removeObject(forKey: apnsKey)
+        AppGroup.userDefaults.removeObject(forKey: fcmKey)
+    }
 }
