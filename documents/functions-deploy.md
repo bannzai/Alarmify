@@ -9,7 +9,7 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 | `default` | `demo-alarmify` | ローカルのエミュレータ専用 (実プロジェクトではない) |
 | `prod` | `alarmify-prod` | 本番 (asia-northeast1) |
 
-## 現状: 本番へデプロイ済み。CI からのデプロイ経路だけ未整備
+## 現状: 本番へデプロイ済み (ローカル・CI とも稼働)
 
 `alarmify-prod` へは 2026-09-03 にローカル (`make deploy-functions`) から初回デプロイ済みで、`appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) の 5 つが ACTIVE (gen2)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。
 
@@ -27,10 +27,12 @@ curl -i -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsA
   -H 'Content-Type: application/json' -d '{"fire_at":"2030-01-01T00:00:00Z","title":"test"}'
 ```
 
-GitHub Actions からのデプロイ (`functions-deploy.yml`) は、次の 2 つが未実施のためまだ起動できない:
+GitHub Actions からのデプロイ (`functions-deploy.yml`) も稼働済み。前提の次の 2 つは 2026-09-04 に適用した。
 
 - デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
+
+初回 run: https://github.com/bannzai/Alarmify/actions/runs/33799188366 (main と本番が同じコードだったため、5 関数すべて `Skipped (No changes detected)` → `Deploy complete!`)
 
 ## ローカルからデプロイする
 
