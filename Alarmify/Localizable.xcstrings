@@ -177,6 +177,26 @@
         }
       }
     },
+    "Apply a cancel payload" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cancel の payload を適用する"
+          }
+        }
+      }
+    },
+    "Apply a schedule payload (fires in 90 seconds)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "schedule の payload を適用する (90 秒後に発火)"
+          }
+        }
+      }
+    },
     "Authorized" : {
       "localizations" : {
         "ja" : {
@@ -223,6 +243,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アラームを取り消す"
+          }
+        }
+      }
+    },
+    "Cancelled %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ を取り消しました"
           }
         }
       }
@@ -683,6 +713,16 @@
         }
       }
     },
+    "Push payload" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "push payload"
+          }
+        }
+      }
+    },
     "Put the Authorization header value in 'secrets.yaml'." : {
       "localizations" : {
         "ja" : {
@@ -783,12 +823,32 @@
         }
       }
     },
+    "Runs the same path as a received push (AlarmRequest → AlarmKitScheduler.apply) to schedule or cancel an alarm with a fixed id. Use this on the simulator, where simctl push does not reach that path." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "push 受信時と同じ経路 (AlarmRequest → AlarmKitScheduler.apply) で、固定 id のアラームを AlarmKit に登録・取消します。simulator では simctl push がこの経路を通らないため、ここから検証します。"
+          }
+        }
+      }
+    },
     "Schedule a test alarm in 1 minute" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 分後にテストアラームを登録する"
+          }
+        }
+      }
+    },
+    "Scheduled %@ at %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$@ に %1$@ を登録しました"
           }
         }
       }
