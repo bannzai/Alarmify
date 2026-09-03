@@ -81,8 +81,8 @@ struct AppStoreScreenshot1Page: View {
             subtitle: "One HTTP request and your iPhone rings"
         ) {
             MockAlarmRingingScreen(
-                // ja: デプロイ完了
-                title: Text("Deploy finished"),
+                // 送信元が付けたタイトルは翻訳されずそのまま届くため verbatim
+                title: Text(verbatim: "Deploy finished"),
                 source: Text(verbatim: "production · GitHub Actions")
             )
         }
@@ -110,8 +110,8 @@ struct AppStoreScreenshot2Page: View {
             subtitle: "Not a notification but a real alarm you cannot miss"
         ) {
             MockAlarmRingingScreen(
-                // ja: サーバーダウン
-                title: Text("Server down"),
+                // 送信元が付けたタイトルは翻訳されずそのまま届くため verbatim
+                title: Text(verbatim: "Server down"),
                 source: Text(verbatim: "api-prod · Grafana"),
                 showsFocusBadges: true
             )

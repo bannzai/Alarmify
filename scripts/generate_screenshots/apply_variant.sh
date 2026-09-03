@@ -142,9 +142,12 @@ for lang in $required_langs; do
     # 適用先に残った過去の PNG と混ざった一式を作らないよう、適用する表示サイズの既存 PNG を先に削除する
     find "$dest_dir" -maxdepth 1 -name "*_${display_type}_*.png" -delete 2>/dev/null || true
 
-    # バリアントのスクリーンショットを適用先にコピー (存在は検証済みのため、失敗はそのまま異常終了させる)
-    cp -f "$lang_dir"*_"${display_type}"_*.png "$dest_dir/"
-    file_count=$((file_count + expected_count))
+    # 検証済みのファイル名だけをコピーする (存在は検証済みのため、失敗はそのまま異常終了させる)。
+    # ワイルドカードでコピーすると、番号の付け替えで残った古い PNG まで適用先へ持ち込むため、期待するインデックスを列挙する
+    for ((variant_index = 0; variant_index < expected_count; variant_index++)); do
+      cp -f "$lang_dir${variant_index}_${display_type}_${variant_index}.png" "$dest_dir/"
+      file_count=$((file_count + 1))
+    done
   done
   echo "Applied: $lang ($file_count files)"
   applied=$((applied + file_count))

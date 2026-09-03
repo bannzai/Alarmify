@@ -5,7 +5,7 @@ import SwiftUI
 /// 本番アプリにはまだ鳴動画面の実装が無いため、スクリーンショット専用のモック UI として実装する
 /// (appstore-screenshot-builder skill「コンテンツ作成の優先順位」の最終手段)
 struct MockAlarmRingingScreen: View {
-    /// 外部サービスが送ってきたアラームのタイトル
+    /// 外部サービスが送ってきたアラームのタイトル。翻訳されずそのまま届くため、呼び出し側は verbatim で渡す
     let title: Text
     /// 送信元 (サービス名・環境)。ブランド名を含むため verbatim で渡す
     let source: Text

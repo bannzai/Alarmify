@@ -16,6 +16,8 @@ artifacts/
 scripts/generate_screenshots/artifacts/
 scripts/generate_screenshots/temp_screenshots/
 scripts/snapshot_ui_tests/screenshots/
+# xcodebuild / swiftc で作った実行ファイルの実行時に作業ディレクトリへ出る LLVM のプロファイルデータ
+*.profraw
 node_modules/
 functions/lib/
 # Firebase CLI / Emulator Suite が作るログとキャッシュ

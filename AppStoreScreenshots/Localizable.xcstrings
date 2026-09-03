@@ -81,16 +81,6 @@
         }
       }
     },
-    "Deploy finished": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "デプロイ完了"
-          }
-        }
-      }
-    },
     "Do Not Disturb": {
       "localizations": {
         "ja": {
@@ -257,16 +247,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "時刻とタイトルを送るだけで\nあとは Alarmify が届ける"
-          }
-        }
-      }
-    },
-    "Server down": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "サーバーダウン"
           }
         }
       }
