@@ -9,6 +9,8 @@ struct DeveloperMenuView: View {
     @State private var paywallTrigger: PaywallTrigger?
     /// 直近の push payload 適用の結果。成否を画面上で確認できるようにする
     @State private var pushPayloadResult: PushPayloadResult?
+    /// 進行中の push payload 適用。schedule (AlarmKit の登録完了を待つ) と cancel が重ならないよう、次の適用は前の完了を待ってから始める
+    @State private var pushPayloadTask: Task<Void, Never>?
 
     private struct PushPayloadResult {
         var message: String
@@ -81,14 +83,14 @@ struct DeveloperMenuView: View {
 
             Section {
                 Button {
-                    Task { await applyPushPayload(DebugPushPayload.scheduleUserInfo(fireDate: .now.addingTimeInterval(DebugPushPayload.defaultFireInterval))) }
+                    enqueuePushPayload(DebugPushPayload.scheduleUserInfo(fireDate: .now.addingTimeInterval(DebugPushPayload.defaultFireInterval)))
                 } label: {
                     // ja: schedule の payload を適用する (90 秒後に発火)
                     Text("Apply a schedule payload (fires in 90 seconds)")
                 }
                 .accessibilityIdentifier("debug_apply_push_schedule")
                 Button {
-                    Task { await applyPushPayload(DebugPushPayload.cancelUserInfo()) }
+                    enqueuePushPayload(DebugPushPayload.cancelUserInfo())
                 } label: {
                     // ja: cancel の payload を適用する
                     Text("Apply a cancel payload")
@@ -112,6 +114,15 @@ struct DeveloperMenuView: View {
         .navigationTitle(Text("Developer menu"))
         .sheet(item: $paywallTrigger) { trigger in
             PaywallPage(trigger: trigger)
+        }
+    }
+
+    /// push payload の適用を直列化する。前の適用が終わってから次を始め、最後に押した操作の結果が最終状態になるようにする
+    private func enqueuePushPayload(_ userInfo: [AnyHashable: Any]) {
+        let previous = pushPayloadTask
+        pushPayloadTask = Task {
+            await previous?.value
+            await applyPushPayload(userInfo)
         }
     }
 
