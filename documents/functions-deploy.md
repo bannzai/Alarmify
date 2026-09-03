@@ -16,11 +16,11 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 デプロイ状態の確認 (read-only):
 
 ```sh
-gcloud functions list --project alarmify-prod --format='table(name,state,updateTime,environment)'
+gcloud functions list --project alarmify-prod --v2 --format='table(name,state,updateTime,environment)'
 
-# ruleset の適用日時 (firestore.rules)
+# firestore.rules の適用状態 (応答の rulesetName と updateTime を見る)
 curl -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "x-goog-user-project: alarmify-prod" \
-  https://firebaserules.googleapis.com/v1/projects/alarmify-prod/releases
+  https://firebaserules.googleapis.com/v1/projects/alarmify-prod/releases/cloud.firestore
 
 # 外部サービス向け API がトークンなしで 401 を返すこと (認証前に落ちるので Firestore には何も書かれない)
 curl -i -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi/v1/alarms \
