@@ -26,6 +26,7 @@
 		B9D380F69A74168B936F4FAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3855C5317EACB9CD0D7B34D /* Assets.xcassets */; };
 		BEDCB68CE5413BC4E1A30603 /* AlarmifyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */; };
 		DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */; };
+		0D7327D88A274C7BB56113AF /* DebugPushPayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */; };
 		DF5F29343C850077D3CECD66 /* AlarmKitScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */; };
 		E9E8F58B61DBC3A66DCD71B7 /* AlarmifyWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EB78EA59DDA5273EB6BE7614 /* AlarmLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AD83FE37A50A790D0662E0 /* AlarmLiveActivityWidget.swift */; };
@@ -68,6 +69,7 @@
 		D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E725A6BB2526D22334F0AD0 /* AccountSession.swift */; };
 		BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */; };
 		0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */; };
+		50539BA0C0094EE0B4E53FD2 /* DebugPushPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */; };
 		5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */; };
 		8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA085358AAEA03A5EF70727B /* APITokenTests.swift */; };
 		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
@@ -155,6 +157,7 @@
 		77F0EDE7A7D5B739462304A9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		A3855C5317EACB9CD0D7B34D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmRequestTests.swift; sourceTree = "<group>"; };
+		9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPushPayloadTests.swift; sourceTree = "<group>"; };
 		AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmKitScheduler.swift; sourceTree = "<group>"; };
 		B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		B4CBF45DA44727442FBE4178 /* Alarmify.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Alarmify.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -206,6 +209,7 @@
 		0E725A6BB2526D22334F0AD0 /* AccountSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountSession.swift"; sourceTree = "<group>"; };
 		740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperMenuView.swift"; sourceTree = "<group>"; };
 		B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperSettings.swift"; sourceTree = "<group>"; };
+		A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugPushPayload.swift"; sourceTree = "<group>"; };
 		CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClientTests.swift"; sourceTree = "<group>"; };
 		FA085358AAEA03A5EF70727B /* APITokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenTests.swift"; sourceTree = "<group>"; };
 		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -338,6 +342,7 @@
 			children = (
 				59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
+				9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */,
 				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
 				FA085358AAEA03A5EF70727B /* APITokenTests.swift */,
@@ -514,6 +519,7 @@
 		F0B0BA3AA317B1253CEA0183 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */,
 				740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */,
 				B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */,
 			);
@@ -823,6 +829,7 @@
 				E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */,
 				3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
+				0D7327D88A274C7BB56113AF /* DebugPushPayloadTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
 			);
@@ -870,6 +877,7 @@
 				D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */,
 				BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */,
 				0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */,
+				50539BA0C0094EE0B4E53FD2 /* DebugPushPayload.swift in Sources */,
 				1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */,
 				68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */,
 				A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */,
