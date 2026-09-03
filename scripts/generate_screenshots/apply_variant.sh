@@ -53,19 +53,21 @@ echo "==== Applying variant: $VARIANT_NAME ===="
 echo "==== Source: $VARIANT_DIR ===="
 echo "==== Destination: $FASTLANE_DIR ===="
 
-# バリアントの期待枚数 = このバリアントの番号帯に属するテストファイル数 × 撮影デバイス数 (SCREENSHOT_DEVICES)。
+# バリアントの期待素材 = このバリアントの番号帯に属するテストファイルごとの get_variant_index の集合 × 撮影デバイス数 (SCREENSHOT_DEVICES)。
 # 一部だけ生成した状態 (-n "1" や -d "69" 等) で適用すると、適用先の完成済み一式を消して欠落した素材を作るため、
-# 各言語がデバイスごとに期待枚数に達していることを削除前に検証する
-expected_count=0
+# 各言語がデバイスごとに期待素材を持つことを削除前に検証する。
+# テスト数からの 0..N-1 の連番だと、中間番号の削除・付け替えで index が歯抜け (例: {0,1,3,4}) になった時に
+# artifacts へ残った古い index の PNG を「揃っている」と誤判定し、必要な index を適用しないため、index を集合で持つ
+variant_indices=()
 for test_file in AppStoreScreenshotsUITests/Features/AppStoreScreenshot/AppStoreScreenshot*PageSnapshotUITest.swift; do
   [ -f "$test_file" ] || continue
   screenshot_number=$(basename "$test_file" .swift | sed -E 's/AppStoreScreenshot([0-9]+)PageSnapshotUITest/\1/')
   if [ "$(get_variant_name "$screenshot_number")" = "$VARIANT_NAME" ]; then
-    expected_count=$((expected_count + 1))
+    variant_indices+=("$(get_variant_index "$screenshot_number")")
   fi
 done
 
-if [ "$expected_count" -eq 0 ]; then
+if [ "${#variant_indices[@]}" -eq 0 ]; then
   echo "Error: バリアント '$VARIANT_NAME' に対応するテストが見つかりません"
   exit 1
 fi
@@ -108,7 +110,7 @@ for lang in $required_langs; do
     display_type=$(get_display_type "$device")
     # 枚数だけの照合だと、番号の付け替えで残った古い PNG が欠けた分を埋めて「揃っている」と誤判定するため、
     # 期待するインデックスのファイル名を 1 つずつ確認する
-    for ((variant_index = 0; variant_index < expected_count; variant_index++)); do
+    for variant_index in "${variant_indices[@]}"; do
       expected_file="$lang_dir${variant_index}_${display_type}_${variant_index}.png"
       if [ ! -f "$expected_file" ]; then
         incomplete+="  - ${lang} (${display_type}): $(basename "$expected_file") がありません"$'\n'
@@ -144,7 +146,7 @@ for lang in $required_langs; do
 
     # 検証済みのファイル名だけをコピーする (存在は検証済みのため、失敗はそのまま異常終了させる)。
     # ワイルドカードでコピーすると、番号の付け替えで残った古い PNG まで適用先へ持ち込むため、期待するインデックスを列挙する
-    for ((variant_index = 0; variant_index < expected_count; variant_index++)); do
+    for variant_index in "${variant_indices[@]}"; do
       cp -f "$lang_dir${variant_index}_${display_type}_${variant_index}.png" "$dest_dir/"
       file_count=$((file_count + 1))
     done
