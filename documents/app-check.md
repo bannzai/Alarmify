@@ -32,7 +32,7 @@ agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny 
 
 | 日付 | 段階 | 内容 |
 | --- | --- | --- |
-| 2026-09-04 | 監視のみ (`monitor`) | クライアント実装と Functions の検証を追加。Apple の App Attest capability を有効化。Firebase 側の登録 (Team ID・App Attest・デバッグトークン) と provisioning profile の再生成は未実施 (bannzai がやる作業の一覧 https://github.com/bannzai/Alarmify/issues/25 ) |
+| 2026-09-04 | 監視のみ (`monitor`) | クライアント実装と Functions の検証を追加。Apple の App Attest capability を有効化。Firebase 側の登録 (App Check API の有効化・Team ID・App Attest プロバイダ・デバッグトークン `simtunnel alarmify`) を `setup-ios --apply` で実施。provisioning profile の再生成は未実施 (bannzai がやる作業の一覧 https://github.com/bannzai/Alarmify/issues/25 ) |
 
 強制 (`enforce`) への切り替えは公開前チェックリスト ( https://github.com/bannzai/Alarmify/issues/14 ) の項目として扱う。
 
@@ -85,7 +85,7 @@ Firebase Console / App Check API の「サービスの強制適用」(`firebase-
 
 ## Firebase 側の登録
 
-Firebase の外部状態を変える操作のため、firebase-app-check-setup skill は `--apply` の前に対象 (project / app ID / Team ID / デバッグトークンの保存先) の確認を求める。無人実装 (#4) では実行せず、bannzai がやる作業の一覧 (issue #25) に載せている。
+Firebase の外部状態を変える操作のため、firebase-app-check-setup skill は `--apply` の前に対象 (project / app ID / Team ID / デバッグトークンの保存先) の確認を求める。2026-09-04 に bannzai の承認で `--apply` を実行済み (`team_id_updated` / `app_attest_configured` / `debug_token_created` がすべて true)。再実行しても同名のデバッグトークンは増えない。
 
 ```sh
 # 計画の確認 (書き込まない)
@@ -143,4 +143,4 @@ curl -i -X POST http://127.0.0.1:5410/demo-alarmify/asia-northeast1/alarmsApi/v1
 # → HTTP 401、error.code = unauthenticated (外部 API は App Check を要求しない)
 ```
 
-simulator のデバッグプロバイダは本番 (`alarmify-prod`) の App Check API とトークンを交換するため、エミュレータ (`demo-alarmify`) 向けの Functions は正規のトークンでも検証を通せない (aud の project が一致しない)。「simulator から強制段階の API が通る」ことの確認は、Firebase 側の登録後に simtunnel + `alarmify-prod` (強制段階に切り替えた後) で行う。
+simulator のデバッグプロバイダは本番 (`alarmify-prod`) の App Check API とトークンを交換するため、エミュレータを `demo-alarmify` で動かすと正規のトークンでも検証を通せない (aud の project が一致しない)。「simulator から強制段階の API が通る」ことをエミュレータで確かめるには、エミュレータを `--project alarmify-prod` で起動し (Firestore / Auth はエミュレータのまま。FCM 送信を伴う `alarmsApi` は呼ばない)、アプリ側の接続先 (`AlarmifyBackend.emulator` の `demo-alarmify` パス) を一時的に `alarmify-prod` に向けたビルドをローカル simulator に入れ、`SIMCTL_CHILD_FIRAAppCheckDebugToken` でデバッグトークンを渡して開発者メニューから接続先を emulator に切り替える。2026-09-04 にこの手順で、配送先の登録と API トークンの発行が `enforce` のエミュレータを通ることを確認した (PR #39)。App Check SDK は交換したトークンを 1 時間キャッシュするため、トークン無しの挙動を simulator で見る時はアプリを入れ直す。
