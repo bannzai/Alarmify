@@ -9,12 +9,30 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 | `default` | `demo-alarmify` | ローカルのエミュレータ専用 (実プロジェクトではない) |
 | `prod` | `alarmify-prod` | 本番 (asia-northeast1) |
 
-## 現状: 初回デプロイの前提が未整備
+## 現状: 本番へデプロイ済み (ローカル・CI とも稼働)
 
-バックエンドの実装 (`functions/` と `firebase.json`) は https://github.com/bannzai/Alarmify/pull/22 で入った。デプロイされる関数は `appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。デプロイ経路 (workflow・Makefile・environment `firebase-prod`) は整備済みで、次の 2 つが未実施:
+`alarmify-prod` へは 2026-09-03 にローカル (`make deploy-functions`) から初回デプロイ済みで、`appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) の 5 つが ACTIVE (gen2)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。
+
+デプロイ状態の確認 (read-only):
+
+```sh
+gcloud functions list --project alarmify-prod --v2 --format='table(name,state,updateTime,environment)'
+
+# firestore.rules の適用状態 (応答の rulesetName と updateTime を見る)
+curl -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "x-goog-user-project: alarmify-prod" \
+  https://firebaserules.googleapis.com/v1/projects/alarmify-prod/releases/cloud.firestore
+
+# 外部サービス向け API がトークンなしで 401 を返すこと (認証前に落ちるので Firestore には何も書かれない)
+curl -i -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi/v1/alarms \
+  -H 'Content-Type: application/json' -d '{"fire_at":"2030-01-01T00:00:00Z","title":"test"}'
+```
+
+GitHub Actions からのデプロイ (`functions-deploy.yml`) も稼働済み。前提の次の 2 つは 2026-09-04 に適用した。
 
 - デプロイ専用サービスアカウントの作成と IAM 付与 (下記「デプロイ専用サービスアカウントの用意」)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `--scheduler` を付けて付与する
 - environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
+
+初回 run: https://github.com/bannzai/Alarmify/actions/runs/33799188366 (main と本番が同じコードだったため、5 関数すべて `Skipped (No changes detected)` → `Deploy complete!`)
 
 ## ローカルからデプロイする
 
