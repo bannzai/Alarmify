@@ -972,6 +972,7 @@
 				CODE_SIGN_ENTITLEMENTS = AlarmifyNotificationService/AlarmifyNotificationService.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -979,7 +980,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.NotificationService;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -996,6 +997,7 @@
 				INFOPLIST_FILE = Alarmify/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1005,7 +1007,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.AppStore";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1021,7 +1023,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.AlarmifyTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Alarmify.app/Alarmify";
 			};
 			name = Debug;
@@ -1034,6 +1036,7 @@
 				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1042,7 +1045,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.NotificationService;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.NotificationService.AppStore";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1057,6 +1060,7 @@
 				INFOPLIST_FILE = Alarmify/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1065,7 +1069,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1128,7 +1132,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1149,7 +1153,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.Widget;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.Widget.AppStore";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1167,7 +1171,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify.Widget;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1183,7 +1187,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.AlarmifyTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Alarmify.app/Alarmify";
 			};
 			name = Release;
@@ -1254,7 +1258,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
