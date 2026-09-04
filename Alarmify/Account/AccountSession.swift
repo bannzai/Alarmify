@@ -1,3 +1,4 @@
+import FirebaseAppCheck
 import FirebaseAuth
 import Foundation
 import Observation
@@ -158,9 +159,21 @@ final class AccountSession {
         if settings.stubAPIClient {
             return StubAlarmifyAPIClient()
         }
-        return URLSessionAlarmifyAPIClient(backend: settings.backend) {
-            guard let user = Auth.auth().currentUser else { return nil }
-            return try await user.getIDToken()
-        }
+        return URLSessionAlarmifyAPIClient(
+            backend: settings.backend,
+            idToken: {
+                guard let user = Auth.auth().currentUser else { return nil }
+                return try await user.getIDToken()
+            },
+            appCheckToken: {
+                do {
+                    return try await AppCheck.appCheck().token(forcingRefresh: false).token
+                } catch {
+                    // 取得できなくてもリクエストは送る (サーバー側の監視のみ / 強制の設定で扱いが決まる)
+                    Logger.appCheck.error("App Check token unavailable: \(error.localizedDescription)")
+                    return nil
+                }
+            }
+        )
     }
 }

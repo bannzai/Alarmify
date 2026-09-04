@@ -1,3 +1,4 @@
+import FirebaseAppCheck
 import FirebaseAuth
 import FirebaseCore
 import FirebaseMessaging
@@ -11,6 +12,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        // factory は configure より前に設定する。後から設定しても反映されず、既定のプロバイダで初期化されてしまう
+        AppCheck.setAppCheckProviderFactory(AlarmifyAppCheckProviderFactory())
         FirebaseApp.configure()
         // 開発者メニューでエミュレータを選んでいる時だけ、Firebase Auth の宛先をローカルへ向ける
         let backend = DeveloperMenu.settings.backend
