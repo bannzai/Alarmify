@@ -47,7 +47,7 @@ openssl pkcs12 -info -in ./tmp/signing/distribution.p12 -passin "file:./tmp/sign
 
 `create-certificate` で新規発行した場合は、`--out` に指定したディレクトリへ `distribution.p12` と `p12-password.txt` が同じ名前で作られるため、この手順は不要。
 
-GUI を使わない書き出し方: `security export` は対象を絞れず全 identity (別チームの鍵を含む) を書き出してしまうため使わないが、Security framework の `SecItemExport` を Swift スクリプトから呼べば serial で指定した 1 つの identity だけを PKCS#12 に書き出せる (許可ダイアログもその鍵 1 つ分だけ出る)。2026-09-04 の初回配布はこの方法で書き出した。ios-deploy-actions skill への取り込みは https://github.com/bannzai/castle/issues/855
+GUI を使わない書き出し方: `security export` は対象を絞れず全 identity (別チームの鍵を含む) を書き出してしまうため使わないが、Security framework の `SecItemExport` を Swift スクリプトから呼べば serial で指定した 1 つの identity だけを PKCS#12 に書き出せる (許可ダイアログもその鍵 1 つ分だけ出る)。2026-09-04 の初回配布はこの方法で書き出した。スクリプトは ios-deploy-actions skill (bannzai/castle。private リポジトリ) 側へ `signing-assets.sh` のサブコマンドとして取り込む予定で、取り込み後は同 skill の手順を正とする
 
 ### provisioning profile を発行する
 
