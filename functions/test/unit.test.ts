@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore";
 import { describe, expect, it } from "vitest";
 import {
   API_TOKEN_PREFIX,
@@ -7,9 +8,16 @@ import {
   hashEquals,
   parseBearerToken,
 } from "../src/lib/apiToken.js";
-import { monthKey } from "../src/lib/plan.js";
+import { effectivePlan, monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
 import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
+import {
+  isAnonymousAppUserId,
+  planUpdatesOf,
+  PRO_ENTITLEMENT_ID,
+  resolveUid,
+  type RevenueCatEvent,
+} from "../src/lib/revenueCat.js";
 
 describe("API トークン", () => {
   it("平文は接頭辞つきで、毎回異なる", () => {
@@ -48,6 +56,145 @@ describe("プラン", () => {
     expect(monthKey(new Date("2026-12-31T23:59:59Z"))).toBe("2026-12");
     // JST では翌月でも UTC では 8 月
     expect(monthKey(new Date("2026-09-01T00:00:00+09:00"))).toBe("2026-08");
+  });
+
+  it("pro は失効日時を過ぎるまで有効で、失効日時ちょうどは失効済み", () => {
+    const now = new Date("2026-09-02T00:00:00Z");
+    expect(effectivePlan({ plan: "free" }, now)).toBe("free");
+    // free に残った失効日時は pro に昇格させない
+    expect(
+      effectivePlan({ plan: "free", proExpiresAt: Timestamp.fromMillis(now.getTime() + 1000) }, now),
+    ).toBe("free");
+    // 失効日時が無い pro は期限なし
+    expect(effectivePlan({ plan: "pro" }, now)).toBe("pro");
+    expect(effectivePlan({ plan: "pro", proExpiresAt: null }, now)).toBe("pro");
+    expect(
+      effectivePlan({ plan: "pro", proExpiresAt: Timestamp.fromMillis(now.getTime() + 1) }, now),
+    ).toBe("pro");
+    expect(
+      effectivePlan({ plan: "pro", proExpiresAt: Timestamp.fromMillis(now.getTime()) }, now),
+    ).toBe("free");
+    expect(
+      effectivePlan({ plan: "pro", proExpiresAt: Timestamp.fromMillis(now.getTime() - 1) }, now),
+    ).toBe("free");
+  });
+});
+
+describe("RevenueCat の webhook イベント", () => {
+  const NOW = new Date("2026-09-02T00:00:00Z");
+  const EXPIRES_AT = new Date(NOW.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const ANONYMOUS_APP_USER_ID = "$RCAnonymousID:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6";
+
+  /** 指定しないフィールドは「test-uid の pro entitlement を NOW 時点で通知する」既定値にする */
+  function revenueCatEvent(
+    overrides: Partial<RevenueCatEvent> & Pick<RevenueCatEvent, "type">,
+  ): RevenueCatEvent {
+    return {
+      id: "event-1",
+      event_timestamp_ms: NOW.getTime(),
+      app_user_id: "test-uid",
+      entitlement_ids: [PRO_ENTITLEMENT_ID],
+      ...overrides,
+    };
+  }
+
+  it("pro の entitlement は失効日時つきで反映し、失効日時を過ぎていれば free にする", () => {
+    expect(
+      planUpdatesOf(
+        revenueCatEvent({ type: "INITIAL_PURCHASE", expiration_at_ms: EXPIRES_AT.getTime() }),
+        NOW,
+      ),
+    ).toEqual([{ uid: "test-uid", plan: "pro", proExpiresAt: EXPIRES_AT }]);
+    // 失効日時が無いイベント (買い切り等) は期限なしの pro
+    expect(planUpdatesOf(revenueCatEvent({ type: "RENEWAL" }), NOW)).toEqual([
+      { uid: "test-uid", plan: "pro", proExpiresAt: null },
+    ]);
+    // 失効日時ちょうども失効済みとして free で保存する
+    expect(
+      planUpdatesOf(
+        revenueCatEvent({ type: "EXPIRATION", expiration_at_ms: NOW.getTime() }),
+        NOW,
+      ),
+    ).toEqual([{ uid: "test-uid", plan: "free", proExpiresAt: null }]);
+  });
+
+  it("請求猶予期間の終了日時が失効日時より後なら、そちらまで pro にする", () => {
+    const graceEndsAt = new Date(EXPIRES_AT.getTime() + 16 * 24 * 60 * 60 * 1000);
+    expect(
+      planUpdatesOf(
+        revenueCatEvent({
+          type: "BILLING_ISSUE",
+          expiration_at_ms: EXPIRES_AT.getTime(),
+          grace_period_expiration_at_ms: graceEndsAt.getTime(),
+        }),
+        NOW,
+      ),
+    ).toEqual([{ uid: "test-uid", plan: "pro", proExpiresAt: graceEndsAt }]);
+  });
+
+  it("TEST・pro 以外の entitlement・匿名 ID だけのイベントは更新しない", () => {
+    expect(planUpdatesOf(revenueCatEvent({ type: "TEST" }), NOW)).toEqual([]);
+    expect(
+      planUpdatesOf(revenueCatEvent({ type: "INITIAL_PURCHASE", entitlement_ids: ["legacy"] }), NOW),
+    ).toEqual([]);
+    expect(
+      planUpdatesOf(revenueCatEvent({ type: "INITIAL_PURCHASE", entitlement_ids: null }), NOW),
+    ).toEqual([]);
+    expect(
+      planUpdatesOf(
+        revenueCatEvent({
+          type: "INITIAL_PURCHASE",
+          app_user_id: ANONYMOUS_APP_USER_ID,
+          aliases: [ANONYMOUS_APP_USER_ID],
+        }),
+        NOW,
+      ),
+    ).toEqual([]);
+  });
+
+  it("TRANSFER は失う側を free、受け取る側を期限なしの pro にし、匿名 ID は除く", () => {
+    expect(
+      planUpdatesOf(
+        revenueCatEvent({
+          type: "TRANSFER",
+          transferred_from: ["uid-a", ANONYMOUS_APP_USER_ID],
+          transferred_to: ["uid-b"],
+          expiration_at_ms: EXPIRES_AT.getTime(),
+        }),
+        NOW,
+      ),
+    ).toEqual([
+      { uid: "uid-a", plan: "free", proExpiresAt: null },
+      { uid: "uid-b", plan: "pro", proExpiresAt: null },
+    ]);
+  });
+
+  it("同じイベントからは何度でも同じ更新を返す (冪等)", () => {
+    const purchase = revenueCatEvent({
+      type: "INITIAL_PURCHASE",
+      expiration_at_ms: EXPIRES_AT.getTime(),
+    });
+    expect(planUpdatesOf(purchase, NOW)).toEqual(planUpdatesOf(purchase, NOW));
+  });
+
+  it("uid は app_user_id を優先し、匿名 ID なら aliases から探す", () => {
+    expect(resolveUid({ app_user_id: "test-uid" })).toBe("test-uid");
+    expect(resolveUid({ app_user_id: "test-uid", aliases: ["other-uid"] })).toBe("test-uid");
+    expect(
+      resolveUid({ app_user_id: ANONYMOUS_APP_USER_ID, aliases: [ANONYMOUS_APP_USER_ID, "test-uid"] }),
+    ).toBe("test-uid");
+    expect(resolveUid({ app_user_id: ANONYMOUS_APP_USER_ID, aliases: [] })).toBeNull();
+    expect(resolveUid({ app_user_id: ANONYMOUS_APP_USER_ID, aliases: null })).toBeNull();
+    expect(resolveUid({})).toBeNull();
+  });
+
+  it("匿名 App User ID は $RCAnonymousID: と英数字 32 文字の形式だけを指す", () => {
+    expect(isAnonymousAppUserId(ANONYMOUS_APP_USER_ID)).toBe(true);
+    expect(isAnonymousAppUserId("test-uid")).toBe(false);
+    // 32 文字に足りない・余る値は匿名 ID として扱わない
+    expect(isAnonymousAppUserId("$RCAnonymousID:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d")).toBe(false);
+    expect(isAnonymousAppUserId(`${ANONYMOUS_APP_USER_ID}0`)).toBe(false);
+    expect(isAnonymousAppUserId("$RCAnonymousID:A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6")).toBe(false);
   });
 });
 

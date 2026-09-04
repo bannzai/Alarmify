@@ -5,10 +5,12 @@ import { getMessaging } from "firebase-admin/messaging";
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions";
+import { defineSecret } from "firebase-functions/params";
 import { onSchedule } from "firebase-functions/scheduler";
 import { handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
+import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
 import { deleteExpiredAlarms } from "./lib/cleanup.js";
 import type { Deps } from "./lib/deps.js";
 import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
@@ -35,6 +37,18 @@ export const appApi = onRequest(createAppApi(createDeps()));
 
 /** 外部サービス向け API (Bearer = API トークン) */
 export const alarmsApi = onRequest(createExternalApi(createDeps()));
+
+/**
+ * RevenueCat Dashboard の webhook 設定に登録した Authorization ヘッダーの値 (Secret Manager)。
+ * 登録手順は documents/revenuecat-webhook.md。未登録だと deploy が止まる (defineSecret の仕様)
+ */
+const revenueCatWebhookAuthorization = defineSecret("REVENUECAT_WEBHOOK_AUTHORIZATION");
+
+/** RevenueCat の webhook。entitlement pro の状態を users/{uid}.plan に反映する */
+export const revenueCatWebhook = onRequest(
+  { secrets: [revenueCatWebhookAuthorization] },
+  createRevenueCatWebhook(createDeps(), { authorization: () => revenueCatWebhookAuthorization.value() }),
+);
 
 /** 保持期間を過ぎたアラーム要求の削除。期限切れの発生量を追い越せるよう、1 回の実行で複数バッチを処理する */
 export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
