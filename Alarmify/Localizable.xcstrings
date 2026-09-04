@@ -723,6 +723,16 @@
         }
       }
     },
+    "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。"
+          }
+        }
+      }
+    },
     "Push payload" : {
       "localizations" : {
         "ja" : {

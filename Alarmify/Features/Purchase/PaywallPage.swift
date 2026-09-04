@@ -116,11 +116,20 @@ struct PaywallPage: View {
         }
     }
 
-    /// 購入・復元をアカウント (uid) に結び付けられなかった時のメッセージ。
-    /// 匿名 ID のまま購入するとサーバー側のプランが更新されないため、結び付くまで購入・復元を始めない (AccountSession.ensurePurchasesLinked)
-    private static var purchasesNotLinkedMessage: String {
-        // ja: 購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。
-        String(localized: "Couldn't link purchases to your account. Check your connection and try again.")
+    /// 購入・復元を始められない時のメッセージ。始めてよければ nil。
+    /// 匿名 ID のまま購入するとサーバー側のプランが更新されないため、uid に結び付くまで購入・復元を始めない (AccountSession.purchaseLinkState)
+    private func purchaseBlockedMessage() async -> String? {
+        switch await AccountSession.shared.purchaseLinkState() {
+        case .linked:
+            return nil
+        case .notLinked:
+            // ja: 購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。
+            return String(localized: "Couldn't link purchases to your account. Check your connection and try again.")
+        case .emulatorBackend:
+            // 開発者メニューでエミュレータを選んだ時だけ到達する (App Store 配布では接続先を変えられない)
+            // ja: エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。
+            return String(localized: "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu.")
+        }
     }
 
     /// ペイウォールを開いた文脈の導入文
@@ -193,8 +202,8 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
-        guard await AccountSession.shared.ensurePurchasesLinked() else {
-            purchaseError = Self.purchasesNotLinkedMessage
+        if let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
             return
         }
         do {
@@ -229,8 +238,8 @@ struct PaywallPage: View {
         }
         isPurchasing = true
         defer { isPurchasing = false }
-        guard await AccountSession.shared.ensurePurchasesLinked() else {
-            purchaseError = Self.purchasesNotLinkedMessage
+        if let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
             return
         }
         do {

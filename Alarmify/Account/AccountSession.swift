@@ -12,6 +12,17 @@ enum DeviceRegistrationState: Equatable, Sendable {
     case failed(String)
 }
 
+/// 購入・復元を始める前の、RevenueCat の identity と Firebase Auth の uid の結び付きの状態 (`AccountSession.purchaseLinkState`)。
+/// 表示する文言は使用側 (PaywallPage) が switch で決める
+enum PurchaseLinkState: Equatable, Sendable {
+    /// uid に結び付いていて購入を始めてよい
+    case linked
+    /// 結び付けに失敗した (未サインイン・RevenueCat の logIn の失敗)
+    case notLinked
+    /// 接続先がエミュレータで、購入・復元を許さない
+    case emulatorBackend
+}
+
 /// 匿名認証で自動作成したアカウントと、この端末の配送先登録をまとめて持つ。
 /// FCM トークンの受信は `AppDelegate`、表示は SwiftUI と入口が分かれるため 1 インスタンス (`shared`) に集約する
 @MainActor
@@ -92,14 +103,16 @@ final class AccountSession {
         await ProEntitlement.logIn(appUserID: uid)
     }
 
-    /// ペイウォールの購入・復元の直前に呼び、購入が uid に結び付く状態かを返す。
+    /// ペイウォールの購入・復元の直前に呼び、購入を始めてよい状態かを返す。
     /// 起動時の logIn が失敗したまま匿名 ID で購入すると、webhook に uid が載らずサーバーのプランが更新されないため、
-    /// ここで結び付けをやり直し、できなければ購入を始めない。エミュレータ向けのアカウントは結び付けない設計のため常に true
-    func ensurePurchasesLinked() async -> Bool {
-        guard settings.backend == .production else { return true }
-        guard let uid else { return false }
+    /// ここで結び付けをやり直し、できなければ購入を始めない。
+    /// 接続先がエミュレータの間は購入・復元を許さない (匿名 ID で行った購入は、本番へ戻した起動の logIn で本番の uid にマージされ、
+    /// その後のイベントが本番の Firestore を更新してしまうため)
+    func purchaseLinkState() async -> PurchaseLinkState {
+        guard settings.backend == .production else { return .emulatorBackend }
+        guard let uid else { return .notLinked }
         await ProEntitlement.logIn(appUserID: uid)
-        return ProEntitlement.isLoggedIn(as: uid)
+        return ProEntitlement.isLoggedIn(as: uid) ? .linked : .notLinked
     }
 
     /// FCM 登録トークンを受け取り、サインイン済みならバックエンドへ登録する
