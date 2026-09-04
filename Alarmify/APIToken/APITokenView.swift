@@ -109,6 +109,10 @@ struct APITokenView: View {
         // サインイン完了前に開いた場合や前面復帰でサインインし直した場合に、一覧を読み直す
         .task(id: session.uid) { await model.load() }
         .refreshable { await model.load() }
+        // 無料プランの上限で発行を拒否された時のペイウォール。購入後のプランの反映は RevenueCat の webhook がサーバー側で行う
+        .sheet(item: $model.paywallTrigger) { trigger in
+            PaywallPage(trigger: trigger)
+        }
     }
 }
 

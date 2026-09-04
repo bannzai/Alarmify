@@ -52,6 +52,7 @@ final class AccountSession {
             }
             uid = user.uid
             signInError = nil
+            await linkPurchases(uid: user.uid)
             await registerDeviceIfPossible()
             return
         }
@@ -65,8 +66,17 @@ final class AccountSession {
             Logger.push.error("Anonymous sign-in failed: \(error.localizedDescription)")
             return
         }
+        await linkPurchases(uid: uid ?? "")
         // サインインの完了前に FCM トークンが届いていた場合、その登録はここで初めて成立する
         await registerDeviceIfPossible()
+    }
+
+    /// サインイン済みの uid を RevenueCat の App User ID にする。
+    /// 本番の Firestore を更新する RevenueCat の webhook には接続先の区別が無いため、エミュレータ向けのアカウント
+    /// (本番に存在しない uid) では結び付けず、購入を RevenueCat の匿名 ID のまま残す (webhook 側で無視される)
+    private func linkPurchases(uid: String) async {
+        guard settings.backend == .production, !uid.isEmpty else { return }
+        await ProEntitlement.logIn(appUserID: uid)
     }
 
     /// FCM 登録トークンを受け取り、サインイン済みならバックエンドへ登録する

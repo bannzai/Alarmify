@@ -48,9 +48,10 @@ final class AccountDeletionTests: XCTestCase {
             try await makeClient().deleteAccount()
             XCTFail("Expected an error")
         } catch {
+            // Callable のエラーは `code` ではなく `status` を持つため code は nil
             XCTAssertEqual(
                 error as? AlarmifyAPIError,
-                .server(statusCode: 401, message: "Authentication is required to delete the account.")
+                .server(statusCode: 401, code: nil, message: "Authentication is required to delete the account.")
             )
         }
     }

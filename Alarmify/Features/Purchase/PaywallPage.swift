@@ -6,7 +6,8 @@ import SwiftUI
 enum PaywallTrigger: Identifiable {
     /// 設定画面から明示的に開いた
     case settings
-    /// 無料プランの上限に達した操作から開いた
+    /// 無料プランの上限 (トークン数・月間のアラーム数) に達した操作から開いた。
+    /// アプリが受け取るのは API トークン発行の `plan_limit_exceeded` (APITokenModel.issue)
     case freeQuotaExceeded
 
     var id: Self { self }
@@ -122,8 +123,9 @@ struct PaywallPage: View {
             // ja: 無料プランではトークン 1 つ・月 20 回までアラームを登録できます
             return Text("The free plan includes one token and up to 20 alarms a month")
         case .freeQuotaExceeded:
-            // ja: 今月の無料枠を使い切りました
-            return Text("You've used up this month's free quota")
+            // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
+            // ja: 無料プランの上限に達しました
+            return Text("You've reached the limit of the free plan")
         }
     }
 

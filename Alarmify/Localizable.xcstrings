@@ -1143,12 +1143,12 @@
         }
       }
     },
-    "You've used up this month's free quota" : {
+    "You've reached the limit of the free plan" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今月の無料枠を使い切りました"
+            "value" : "無料プランの上限に達しました"
           }
         }
       }
