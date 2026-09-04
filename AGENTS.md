@@ -30,7 +30,7 @@
 
 ## 配布とデプロイ
 
-- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
+- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (main へのマージで自動起動。手動起動は workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
 - Functions のデプロイはローカルが `make deploy-functions`、CI が `.github/workflows/functions-deploy.yml` (workflow_dispatch)。デプロイ先は `.firebaserc` の alias で明示する。手順は `documents/functions-deploy.md`
 
 ## ストア素材
