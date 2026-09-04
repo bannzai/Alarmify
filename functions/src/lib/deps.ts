@@ -14,6 +14,8 @@ export interface Deps {
   firestore: Firestore;
   sendPush: PushSender;
   verifyIdToken: (idToken: string) => Promise<VerifiedIdToken>;
+  /** Firebase Auth にユーザーが存在するか。RevenueCat の webhook が users/{uid} を作る前の確認に使う */
+  authUserExists: (uid: string) => Promise<boolean>;
   pushDeliveryMode: () => PushDeliveryMode;
   now: () => Date;
 }

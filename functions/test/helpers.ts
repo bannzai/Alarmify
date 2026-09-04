@@ -43,12 +43,15 @@ export interface TestContext {
   setNow(date: Date): void;
   failNextPush(): void;
   throwNextPush(): void;
+  /** Firebase Auth にユーザーが存在するかの応答を差し替える (既定は存在する) */
+  setAuthUserExists(exists: boolean): void;
 }
 
 export function createTestContext(uid = "test-uid"): TestContext {
   let now = TEST_NOW;
   let failNext = false;
   let throwNext = false;
+  let authUserExists = true;
   const sentBatches: Message[][] = [];
   const deps: Deps = {
     firestore: testFirestore(),
@@ -70,6 +73,7 @@ export function createTestContext(uid = "test-uid"): TestContext {
       }
       return { uid };
     },
+    authUserExists: async () => authUserExists,
     pushDeliveryMode: () => "notification-service",
     now: () => now,
   };
@@ -85,6 +89,9 @@ export function createTestContext(uid = "test-uid"): TestContext {
     },
     throwNextPush: () => {
       throwNext = true;
+    },
+    setAuthUserExists: (exists) => {
+      authUserExists = exists;
     },
   };
 }

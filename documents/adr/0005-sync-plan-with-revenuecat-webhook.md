@@ -18,7 +18,8 @@ Accepted (2026-09-04)
 ## Decision
 方式 1 を採る。Functions `revenueCatWebhook` (`functions/src/api/revenueCatWebhook.ts`) が RevenueCat の webhook を受け、次の規則で `users/{uid}` を更新する (判定の本体は `functions/src/lib/revenueCat.ts` の純粋関数)。
 
-- **uid の解決**: アプリは匿名認証の完了後に `Purchases.logIn(uid)` を呼ぶ (`ProEntitlement.logIn`)。webhook の `app_user_id` が uid になるため、それをそのまま使う。匿名 ID (`$RCAnonymousID:`) しか無いイベントは結び付ける相手がいないので無視する。接続先がエミュレータのアカウントは `logIn` しない (webhook は本番の Firestore にしか届かず、本番に存在しない uid のドキュメントを作らないため)
+- **uid の解決**: アプリは匿名認証の完了後に `Purchases.logIn(uid)` を呼ぶ (`ProEntitlement.logIn`)。webhook の `app_user_id` が uid になるため、それをそのまま使う。匿名 ID (`$RCAnonymousID:`) しか無いイベントは結び付ける相手がいないので無視する。接続先がエミュレータのアカウントは `logIn` せず、残っている本番の identity は `logOut` で匿名に戻す (webhook は本番の Firestore にしか届かず、本番に存在しない uid のドキュメントを作らない・本番の uid での購入を起こさないため)。ペイウォールの購入・復元は結び付けが成立してから始める (`AccountSession.ensurePurchasesLinked`。起動時の `logIn` が失敗したまま匿名 ID で購入すると webhook に uid が載らないため)
+- **削除済みアカウントの扱い**: ユーザーのドキュメントが無い uid を pro にする時は、Firebase Auth にユーザーが今も存在する場合だけ作る。削除の目印 (`deletedAccounts/{uid}`) は 2 時間で消えるため、削除後に RevenueCat 側へ残った購読の RENEWAL が削除済みアカウントのドキュメントを作り直さないようにする
 - **プランの判定**: `entitlement_ids` に `pro` を含むイベントを、その時点の失効日時 (`expiration_at_ms`。請求猶予期間中は `grace_period_expiration_at_ms` が後ならそちら) つきの pro として保存する。失効日時が過去なら free。イベント種別ごとの分岐は持たない (CANCELLATION は失効日時まで pro のまま、EXPIRATION と返金は失効日時が過去になるので free)。TRANSFER は失う側を free、受け取る側を期限なしの pro にする
 - **読み取り時の再判定**: 上限の判定は保存した `plan` をそのまま使わず、`effectivePlan(user, now)` で `proExpiresAt` と現在時刻を突き合わせる。失効の webhook が遅れても、失効日時を過ぎた pro に上限の解除を続けない
 - **順序と再送**: 保存した `planEventAt` より古いイベントは無視し、同じイベントの再送は同じ状態に収束させる (冪等)

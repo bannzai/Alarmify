@@ -297,6 +297,16 @@
         }
       }
     },
+    "Couldn't link purchases to your account. Check your connection and try again." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。"
+          }
+        }
+      }
+    },
     "Define the rest_command in 'configuration.yaml' and restart Home Assistant." : {
       "localizations" : {
         "ja" : {

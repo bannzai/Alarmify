@@ -116,6 +116,13 @@ struct PaywallPage: View {
         }
     }
 
+    /// 購入・復元をアカウント (uid) に結び付けられなかった時のメッセージ。
+    /// 匿名 ID のまま購入するとサーバー側のプランが更新されないため、結び付くまで購入・復元を始めない (AccountSession.ensurePurchasesLinked)
+    private static var purchasesNotLinkedMessage: String {
+        // ja: 購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。
+        String(localized: "Couldn't link purchases to your account. Check your connection and try again.")
+    }
+
     /// ペイウォールを開いた文脈の導入文
     private var triggerText: Text {
         switch trigger {
@@ -186,6 +193,10 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
+        guard await AccountSession.shared.ensurePurchasesLinked() else {
+            purchaseError = Self.purchasesNotLinkedMessage
+            return
+        }
         do {
             let result = try await Purchases.shared.purchase(package: package)
             // キャンセルはユーザー操作の範囲なので何もしない
@@ -218,6 +229,10 @@ struct PaywallPage: View {
         }
         isPurchasing = true
         defer { isPurchasing = false }
+        guard await AccountSession.shared.ensurePurchasesLinked() else {
+            purchaseError = Self.purchasesNotLinkedMessage
+            return
+        }
         do {
             let customerInfo = try await Purchases.shared.restorePurchases()
             // 返金・失効で entitlement が無効になっている場合に古い true を残さないため、

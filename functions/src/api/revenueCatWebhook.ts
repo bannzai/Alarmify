@@ -39,13 +39,20 @@ function authenticate(options: RevenueCatWebhookOptions) {
 }
 
 /** 1 件の更新の結果。ログと応答に載せる (uid は載せない) */
-export type PlanUpdateOutcome = "applied" | "stale" | "unknown_user" | "account_deleted";
+export type PlanUpdateOutcome =
+  | "applied"
+  | "stale"
+  | "unknown_user"
+  | "account_deleted"
+  | "auth_user_missing";
 
 /**
  * プランを users/{uid} に書く。
  * - 保存済みの planEventAt より古いイベントは書かない (再送・順序の入れ替わりで新しい状態を巻き戻さない)
  * - ユーザーのドキュメントが無い時は、pro にする更新に限って作る (購入を取りこぼさない)。free にする更新は何も変えない
- * - 削除処理中 (目印がある) のアカウントには書かない (掃除の後にドキュメントを復活させない)
+ * - 削除処理中 (目印がある) のアカウントには書かない (掃除の後にドキュメントを復活させない)。
+ *   目印は 2 時間で消えるため、作る前に Firebase Auth のユーザーが今も存在することも確かめる
+ *   (削除後に RevenueCat 側へ残った購読の RENEWAL が、削除済みアカウントのドキュメントを作り直さないようにする)
  * 同じイベントを何度受けても同じ状態に収束する (冪等)
  */
 async function applyPlanUpdate(
@@ -77,6 +84,9 @@ async function applyPlanUpdate(
     }
     if (update.plan !== "pro") {
       return "unknown_user";
+    }
+    if (!(await deps.authUserExists(update.uid))) {
+      return "auth_user_missing";
     }
     transaction.set(userDocRef, { ...newUserDocument(now), ...fields });
     return "applied";

@@ -104,6 +104,22 @@ enum ProEntitlement {
         }
     }
 
+    /// RevenueCat の App User ID がこの uid になっているか。未 configure では購入自体ができないため false
+    static func isLoggedIn(as appUserID: String) -> Bool {
+        Purchases.isConfigured && Purchases.shared.appUserID == appUserID
+    }
+
+    /// RevenueCat の identity を匿名 ID に戻す。既に匿名なら何もしない (冪等。匿名の logOut は SDK がエラーにする)
+    static func logOut() async {
+        guard Purchases.isConfigured, !Purchases.shared.isAnonymous else { return }
+        do {
+            let customerInfo = try await Purchases.shared.logOut()
+            cacheEntitlement(customerInfo: customerInfo)
+        } catch {
+            Logger.purchase.error("RevenueCat logOut failed: \(error.localizedDescription)")
+        }
+    }
+
     /// customerInfoStream を監視して entitlement 判定のキャッシュを更新し続ける。
     /// 起動時キャッシュ → 購入・復元・期限切れ更新の順に customerInfo が流れてくるため、この 1 本で課金状態へ追従できる
     static func observeCustomerInfo() async {

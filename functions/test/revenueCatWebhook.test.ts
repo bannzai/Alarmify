@@ -405,6 +405,21 @@ describe("RevenueCat の webhook", () => {
     expect((await storedUser("unregistered-free")).exists).toBe(false);
   });
 
+  it("Firebase Auth にユーザーが無い uid のドキュメントは作らない (削除済みアカウントの復活を防ぐ)", async () => {
+    context.setAuthUserExists(false);
+
+    const response = await postWebhook(
+      webhookBody({
+        type: "RENEWAL",
+        app_user_id: "deleted-uid",
+        expiration_at_ms: EXPIRES_AT.getTime(),
+      }),
+    ).expect(200);
+
+    expect(response.body.outcomes).toEqual(["auth_user_missing"]);
+    expect((await storedUser("deleted-uid")).exists).toBe(false);
+  });
+
   it("削除処理中のアカウントには書き込まない", async () => {
     await deletionMarkerRef(context.deps.firestore, "deleting-uid").set({
       [deletedAccountFields.requestedAt]: Timestamp.fromDate(TEST_NOW),

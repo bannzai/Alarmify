@@ -7,7 +7,7 @@ import { onCall, onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { onSchedule } from "firebase-functions/scheduler";
-import { handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
+import { authUserExists, handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
@@ -26,6 +26,7 @@ function createDeps(): Deps {
       const decoded = await getAuth().verifyIdToken(idToken);
       return { uid: decoded.uid };
     },
+    authUserExists: (uid) => authUserExists(getAuth(), uid),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
     now: () => new Date(),
