@@ -7,6 +7,7 @@ import {
   hashEquals,
   parseBearerToken,
 } from "../src/lib/apiToken.js";
+import { parseAppCheckEnforcementMode } from "../src/lib/appCheck.js";
 import { monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
 import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
@@ -102,6 +103,15 @@ describe("push payload", () => {
     expect(parsePushDeliveryMode("notification-service")).toBe("notification-service");
     expect(parsePushDeliveryMode(undefined)).toBe("notification-service");
     expect(parsePushDeliveryMode("unknown")).toBe("notification-service");
+  });
+});
+
+describe("App Check", () => {
+  it("適用段階は環境変数で切り替え、未知の値と未設定は監視のみに落とす", () => {
+    expect(parseAppCheckEnforcementMode("enforce")).toBe("enforce");
+    expect(parseAppCheckEnforcementMode("monitor")).toBe("monitor");
+    expect(parseAppCheckEnforcementMode(undefined)).toBe("monitor");
+    expect(parseAppCheckEnforcementMode("unknown")).toBe("monitor");
   });
 });
 

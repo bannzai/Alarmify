@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase-admin/app";
+import { getAppCheck } from "firebase-admin/app-check";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
@@ -10,6 +11,7 @@ import { handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccou
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { deleteExpiredAlarms } from "./lib/cleanup.js";
+import { parseAppCheckEnforcementMode } from "./lib/appCheck.js";
 import type { Deps } from "./lib/deps.js";
 import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
 
@@ -24,6 +26,12 @@ function createDeps(): Deps {
       const decoded = await getAuth().verifyIdToken(idToken);
       return { uid: decoded.uid };
     },
+    verifyAppCheckToken: async (appCheckToken) => {
+      const verified = await getAppCheck().verifyToken(appCheckToken);
+      return { appId: verified.appId };
+    },
+    // 監視のみ (monitor) から強制 (enforce) へ段階的に切り替える。値は functions/.env.<プロジェクト ID>
+    appCheckEnforcementMode: () => parseAppCheckEnforcementMode(process.env.ALARMIFY_APP_CHECK_ENFORCEMENT),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
     now: () => new Date(),
@@ -45,10 +53,14 @@ export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
 /**
  * 呼び出し元自身のアカウントとサーバー上のデータを削除する Callable。
  * App Store Review Guideline 5.1.1 (v) の「アプリ内からのアカウント削除」に対応する。
- * App Check の強制はアプリ側の App Attest 導入 (#4) と合わせて有効にする
+ *
+ * enforceAppCheck が true なら無効・欠落した App Check トークンを firebase-functions が 401 で拒否し、
+ * false なら検証の失敗を warn ログに残して通す (アプリ向け API の monitor と同じ扱い)。
+ * Callable のオプションはモジュールの読み込み時 (デプロイ時) に決まるため、切り替えには再デプロイが要る
  */
-export const deleteAccount = onCall((request) =>
-  handleDeleteAccount({ firestore: getFirestore(), auth: getAuth() }, request),
+export const deleteAccount = onCall(
+  { enforceAppCheck: parseAppCheckEnforcementMode(process.env.ALARMIFY_APP_CHECK_ENFORCEMENT) === "enforce" },
+  (request) => handleDeleteAccount({ firestore: getFirestore(), auth: getAuth() }, request),
 );
 
 /**
