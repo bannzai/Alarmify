@@ -108,9 +108,11 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
 
 ## 配布する
 
-workflow は `workflow_dispatch` でのみ起動する。environment のブランチ制限があるため `--ref` は `main` にする。
+`main` へのマージで自動起動する (初回配布 https://github.com/bannzai/Alarmify/actions/runs/33865771891 の成功後、2026-09-04 に push トリガを有効にした)。起動した run の確認と、配布し直す時の手動起動は次のとおり。environment のブランチ制限があるため `--ref` は `main` にする。
 
 ```sh
+gh run list --workflow ios-deploy.yml --limit 5
+# 手動で配布し直す
 gh workflow run ios-deploy.yml --ref main
 RUN_ID="$(gh run list --workflow ios-deploy.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh run watch "$RUN_ID"
@@ -133,17 +135,6 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/asc-api.sh GET \
 
 - **Upload to TestFlight まで進んで失敗した run は Re-run しない**。Re-run では `run_number` が変わらず同じビルド番号になり、アップロード済みと同じ番号の再送は重複として拒否される。原因を直して新しく dispatch する
 - Upload より前の step で失敗した run は、その番号がまだアップロードされていないため Re-run で復旧してよい
-
-## push トリガを有効に戻す
-
-ios-deploy-actions skill のテンプレート既定は「`main` への push で自動起動 + `workflow_dispatch`」だが、上記の準備が済むまでは main へのマージのたびに必ず失敗する run が出るため、現在は `workflow_dispatch` だけにしている。初回配布に成功したら `.github/workflows/ios-deploy.yml` の `on:` を次の形に戻す。
-
-```yaml
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-```
 
 ## セッション再開
 

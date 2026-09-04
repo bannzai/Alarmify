@@ -1,23 +1,20 @@
 # managed-by: ios-deploy-actions (bannzai/castle)
 name: ios-deploy
 
-# workflow_dispatch で手動起動する iOS 配布ワークフロー。
+# main への push で自動起動し、workflow_dispatch でも手動起動できる iOS 配布ワークフロー。
 # Alarmify を Release / arm64 実機向けにアーカイブし、IPA を書き出して TestFlight (App Store Connect) へアップロードする。
 # 署名は手動署名: Secrets の P12 証明書と App Store 用 provisioning profile を CI 上に復元して署名する。
 # cloud signing (自動署名) は API Key に Admin ロールが必須なため採用しない。
 # 方式の設計判断は ios-deploy-actions skill (bannzai/castle) の references/signing-design.md を参照。
 #
-# skill のテンプレートから 3 点変えている (scaffold-ios-deploy.sh を再実行する時はすべて入れ直す):
-#  1. 起動を workflow_dispatch だけにしている。テンプレート既定は「main への push で自動起動 +
-#     workflow_dispatch」だが、App Store Connect のアプリレコードと署名アセット
-#     (App ID / App Group / 証明書 / profile / Secrets) がまだ無く、push 起動にすると
-#     main へのマージのたびに必ず失敗する run が出るため。初回配布に成功したら push トリガを戻す
-#     (手順: documents/ios-testflight-distribution.md「push トリガを有効に戻す」)
-#  2. DEVELOPMENT_TEAM (Team ID) をベタ書きせず environment secret APPLE_DEVELOPMENT_TEAM_ID から渡している。
+# skill のテンプレートから 2 点変えている (scaffold-ios-deploy.sh を再実行する時はすべて入れ直す):
+#  1. DEVELOPMENT_TEAM (Team ID) をベタ書きせず environment secret APPLE_DEVELOPMENT_TEAM_ID から渡している。
 #     public リポジトリに Team ID の実値をコミットしない方針のため (AGENTS.md「秘匿情報」)
-#  3. Reject concurrent dispatch の run 一覧取得を fail-close にしている。テンプレートは取得失敗を
+#  2. Reject concurrent dispatch の run 一覧取得を fail-close にしている。テンプレートは取得失敗を
 #     読み飛ばして earlier=0 を算出し得るため、判定不能なまま並行配布を通してしまう
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 env:
