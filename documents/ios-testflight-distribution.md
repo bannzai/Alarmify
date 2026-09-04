@@ -125,7 +125,7 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/asc-api.sh GET \
   "/v1/builds?filter[app]=<アプリの ID>&sort=-uploadedDate&limit=5&fields[builds]=version,processingState,uploadedDate"
 ```
 
-配布は同時に 1 本だけ実行できる。先行の run が未完了のまま dispatch すると、最初の step (Reject concurrent dispatch) で失敗する。完了を待ってから dispatch し直す。
+配布は同時に 1 本だけ実行され、先行の run が未完了の間に起動した run (main への push・手動 dispatch とも) は workflow の `concurrency` (ref ごとの group、`cancel-in-progress: false`) で待機する。待機中にさらに新しい run が来ると、待機中の run は取り消されて最新の run が待機する (main は直線なので最新の run が途中の commit も含む)。したがって先行 run の完了を待って dispatch し直す必要はなく、同じ内容を二重にアップロードしてビルド番号を消費しないよう、dispatch し直すのは run が取り消された・失敗した時に限る。Reject concurrent dispatch step で失敗するのは concurrency が効かなかった場合だけで、その時は先行 run の完了後に dispatch し直す。
 
 ## ビルド番号
 

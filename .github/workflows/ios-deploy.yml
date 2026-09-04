@@ -24,9 +24,11 @@ on:
 # 実行中の run があれば後発は待機し、待機中にさらに新しい run が来ると待機中の run は取り消されて最新の run が待機する。
 # GitHub の concurrency は pending を 1 件しか保持しないが、main は直線で最新の run が途中の commit も含むため、
 # 自動配布では「最新だけ配布できればよい」と割り切れる (取り消された run はマージ済みの内容を配布し損ねない)。
-# 並行実行そのものの拒否は下の Reject concurrent dispatch step が最後の防御として担う
+# 並行実行そのものの拒否は下の Reject concurrent dispatch step が最後の防御として担う。
+# group に ref を含めるのは、feature branch を --ref にした workflow_dispatch (environment のブランチ制限で
+# どのみち配布できない) が main の待機中 run を押し出して、最新の main の配布を失わせないため
 concurrency:
-  group: ios-deploy-main
+  group: ios-deploy-${{ github.ref }}
   cancel-in-progress: false
 
 env:
