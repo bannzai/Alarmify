@@ -129,7 +129,7 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/asc-api.sh GET \
 
 ## ビルド番号
 
-ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に既存ビルドが無いため現在の offset は `0`。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直して `run_number` が既存の最大ビルド番号以下に戻る場合は offset を上げる。
+ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に存在する最大のビルド番号は **2** (2026-09-04 の初回配布、`run_number` = 2。build 1 は検証エラーで未アップロード)。`run_number` は同じ workflow の run ごとに増え、次の run は 3 以上になるため、offset は `0` のままで単調増加が保たれる。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直す・名前を変える等で `run_number` が 1 から数え直される場合は、その時点の TestFlight の最大ビルド番号 (`asc-api.sh GET "/v1/builds?filter[app]=6808548984&sort=-version&limit=1&fields[builds]=version"`) 以上を offset にする。
 
 ## Re-run の可否
 
