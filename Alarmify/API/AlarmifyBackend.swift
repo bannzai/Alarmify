@@ -12,7 +12,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         case .production:
             return URL(string: "https://asia-northeast1-alarmify-prod.cloudfunctions.net")!
         case .emulator:
-            // ポートは firebase.json の emulators.functions.port と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
+            // ポートは firebase/firebase.json の emulators.functions.port と揃える。simulator からは 127.0.0.1 で Mac のローカルに届く
             return URL(string: "http://127.0.0.1:5410/demo-alarmify/asia-northeast1")!
         }
     }
@@ -23,7 +23,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
     }
 
     /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
-    /// Functions の `alarmsApi` (functions/src/index.ts) で、アプリ向けの `appBaseURL` とは別の関数として公開されている
+    /// Functions の `alarmsApi` (firebase/functions/src/index.ts) で、アプリ向けの `appBaseURL` とは別の関数として公開されている
     var alarmsAPIBaseURL: URL {
         functionsBaseURL.appending(path: "alarmsApi")
     }
@@ -33,7 +33,7 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
         functionsBaseURL.appending(path: "deleteAccount")
     }
 
-    /// Firebase Auth エミュレータのホストとポート (firebase.json の emulators.auth と揃える)。production では nil
+    /// Firebase Auth エミュレータのホストとポート (firebase/firebase.json の emulators.auth と揃える)。production では nil
     var authEmulator: (host: String, port: Int)? {
         switch self {
         case .production:

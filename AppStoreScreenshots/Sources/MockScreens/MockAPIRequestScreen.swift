@@ -3,7 +3,7 @@ import SwiftUI
 /// アラーム登録 API (POST /v1/alarms) のリクエストとレスポンスのモック。
 /// 「POST ひとつで登録完了」を、curl 1 コマンドとその応答で伝える。
 /// コードはローカライズ対象外のため verbatim で書く。API のホスト名は未確定のため環境変数の形で示す。
-/// リクエストとレスポンスの形は docs/api.md (functions/src/api/externalApi.ts) の契約に合わせる:
+/// リクエストとレスポンスの形は docs/api.md (firebase/functions/src/api/externalApi.ts) の契約に合わせる:
 /// リクエストは JSON の Content-Type が必須、レスポンスの id は UUID、fire_at は UTC (Z) で返る
 struct MockAPIRequestScreen: View {
     /// リクエストの 1 行分。強調 (フラグ・値) はシグナル橙で塗る

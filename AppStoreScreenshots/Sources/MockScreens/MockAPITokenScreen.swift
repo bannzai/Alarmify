@@ -2,7 +2,7 @@ import SwiftUI
 
 /// API トークン画面 (Alarmify/APIToken/APITokenView.swift) のモック。
 /// 発行直後の状態 (発行したトークンの表示とコピー・レシピへの導線) と発行済み一覧を、本番の構成に忠実に再現する。
-/// トークンの値は見本のため verbatim (形式は backend の functions/src/lib/apiToken.ts と同じ alm_ + base64url 43 文字。一覧の prefix は alm_ + 8 文字)
+/// トークンの値は見本のため verbatim (形式は backend の firebase/functions/src/lib/apiToken.ts と同じ alm_ + base64url 43 文字。一覧の prefix は alm_ + 8 文字)
 struct MockAPITokenScreen: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {

@@ -30,7 +30,7 @@ function createDeps(): Deps {
       const verified = await getAppCheck().verifyToken(appCheckToken);
       return { appId: verified.appId };
     },
-    // 監視のみ (monitor) から強制 (enforce) へ段階的に切り替える。値は functions/.env.<プロジェクト ID>
+    // 監視のみ (monitor) から強制 (enforce) へ段階的に切り替える。値は firebase/functions/.env.<プロジェクト ID>
     appCheckEnforcementMode: () => parseAppCheckEnforcementMode(process.env.ALARMIFY_APP_CHECK_ENFORCEMENT),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),

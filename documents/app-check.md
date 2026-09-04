@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | iOS (クライアント) | `Alarmify/Utils/AppCheckProviderFactory.swift` を `FirebaseApp.configure()` より前に登録する (`Alarmify/Utils/AppDelegate.swift`)。simulator はデバッグプロバイダ、実機は App Attest | `Alarmify/Alarmify.entitlements` の `com.apple.developer.devicecheck.appattest-environment` は `production` (App Check は App Attest の sandbox 環境のトークンを受け付けない。TestFlight / App Store 配布では entitlement の値に関わらず production が使われる) |
 | iOS (送信) | `URLSessionAlarmifyAPIClient` が `AppCheck.appCheck().token(forcingRefresh:)` で得たトークンを `X-Firebase-AppCheck` ヘッダーに付ける | トークンを取得できない時はヘッダー無しで送り、扱いはサーバーの適用段階に委ねる (クライアントで止めると監視段階の利用まで止まる) |
-| Functions (`appApi`) | `functions/src/lib/appCheck.ts` の `requireAppCheck` を ID トークン検証より前に通す。`firebase-admin` の `getAppCheck().verifyToken` で検証する | 適用段階は環境変数 `ALARMIFY_APP_CHECK_ENFORCEMENT` (`monitor` / `enforce`。未設定は `monitor`) |
+| Functions (`appApi`) | `firebase/functions/src/lib/appCheck.ts` の `requireAppCheck` を ID トークン検証より前に通す。`firebase-admin` の `getAppCheck().verifyToken` で検証する | 適用段階は環境変数 `ALARMIFY_APP_CHECK_ENFORCEMENT` (`monitor` / `enforce`。未設定は `monitor`) |
 | Functions (`deleteAccount`) | `onCall({ enforceAppCheck })` を同じ環境変数から決める | Callable のオプションはデプロイ時に決まるため、切り替えには再デプロイが要る |
 | Firebase (`alarmify-prod`) | App Check API の有効化、iOS アプリの Team ID、App Attest プロバイダ、simulator 用デバッグトークンの登録 | 下記「Firebase 側の登録」。skill の `firebase-app-check-api.sh setup-ios` で行う |
 | Apple Developer | App ID `com.bannzai.Alarmify` の App Attest capability | 2026-09-04 に有効化済み (下記「Apple 側の設定」) |
@@ -24,7 +24,7 @@
 
 `deleteAccount` (Callable) は firebase-functions の実装に従い、`monitor` では検証失敗を `Failed to validate AppCheck token.` の warn ログに残して通し、`enforce` では 401 を返す。
 
-値の置き場所は `functions/.env.alarmify-prod` (firebase-tools が `functions/.env.<project id>` をデプロイ時に読み込む: https://firebase.google.com/docs/functions/config-env )。監視のみの間はこのファイルを置かず、環境変数が無い時のコードの既定値 (`monitor`) で動かす。ローカルのエミュレータ (`demo-alarmify`) はこのファイルを読まないため常に既定値で動き、強制の挙動を手で確かめる時は起動時に環境変数を渡す (下記「ローカルでの確認」)。
+値の置き場所は `firebase/functions/.env.alarmify-prod` (firebase-tools が `functions/.env.<project id>` をデプロイ時に読み込む: https://firebase.google.com/docs/functions/config-env )。現在は `ALARMIFY_APP_CHECK_ENFORCEMENT=monitor` を置いている (ファイルが無い時もコードの既定値は `monitor`)。ローカルのエミュレータ (`demo-alarmify`) はこのファイルを読まないため常に既定値で動き、強制の挙動を手で確かめる時は起動時に環境変数を渡す (下記「ローカルでの確認」)。
 
 agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny しているため、このファイルの作成・編集は bannzai が行う。
 
@@ -51,10 +51,10 @@ agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny 
      --project alarmify-prod --freshness=7d --limit 50
    ```
 
-3. **`functions/.env.alarmify-prod` を作成して PR を作り、main へマージする** (agent は `.env*` を書けないため bannzai が作る。値をコミットするのは、以降のどの経路のデプロイでも段階が保たれるようにするため)
+3. **`firebase/functions/.env.alarmify-prod` の値を `enforce` に書き換えて PR を作り、main へマージする** (agent は `.env*` を書けないため bannzai が編集する。値をコミットするのは、以降のどの経路のデプロイでも段階が保たれるようにするため)
 
    ```sh
-   cat > functions/.env.alarmify-prod <<'EOF'
+   cat > firebase/functions/.env.alarmify-prod <<'EOF'
    # Firebase App Check の適用段階。monitor = 未検証リクエストを warn ログに残して通す / enforce = 401 で拒否する。
    # 切り替え手順は documents/app-check.md。値を変えたら appApi と deleteAccount を再デプロイする
    ALARMIFY_APP_CHECK_ENFORCEMENT=enforce
@@ -79,9 +79,9 @@ agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny 
 
 6. 本書の「現在の適用段階」に日付と段階を追記する
 
-**戻し方**: `functions/.env.alarmify-prod` を `ALARMIFY_APP_CHECK_ENFORCEMENT=monitor` に書き換える (またはファイルを消す) をマージして、同じ 2 関数を再デプロイする。正当な通信が拒否されている場合はまずこれで復旧し、原因 (プロバイダ登録・profile の entitlement・デバッグトークンの失効) を調べる。
+**戻し方**: `firebase/functions/.env.alarmify-prod` を `ALARMIFY_APP_CHECK_ENFORCEMENT=monitor` に書き換える (またはファイルを消す) をマージして、同じ 2 関数を再デプロイする。正当な通信が拒否されている場合はまずこれで復旧し、原因 (プロバイダ登録・profile の entitlement・デバッグトークンの失効) を調べる。
 
-Firebase Console / App Check API の「サービスの強制適用」(`firebase-app-check-api.sh set-enforcement`) は Firestore 等の Firebase 標準サービス向けの設定で、Functions には効かない。このアプリはクライアントから Firestore を直接読み書きしない (`firestore.rules` は全パス deny) ため、標準サービス側の強制適用は行わない。
+Firebase Console / App Check API の「サービスの強制適用」(`firebase-app-check-api.sh set-enforcement`) は Firestore 等の Firebase 標準サービス向けの設定で、Functions には効かない。このアプリはクライアントから Firestore を直接読み書きしない (`firebase/firestore.rules` は全パス deny) ため、標準サービス側の強制適用は行わない。
 
 ## Firebase 側の登録
 
@@ -130,7 +130,7 @@ simulator ではデバッグプロバイダが動き、環境変数 `FIRAAppChec
 
 ## ローカルでの確認 (エミュレータ)
 
-`functions/test/alarmFlow.test.ts` が `enforce` / `monitor` の両方の挙動を検証する (`make test-functions`)。強制段階の curl を手で確かめる場合は、エミュレータに環境変数を渡して起動する。
+`firebase/functions/test/alarmFlow.test.ts` が `enforce` / `monitor` の両方の挙動を検証する (`make test-functions`)。強制段階の curl を手で確かめる場合は、エミュレータに環境変数を渡して起動する。
 
 ```sh
 ALARMIFY_APP_CHECK_ENFORCEMENT=enforce make emulators   # エミュレータは起動したシェルの環境変数を関数に渡す
