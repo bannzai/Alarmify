@@ -10,7 +10,7 @@ import {
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
-import { planLimits } from "../lib/plan.js";
+import { effectivePlan, planLimits } from "../lib/plan.js";
 import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
 import { deletionMarkerRef, MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
@@ -202,7 +202,8 @@ export function createAppApi(deps: Deps): Express {
       await rejectIfAccountDeleted(transaction, deps, uid);
       const userSnapshot = await transaction.get(userDocRef);
       const user = userSnapshot.exists ? userSchema.parse(userSnapshot.data()) : null;
-      const plan = user?.plan ?? "free";
+      // pro は失効日時を過ぎていない間だけ (失効の webhook が遅れても上限を解除したままにしない)
+      const plan = user ? effectivePlan(user, now) : "free";
       const limit = planLimits[plan].apiTokens;
       if (Number.isFinite(limit)) {
         const active = await transaction.get(

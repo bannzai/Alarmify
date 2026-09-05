@@ -18,7 +18,7 @@ App Store Connect の「App のプライバシー」への回答内容と、そ�
 | USER_ID (ユーザー ID) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | Firebase Auth の匿名 uid、API トークン (ハッシュ) | アカウントと API トークンの認証に必須。uid に紐づくため「ユーザーに紐付く」 |
 | DEVICE_ID (デバイス ID) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | APNs デバイストークン (FCM 登録トークン)、端末種別・OS・アプリのバージョン、App Check トークン (App Attest) | push の配送先。`users/{uid}/devices` に保存するため「ユーザーに紐付く」 |
 | OTHER_USER_CONTENT (その他のユーザーコンテンツ) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | 外部サービスから送られたアラームのタイトル・日時・送信元。30 日で削除 | 配送と履歴表示 (Pro) のためサーバーに保存する |
-| PURCHASE_HISTORY (購入履歴) | ANALYTICS, APP_FUNCTIONALITY | DATA_NOT_LINKED_TO_YOU | RevenueCat SDK が購入・購読情報を RevenueCat サーバーへ送信する | RevenueCat 公式が最低要件とする回答 ( https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy )。`Purchases.logIn` で uid を連携する実装にした場合は DATA_LINKED_TO_YOU に変更する |
+| PURCHASE_HISTORY (購入履歴) | ANALYTICS, APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | RevenueCat SDK が購入・購読情報を RevenueCat サーバーへ送信する。`Purchases.logIn` で Firebase Auth の uid を App User ID にしている (`Alarmify/Features/Purchase/ProEntitlement.swift`) | RevenueCat 公式が最低要件とする回答は DATA_NOT_LINKED_TO_YOU ( https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy ) だが、uid で識別できるアカウントに購入履歴が紐づくため「ユーザーに紐付く」。RevenueCat の webhook がこの uid で `users/{uid}.plan` を更新する (#19) |
 
 Sign in with Apple を実装した時点で、Apple から受け取るメールアドレス (中継アドレスを含む) を Firebase Auth が保持するため EMAIL_ADDRESS (APP_FUNCTIONALITY / DATA_LINKED_TO_YOU) を追加する。
 

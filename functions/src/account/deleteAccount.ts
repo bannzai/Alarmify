@@ -190,8 +190,8 @@ async function deleteAuthUser(auth: AccountDeletionDeps["auth"], uid: string): P
   }
 }
 
-/** Firebase Auth にユーザーが存在するか */
-async function authUserExists(auth: AccountDeletionDeps["auth"], uid: string): Promise<boolean> {
+/** Firebase Auth にユーザーが存在するか。RevenueCat の webhook も、削除済みアカウントのドキュメントを作り直さないために使う */
+export async function authUserExists(auth: AccountDeletionDeps["auth"], uid: string): Promise<boolean> {
   try {
     await auth.getUser(uid);
     return true;

@@ -23,5 +23,7 @@ functions/lib/
 # Firebase CLI / Emulator Suite が作るログとキャッシュ
 .firebase/
 *-debug.log
+# エミュレータ専用の Secret の値 (documents/revenuecat-webhook.md)。本番の値は Secret Manager にだけ置く
+functions/.secret.local
 # RevenueCat の実キー (appl_) を置くローカル上書き。実値をコミットしないため追跡しない (Config.xcconfig のコメント参照)
 Config.local.xcconfig

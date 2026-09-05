@@ -6,7 +6,8 @@ import SwiftUI
 enum PaywallTrigger: Identifiable {
     /// 設定画面から明示的に開いた
     case settings
-    /// 無料プランの上限に達した操作から開いた
+    /// 無料プランの上限 (トークン数・月間のアラーム数) に達した操作から開いた。
+    /// アプリが受け取るのは API トークン発行の `plan_limit_exceeded` (APITokenModel.issue)
     case freeQuotaExceeded
 
     var id: Self { self }
@@ -115,6 +116,22 @@ struct PaywallPage: View {
         }
     }
 
+    /// 購入・復元を始められない時のメッセージ。始めてよければ nil。
+    /// 匿名 ID のまま購入するとサーバー側のプランが更新されないため、uid に結び付くまで購入・復元を始めない (AccountSession.purchaseLinkState)
+    private func purchaseBlockedMessage() async -> String? {
+        switch await AccountSession.shared.purchaseLinkState() {
+        case .linked:
+            return nil
+        case .notLinked:
+            // ja: 購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。
+            return String(localized: "Couldn't link purchases to your account. Check your connection and try again.")
+        case .emulatorBackend:
+            // 開発者メニューでエミュレータを選んだ時だけ到達する (App Store 配布では接続先を変えられない)
+            // ja: エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。
+            return String(localized: "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu.")
+        }
+    }
+
     /// ペイウォールを開いた文脈の導入文
     private var triggerText: Text {
         switch trigger {
@@ -122,8 +139,9 @@ struct PaywallPage: View {
             // ja: 無料プランではトークン 1 つ・月 20 回までアラームを登録できます
             return Text("The free plan includes one token and up to 20 alarms a month")
         case .freeQuotaExceeded:
-            // ja: 今月の無料枠を使い切りました
-            return Text("You've used up this month's free quota")
+            // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
+            // ja: 無料プランの上限に達しました
+            return Text("You've reached the limit of the free plan")
         }
     }
 
@@ -184,6 +202,10 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
+        if let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
+            return
+        }
         do {
             let result = try await Purchases.shared.purchase(package: package)
             // キャンセルはユーザー操作の範囲なので何もしない
@@ -216,6 +238,10 @@ struct PaywallPage: View {
         }
         isPurchasing = true
         defer { isPurchasing = false }
+        if let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
+            return
+        }
         do {
             let customerInfo = try await Purchases.shared.restorePurchases()
             // 返金・失効で entitlement が無効になっている場合に古い true を残さないため、

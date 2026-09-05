@@ -4,8 +4,9 @@ import SwiftUI
 struct DeveloperMenuView: View {
     @State private var session = AccountSession.shared
     @State private var settings = DeveloperMenu.settings
-    /// 無料枠の上限に達した時のペイウォール。上限判定を持つバックエンド (#2) がまだ無く通常操作では到達できないため、
-    /// ここから開いて表示を確認する (`.claude/rules/debug-menu-for-verification.md`)
+    /// 無料枠の上限に達した時のペイウォール。通常操作では API トークン画面で 2 つ目の発行が `plan_limit_exceeded` で
+    /// 拒否された時に開くが、上限に達したアカウントを用意せずに表示だけを確認できるようここからも開く
+    /// (`.claude/rules/debug-menu-for-verification.md`)
     @State private var paywallTrigger: PaywallTrigger?
     /// 直近の push payload 適用の結果。成否を画面上で確認できるようにする
     @State private var pushPayloadResult: PushPayloadResult?

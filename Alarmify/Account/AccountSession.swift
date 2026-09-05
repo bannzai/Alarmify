@@ -12,6 +12,17 @@ enum DeviceRegistrationState: Equatable, Sendable {
     case failed(String)
 }
 
+/// 購入・復元を始める前の、RevenueCat の identity と Firebase Auth の uid の結び付きの状態 (`AccountSession.purchaseLinkState`)。
+/// 表示する文言は使用側 (PaywallPage) が switch で決める
+enum PurchaseLinkState: Equatable, Sendable {
+    /// uid に結び付いていて購入を始めてよい
+    case linked
+    /// 結び付けに失敗した (未サインイン・RevenueCat の logIn の失敗)
+    case notLinked
+    /// 接続先がエミュレータで、購入・復元を許さない
+    case emulatorBackend
+}
+
 /// 匿名認証で自動作成したアカウントと、この端末の配送先登録をまとめて持つ。
 /// FCM トークンの受信は `AppDelegate`、表示は SwiftUI と入口が分かれるため 1 インスタンス (`shared`) に集約する
 @MainActor
@@ -52,21 +63,56 @@ final class AccountSession {
             }
             uid = user.uid
             signInError = nil
-            await registerDeviceIfPossible()
+            await registerDeviceAndLinkPurchases(uid: user.uid)
             return
         }
+        let signedInUid: String
         do {
             let result = try await Auth.auth().signInAnonymously()
             DeveloperMenu.authenticatedBackend = settings.backend
-            uid = result.user.uid
+            signedInUid = result.user.uid
+            uid = signedInUid
             signInError = nil
         } catch {
             signInError = error.localizedDescription
             Logger.push.error("Anonymous sign-in failed: \(error.localizedDescription)")
             return
         }
-        // サインインの完了前に FCM トークンが届いていた場合、その登録はここで初めて成立する
+        await registerDeviceAndLinkPurchases(uid: signedInUid)
+    }
+
+    /// 配送先の登録と RevenueCat の identity 連携を並行して行う。
+    /// RevenueCat の応答を待つ間に配送先の登録 (サインインの完了前に届いていた FCM トークンの登録を含む) を遅らせない
+    private func registerDeviceAndLinkPurchases(uid: String) async {
+        let linking = Task { @MainActor [weak self] in
+            await self?.linkPurchases(uid: uid)
+        }
         await registerDeviceIfPossible()
+        await linking.value
+    }
+
+    /// サインイン済みの uid を RevenueCat の App User ID にする。
+    /// 本番の Firestore を更新する RevenueCat の webhook には接続先の区別が無いため、エミュレータ向けのアカウント
+    /// (本番に存在しない uid) では結び付けず、購入を RevenueCat の匿名 ID のまま残す (webhook 側で無視される)。
+    /// 本番からエミュレータへ切り替えた起動では、残っている本番の identity での購入が本番の Firestore を更新しないよう、匿名 ID に戻す
+    private func linkPurchases(uid: String) async {
+        guard settings.backend == .production else {
+            await ProEntitlement.logOut()
+            return
+        }
+        await ProEntitlement.logIn(appUserID: uid)
+    }
+
+    /// ペイウォールの購入・復元の直前に呼び、購入を始めてよい状態かを返す。
+    /// 起動時の logIn が失敗したまま匿名 ID で購入すると、webhook に uid が載らずサーバーのプランが更新されないため、
+    /// ここで結び付けをやり直し、できなければ購入を始めない。
+    /// 接続先がエミュレータの間は購入・復元を許さない (匿名 ID で行った購入は、本番へ戻した起動の logIn で本番の uid にマージされ、
+    /// その後のイベントが本番の Firestore を更新してしまうため)
+    func purchaseLinkState() async -> PurchaseLinkState {
+        guard settings.backend == .production else { return .emulatorBackend }
+        guard let uid else { return .notLinked }
+        await ProEntitlement.logIn(appUserID: uid)
+        return ProEntitlement.isLoggedIn(as: uid) ? .linked : .notLinked
     }
 
     /// FCM 登録トークンを受け取り、サインイン済みならバックエンドへ登録する
