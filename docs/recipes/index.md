@@ -2,7 +2,7 @@
 
 Copy-and-paste setups for the systems people most often want to be woken up by. Every recipe ends in the same call, `POST /v1/alarms` with your API token, so anything not listed here works the same way. The request and response are documented in the [API reference](../api).
 
-Replace `<API_TOKEN>` with the token issued in the Alarmify app. The in-app "Integration recipes" screen shows these snippets with your token already filled in.
+Replace `<API_TOKEN>` with the token issued in the Signalarm app. The in-app "Integration recipes" screen shows these snippets with your token already filled in.
 
 - [cron / shell](./cron): a one-line `curl` for scripts, crontab and CI jobs
 - [GitHub Actions](./github-actions): a workflow step that rings when a job finishes or fails

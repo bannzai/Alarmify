@@ -1,10 +1,10 @@
-Alarmify は、外部サービスからの HTTP リクエストを iPhone の本物のアラームに変えるアプリです。
+Signalarm は、外部サービスからの HTTP リクエストを iPhone の本物のアラームに変えるアプリです。
 
 通知ではありません。iOS 26 の AlarmKit によるアラームなので、サイレントモードや集中モードの最中でも鳴り、ロック画面に大きく表示され、アプリを閉じていても動きます。
 
 ■ 使い方は 3 ステップ
 ・アプリでアラームの権限を許可し、API トークンを発行します
-・GitHub Actions、Home Assistant、Grafana、Uptime Kuma、cron、Zapier、ショートカットなど、HTTP リクエストを送れるものから Alarmify の API を呼びます
+・GitHub Actions、Home Assistant、Grafana、Uptime Kuma、cron、Zapier、ショートカットなど、HTTP リクエストを送れるものから Signalarm の API を呼びます
 ・指定した日時に、あなたの iPhone で本物のアラームが鳴ります。アプリを開く必要はありません
 
 ■ こんな時に

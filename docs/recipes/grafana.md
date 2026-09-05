@@ -27,7 +27,7 @@ Under **Optional Webhook settings**, enable **Custom Payload** and paste:
 
 ## 3. Do not ring when the alert resolves
 
-Grafana sends a second notification when the alert resolves, which would ring again. Turn on **Disable resolved message** on the contact point so only firing alerts reach Alarmify. If you do want a resolved alarm, leave it off; the title starts with `RESOLVED:` so you can tell them apart.
+Grafana sends a second notification when the alert resolves, which would ring again. Turn on **Disable resolved message** on the contact point so only firing alerts reach Signalarm. If you do want a resolved alarm, leave it off; the title starts with `RESOLVED:` so you can tell them apart.
 
 ## Test it
 

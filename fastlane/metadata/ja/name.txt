@@ -1,1 +1,1 @@
-Alarmify - Webhookで鳴る本物のアラーム
+Signalarm - Webhookで鳴る本物のアラーム

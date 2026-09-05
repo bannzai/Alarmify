@@ -1,6 +1,6 @@
-# Alarmify API reference
+# Signalarm API reference
 
-Alarmify exposes one HTTPS API. Any system that can send an HTTP request with a header can schedule or cancel a real AlarmKit alarm on your iPhone with it.
+Signalarm exposes one HTTPS API. Any system that can send an HTTP request with a header can schedule or cancel a real AlarmKit alarm on your iPhone with it.
 
 > **Pre-release.** `https://api.alarmify.app` is the planned host name. Until that domain is set up, the API is served at `https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi` (the in-app "Integration recipes" screen fills in the current host and your token for you). The request and response shapes below match the backend implementation in this repository (`functions/src/api/externalApi.ts`) and may still change before release.
 
@@ -11,7 +11,7 @@ Alarmify exposes one HTTPS API. Any system that can send an HTTP request with a 
 
 ## Authentication
 
-Every request carries a personal API token as a bearer token. Issue the token from the Alarmify app; it belongs to your account and to the iPhone that runs the app.
+Every request carries a personal API token as a bearer token. Issue the token from the Signalarm app; it belongs to your account and to the iPhone that runs the app.
 
 ```
 Authorization: Bearer <API_TOKEN>
@@ -35,7 +35,7 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `fire_at` | string (ISO 8601, seconds precision, with a time zone) | one of `fire_at` / `fire_in` | Absolute time to ring. At least 30 seconds ahead and at most 365 days ahead (see the lead time below). |
 | `fire_in` | integer (seconds) | one of `fire_at` / `fire_in` | Ring this many seconds after the server receives the request, at most 365 days. `0` rings as soon as possible (see the lead time below). Use it from tools whose templates cannot compute a date (Grafana, Uptime Kuma, Shortcuts). |
-| `title` | string | no | Shown on the alarm. 1 to 200 characters; longer titles are rejected with `400`. When omitted the app shows `Alarmify`. |
+| `title` | string | no | Shown on the alarm. 1 to 200 characters; longer titles are rejected with `400`. When omitted the app shows `Signalarm`. |
 | `id` | string (UUID) | no | Your own identifier for the alarm. Sending the same `id` again replaces the existing alarm instead of creating a second one, so a retry never rings twice. When omitted the server generates one. |
 
 Send exactly one of `fire_at` and `fire_in`.

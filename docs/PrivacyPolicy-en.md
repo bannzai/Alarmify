@@ -1,6 +1,6 @@
 # Privacy Policy
 
-bannzai (the "Provider") establishes this Privacy Policy (this "Policy") regarding the handling of user information, including personal information, of users of the service "Alarmify" (the "Service") provided by the Provider.
+bannzai (the "Provider") establishes this Privacy Policy (this "Policy") regarding the handling of user information, including personal information, of users of the service "Signalarm" (the "Service") provided by the Provider.
 
 ## User Information Collected and Collection Methods
 In this Policy, "user information" means information relating to the identification of users, behavioral history on communication services, and other information generated or accumulated in relation to users or their devices, which the Provider collects in accordance with this Policy.
