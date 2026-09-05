@@ -297,6 +297,16 @@
         }
       }
     },
+    "Couldn't link purchases to your account. Check your connection and try again." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入をアカウントに結び付けられませんでした。通信状態を確認してもう一度お試しください。"
+          }
+        }
+      }
+    },
     "Define the rest_command in 'configuration.yaml' and restart Home Assistant." : {
       "localizations" : {
         "ja" : {
@@ -709,6 +719,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "購入を復元できませんでした。"
+          }
+        }
+      }
+    },
+    "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。"
           }
         }
       }
@@ -1143,12 +1163,12 @@
         }
       }
     },
-    "You've used up this month's free quota" : {
+    "You've reached the limit of the free plan" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今月の無料枠を使い切りました"
+            "value" : "無料プランの上限に達しました"
           }
         }
       }

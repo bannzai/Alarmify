@@ -2,14 +2,16 @@
 
 `.github/workflows/ios-deploy.yml` で Alarmify を Release / 実機向けにアーカイブし、IPA を TestFlight (App Store Connect) へアップロードする。署名は手動署名で、Secrets の P12 証明書と App Store 用 provisioning profile を CI 上に復元して使う。方式の設計判断は ios-deploy-actions skill (bannzai/castle) の `references/signing-design.md` を正とする。
 
-## 現状: 初回配布の前に必要な準備が残っている
+## 現状: 配布の前提は揃っている (2026-09-04)
 
-workflow・`project.pbxproj` の手動署名設定・ビルド番号の採番は整備済みだが、**まだ 1 度も TestFlight へ配布していない**。次の 4 つが揃うまで配布できない。1 と 2 は Web UI でしか行えない。
+次の 4 つは 2026-09-04 に適用済み。再発行・更新の手順は以降の各節を参照する。
 
-1. **App Store Connect のアプリレコード作成**。App Store Connect API にアプリレコードを作成するエンドポイントは無く、Web UI での作成が必須。さらに App Store のアプリ名は全世界で一意で、コードネームの「Alarmify」は既存アプリ (Alarmify™、Spotify 連携の目覚まし) が使っているため、`documents/PROJECT.md` のとおり製品名を決め直してから作成する (公開前チェックリスト https://github.com/bannzai/Alarmify/issues/14 の項目)
-2. **App ID と App Group の登録**。`com.bannzai.Alarmify` / `com.bannzai.Alarmify.NotificationService` / `com.bannzai.Alarmify.Widget` の 3 つの App ID と、App Group `group.com.bannzai.Alarmify` を Developer Portal に登録し、App Group の割り当てと Push Notifications の有効化を行う。App Group の割り当ては公開 App Store Connect API では行えないため、Web UI か `fastlane spaceauth` のセッションが要る
-3. **配布証明書と provisioning profile の発行** (下記「署名アセットを発行する」)
-4. **environment secrets の登録** (下記「Secrets を登録する」)。environment `ios-deploy` の作成と `main` だけへのデプロイブランチ制限は適用済みで、残っているのは secret の登録
+1. **App Store Connect のアプリレコード**: 「Signalarm」(app id 6808548984、bundle id `com.bannzai.Alarmify`、主言語 en-US)。公開 App Store Connect API に作成エンドポイントは無いが、`fastlane produce create` (Apple ID の Web セッション) で作成できる。製品名の経緯は https://github.com/bannzai/Alarmify/issues/14
+2. **App ID と App Group**: 3 つの App ID (`com.bannzai.Alarmify` = `S63PHTW726` / `.NotificationService` = `XFD8933ZYP` / `.Widget` = `ZH2FZGQF2D`) を `POST /v1/bundleIds` で登録し、APP_GROUPS (3 つ) と PUSH_NOTIFICATIONS (app) を `POST /v1/bundleIdCapabilities` で有効化。App Group `group.com.bannzai.Alarmify` (`47A5B5LDSS`) の作成と割り当ては公開 API に無いため `fastlane produce group` / `associate_group` で行った
+3. **配布証明書と provisioning profile**: チーム共有の Apple Distribution 証明書 `68L9PY6PX2` (期限 2027-01-17) で 3 本発行済み (`Alarmify.AppStore` = `9YDV59L4TY` / `Alarmify.NotificationService.AppStore` = `29L69S92F2` / `Alarmify.Widget.AppStore` = `2X9ALHKFYG`。期限は証明書と同じ 2027-01-17)。すべて `entitlements-check=ok`
+4. **environment secrets**: environment `ios-deploy` に「Secrets を登録する」の 10 個を登録済み
+
+初回 dispatch (build 1) は archive・export まで通り、Upload to TestFlight で App Store の検証 ITMS-90474 (向きの未指定) と ITMS-90360 (Notification Service Extension の `CFBundleDisplayName` 欠落) で失敗した。対処は `project.pbxproj` で `TARGETED_DEVICE_FAMILY = 1` (iPhone 専用。mementomorning と同じ判断) と `INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait`、Extension に `INFOPLIST_KEY_CFBundleDisplayName` を設定。build 1 はアップロードされていないため、ビルド番号の offset はそのまま。
 
 ## 署名アセットを発行する
 
@@ -44,6 +46,8 @@ openssl pkcs12 -info -in ./tmp/signing/distribution.p12 -passin "file:./tmp/sign
 ```
 
 `create-certificate` で新規発行した場合は、`--out` に指定したディレクトリへ `distribution.p12` と `p12-password.txt` が同じ名前で作られるため、この手順は不要。
+
+GUI を使わない書き出し方: `security export` は対象を絞れず全 identity (別チームの鍵を含む) を書き出してしまうため使わないが、Security framework の `SecItemExport` を Swift スクリプトから呼べば serial で指定した 1 つの identity だけを PKCS#12 に書き出せる (許可ダイアログもその鍵 1 つ分だけ出る)。2026-09-04 の初回配布はこの方法で書き出した。スクリプトは ios-deploy-actions skill (bannzai/castle。private リポジトリ) 側へ `signing-assets.sh` のサブコマンドとして取り込む予定で、取り込み後は同 skill の手順を正とする
 
 ### provisioning profile を発行する
 
@@ -90,9 +94,9 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
   --secret APPLE_DEVELOPMENT_TEAM_ID="$FASTLANE_TEAM_ID" \
   --secret-base64-file IOS_P12_CERTIFICATE_BASE64=./tmp/signing/distribution.p12 \
   --secret-from-file IOS_P12_PASSWORD=./tmp/signing/p12-password.txt \
-  --secret-base64-file IOS_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.AppStore.mobileprovision \
-  --secret-base64-file IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.NotificationService.AppStore.mobileprovision \
-  --secret-base64-file IOS_WIDGET_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify.Widget.AppStore.mobileprovision \
+  --secret-base64-file IOS_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify_AppStore.mobileprovision \
+  --secret-base64-file IOS_NOTIFICATION_SERVICE_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify_NotificationService_AppStore.mobileprovision \
+  --secret-base64-file IOS_WIDGET_PROVISIONING_PROFILE_BASE64=./tmp/signing/Alarmify_Widget_AppStore.mobileprovision \
   --secret REVENUECAT_API_KEY="$REVENUECAT_API_KEY"
 ```
 
@@ -104,9 +108,11 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
 
 ## 配布する
 
-workflow は `workflow_dispatch` でのみ起動する。environment のブランチ制限があるため `--ref` は `main` にする。
+`main` へのマージで自動起動する (初回配布 https://github.com/bannzai/Alarmify/actions/runs/33865771891 の成功後、2026-09-04 に push トリガを有効にした)。起動した run の確認と、配布し直す時の手動起動は次のとおり。environment のブランチ制限があるため `--ref` は `main` にする。
 
 ```sh
+gh run list --workflow ios-deploy.yml --limit 5
+# 手動で配布し直す
 gh workflow run ios-deploy.yml --ref main
 RUN_ID="$(gh run list --workflow ios-deploy.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh run watch "$RUN_ID"
@@ -119,27 +125,16 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/asc-api.sh GET \
   "/v1/builds?filter[app]=<アプリの ID>&sort=-uploadedDate&limit=5&fields[builds]=version,processingState,uploadedDate"
 ```
 
-配布は同時に 1 本だけ実行できる。先行の run が未完了のまま dispatch すると、最初の step (Reject concurrent dispatch) で失敗する。完了を待ってから dispatch し直す。
+配布は同時に 1 本だけ実行され、先行の run が未完了の間に起動した run (main への push・手動 dispatch とも) は workflow の `concurrency` (ref ごとの group、`cancel-in-progress: false`) で待機する。待機中にさらに新しい run が来ると、待機中の run は取り消されて最新の run が待機する (main は直線なので最新の run が途中の commit も含む)。したがって先行 run の完了を待って dispatch し直す必要はなく、同じ内容を二重にアップロードしてビルド番号を消費しないよう、dispatch し直すのは run が取り消された・失敗した時に限る。Reject concurrent dispatch step で失敗するのは concurrency が効かなかった場合だけで、その時は先行 run の完了後に dispatch し直す。
 
 ## ビルド番号
 
-ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に既存ビルドが無いため現在の offset は `0`。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直して `run_number` が既存の最大ビルド番号以下に戻る場合は offset を上げる。
+ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に存在する最大のビルド番号は **2** (2026-09-04 の初回配布、`run_number` = 2。build 1 は検証エラーで未アップロード)。`run_number` は同じ workflow の run ごとに増え、次の run は 3 以上になるため、offset は `0` のままで単調増加が保たれる。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直す・名前を変える等で `run_number` が 1 から数え直される場合は、その時点の TestFlight の最大ビルド番号 (`asc-api.sh GET "/v1/builds?filter[app]=6808548984&sort=-version&limit=1&fields[builds]=version"`) 以上を offset にする。
 
 ## Re-run の可否
 
 - **Upload to TestFlight まで進んで失敗した run は Re-run しない**。Re-run では `run_number` が変わらず同じビルド番号になり、アップロード済みと同じ番号の再送は重複として拒否される。原因を直して新しく dispatch する
 - Upload より前の step で失敗した run は、その番号がまだアップロードされていないため Re-run で復旧してよい
-
-## push トリガを有効に戻す
-
-ios-deploy-actions skill のテンプレート既定は「`main` への push で自動起動 + `workflow_dispatch`」だが、上記の準備が済むまでは main へのマージのたびに必ず失敗する run が出るため、現在は `workflow_dispatch` だけにしている。初回配布に成功したら `.github/workflows/ios-deploy.yml` の `on:` を次の形に戻す。
-
-```yaml
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-```
 
 ## セッション再開
 

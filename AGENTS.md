@@ -31,7 +31,7 @@
 
 ## 配布とデプロイ
 
-- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
+- iOS の TestFlight 配布は `.github/workflows/ios-deploy.yml` (main へのマージで自動起動。手動起動は workflow_dispatch)。署名アセットの発行・Secrets の登録・初回配布までの手順は `documents/ios-testflight-distribution.md`
 - Functions のデプロイはローカルが `make deploy-functions`、CI が `.github/workflows/functions-deploy.yml` (workflow_dispatch)。デプロイ先は `firebase/.firebaserc` の alias で明示する。手順は `documents/functions-deploy.md`
 
 ## ストア素材
@@ -44,7 +44,7 @@
 ## 公開サイトとバックエンド
 
 - `docs/` は GitHub Pages (main の `/docs`) で配信する LP と法務ドキュメント。LP の検証は `bash ~/.agents/skills/landing-page-builder/scripts/verify-lp.sh --app-store-support --has-account docs/index.html`
-- Functions の構成: アプリ向け API `appApi` (App Check トークンと Firebase Auth の ID トークンで認証。端末登録・API トークンの発行 / 失効・アラーム履歴)、外部サービス向け API `alarmsApi` (Bearer = API トークン。`POST /v1/alarms` / `DELETE /v1/alarms/{id}`)、保持期間 (30 日) を過ぎたアラーム要求を消す `cleanupExpiredAlarms`、アカウント削除の Callable `deleteAccount` とその掃除を完了させる `sweepDeletedAccountsHourly` (削除中の目印 `deletedAccounts/{uid}` がある間は `appApi` の書き込みを 410 で拒否し、目印は 2 時間後の sweep が最後の掃除と一緒に消す)。push payload は `Alarmify/Shared/AlarmRequest.swift` の形式に揃え、`mutable-content` と `content-available` の切り替えは環境変数 `ALARMIFY_PUSH_DELIVERY` (`notification-service` / `background`) で行う
+- Functions の構成: アプリ向け API `appApi` (App Check トークンと Firebase Auth の ID トークンで認証。端末登録・API トークンの発行 / 失効・アラーム履歴)、外部サービス向け API `alarmsApi` (Bearer = API トークン。`POST /v1/alarms` / `DELETE /v1/alarms/{id}`)、保持期間 (30 日) を過ぎたアラーム要求を消す `cleanupExpiredAlarms`、アカウント削除の Callable `deleteAccount` とその掃除を完了させる `sweepDeletedAccountsHourly` (削除中の目印 `deletedAccounts/{uid}` がある間は `appApi` の書き込みを 410 で拒否し、目印は 2 時間後の sweep が最後の掃除と一緒に消す)、RevenueCat の webhook を受けて `users/{uid}.plan` を更新する `revenueCatWebhook` (Authorization ヘッダーの値は Secret `REVENUECAT_WEBHOOK_AUTHORIZATION`。設定手順と方式の選定は `documents/revenuecat-webhook.md` と [ADR 0005](documents/adr/0005-sync-plan-with-revenuecat-webhook.md)。無料枠の判定は `plan` と `proExpiresAt` から `effectivePlan` で決める)。push payload は `Alarmify/Shared/AlarmRequest.swift` の形式に揃え、`mutable-content` と `content-available` の切り替えは環境変数 `ALARMIFY_PUSH_DELIVERY` (`notification-service` / `background`) で行う
 - Firebase 関連のファイル (`firebase.json`・`.firebaserc`・`firestore.rules`・`firestore.indexes.json`・`functions/`) は `firebase/` 配下にまとめる (bannzai/shoppinglist と同じ構成)。バックエンドは Firebase `alarmify-prod` (構成: `documents/adr/0001-firebase-backend.md`、DB の規約: `.claude/rules/firestore-db-rules.md`)。ローカルは `demo-alarmify` のエミュレータで動かし、デプロイは `--project prod` を明示する
 
 ## 秘匿情報

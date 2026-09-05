@@ -23,6 +23,8 @@ export interface Deps {
   verifyIdToken: (idToken: string) => Promise<VerifiedIdToken>;
   verifyAppCheckToken: (appCheckToken: string) => Promise<VerifiedAppCheckToken>;
   appCheckEnforcementMode: () => AppCheckEnforcementMode;
+  /** Firebase Auth にユーザーが存在するか。RevenueCat の webhook が users/{uid} を作る前の確認に使う */
+  authUserExists: (uid: string) => Promise<boolean>;
   pushDeliveryMode: () => PushDeliveryMode;
   now: () => Date;
 }

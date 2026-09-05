@@ -48,4 +48,29 @@ final class APITokenTests: XCTestCase {
         // 失効させたトークンの平文は表示に残さない
         XCTAssertNil(model.issued)
     }
+
+    /// 無料プランの上限 (トークン 1 つ) を超える発行は拒否され、ペイウォールが開く。上限の判定はサーバー (スタブ) が正
+    @MainActor
+    func testIssuingBeyondTheFreeLimitOpensThePaywall() async {
+        let session = AccountSession(settings: DeveloperSettings(backend: .emulator, stubAPIClient: true))
+        let model = APITokenModel(session: session)
+
+        await model.issue()
+        XCTAssertNil(model.paywallTrigger)
+
+        await model.issue()
+
+        XCTAssertEqual(model.paywallTrigger, .freeQuotaExceeded)
+        XCTAssertEqual(model.tokens.count, StubAlarmifyAPIClient.freePlanAPITokenLimit)
+        XCTAssertNotNil(model.errorMessage)
+
+        // 失効させて空きができれば、また発行できる
+        model.paywallTrigger = nil
+        await model.revoke(id: model.tokens.first?.id ?? "")
+        await model.issue()
+
+        XCTAssertNil(model.paywallTrigger)
+        XCTAssertEqual(model.tokens.count, 1)
+        XCTAssertNil(model.errorMessage)
+    }
 }

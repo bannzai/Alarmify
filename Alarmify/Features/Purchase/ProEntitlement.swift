@@ -1,5 +1,6 @@
 import Foundation
 import RevenueCat
+import os
 
 extension String {
     /// RevenueCat の entitlement 判定結果をキャッシュする UserDefaults キー。
@@ -85,6 +86,38 @@ enum ProEntitlement {
     static func configureIfPossible() {
         guard !revenueCatAPIKey.isEmpty, !isUnitTest, !isPreview, !Purchases.isConfigured else { return }
         Purchases.configure(withAPIKey: revenueCatAPIKey)
+    }
+
+    /// Firebase Auth の uid を RevenueCat の App User ID に結び付ける。
+    /// バックエンドは RevenueCat の webhook が運ぶ app_user_id を uid として users/{uid}.plan を更新する
+    /// (functions/src/api/revenueCatWebhook.ts) ため、購入の前に uid でログインしておく必要がある。
+    /// 匿名 ID で行った購入があれば RevenueCat 側で uid にマージされる。
+    /// 未 configure (API key 無し・テスト・Preview) では何もせず、同じ uid で既にログイン済みなら通信しない (冪等)
+    static func logIn(appUserID: String) async {
+        guard Purchases.isConfigured, Purchases.shared.appUserID != appUserID else { return }
+        do {
+            let (customerInfo, _) = try await Purchases.shared.logIn(appUserID)
+            cacheEntitlement(customerInfo: customerInfo)
+        } catch {
+            // 失敗しても次回の signIn (起動・前面復帰) で再試行する
+            Logger.purchase.error("RevenueCat logIn failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// RevenueCat の App User ID がこの uid になっているか。未 configure では購入自体ができないため false
+    static func isLoggedIn(as appUserID: String) -> Bool {
+        Purchases.isConfigured && Purchases.shared.appUserID == appUserID
+    }
+
+    /// RevenueCat の identity を匿名 ID に戻す。既に匿名なら何もしない (冪等。匿名の logOut は SDK がエラーにする)
+    static func logOut() async {
+        guard Purchases.isConfigured, !Purchases.shared.isAnonymous else { return }
+        do {
+            let customerInfo = try await Purchases.shared.logOut()
+            cacheEntitlement(customerInfo: customerInfo)
+        } catch {
+            Logger.purchase.error("RevenueCat logOut failed: \(error.localizedDescription)")
+        }
     }
 
     /// customerInfoStream を監視して entitlement 判定のキャッシュを更新し続ける。

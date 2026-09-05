@@ -145,7 +145,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
 
     func testServerErrorMessageIsSurfacedAsIs() async {
         StubURLProtocol.handler = { _ in
-            (429, Data(#"{"error":{"message":"Free plan allows 20 alarms per month"}}"#.utf8))
+            (429, Data(#"{"error":{"code":"rate_limited","message":"Free plan allows 20 alarms per month"}}"#.utf8))
         }
 
         do {
@@ -154,8 +154,27 @@ final class AlarmifyAPIClientTests: XCTestCase {
         } catch {
             XCTAssertEqual(
                 error as? AlarmifyAPIError,
-                .server(statusCode: 429, message: "Free plan allows 20 alarms per month")
+                .server(statusCode: 429, code: "rate_limited", message: "Free plan allows 20 alarms per month")
             )
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isPlanLimitExceeded, false)
+        }
+    }
+
+    /// 無料プランの上限で発行を拒否された応答は、ペイウォールへ誘導する判定 (`plan_limit_exceeded`) として受け取る
+    func testPlanLimitExceededIsRecognizedFromTheErrorCode() async {
+        StubURLProtocol.handler = { _ in
+            (403, Data(#"{"error":{"code":"plan_limit_exceeded","message":"free プランで発行できる API トークンは 1 個までです"}}"#.utf8))
+        }
+
+        do {
+            _ = try await makeClient().issueAPIToken()
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual(
+                error as? AlarmifyAPIError,
+                .server(statusCode: 403, code: "plan_limit_exceeded", message: "free プランで発行できる API トークンは 1 個までです")
+            )
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isPlanLimitExceeded, true)
         }
     }
 
@@ -166,7 +185,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
             _ = try await makeClient().apiTokens()
             XCTFail("Expected an error")
         } catch {
-            XCTAssertEqual(error as? AlarmifyAPIError, .server(statusCode: 500, message: "Internal Server Error"))
+            XCTAssertEqual(error as? AlarmifyAPIError, .server(statusCode: 500, code: nil, message: "Internal Server Error"))
         }
     }
 

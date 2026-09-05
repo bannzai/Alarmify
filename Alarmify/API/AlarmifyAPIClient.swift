@@ -121,9 +121,11 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         }
     }
 
-    /// サーバーのエラー応答。`error.message` をそのまま画面に出す
+    /// サーバーのエラー応答。`error.message` をそのまま画面に出し、`error.code` で分岐する
+    /// (Callable 関数のエラーは `code` の代わりに `status` を持つため、`code` は無くても受け付ける)
     private struct ErrorResponse: Decodable {
         struct Body: Decodable {
+            let code: String?
             let message: String
         }
         let error: Body
@@ -155,7 +157,8 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
             throw AlarmifyAPIError.invalidResponse(detail: "Unexpected response: \(response)")
         }
         guard (200..<300).contains(httpResponse.statusCode) else {
-            throw AlarmifyAPIError.server(statusCode: httpResponse.statusCode, message: Self.errorMessage(from: data))
+            let error = Self.errorBody(from: data)
+            throw AlarmifyAPIError.server(statusCode: httpResponse.statusCode, code: error.code, message: error.message)
         }
         return data
     }
@@ -168,12 +171,12 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         return components.url ?? baseURL
     }
 
-    /// エラー本文は JSON の `error.message` を優先し、JSON でなければ body をそのまま使う
-    private static func errorMessage(from data: Data) -> String {
+    /// エラー本文は JSON の `error.code` / `error.message` を優先し、JSON でなければ body をそのままメッセージにする
+    private static func errorBody(from data: Data) -> (code: String?, message: String) {
         if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-            return decoded.error.message
+            return (decoded.error.code, decoded.error.message)
         }
-        return String(data: data, encoding: .utf8) ?? ""
+        return (nil, String(data: data, encoding: .utf8) ?? "")
     }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
