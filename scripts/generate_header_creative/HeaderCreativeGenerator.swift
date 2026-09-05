@@ -161,7 +161,7 @@ struct OpenGraphImageView: View {
             HStack(alignment: .center, spacing: 64) {
                 SignalBellGlyph(size: 300)
                 VStack(alignment: .leading, spacing: 18) {
-                    Text(verbatim: "Alarmify")
+                    Text(verbatim: "Signalarm")
                         .font(.system(size: 96, weight: .heavy))
                         .foregroundStyle(Color.paper)
                     // LP の <title> と同じ一言 (docs/index.html)

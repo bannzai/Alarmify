@@ -161,8 +161,8 @@ struct AppStoreScreenshot4Page: View {
             title: Text("One POST is all\nit takes"),
             // ja: 時刻とタイトルを送るだけで
             //
-            // あとは Alarmify が届ける
-            subtitle: "Send a time and a title and Alarmify does the rest"
+            // あとは Signalarm が届ける
+            subtitle: "Send a time and a title and Signalarm does the rest"
         ) {
             MockAPIRequestScreen()
         }
