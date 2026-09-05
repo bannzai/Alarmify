@@ -1,5 +1,5 @@
 # GitHub Pages (Jekyll) の設定。利用規約・プライバシーポリシー等の Markdown を HTML 化して
 # 拡張子なし URL (/Terms-en) と .html の両方で配信するため .nojekyll は置かない
-title: Alarmify
+title: Signalarm
 description: Turn any webhook or API call into a real alarm on your iPhone
 lang: en

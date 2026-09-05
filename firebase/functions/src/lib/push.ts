@@ -71,7 +71,7 @@ export function buildAlarmMessage(input: AlarmPushInput): Message {
       },
       payload: {
         aps: visible
-          ? { alert: { title: "Alarmify", body }, mutableContent: true, sound: "default" }
+          ? { alert: { title: "Signalarm", body }, mutableContent: true, sound: "default" }
           : { contentAvailable: true },
         alarm,
       },

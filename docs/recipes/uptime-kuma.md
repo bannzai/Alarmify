@@ -8,7 +8,7 @@ Settings, Notifications, Setup Notification. Choose **Webhook** as the notificat
 
 | Setting | Value |
 | --- | --- |
-| Friendly Name | `Alarmify` |
+| Friendly Name | `Signalarm` |
 | Post URL | `https://api.alarmify.app/v1/alarms` |
 | Request Body | **Custom Body** |
 

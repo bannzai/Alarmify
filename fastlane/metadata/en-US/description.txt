@@ -1,10 +1,10 @@
-Alarmify turns an HTTP request from any service into a real alarm on your iPhone.
+Signalarm turns an HTTP request from any service into a real alarm on your iPhone.
 
-Not a notification. Alarmify uses AlarmKit on iOS 26, so the alarm rings through Silent mode and Focus, fills the lock screen, and works even when the app is closed.
+Not a notification. Signalarm uses AlarmKit on iOS 26, so the alarm rings through Silent mode and Focus, fills the lock screen, and works even when the app is closed.
 
 ■ Three steps
 - Allow alarms in the app and create an API token
-- Call the Alarmify API from anything that can send an HTTP request: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Shortcuts
+- Call the Signalarm API from anything that can send an HTTP request: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Shortcuts
 - At the time you set, your iPhone rings a real alarm. You never have to open the app
 
 ■ Made for

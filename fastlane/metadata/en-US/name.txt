@@ -1,1 +1,1 @@
-Alarmify - Webhook Alarms
+Signalarm - Webhook Alarms

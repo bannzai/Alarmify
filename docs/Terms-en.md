@@ -10,7 +10,7 @@ The following terms used in these Terms have the meanings set forth below.
 1. "Service Content" means Content accessible through the Service.
 1. "Transmitted Data" means the date and time, title, and other information of alarms that a user, or an external service linked by a user, transmits to the Service through the API.
 1. "User" means a person who uses the Service, regardless of whether they have registered an email address.
-1. "Service" means the service named "Alarmify" provided by the Provider (if the name or content of the service is changed for any reason, it includes the service after such change), and includes the App and the API.
+1. "Service" means the service named "Signalarm" provided by the Provider (if the name or content of the service is changed for any reason, it includes the service after such change), and includes the App and the API.
 1. "API" means the interface provided by the Provider for sending requests to the Service from external services or programs.
 1. "API Token" means the character string issued by the Provider to authenticate a user when the API is called.
 1. "Individual Terms of Use" means documents published by the Provider in the App under names such as "Guidelines," "Policies," or "Rules of Use," separately from these Terms, in relation to the Service.

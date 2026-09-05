@@ -241,12 +241,12 @@
         }
       }
     },
-    "Send a time and a title and Alarmify does the rest": {
+    "Send a time and a title and Signalarm does the rest": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "時刻とタイトルを送るだけで\nあとは Alarmify が届ける"
+            "value": "時刻とタイトルを送るだけで\nあとは Signalarm が届ける"
           }
         }
       }
