@@ -21,7 +21,7 @@ enum AlarmKitScheduler {
         switch request.action {
         case .schedule:
             guard let fireDate = request.fireDate else { return }
-            try await schedule(id: request.id, fireDate: fireDate, title: request.title ?? "Alarmify")
+            try await schedule(id: request.id, fireDate: fireDate, title: request.title ?? "Signalarm")
         case .cancel:
             try cancel(id: request.id)
         }

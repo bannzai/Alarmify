@@ -91,7 +91,7 @@
         }
       }
     },
-    "Alarmify" : {
+    "Signalarm" : {
       "shouldTranslate" : false
     },
     "AlarmKit" : {

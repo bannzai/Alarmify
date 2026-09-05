@@ -972,7 +972,7 @@
 				CODE_SIGN_ENTITLEMENTS = AlarmifyNotificationService/AlarmifyNotificationService.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -995,6 +995,7 @@
 				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Alarmify/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1036,7 +1037,7 @@
 				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyNotificationService/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1058,6 +1059,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Alarmify/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1144,7 +1146,7 @@
 				"CODE_SIGN_STYLE[sdk=iphoneos*]" = Manual;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1163,7 +1165,7 @@
 				CODE_SIGN_ENTITLEMENTS = AlarmifyWidget/AlarmifyWidget.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlarmifyWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Alarmify;
+				INFOPLIST_KEY_CFBundleDisplayName = Signalarm;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -58,7 +58,7 @@ enum DebugPushPayload {
     private static func userInfo(alarm: [String: Any]) -> [AnyHashable: Any] {
         [
             "aps": [
-                "alert": ["title": "Alarmify", "body": title],
+                "alert": ["title": "Signalarm", "body": title],
                 "mutable-content": 1,
             ],
             AlarmRequest.payloadKey: alarm,

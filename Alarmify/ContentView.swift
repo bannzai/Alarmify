@@ -168,7 +168,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("Alarmify")
+            .navigationTitle("Signalarm")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
