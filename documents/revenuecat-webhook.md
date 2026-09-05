@@ -4,7 +4,7 @@ RevenueCat の entitlement `pro` の状態を `users/{uid}.plan` に反映する
 
 | 項目 | 値 |
 | --- | --- |
-| 関数 | `revenueCatWebhook` (`functions/src/api/revenueCatWebhook.ts`。`POST /` のみ) |
+| 関数 | `revenueCatWebhook` (`firebase/functions/src/api/revenueCatWebhook.ts`。`POST /` のみ) |
 | 本番 URL | `https://asia-northeast1-alarmify-prod.cloudfunctions.net/revenueCatWebhook` |
 | 認証 | リクエストの `Authorization` ヘッダーの値が Secret `REVENUECAT_WEBHOOK_AUTHORIZATION` と完全一致すること (一致しなければ 401) |
 | RevenueCat project | `Signalarm` (proj42e2b4ed) |
@@ -60,8 +60,8 @@ gcloud functions logs read revenueCatWebhook --region=asia-northeast1 --project=
 
 ## ローカル (エミュレータ) での扱い
 
-- `make test-functions` のテスト (`functions/test/revenueCatWebhook.test.ts`) は Secret を使わず、`createRevenueCatWebhook(deps, { authorization })` に値を直接渡す
-- `make emulators` で関数を起動する時は、`functions/.secret.local` に `REVENUECAT_WEBHOOK_AUTHORIZATION=<任意の値>` を書く (`*.local` は Firebase CLI がエミュレータ専用に読む。git 管理外にする)。RevenueCat から手元のエミュレータには届かないため、`curl -H "Authorization: <値>"` で `http://127.0.0.1:5410/demo-alarmify/asia-northeast1/revenueCatWebhook` へイベントを投げて確認する
+- `make test-functions` のテスト (`firebase/functions/test/revenueCatWebhook.test.ts`) は Secret を使わず、`createRevenueCatWebhook(deps, { authorization })` に値を直接渡す
+- `make emulators` で関数を起動する時は、`firebase/functions/.secret.local` に `REVENUECAT_WEBHOOK_AUTHORIZATION=<任意の値>` を書く (`*.local` は Firebase CLI がエミュレータ専用に読む。git 管理外にする)。RevenueCat から手元のエミュレータには届かないため、`curl -H "Authorization: <値>"` で `http://127.0.0.1:5410/demo-alarmify/asia-northeast1/revenueCatWebhook` へイベントを投げて確認する
 - アプリは接続先がエミュレータのアカウントでは `Purchases.logIn` を呼ばず、本番から切り替えた起動では残っている本番の identity を `logOut` で匿名に戻す (`AccountSession.linkPurchases`)。エミュレータに接続している間はペイウォールの購入・復元を行えない (`AccountSession.purchaseLinkState`)。購入の導線を確認する時は接続先を production にする
 
 ## 反映されるプランの規則 (要約)

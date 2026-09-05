@@ -25,17 +25,23 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     let deviceID: String
     /// Firebase Auth の ID トークンを返す。未サインインなら nil
     let idToken: @Sendable () async throws -> String?
+    /// App Check のトークンを返す。取得できなければ nil。
+    /// 引数の最後に置くのは、既存の呼び出しがトレーリングクロージャで `idToken` を渡しているため
+    /// (前に置くとトレーリングクロージャの前方走査がこちらに束縛されてしまう)
+    let appCheckToken: @Sendable () async -> String?
 
     init(
         backend: AlarmifyBackend,
         session: URLSession = .shared,
         deviceID: String = DeviceIdentifier.current,
-        idToken: @escaping @Sendable () async throws -> String?
+        idToken: @escaping @Sendable () async throws -> String?,
+        appCheckToken: @escaping @Sendable () async -> String? = { nil }
     ) {
         self.backend = backend
         self.session = session
         self.deviceID = deviceID
         self.idToken = idToken
+        self.appCheckToken = appCheckToken
     }
 
     func registerDevice(fcmRegistrationToken: String) async throws {
@@ -135,6 +141,12 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        // App Check のトークンが取れない時 (App Attest 非対応・一時的な失敗・デバッグトークン未登録) はヘッダー無しで送る。
+        // 通すか弾くかはサーバー側の設定 (監視のみ / 強制) で決める。クライアントで止めると、監視のみで運用している間の
+        // 正当な利用まで落ちてしまうため
+        if let appCheckToken = await appCheckToken() {
+            request.setValue(appCheckToken, forHTTPHeaderField: "X-Firebase-AppCheck")
+        }
         if let body {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = try JSONSerialization.data(withJSONObject: body)

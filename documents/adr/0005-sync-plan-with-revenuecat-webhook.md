@@ -4,7 +4,7 @@
 Accepted (2026-09-04)
 
 ## Context
-無料枠の上限 (API トークン 1 つ・月 20 件のアラーム) はサーバー (`functions/src/lib/plan.ts`) が `users/{uid}.plan` を見て判定する。iOS 側は RevenueCat の entitlement `pro` を UserDefaults にキャッシュして表示に使う ([ADR 0004](0004-revenuecat-entitlement-and-api-key.md)) が、この時点では `plan` を更新する経路が無く、購入しても上限が解除されなかった (#19)。
+無料枠の上限 (API トークン 1 つ・月 20 件のアラーム) はサーバー (`firebase/functions/src/lib/plan.ts`) が `users/{uid}.plan` を見て判定する。iOS 側は RevenueCat の entitlement `pro` を UserDefaults にキャッシュして表示に使う ([ADR 0004](0004-revenuecat-entitlement-and-api-key.md)) が、この時点では `plan` を更新する経路が無く、購入しても上限が解除されなかった (#19)。
 
 `plan` の更新元には 2 つの選択肢があった。
 
@@ -16,7 +16,7 @@ Accepted (2026-09-04)
 1 は端末の状態に依存せず、RevenueCat が正を持つ購読の状態変化 (更新・停止・失効・返金・請求エラー・端末間の引き継ぎ) をそのままサーバーへ運ぶ。webhook は Dashboard で URL と Authorization ヘッダーを設定するだけで、追加の API キーを Functions に持たなくてよい。
 
 ## Decision
-方式 1 を採る。Functions `revenueCatWebhook` (`functions/src/api/revenueCatWebhook.ts`) が RevenueCat の webhook を受け、次の規則で `users/{uid}` を更新する (判定の本体は `functions/src/lib/revenueCat.ts` の純粋関数)。
+方式 1 を採る。Functions `revenueCatWebhook` (`firebase/functions/src/api/revenueCatWebhook.ts`) が RevenueCat の webhook を受け、次の規則で `users/{uid}` を更新する (判定の本体は `firebase/functions/src/lib/revenueCat.ts` の純粋関数)。
 
 - **uid の解決**: アプリは匿名認証の完了後に `Purchases.logIn(uid)` を呼ぶ (`ProEntitlement.logIn`)。webhook の `app_user_id` が uid になるため、それをそのまま使う。匿名 ID (`$RCAnonymousID:`) しか無いイベントは結び付ける相手がいないので無視する。接続先がエミュレータのアカウントは `logIn` せず、残っている本番の identity は `logOut` で匿名に戻す (webhook は本番の Firestore にしか届かず、本番に存在しない uid のドキュメントを作らない・本番の uid での購入を起こさないため)。ペイウォールの購入・復元は結び付けが成立してから始め、接続先がエミュレータの間は行えない (`AccountSession.purchaseLinkState`。起動時の `logIn` が失敗したまま匿名 ID で購入すると webhook に uid が載らず、エミュレータで匿名 ID のまま購入すると本番へ戻した起動の `logIn` で本番の uid にマージされてしまうため)
 - **削除済みアカウントの扱い**: ユーザーのドキュメントが無い uid を pro にする時は、Firebase Auth にユーザーが今も存在する場合だけ作る。削除の目印 (`deletedAccounts/{uid}`) は 2 時間で消えるため、削除後に RevenueCat 側へ残った購読の RENEWAL が削除済みアカウントのドキュメントを作り直さないようにする

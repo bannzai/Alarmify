@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
 import { createRevenueCatWebhook } from "../src/api/revenueCatWebhook.js";
+import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
 import { monthKey, planLimits } from "../src/lib/plan.js";
 import { PRO_ENTITLEMENT_ID, type RevenueCatEvent } from "../src/lib/revenueCat.js";
 import { deletionMarkerRef, userRef } from "../src/lib/store.js";
@@ -15,6 +16,7 @@ import {
   startTestServer,
   stopTestServer,
   TEST_NOW,
+  VALID_APP_CHECK_TOKEN,
   VALID_ID_TOKEN,
   type TestContext,
 } from "./helpers.js";
@@ -73,6 +75,7 @@ async function registerDevice(): Promise<void> {
   await request(appApi)
     .post("/v1/devices")
     .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+    .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
     .send({ device_id: "device-1", fcm_token: "fcm-token-1" })
     .expect(200);
 }
@@ -81,6 +84,7 @@ async function issueApiToken(name = "github-actions"): Promise<{ id: string; tok
   const response = await request(appApi)
     .post("/v1/api-tokens")
     .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+    .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
     .send({ name })
     .expect(201);
   return { id: response.body.id, token: response.body.token };
@@ -225,6 +229,7 @@ describe("RevenueCat の webhook", () => {
     const token = await request(appApi)
       .post("/v1/api-tokens")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .send({ name: "second" })
       .expect(403);
     expect(token.body.error.code).toBe("plan_limit_exceeded");
@@ -352,6 +357,7 @@ describe("RevenueCat の webhook", () => {
       await request(receivingAppApi)
         .post("/v1/devices")
         .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
         .send({ device_id: "device-b", fcm_token: "fcm-token-b" })
         .expect(200);
     } finally {

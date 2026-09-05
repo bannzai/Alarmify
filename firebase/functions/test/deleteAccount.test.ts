@@ -11,6 +11,7 @@ import {
 import { collections, deletedAccountFields } from "../src/schema/index.js";
 import request from "supertest";
 import { createAppApi } from "../src/api/appApi.js";
+import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
 import {
   clearFirestore,
   createTestContext,
@@ -19,6 +20,7 @@ import {
   stopTestServer,
   TEST_NOW,
   testFirestore,
+  VALID_APP_CHECK_TOKEN,
   VALID_ID_TOKEN,
 } from "./helpers.js";
 
@@ -219,12 +221,14 @@ describe("アカウント削除", () => {
       const device = await request(appApi)
         .post("/v1/devices")
         .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
         .send({ device_id: "device-1", fcm_token: "fcm-token-1" })
         .expect(410);
       expect(device.body.error.code).toBe("account_deleted");
       const token = await request(appApi)
         .post("/v1/api-tokens")
         .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
         .send({ name: "github-actions" })
         .expect(410);
       expect(token.body.error.code).toBe("account_deleted");

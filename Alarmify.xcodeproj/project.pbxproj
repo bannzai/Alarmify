@@ -74,6 +74,8 @@
 		8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA085358AAEA03A5EF70727B /* APITokenTests.swift */; };
 		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
 		B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */; };
+		3F7A1C4E9B052D6188E4A730 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */; };
+		2E9F5C81D703A64BF18C25E7 /* AppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4D63A0F1C89E25340AB6D9 /* AppCheckProviderFactory.swift */; };
 		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
 		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
 		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
@@ -147,6 +149,7 @@
 		7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentifier.swift; sourceTree = "<group>"; };
 		21F13E25009531099CD8FB83 /* AlarmifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyApp.swift; sourceTree = "<group>"; };
 		247CF42D4F40787F4C65182A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7B4D63A0F1C89E25340AB6D9 /* AppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		2B404EE90E0E26173FD4D5C9 /* AlarmifyWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmifyWidget.entitlements; sourceTree = "<group>"; };
 		35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = AlarmifyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BE9FC39A39F916DDE0394A8 /* AlarmifyNotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmifyNotificationService.entitlements; sourceTree = "<group>"; };
@@ -232,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */,
+				3F7A1C4E9B052D6188E4A730 /* FirebaseAppCheck in Frameworks */,
 				96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */,
 				FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */,
 			);
@@ -356,6 +360,7 @@
 		E6573050F56C14CBE499622A /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				7B4D63A0F1C89E25340AB6D9 /* AppCheckProviderFactory.swift */,
 				247CF42D4F40787F4C65182A /* AppDelegate.swift */,
 				7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */,
 				1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */,
@@ -602,6 +607,7 @@
 			name = Alarmify;
 			packageProductDependencies = (
 				78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */,
+				5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */,
 				01958D05CA8D55574EE318D0 /* FirebaseMessaging */,
 				29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */,
 			);
@@ -859,6 +865,7 @@
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
 				ADBD6F35237D975376AA9E7D /* AlarmifyApp.swift in Sources */,
+				2E9F5C81D703A64BF18C25E7 /* AppCheckProviderFactory.swift in Sources */,
 				FA8F9C3F7D37FAA511EA29F6 /* AppDelegate.swift in Sources */,
 				F793B4FAB205414176A8285C /* AppGroup.swift in Sources */,
 				8FB69638DC050485008C1A96 /* ContentView.swift in Sources */,
@@ -1461,6 +1468,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 		01958D05CA8D55574EE318D0 /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
