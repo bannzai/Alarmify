@@ -5,6 +5,7 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { createExternalApi } from "../src/api/externalApi.js";
+import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
 import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
 import { MAX_FIRE_AT_AHEAD_DAYS, MIN_FIRE_AT_LEAD_SECONDS } from "../src/api/externalApi.js";
@@ -16,6 +17,7 @@ import {
   startTestServer,
   stopTestServer,
   TEST_NOW,
+  VALID_APP_CHECK_TOKEN,
   VALID_ID_TOKEN,
   type TestContext,
 } from "./helpers.js";
@@ -30,6 +32,7 @@ async function registerDevice(deviceId = "device-1", fcmToken = "fcm-token-1"): 
   await request(appApi)
     .post("/v1/devices")
     .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+    .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
     .send({ device_id: deviceId, fcm_token: fcmToken })
     .expect(200);
 }
@@ -38,6 +41,7 @@ async function issueApiToken(name = "github-actions"): Promise<{ id: string; tok
   const response = await request(appApi)
     .post("/v1/api-tokens")
     .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+    .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
     .send({ name })
     .expect(201);
   return { id: response.body.id, token: response.body.token };
@@ -56,7 +60,11 @@ afterEach(async () => {
 
 describe("アプリ向け API", () => {
   it("ID トークンが無ければ 401", async () => {
-    const response = await request(appApi).post("/v1/api-tokens").send({}).expect(401);
+    const response = await request(appApi)
+      .post("/v1/api-tokens")
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .send({})
+      .expect(401);
     expect(response.body.error.code).toBe("unauthenticated");
   });
 
@@ -64,8 +72,57 @@ describe("アプリ向け API", () => {
     await request(appApi)
       .post("/v1/api-tokens")
       .set("authorization", "Bearer invalid")
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .send({})
       .expect(401);
+  });
+
+  it("App Check トークンが無ければ 401 (ID トークンが有効でも通さない)", async () => {
+    const response = await request(appApi)
+      .post("/v1/api-tokens")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .send({})
+      .expect(401);
+    expect(response.body.error.code).toBe("app_check_required");
+  });
+
+  it("App Check トークンが不正なら 401", async () => {
+    const response = await request(appApi)
+      .post("/v1/api-tokens")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, "invalid-app-check-token")
+      .send({})
+      .expect(401);
+    expect(response.body.error.code).toBe("app_check_invalid");
+  });
+
+  it("monitor では App Check トークンが無くても通る (強制適用の前段)", async () => {
+    context.setAppCheckEnforcementMode("monitor");
+    await request(appApi)
+      .post("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .send({ device_id: "device-1", fcm_token: "fcm-token-1" })
+      .expect(200);
+  });
+
+  it("monitor では不正な App Check トークンも通る (記録するだけで拒否しない)", async () => {
+    context.setAppCheckEnforcementMode("monitor");
+    await request(appApi)
+      .post("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, "invalid-app-check-token")
+      .send({ device_id: "device-1", fcm_token: "fcm-token-1" })
+      .expect(200);
+  });
+
+  it("外部サービス向け API は App Check を要求しない (API トークンで守る)", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
   });
 
   it("同じ device_id への再登録は上書きになる (冪等)", async () => {
@@ -86,6 +143,7 @@ describe("アプリ向け API", () => {
     const response = await request(appApi)
       .post("/v1/devices")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .send({ device_id: "device-over", fcm_token: "fcm-token-over" })
       .expect(403);
     expect(response.body.error.code).toBe("device_limit_exceeded");
@@ -96,6 +154,7 @@ describe("アプリ向け API", () => {
     await request(appApi)
       .post("/v1/devices")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .send({ device_id: "a/b/c", fcm_token: "fcm-token" })
       .expect(400);
   });
@@ -106,6 +165,7 @@ describe("アプリ向け API", () => {
     const response = await request(appApi)
       .get("/v1/devices")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(response.body.devices.map((device: { device_id: string }) => device.device_id)).toEqual([
       "device-1",
@@ -129,6 +189,7 @@ describe("アプリ向け API", () => {
     const response = await request(appApi)
       .post("/v1/api-tokens")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .send({ name: "second" })
       .expect(403);
     expect(response.body.error.code).toBe("plan_limit_exceeded");
@@ -139,10 +200,12 @@ describe("アプリ向け API", () => {
     await request(appApi)
       .delete(`/v1/api-tokens/${issued.id}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(204);
     const list = await request(appApi)
       .get("/v1/api-tokens")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(list.body.api_tokens).toHaveLength(0);
     expect(list.body.next_cursor).toBeNull();
@@ -223,6 +286,7 @@ describe("外部サービス向け API", () => {
     await request(appApi)
       .delete(`/v1/api-tokens/${issued.id}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(204);
     await request(externalApi)
       .post("/v1/alarms")
@@ -691,6 +755,7 @@ describe("外部サービス向け API", () => {
     await request(appApi)
       .delete(`/v1/api-tokens/${first.id}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(204);
     const second = await issueApiToken("second");
 
@@ -799,6 +864,7 @@ describe("アラーム履歴", () => {
     const history = await request(appApi)
       .get("/v1/alarms")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(history.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([
       second.body.id,
@@ -823,6 +889,7 @@ describe("アラーム履歴", () => {
     const first = await request(appApi)
       .get("/v1/alarms?limit=2")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(first.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[2], ids[1]]);
     expect(first.body.next_cursor).not.toBeNull();
@@ -830,6 +897,7 @@ describe("アラーム履歴", () => {
     const second = await request(appApi)
       .get(`/v1/alarms?limit=2&cursor=${first.body.next_cursor}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(second.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[0]]);
     expect(second.body.next_cursor).toBeNull();
@@ -839,18 +907,21 @@ describe("アラーム履歴", () => {
     await request(appApi)
       .get("/v1/alarms?cursor=not-a-cursor")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(400);
     // Firestore の Timestamp の範囲を外れる時刻
     const outOfRange = Buffer.from("9007199254740991:x", "utf8").toString("base64url");
     await request(appApi)
       .get(`/v1/alarms?cursor=${outOfRange}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(400);
     // ドキュメント id として使えない文字を含む
     const invalidId = Buffer.from("0:a/b", "utf8").toString("base64url");
     await request(appApi)
       .get(`/v1/alarms?cursor=${invalidId}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(400);
   });
 
@@ -870,6 +941,7 @@ describe("アラーム履歴", () => {
     const first = await request(appApi)
       .get("/v1/alarms?limit=2")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
 
     // cursor が指すアラームが削除されても、残りを辿れる
@@ -881,6 +953,7 @@ describe("アラーム履歴", () => {
     const second = await request(appApi)
       .get(`/v1/alarms?limit=2&cursor=${first.body.next_cursor}`)
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(second.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[0]]);
   });
@@ -889,6 +962,7 @@ describe("アラーム履歴", () => {
     await request(appApi)
       .get("/v1/alarms?limit=0")
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(400);
   });
 });

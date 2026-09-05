@@ -9,7 +9,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { emulatorHost, PROJECT_ID } from "./helpers.js";
 
-/** 実行時の作業ディレクトリ (functions/ かリポジトリルート) の差を吸収して firestore.rules を探す */
+/** 実行時の作業ディレクトリ (firebase/functions/ か firebase/) の差を吸収して firebase/firestore.rules を探す */
 function findRulesPath(): string {
   let directory = process.cwd();
   for (let depth = 0; depth < 5; depth += 1) {

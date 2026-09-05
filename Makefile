@@ -8,7 +8,7 @@ DERIVED_DATA := tmp/DerivedData
 APP := $(DERIVED_DATA)/Build/Products/$(CONFIGURATION)-iphonesimulator/Alarmify.app
 IOS_APP := $(DERIVED_DATA)/Build/Products/$(CONFIGURATION)-iphoneos/Alarmify.app
 BUNDLE_ID := com.bannzai.Alarmify
-# Firebase Functions のデプロイ先。.firebaserc の alias で指定する (取り違え防止のため常に明示する)
+# Firebase Functions のデプロイ先。firebase/.firebaserc の alias で指定する (取り違え防止のため常に明示する)
 FIREBASE_ALIAS ?= prod
 # firebase-tools は .github/workflows/functions-deploy.yml と同じバージョンに固定する (CLI 更新で挙動が変わらないように)
 FIREBASE_TOOLS_VERSION := 15.28.2
@@ -57,29 +57,29 @@ test:
 
 # Firebase Functions のテスト。Firestore エミュレータ (demo-alarmify) 上で実行する
 test-functions:
-	@[ -d functions/node_modules ] || npm --prefix functions ci
-	npm --prefix functions test
+	@[ -d firebase/functions/node_modules ] || npm --prefix firebase/functions ci
+	npm --prefix firebase/functions test
 
 # Firebase Emulator Suite (Firestore / Auth) を起動する
 emulators:
-	@[ -d functions/node_modules ] || npm --prefix functions ci
-	npm --prefix functions run emulators
+	@[ -d firebase/functions/node_modules ] || npm --prefix firebase/functions ci
+	npm --prefix firebase/functions run emulators
 
 clean:
 	rm -rf $(DERIVED_DATA)
 
-# Functions を .firebaserc の alias で指定した Firebase プロジェクトへデプロイする。
+# Functions を firebase/.firebaserc の alias で指定した Firebase プロジェクトへデプロイする。
 # GitHub Actions の functions-deploy.yml と同じコマンドで、ローカルからも同じ経路でデプロイできるようにする
 deploy-functions:
 	@set -e; \
 	alias_name="$(FIREBASE_ALIAS)"; \
 	[ -n "$$alias_name" ] || { echo "Error: FIREBASE_ALIAS が空です (例: make deploy-functions FIREBASE_ALIAS=prod)" >&2; exit 1; }; \
-	project_id=$$(jq -r --arg alias "$$alias_name" '.projects[$$alias] // empty' .firebaserc); \
-	[ -n "$$project_id" ] || { echo "Error: .firebaserc に alias '$$alias_name' がありません" >&2; exit 1; }; \
-	[ -d functions ] || { echo "Error: functions/ がありません" >&2; exit 1; }; \
+	project_id=$$(jq -r --arg alias "$$alias_name" '.projects[$$alias] // empty' firebase/.firebaserc); \
+	[ -n "$$project_id" ] || { echo "Error: firebase/.firebaserc に alias '$$alias_name' がありません" >&2; exit 1; }; \
+	[ -d firebase/functions ] || { echo "Error: firebase/functions/ がありません" >&2; exit 1; }; \
 	if [ -n "$(FUNCTIONS)" ]; then \
 		target=$$(printf '%s' "$(FUNCTIONS)" | awk -F',' '{for (i = 1; i <= NF; i++) { gsub(/^[ \t]+|[ \t]+$$/, "", $$i); if ($$i != "") printf "%sfunctions:%s", (n++ ? "," : ""), $$i }}'); \
 		[ -n "$$target" ] || { echo "Error: FUNCTIONS の指定が空です" >&2; exit 1; }; \
 	else target="functions"; fi; \
 	echo "デプロイ先: alias=$$alias_name project=$$project_id target=$$target"; \
-	npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive
+	cd firebase && npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive

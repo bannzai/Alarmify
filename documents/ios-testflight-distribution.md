@@ -108,9 +108,11 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
 
 ## 配布する
 
-workflow は `workflow_dispatch` でのみ起動する。environment のブランチ制限があるため `--ref` は `main` にする。
+`main` へのマージで自動起動する (初回配布 https://github.com/bannzai/Alarmify/actions/runs/33865771891 の成功後、2026-09-04 に push トリガを有効にした)。起動した run の確認と、配布し直す時の手動起動は次のとおり。environment のブランチ制限があるため `--ref` は `main` にする。
 
 ```sh
+gh run list --workflow ios-deploy.yml --limit 5
+# 手動で配布し直す
 gh workflow run ios-deploy.yml --ref main
 RUN_ID="$(gh run list --workflow ios-deploy.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh run watch "$RUN_ID"
@@ -123,27 +125,16 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/asc-api.sh GET \
   "/v1/builds?filter[app]=<アプリの ID>&sort=-uploadedDate&limit=5&fields[builds]=version,processingState,uploadedDate"
 ```
 
-配布は同時に 1 本だけ実行できる。先行の run が未完了のまま dispatch すると、最初の step (Reject concurrent dispatch) で失敗する。完了を待ってから dispatch し直す。
+配布は同時に 1 本だけ実行され、先行の run が未完了の間に起動した run (main への push・手動 dispatch とも) は workflow の `concurrency` (ref ごとの group、`cancel-in-progress: false`) で待機する。待機中にさらに新しい run が来ると、待機中の run は取り消されて最新の run が待機する (main は直線なので最新の run が途中の commit も含む)。したがって先行 run の完了を待って dispatch し直す必要はなく、同じ内容を二重にアップロードしてビルド番号を消費しないよう、dispatch し直すのは run が取り消された・失敗した時に限る。Reject concurrent dispatch step で失敗するのは concurrency が効かなかった場合だけで、その時は先行 run の完了後に dispatch し直す。
 
 ## ビルド番号
 
-ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に既存ビルドが無いため現在の offset は `0`。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直して `run_number` が既存の最大ビルド番号以下に戻る場合は offset を上げる。
+ビルド番号 (`CURRENT_PROJECT_VERSION`) は `github.run_number + BUILD_NUMBER_OFFSET` で決まる。TestFlight に存在する最大のビルド番号は **2** (2026-09-04 の初回配布、`run_number` = 2。build 1 は検証エラーで未アップロード)。`run_number` は同じ workflow の run ごとに増え、次の run は 3 以上になるため、offset は `0` のままで単調増加が保たれる。App Store Connect のビルド番号は同一バージョン内で単調増加が必要なので、workflow を作り直す・名前を変える等で `run_number` が 1 から数え直される場合は、その時点の TestFlight の最大ビルド番号 (`asc-api.sh GET "/v1/builds?filter[app]=6808548984&sort=-version&limit=1&fields[builds]=version"`) 以上を offset にする。
 
 ## Re-run の可否
 
 - **Upload to TestFlight まで進んで失敗した run は Re-run しない**。Re-run では `run_number` が変わらず同じビルド番号になり、アップロード済みと同じ番号の再送は重複として拒否される。原因を直して新しく dispatch する
 - Upload より前の step で失敗した run は、その番号がまだアップロードされていないため Re-run で復旧してよい
-
-## push トリガを有効に戻す
-
-ios-deploy-actions skill のテンプレート既定は「`main` への push で自動起動 + `workflow_dispatch`」だが、上記の準備が済むまでは main へのマージのたびに必ず失敗する run が出るため、現在は `workflow_dispatch` だけにしている。初回配布に成功したら `.github/workflows/ios-deploy.yml` の `on:` を次の形に戻す。
-
-```yaml
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-```
 
 ## セッション再開
 

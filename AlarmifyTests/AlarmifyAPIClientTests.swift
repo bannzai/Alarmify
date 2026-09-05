@@ -18,8 +18,14 @@ final class AlarmifyAPIClientTests: XCTestCase {
         super.tearDown()
     }
 
-    private func makeClient(idToken: String? = "id-token") -> URLSessionAlarmifyAPIClient {
-        URLSessionAlarmifyAPIClient(backend: .emulator, session: session, deviceID: "device-1") { idToken }
+    private func makeClient(idToken: String? = "id-token", appCheckToken: String? = nil) -> URLSessionAlarmifyAPIClient {
+        URLSessionAlarmifyAPIClient(
+            backend: .emulator,
+            session: session,
+            deviceID: "device-1",
+            idToken: { idToken },
+            appCheckToken: { appCheckToken }
+        )
     }
 
     func testAPITokensAreDecodedIntoTypedStructs() async throws {
@@ -139,7 +145,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
 
     func testServerErrorMessageIsSurfacedAsIs() async {
         StubURLProtocol.handler = { _ in
-            (429, Data(#"{"error":{"message":"Free plan allows 20 alarms per month"}}"#.utf8))
+            (429, Data(#"{"error":{"code":"rate_limited","message":"Free plan allows 20 alarms per month"}}"#.utf8))
         }
 
         do {
@@ -148,8 +154,27 @@ final class AlarmifyAPIClientTests: XCTestCase {
         } catch {
             XCTAssertEqual(
                 error as? AlarmifyAPIError,
-                .server(statusCode: 429, message: "Free plan allows 20 alarms per month")
+                .server(statusCode: 429, code: "rate_limited", message: "Free plan allows 20 alarms per month")
             )
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isPlanLimitExceeded, false)
+        }
+    }
+
+    /// 無料プランの上限で発行を拒否された応答は、ペイウォールへ誘導する判定 (`plan_limit_exceeded`) として受け取る
+    func testPlanLimitExceededIsRecognizedFromTheErrorCode() async {
+        StubURLProtocol.handler = { _ in
+            (403, Data(#"{"error":{"code":"plan_limit_exceeded","message":"free プランで発行できる API トークンは 1 個までです"}}"#.utf8))
+        }
+
+        do {
+            _ = try await makeClient().issueAPIToken()
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual(
+                error as? AlarmifyAPIError,
+                .server(statusCode: 403, code: "plan_limit_exceeded", message: "free プランで発行できる API トークンは 1 個までです")
+            )
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isPlanLimitExceeded, true)
         }
     }
 
@@ -160,7 +185,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
             _ = try await makeClient().apiTokens()
             XCTFail("Expected an error")
         } catch {
-            XCTAssertEqual(error as? AlarmifyAPIError, .server(statusCode: 500, message: "Internal Server Error"))
+            XCTAssertEqual(error as? AlarmifyAPIError, .server(statusCode: 500, code: nil, message: "Internal Server Error"))
         }
     }
 
@@ -176,6 +201,42 @@ final class AlarmifyAPIClientTests: XCTestCase {
         } catch {
             XCTAssertEqual(error as? AlarmifyAPIError, .notSignedIn)
         }
+    }
+
+    /// App Check のトークンが取れたら、サーバーが検証できるようヘッダーに載せる
+    func testAppCheckTokenIsSentInTheHeader() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Firebase-AppCheck"), "app-check-token")
+            return (200, Data(#"{"api_tokens":[],"next_cursor":null}"#.utf8))
+        }
+
+        _ = try await makeClient(appCheckToken: "app-check-token").apiTokens()
+    }
+
+    /// App Attest 非対応の端末やトークン取得の失敗でも、リクエスト自体は送る
+    /// (サーバーが監視のみのモードで運用している間に、正当な利用まで落とさないため)
+    func testRequestIsStillSentWithoutTheAppCheckHeader() async throws {
+        nonisolated(unsafe) var requestCount = 0
+        StubURLProtocol.handler = { request in
+            requestCount += 1
+            XCTAssertNil(request.value(forHTTPHeaderField: "X-Firebase-AppCheck"))
+            return (200, Data(#"{"api_tokens":[],"next_cursor":null}"#.utf8))
+        }
+
+        _ = try await makeClient(appCheckToken: nil).apiTokens()
+
+        XCTAssertEqual(requestCount, 1)
+    }
+
+    /// Callable の `deleteAccount` も同じ送信経路を通るため、ヘッダーが付く
+    func testDeleteAccountCarriesTheAppCheckHeader() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.url?.absoluteString, "http://127.0.0.1:5410/demo-alarmify/asia-northeast1/deleteAccount")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Firebase-AppCheck"), "app-check-token")
+            return (200, Data(#"{"result":{"userId":"uid-1234","authUserExisted":true,"userDocumentExisted":true}}"#.utf8))
+        }
+
+        try await makeClient(appCheckToken: "app-check-token").deleteAccount()
     }
 
     func testMalformedSuccessBodyIsRejectedInsteadOfDefaulted() async {

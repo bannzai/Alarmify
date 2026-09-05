@@ -25,17 +25,23 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     let deviceID: String
     /// Firebase Auth の ID トークンを返す。未サインインなら nil
     let idToken: @Sendable () async throws -> String?
+    /// App Check のトークンを返す。取得できなければ nil。
+    /// 引数の最後に置くのは、既存の呼び出しがトレーリングクロージャで `idToken` を渡しているため
+    /// (前に置くとトレーリングクロージャの前方走査がこちらに束縛されてしまう)
+    let appCheckToken: @Sendable () async -> String?
 
     init(
         backend: AlarmifyBackend,
         session: URLSession = .shared,
         deviceID: String = DeviceIdentifier.current,
-        idToken: @escaping @Sendable () async throws -> String?
+        idToken: @escaping @Sendable () async throws -> String?,
+        appCheckToken: @escaping @Sendable () async -> String? = { nil }
     ) {
         self.backend = backend
         self.session = session
         self.deviceID = deviceID
         self.idToken = idToken
+        self.appCheckToken = appCheckToken
     }
 
     func registerDevice(fcmRegistrationToken: String) async throws {
@@ -115,9 +121,11 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         }
     }
 
-    /// サーバーのエラー応答。`error.message` をそのまま画面に出す
+    /// サーバーのエラー応答。`error.message` をそのまま画面に出し、`error.code` で分岐する
+    /// (Callable 関数のエラーは `code` の代わりに `status` を持つため、`code` は無くても受け付ける)
     private struct ErrorResponse: Decodable {
         struct Body: Decodable {
+            let code: String?
             let message: String
         }
         let error: Body
@@ -133,6 +141,12 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        // App Check のトークンが取れない時 (App Attest 非対応・一時的な失敗・デバッグトークン未登録) はヘッダー無しで送る。
+        // 通すか弾くかはサーバー側の設定 (監視のみ / 強制) で決める。クライアントで止めると、監視のみで運用している間の
+        // 正当な利用まで落ちてしまうため
+        if let appCheckToken = await appCheckToken() {
+            request.setValue(appCheckToken, forHTTPHeaderField: "X-Firebase-AppCheck")
+        }
         if let body {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -143,7 +157,8 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
             throw AlarmifyAPIError.invalidResponse(detail: "Unexpected response: \(response)")
         }
         guard (200..<300).contains(httpResponse.statusCode) else {
-            throw AlarmifyAPIError.server(statusCode: httpResponse.statusCode, message: Self.errorMessage(from: data))
+            let error = Self.errorBody(from: data)
+            throw AlarmifyAPIError.server(statusCode: httpResponse.statusCode, code: error.code, message: error.message)
         }
         return data
     }
@@ -156,12 +171,12 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         return components.url ?? baseURL
     }
 
-    /// エラー本文は JSON の `error.message` を優先し、JSON でなければ body をそのまま使う
-    private static func errorMessage(from data: Data) -> String {
+    /// エラー本文は JSON の `error.code` / `error.message` を優先し、JSON でなければ body をそのままメッセージにする
+    private static func errorBody(from data: Data) -> (code: String?, message: String) {
         if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-            return decoded.error.message
+            return (decoded.error.code, decoded.error.message)
         }
-        return String(data: data, encoding: .utf8) ?? ""
+        return (nil, String(data: data, encoding: .utf8) ?? "")
     }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {

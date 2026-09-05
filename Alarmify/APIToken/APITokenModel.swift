@@ -13,6 +13,9 @@ final class APITokenModel {
     private(set) var errorMessage: String?
     /// 発行直後のトークン。平文を表示できるのはこの 1 回だけなので、画面から明示的に閉じるまで保持する
     private(set) var issued: IssuedAPIToken?
+    /// 表示中のペイウォールの文脈。発行が無料プランの上限 (`plan_limit_exceeded`) で拒否された時に立て、画面が sheet で開く。
+    /// 閉じる操作で画面側から nil に戻すため設定可能にする
+    var paywallTrigger: PaywallTrigger?
 
     /// 既定は共有のアカウント状態。テストは専用のインスタンスを渡す
     /// (既定値に `.shared` を直接書くと、既定値が nonisolated な文脈で評価されて main actor 隔離の警告になる)
@@ -51,6 +54,10 @@ final class APITokenModel {
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
+            // 無料プランの上限で拒否された時はペイウォールへ誘導する (サーバーの上限判定が正で、アプリ側では数えない)
+            if (error as? AlarmifyAPIError)?.isPlanLimitExceeded == true {
+                paywallTrigger = .freeQuotaExceeded
+            }
         }
     }
 

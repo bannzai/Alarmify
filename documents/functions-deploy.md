@@ -1,8 +1,8 @@
 # Firebase Functions のデプロイ手順
 
-Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プロジェクトへデプロイする。ローカルとも GitHub Actions とも同じ `firebase deploy --only functions --project <alias>` を使う。
+Cloud Functions (gen2) を `firebase/.firebaserc` の alias で指定した Firebase プロジェクトへデプロイする。ローカルとも GitHub Actions とも同じ `firebase deploy --only functions --project <alias>` を使う。
 
-`.firebaserc` の alias は 2 つ。デプロイ先は必ず alias で明示する (取り違え防止)。
+`firebase/.firebaserc` の alias は 2 つ。デプロイ先は必ず alias で明示する (取り違え防止)。
 
 | alias | GCP プロジェクト | 用途 |
 | --- | --- | --- |
@@ -11,7 +11,7 @@ Cloud Functions (gen2) を `.firebaserc` の alias で指定した Firebase プ�
 
 ## 現状: 本番へデプロイ済み (ローカル・CI とも稼働)
 
-`alarmify-prod` へは 2026-09-03 にローカル (`make deploy-functions`) から初回デプロイ済みで、`appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) の 5 つが ACTIVE (gen2)。`firebase.json` の `firestore` (全パス deny の `firestore.rules` と、複合インデックスの `firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。
+`alarmify-prod` へは 2026-09-03 にローカル (`make deploy-functions`) から初回デプロイ済みで、`appApi` (アプリ向け API)・`alarmsApi` (外部サービス向け API)・`cleanupExpiredAlarms` (期限切れアラームの定期削除)・`deleteAccount` (アカウント削除の Callable)・`sweepDeletedAccountsHourly` (アカウント削除の掃除の定期実行) の 5 つが ACTIVE (gen2)。#19 で追加した `revenueCatWebhook` (RevenueCat の webhook でプランを更新) は Secret `REVENUECAT_WEBHOOK_AUTHORIZATION` の登録が前提で、登録前に `firebase deploy --only functions` を実行すると Functions 全体のデプロイが止まる (登録手順と Dashboard 側の設定は `documents/revenuecat-webhook.md`)。`firebase/firebase.json` の `firestore` (全パス deny の `firebase/firestore.rules` と、複合インデックスの `firebase/firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase/` で `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。
 
 デプロイ状態の確認 (read-only):
 
@@ -42,7 +42,7 @@ make deploy-functions FUNCTIONS=alarmsApi               # 対象を絞る (カ�
 make deploy-functions FIREBASE_ALIAS=prod               # alias を明示する場合
 ```
 
-target は実行前に alias から GCP プロジェクト ID を解決してログに出し、alias が `.firebaserc` に無ければデプロイせずに止まる。
+target は実行前に alias から GCP プロジェクト ID を解決してログに出し、alias が `firebase/.firebaserc` に無ければデプロイせずに止まる。
 
 ## GitHub Actions からデプロイする
 

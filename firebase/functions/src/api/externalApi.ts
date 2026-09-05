@@ -4,7 +4,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { hashApiToken, isApiTokenFormat, parseBearerToken } from "../lib/apiToken.js";
 import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
-import { monthKey, planLimits } from "../lib/plan.js";
+import { effectivePlan, monthKey, planLimits } from "../lib/plan.js";
 import { alarmActionOf, buildAlarmMessage, type PushResult } from "../lib/push.js";
 import { createRateLimiter, createRecentKeys, type RateLimit } from "../lib/rateLimit.js";
 import {
@@ -328,12 +328,14 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       const currentMonth = monthKey(now);
       const used =
         user.monthlyUsage.month === currentMonth ? user.monthlyUsage.scheduledAlarmCount : 0;
-      const limit = planLimits[user.plan].alarmsPerMonth;
+      // pro は失効日時を過ぎていない間だけ (失効の webhook が遅れても上限を解除したままにしない)
+      const plan = effectivePlan(user, now);
+      const limit = planLimits[plan].alarmsPerMonth;
       if (used >= limit) {
         throw new ApiError(
           403,
           "plan_limit_exceeded",
-          `${user.plan} プランで登録できるアラームは月 ${limit} 件までです`,
+          `${plan} プランで登録できるアラームは月 ${limit} 件までです`,
         );
       }
       transaction.update(userDocRef, {
