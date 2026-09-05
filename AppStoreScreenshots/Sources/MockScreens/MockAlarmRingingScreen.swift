@@ -43,7 +43,7 @@ struct MockAlarmRingingScreen: View {
                     Image(systemName: "bell.fill")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(Color.signal)
-                    Text(verbatim: "ALARMIFY")
+                    Text(verbatim: "SIGNALARM")
                         .font(.system(size: 12, weight: .semibold))
                         .tracking(2.4)
                         .foregroundStyle(Color.paper.opacity(0.6))

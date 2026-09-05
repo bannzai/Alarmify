@@ -2,7 +2,7 @@
   "Simulator Target Bundle": "com.bannzai.Alarmify",
   "aps": {
     "alert": {
-      "title": "Alarmify",
+      "title": "Signalarm",
       "body": "Deploy finished"
     },
     "mutable-content": 1
