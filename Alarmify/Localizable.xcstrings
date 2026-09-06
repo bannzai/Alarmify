@@ -19486,10 +19486,214 @@
     },
     "Settings > Notifications: add a Webhook notification with the Post URL." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإعدادات > الإشعارات: أضف إشعار Webhook باستخدام Post URL."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuració > Notificacions: afegeix una notificació Webhook amb Post URL."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavení > Oznámení: přidej oznámení Webhook s použitím Post URL."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstillinger > Notifikationer: Tilføj en Webhook-notifikation med Post URL."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen > Mitteilungen: Füge eine Webhook-Mitteilung mit Post URL hinzu."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρυθμίσεις > Γνωστοποιήσεις: πρόσθεσε μια γνωστοποίηση Webhook με το Post URL."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes > Notificaciones: añade una notificación Webhook usando Post URL."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración > Notificaciones: agrega una notificación Webhook usando Post URL."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asetukset > Ilmoitukset: lisää Webhook-ilmoitus käyttämällä Post URL -osoitetta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages > Notifications : ajoutez une notification Webhook avec Post URL."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדרות > התראות: הוסף התראת Webhook באמצעות Post URL."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सेटिंग्स > नोटिफ़िकेशन: Post URL के साथ Webhook नोटिफ़िकेशन जोड़ें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavke > Obavijesti: dodaj Webhook obavijest pomoću Post URL-a."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beállítások > Értesítések: adj hozzá egy Webhook-értesítést a Post URL használatával."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pengaturan > Notifikasi: tambahkan notifikasi Webhook menggunakan Post URL."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni > Notifiche: aggiungi una notifica Webhook usando Post URL."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings > Notifications で Webhook 通知を追加し、Post URL を設定します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 > 알림: Post URL을 사용해 Webhook 알림을 추가하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tetapan > Pemberitahuan: tambahkan pemberitahuan Webhook menggunakan Post URL."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Innstillinger > Varsler: legg til et Webhook-varsel med Post URL."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instellingen > Meldingen: voeg een Webhook-melding toe met Post URL."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia > Powiadomienia: dodaj powiadomienie Webhook z użyciem Post URL."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes > Notificações: adicione uma notificação Webhook usando Post URL."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definições > Notificações: adiciona uma notificação Webhook usando Post URL."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurări > Notificări: adaugă o notificare Webhook folosind Post URL."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки > Уведомления: добавьте уведомление Webhook с помощью Post URL."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavenia > Oznámenia: pridaj oznámenie Webhook s použitím Post URL."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inställningar > Notiser: lägg till en Webhook-notis med Post URL."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่า > การแจ้งเตือน: เพิ่มการแจ้งเตือน Webhook โดยใช้ Post URL"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayarlar > Bildirimler: Post URL ile bir Webhook bildirimi ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Параметри > Сповіщення: додай сповіщення Webhook за допомогою Post URL."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cài đặt > Thông báo: thêm thông báo Webhook bằng Post URL."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > 通知：使用 Post URL 加入 Webhook 通知。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置 > 通知：使用 Post URL 添加 Webhook 通知。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > 通知：使用 Post URL 加入 Webhook 通知。"
           }
         }
       }
