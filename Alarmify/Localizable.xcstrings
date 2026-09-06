@@ -9947,10 +9947,214 @@
     },
     "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ar"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ca"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-cs"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-da"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-de"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-el"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-es"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-es-419"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-fi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-fr"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-he"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-hi"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-hr"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-hu"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-id"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-it"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ja"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ko"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ms"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-nb"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-nl"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-pl"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-pt-BR"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-pt-PT"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ro"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ru"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-sk"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-sv"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-th"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-tr"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-uk"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-vi"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-zh-HK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-zh-Hans"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-zh-Hant"
           }
         }
       }
