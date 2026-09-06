@@ -9208,10 +9208,214 @@
     },
     "Include this account ID when you request deletion by email." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدرج معرّف الحساب هذا عند طلب الحذف عبر البريد الإلكتروني."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inclou aquest ID del compte quan sol·licitis la supressió per correu electrònic."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Při žádosti o smazání e-mailem uveď toto ID účtu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medtag dette konto-id, når du anmoder om sletning via e-mail."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib diese Konto-ID an, wenn du die Löschung per E-Mail beantragst."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Συμπεριέλαβε αυτό το αναγνωριστικό λογαριασμού όταν ζητήσεις διαγραφή μέσω email."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluye este ID de cuenta cuando solicites la eliminación por correo electrónico."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluye este ID de cuenta cuando solicites la eliminación por correo electrónico."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liitä tämä tilin tunnus, kun pyydät poistamista sähköpostitse."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indiquez cet identifiant de compte lorsque vous demandez sa suppression par e-mail."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כלול את מזהה החשבון הזה כשאתה מבקש למחוק את החשבון בדוא״ל."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ईमेल से हटाने का अनुरोध करते समय इस खाता ID को शामिल करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uključi ovaj ID računa kada zatražiš brisanje e-poštom."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mailben történő törlési kérelemkor add meg ezt a fiókazonosítót."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sertakan ID akun ini saat kamu meminta penghapusan melalui email."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Includi questo ID account quando richiedi l’eliminazione via email."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "メールで削除を依頼する時は、このアカウント ID を書き添えてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이메일로 삭제를 요청할 때 이 계정 ID를 포함해 주세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sertakan ID akaun ini apabila anda meminta pemadaman melalui e-mel."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta med denne konto-ID-en når du ber om sletting via e-post."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vermeld deze account-ID wanneer je per e-mail om verwijdering vraagt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dołącz ten identyfikator konta, gdy poprosisz o jego usunięcie e-mailem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inclua este ID da conta ao solicitar a exclusão por e-mail."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inclui este ID de conta quando solicitares a eliminação por e-mail."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include acest ID de cont atunci când soliciți ștergerea prin e-mail."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажите этот идентификатор аккаунта при запросе на удаление по электронной почте."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pri žiadosti o vymazanie e-mailom uveď toto ID účtu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange detta konto-ID när du begär radering via e-post."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ระบุ ID บัญชีนี้เมื่อขอลบบัญชีทางอีเมล"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-posta ile silme talebinde bulunurken bu hesap kimliğini ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажіть цей ідентифікатор облікового запису, коли надсилаєте запит на видалення електронною поштою."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy cung cấp ID tài khoản này khi bạn yêu cầu xóa qua email."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以電郵要求刪除時，請附上此帳戶 ID。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过电子邮件请求删除时，请附上此账号 ID。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過電子郵件要求刪除時，請附上此帳戶 ID。"
           }
         }
       }
