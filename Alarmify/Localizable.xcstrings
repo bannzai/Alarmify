@@ -21415,10 +21415,214 @@
     },
     "The 'Get Contents of URL' action, for Shortcuts automations" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إجراء \"الحصول على محتويات عنوان URL\" لأتمتة Shortcuts"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acció «Obtenir el contingut de l’URL» per a automatitzacions de Shortcuts"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akce „Načíst obsah URL“ pro automatizace v Shortcuts"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handlingen \"Hent indhold fra URL\" til Shortcuts-automatiseringer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Aktion „Inhalte von URL abrufen“ für Shortcuts-Automationen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η ενέργεια «Λήψη περιεχομένων URL» για αυτοματισμούς Shortcuts"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La acción «Obtener contenido de URL» para automatizaciones de Shortcuts"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La acción «Obtener contenido de URL» para automatizaciones de Shortcuts"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "”Hae URL-osoitteen sisältö” -toiminto Shortcuts-automaatioille"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’action « Obtenir le contenu de l’URL » pour les automatisations de Shortcuts"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפעולה „קבלת תוכן מכתובת URL“ לאוטומציות Shortcuts"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcuts ऑटोमेशन के लिए “URL की सामग्री प्राप्त करें” ऐक्शन"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radnja „Dohvati sadržaj URL-a” za automatizacije u Shortcuts"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A „Webhely tartalmának lekérése” művelet Shortcuts-automatizálásokhoz"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tindakan \"Dapatkan Isi URL\" untuk otomatisasi Shortcuts"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’azione “Ottieni contenuti dell’URL” per le automazioni di Shortcuts"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "「URL の内容を取得」アクションで鳴らす"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcuts 자동화에서 사용하는 ‘URL 콘텐츠 가져오기’ 동작"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tindakan “Dapatkan Kandungan URL” untuk automasi Shortcuts"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handlingen «Hent innhold fra URL» for Shortcuts-automatiseringer"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De actie 'Haal inhoud van URL op' voor Shortcuts-automatiseringen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czynność „Pobierz zawartość adresu URL” dla automatyzacji Shortcuts"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A ação “Obter Conteúdo do URL” para automações do Shortcuts"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A ação “Obter conteúdo do URL” para automatizações do Shortcuts"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acțiunea „Obține conținutul URL-ului” pentru automatizările Shortcuts"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действие «Получить содержимое URL» для автоматизаций Shortcuts"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akcia „Načítať obsah URL“ pre automatizácie v Shortcuts"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åtgärden ”Hämta innehåll från URL” för Shortcuts-automationer"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การทำงาน “รับเนื้อหาจาก URL” สำหรับการทำงานอัตโนมัติใน Shortcuts"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcuts otomasyonları için “URL İçeriğini Al” eylemi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дія «Отримати вміст URL» для автоматизацій Shortcuts"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tác vụ “Lấy nội dung URL” cho automation Shortcuts"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於 Shortcuts 自動化的「取得 URL 內容」動作"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于 Shortcuts 自动化的“获取 URL 内容”操作"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於 Shortcuts 自動化的「取得 URL 內容」動作"
           }
         }
       }
