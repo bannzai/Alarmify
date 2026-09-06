@@ -431,10 +431,214 @@
     },
     "A rest_command you can call from any automation" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command يمكنك استدعاؤه من أي أتمتة"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command que pots cridar des de qualsevol automatització"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, který můžeš volat z jakékoli automatizace"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En rest_command, du kan kalde fra enhver automatisering"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein rest_command, den du aus jeder Automatisierung aufrufen kannst"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ένα rest_command που μπορείς να καλείς από οποιονδήποτε αυτοματισμό"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command que puedes invocar desde cualquier automatización"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command que puedes invocar desde cualquier automatización"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, jonka voit kutsua mistä tahansa automaatiosta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command que vous pouvez appeler depuis n’importe quelle automatisation"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command שאפשר להפעיל מכל אוטומציה"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऐसा rest_command जिसे आप किसी भी ऑटोमेशन से कॉल कर सकते हैं"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command koji možeš pozvati iz bilo koje automatizacije"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egy rest_command, amelyet bármely automatizálásból meghívhatsz"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command yang bisa kamu panggil dari otomatisasi apa pun"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command che puoi chiamare da qualsiasi automazione"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "任意のオートメーションから呼べる rest_command"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어떤 자동화에서든 호출할 수 있는 rest_command"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command yang anda boleh panggil daripada mana-mana automasi"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En rest_command du kan kalle fra enhver automatisering"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een rest_command dat je vanuit elke automatisering kunt aanroepen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, który możesz wywołać z dowolnej automatyzacji"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um rest_command que você pode chamar de qualquer automação"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um rest_command que podes chamar a partir de qualquer automação"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un rest_command pe care îl poți apela din orice automatizare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, который вы можете вызвать из любой автоматизации"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, ktorý môžeš zavolať z ľubovoľnej automatizácie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ett rest_command som du kan anropa från vilken automatisering som helst"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command ที่คุณเรียกใช้ได้จากระบบอัตโนมัติใดก็ได้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her otomasyondan çağırabileceğin bir rest_command"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rest_command, який ви можете викликати з будь-якої автоматизації"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Một rest_command bạn có thể gọi từ bất kỳ tính năng tự động hóa nào"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可從任何自動化呼叫的 rest_command"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可从任何自动化调用的 rest_command"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可從任何自動化呼叫的 rest_command"
           }
         }
       }
