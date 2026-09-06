@@ -12,7 +12,8 @@ final class AlarmApplyReportQueueTests: XCTestCase {
         let suiteName = "AlarmApplyReportQueueTests.\(UUID().uuidString)"
         let userDefaults = UserDefaults(suiteName: suiteName)!
         userDefaults.removePersistentDomain(forName: suiteName)
-        queue = AlarmApplyReportQueue(userDefaults: userDefaults)
+        // 競合する書き手がいないためロックしない (ロック自体は SharedStoreLockTests で検証する)
+        queue = AlarmApplyReportQueue(userDefaults: userDefaults, lock: SharedStoreLock(fileURL: nil))
     }
 
     func testEnqueueKeepsOnlyTheLatestReportPerAlarmAndAction() {

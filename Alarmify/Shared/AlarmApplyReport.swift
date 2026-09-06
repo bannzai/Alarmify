@@ -18,13 +18,15 @@ struct AlarmApplyReport: Codable, Equatable, Sendable {
 
 /// バックエンドへ未送信の適用結果。
 /// Notification Service Extension は Firebase Auth の ID トークンを持てない (keychain を共有していない) ため、
-/// 到着元を問わず App Group に積んでおき、app 本体がサインイン済みの時にまとめて送る
+/// 到着元を問わず App Group に積んでおき、app 本体がサインイン済みの時にまとめて送る。
+/// 書き換えは `lock` の中で行い、Extension の積み込みと app 本体の送信後の取り除きが重なっても互いの変更を消さない
 struct AlarmApplyReportQueue {
     private static let key = "pendingAlarmApplyReports"
 
     let userDefaults: UserDefaults
+    let lock: SharedStoreLock
 
-    static let shared = AlarmApplyReportQueue(userDefaults: AppGroup.userDefaults)
+    static let shared = AlarmApplyReportQueue(userDefaults: AppGroup.userDefaults, lock: .appGroup)
 
     /// 未送信の報告。古い順
     var pending: [AlarmApplyReport] {
@@ -34,14 +36,18 @@ struct AlarmApplyReportQueue {
 
     /// 同じアラーム・同じ操作の報告は最新の 1 件だけ残す (サーバー側も端末ごとに最新の結果を 1 件持つため、古い結果を送る意味がない)
     func enqueue(_ report: AlarmApplyReport) {
-        var reports = pending.filter { !($0.alarmID == report.alarmID && $0.action == report.action) }
-        reports.append(report)
-        save(reports)
+        lock.withLock {
+            var reports = pending.filter { !($0.alarmID == report.alarmID && $0.action == report.action) }
+            reports.append(report)
+            save(reports)
+        }
     }
 
     /// 送信できた (またはサーバーに記録先が無かった) 報告を取り除く
     func remove(_ report: AlarmApplyReport) {
-        save(pending.filter { $0 != report })
+        lock.withLock {
+            save(pending.filter { $0 != report })
+        }
     }
 
     private func save(_ reports: [AlarmApplyReport]) {

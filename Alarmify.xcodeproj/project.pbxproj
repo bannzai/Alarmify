@@ -30,6 +30,8 @@
 		DF5F29343C850077D3CECD66 /* AlarmKitScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */; };
 		8C7D7DA80B2B6086739A741F /* AlarmApplyReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */; };
 		C81F1397CFE9DB98EF9AB828 /* AlarmApplyReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */; };
+		8E2EF3927F384943AF38745C /* SharedStoreLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A7F7C19BBD420D81A09460 /* SharedStoreLock.swift */; };
+		39ACAFE564EE4BD2B1D731D3 /* SharedStoreLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A7F7C19BBD420D81A09460 /* SharedStoreLock.swift */; };
 		63963CF8885CD4B41D7C0B6D /* AlarmTitleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8923815E0FD752503A58C83 /* AlarmTitleStore.swift */; };
 		837A72777F3EF709FEB78E19 /* AlarmTitleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8923815E0FD752503A58C83 /* AlarmTitleStore.swift */; };
 		DD24E3F08575976C8781676E /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4A31D02C70ED149CD0E8AD /* DesignTokens.swift */; };
@@ -38,6 +40,7 @@
 		88B141540E2EC6394FC31316 /* AlarmHistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37894222C38139E382801850 /* AlarmHistoryEntry.swift */; };
 		9A39FEEA7DB51F2AFA56F016 /* AlarmKitSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777C0D279353A7CDA9FEFD5 /* AlarmKitSchedulerTests.swift */; };
 		D2A25BFA4F043C07A2EEA4F5 /* AlarmApplyReportQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBB6D5FF0830897265AD06A /* AlarmApplyReportQueueTests.swift */; };
+		1CD11AA85286485F9F205BCF /* SharedStoreLockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E2903ECD26746A0BF767878 /* SharedStoreLockTests.swift */; };
 		E9E8F58B61DBC3A66DCD71B7 /* AlarmifyWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 35576E1E6E1C349E73C60B0A /* AlarmifyWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EB78EA59DDA5273EB6BE7614 /* AlarmLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AD83FE37A50A790D0662E0 /* AlarmLiveActivityWidget.swift */; };
 		F765F6153169A374BE95CDE3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5FB5D44568197306A2B5A781 /* PrivacyInfo.xcprivacy */; };
@@ -173,11 +176,13 @@
 		9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPushPayloadTests.swift; sourceTree = "<group>"; };
 		AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmKitScheduler.swift; sourceTree = "<group>"; };
 		FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmApplyReport.swift; sourceTree = "<group>"; };
+		D5A7F7C19BBD420D81A09460 /* SharedStoreLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStoreLock.swift; sourceTree = "<group>"; };
 		D8923815E0FD752503A58C83 /* AlarmTitleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmTitleStore.swift; sourceTree = "<group>"; };
 		6C4A31D02C70ED149CD0E8AD /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		37894222C38139E382801850 /* AlarmHistoryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmHistoryEntry.swift; sourceTree = "<group>"; };
 		2777C0D279353A7CDA9FEFD5 /* AlarmKitSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmKitSchedulerTests.swift; sourceTree = "<group>"; };
 		2BBB6D5FF0830897265AD06A /* AlarmApplyReportQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmApplyReportQueueTests.swift; sourceTree = "<group>"; };
+		9E2903ECD26746A0BF767878 /* SharedStoreLockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStoreLockTests.swift; sourceTree = "<group>"; };
 		B1D59240FA08DA6A59E19F97 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		B4CBF45DA44727442FBE4178 /* Alarmify.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Alarmify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmRequest.swift; sourceTree = "<group>"; };
@@ -330,6 +335,7 @@
 				F0821876EF19698F1E1AEF9A /* AppGroup.swift */,
 				6C4A31D02C70ED149CD0E8AD /* DesignTokens.swift */,
 				DD24C3E43B6B73E9312095FA /* Log.swift */,
+				D5A7F7C19BBD420D81A09460 /* SharedStoreLock.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -365,6 +371,7 @@
 			children = (
 				59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */,
 				2BBB6D5FF0830897265AD06A /* AlarmApplyReportQueueTests.swift */,
+				9E2903ECD26746A0BF767878 /* SharedStoreLockTests.swift */,
 				2777C0D279353A7CDA9FEFD5 /* AlarmKitSchedulerTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
 				9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */,
@@ -859,6 +866,7 @@
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				9A39FEEA7DB51F2AFA56F016 /* AlarmKitSchedulerTests.swift in Sources */,
 				D2A25BFA4F043C07A2EEA4F5 /* AlarmApplyReportQueueTests.swift in Sources */,
+				1CD11AA85286485F9F205BCF /* SharedStoreLockTests.swift in Sources */,
 				0D7327D88A274C7BB56113AF /* DebugPushPayloadTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
@@ -873,6 +881,7 @@
 				172885D547342920AEA2AE2C /* AlarmRequest.swift in Sources */,
 				65EEE41D8B399132533F169E /* AlarmifyAlarmMetadata.swift in Sources */,
 				C81F1397CFE9DB98EF9AB828 /* AlarmApplyReport.swift in Sources */,
+				39ACAFE564EE4BD2B1D731D3 /* SharedStoreLock.swift in Sources */,
 				837A72777F3EF709FEB78E19 /* AlarmTitleStore.swift in Sources */,
 				830A815B37A8B5866E106755 /* DesignTokens.swift in Sources */,
 				AC3FD73CE08F56F35251424B /* AppGroup.swift in Sources */,
@@ -892,6 +901,7 @@
 				604245B85F6075E37F59805B /* AlarmRequest.swift in Sources */,
 				5867C6F34F04FADFFEF1E8D5 /* AlarmifyAlarmMetadata.swift in Sources */,
 				8C7D7DA80B2B6086739A741F /* AlarmApplyReport.swift in Sources */,
+				8E2EF3927F384943AF38745C /* SharedStoreLock.swift in Sources */,
 				63963CF8885CD4B41D7C0B6D /* AlarmTitleStore.swift in Sources */,
 				DD24E3F08575976C8781676E /* DesignTokens.swift in Sources */,
 				88B141540E2EC6394FC31316 /* AlarmHistoryEntry.swift in Sources */,

@@ -62,15 +62,19 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any]
     ) async -> UIBackgroundFetchResult {
         guard let request = AlarmRequest(userInfo: userInfo) else { return .noData }
-        // 適用結果の報告は成否に関わらずキューに積まれるため、app 本体が動いているこの経路ではその場で送る
-        defer { Task { @MainActor in await AccountSession.shared.flushAlarmApplyReports() } }
+        let result: UIBackgroundFetchResult
         do {
             try await AlarmKitScheduler.apply(request)
-            return .newData
+            result = .newData
         } catch {
             Logger.push.error("Applying alarm request from background push failed: \(error.localizedDescription)")
-            return .failed
+            result = .failed
         }
+        // 適用結果の報告は成否に関わらずキューに積まれるため、app 本体が動いているこの経路では戻る前に送り切る
+        // (戻った後は iOS が app を中断し得るため、切り離した Task では送れないことがある)。
+        // 送れなかった報告は次のサインイン・前面復帰で送るので、送信の成否で AlarmKit への反映結果は変えない
+        await AccountSession.shared.flushAlarmApplyReports()
+        return result
     }
 }
 

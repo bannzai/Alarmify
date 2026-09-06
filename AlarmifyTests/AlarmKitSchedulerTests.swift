@@ -8,6 +8,8 @@ final class AlarmKitSchedulerTests: XCTestCase {
     private let id = UUID(uuidString: "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E")!
     private var store: FakeAlarmStore!
     private var userDefaults: UserDefaults!
+    /// テストは 1 プロセスで順に動き、競合する書き手がいないためロックしない
+    private let noLock = SharedStoreLock(fileURL: nil)
 
     override func setUp() {
         super.setUp()
@@ -26,6 +28,7 @@ final class AlarmKitSchedulerTests: XCTestCase {
             schedule: { id, fireDate, title in try await store.schedule(id: id, fireDate: fireDate, title: title) },
             cancel: { id in store.cancel(id: id) },
             userDefaults: userDefaults,
+            storeLock: noLock,
             now: { now }
         )
     }
@@ -57,7 +60,7 @@ final class AlarmKitSchedulerTests: XCTestCase {
         XCTAssertEqual(store.alarms.count, 1)
         XCTAssertEqual(store.alarms[id]?.fireDate, now.addingTimeInterval(1200))
         XCTAssertEqual(store.alarms[id]?.title, "second")
-        XCTAssertEqual(AlarmTitleStore(userDefaults: userDefaults).title(id: id), "second")
+        XCTAssertEqual(AlarmTitleStore(userDefaults: userDefaults, lock: noLock).title(id: id), "second")
     }
 
     func testCancelRemovesTheAlarmAndItsTitle() async throws {
@@ -66,14 +69,14 @@ final class AlarmKitSchedulerTests: XCTestCase {
         try await AlarmKitScheduler.apply(AlarmRequest(payload: ["id": id.uuidString, "action": "cancel"])!, dependencies: dependencies)
 
         XCTAssertTrue(store.alarms.isEmpty)
-        XCTAssertNil(AlarmTitleStore(userDefaults: userDefaults).title(id: id))
+        XCTAssertNil(AlarmTitleStore(userDefaults: userDefaults, lock: noLock).title(id: id))
     }
 
     func testSchedulingCancelsPastAlarmsButKeepsFutureAndAlertingOnes() async throws {
         let past = UUID()
         let alerting = UUID()
         let future = UUID()
-        let titles = AlarmTitleStore(userDefaults: userDefaults)
+        let titles = AlarmTitleStore(userDefaults: userDefaults, lock: noLock)
         store.alarms[past] = FakeAlarmStore.Entry(fireDate: now.addingTimeInterval(-60), title: "past", isAlerting: false)
         store.alarms[alerting] = FakeAlarmStore.Entry(fireDate: now.addingTimeInterval(-60), title: "alerting", isAlerting: true)
         store.alarms[future] = FakeAlarmStore.Entry(fireDate: now.addingTimeInterval(60), title: "future", isAlerting: false)
@@ -106,7 +109,7 @@ final class AlarmKitSchedulerTests: XCTestCase {
     func testApplyEnqueuesAnAppliedReport() async throws {
         try await AlarmKitScheduler.apply(scheduleRequest(fireDate: now.addingTimeInterval(600)), dependencies: dependencies)
 
-        let pending = AlarmApplyReportQueue(userDefaults: userDefaults).pending
+        let pending = AlarmApplyReportQueue(userDefaults: userDefaults, lock: noLock).pending
         XCTAssertEqual(pending, [AlarmApplyReport(alarmID: id, action: .schedule, result: .applied, error: nil, occurredAt: now)])
     }
 
@@ -120,7 +123,7 @@ final class AlarmKitSchedulerTests: XCTestCase {
             XCTAssertEqual(error as? FakeAlarmStore.Failure, .limitReached)
         }
 
-        let pending = AlarmApplyReportQueue(userDefaults: userDefaults).pending
+        let pending = AlarmApplyReportQueue(userDefaults: userDefaults, lock: noLock).pending
         XCTAssertEqual(pending.count, 1)
         XCTAssertEqual(pending.first?.result, .failed)
         XCTAssertEqual(pending.first?.error, FakeAlarmStore.Failure.limitReached.localizedDescription)

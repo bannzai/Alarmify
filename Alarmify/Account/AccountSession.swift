@@ -36,6 +36,8 @@ final class AccountSession {
     /// FCM の登録トークン。simulator でも取得できるが、実際の配送には APNs キーの登録が要る
     private(set) var fcmRegistrationToken: String?
     private(set) var deviceRegistration: DeviceRegistrationState = .notRegistered
+    /// 適用結果の報告をバックエンドへ最後に送れた時刻。サーバーの履歴 (`device_reports`) が変わった合図としてホームが購読する。未送信なら nil
+    private(set) var alarmApplyReportsFlushedAt: Date?
     /// サインインに失敗したエラーの説明。成功したら nil に戻す
     private(set) var signInError: String?
     /// 開発者メニューで接続先を変えた後、再起動するまで反映されない状態かどうか。
@@ -95,20 +97,26 @@ final class AccountSession {
     }
 
     /// 未送信の適用結果 (`AlarmApplyReportQueue`) をバックエンドへ送る。
-    /// 送れた報告と、サーバーに記録先が無い報告 (開発者メニューの固定 id や保持期間を過ぎたアラームへの 404) はキューから消し、
-    /// それ以外の失敗 (未サインイン・通信エラー) は次の機会に送り直せるよう残す。何度呼んでも未送信分を送るだけで冪等
+    /// 送れた報告と、サーバーに報告先が無い報告 (開発者メニューの固定 id や保持期間を過ぎたアラーム、未登録の端末) はキューから消し、
+    /// それ以外の失敗 (未サインイン・通信エラー・エンドポイントが無い古いデプロイの 404) は次の機会に送り直せるよう残す。
+    /// 何度呼んでも未送信分を送るだけで冪等。1 件でも送れたら `alarmApplyReportsFlushedAt` を更新し、ホームが履歴を読み直す
     func flushAlarmApplyReports() async {
         let queue = AlarmApplyReportQueue.shared
+        var sent = false
         for report in queue.pending {
             do {
                 try await apiClient.reportAlarmApply(report)
                 queue.remove(report)
-            } catch let error as AlarmifyAPIError where error.isNotFound {
+                sent = true
+            } catch let error as AlarmifyAPIError where error.isAlarmApplyReportTargetMissing {
                 queue.remove(report)
             } catch {
                 Logger.push.error("Reporting alarm apply result failed: \(error.localizedDescription)")
-                return
+                break
             }
+        }
+        if sent {
+            alarmApplyReportsFlushedAt = .now
         }
     }
 

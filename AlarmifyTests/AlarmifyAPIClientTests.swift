@@ -316,17 +316,33 @@ final class AlarmifyAPIClientTests: XCTestCase {
         ))
     }
 
-    /// 404 は「報告先のアラームがサーバーに無い」判定 (`isNotFound`) として受け取り、報告を捨てる側の分岐に使う
-    func testNotFoundIsRecognizedFromTheStatusCode() async {
+    /// 報告先のアラームが無い 404 (`alarm_not_found`) と端末が未登録の 404 (`device_not_found`) は、報告を捨てる側の分岐 (`isAlarmApplyReportTargetMissing`) になる
+    func testMissingReportTargetIsRecognizedFromTheErrorCode() async {
+        for code in ["alarm_not_found", "device_not_found"] {
+            StubURLProtocol.handler = { _ in
+                (404, Data(#"{"error":{"code":"\#(code)","message":"見つかりません"}}"#.utf8))
+            }
+
+            do {
+                try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
+                XCTFail("Expected an error for \(code)")
+            } catch {
+                XCTAssertEqual((error as? AlarmifyAPIError)?.isAlarmApplyReportTargetMissing, true, code)
+            }
+        }
+    }
+
+    /// エンドポイント自体が無い古いデプロイの 404 (`not_found`) は報告先の有無を示さないため、報告を捨てる側の分岐にならない (残して後で送り直す)
+    func testGenericNotFoundDoesNotDiscardTheReport() async {
         StubURLProtocol.handler = { _ in
-            (404, Data(#"{"error":{"code":"not_found","message":"アラームが見つかりません"}}"#.utf8))
+            (404, Data(#"{"error":{"code":"not_found","message":"エンドポイントが見つかりません"}}"#.utf8))
         }
 
         do {
             try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
             XCTFail("Expected an error")
         } catch {
-            XCTAssertEqual((error as? AlarmifyAPIError)?.isNotFound, true)
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isAlarmApplyReportTargetMissing, false)
         }
     }
 

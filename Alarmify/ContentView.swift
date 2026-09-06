@@ -78,8 +78,8 @@ struct ContentView: View {
                         Button {
                             paywallTrigger = .alarmHistory
                         } label: {
-                            // ja: Pro で全期間の履歴を見る
-                            Text("See the full history with Pro")
+                            // ja: Pro でもっと履歴を見る
+                            Text("See more history with Pro")
                         }
                         .accessibilityIdentifier("home_history_upgrade")
                     }
@@ -259,9 +259,21 @@ struct ContentView: View {
                 refresh()
                 await loadHistory()
             }
-            .task {
+            // 起動直後はサインインの完了前に走って履歴を取れないため、uid が決まったらもう一度読む
+            .task(id: session.uid) {
                 refresh()
                 await loadHistory()
+            }
+            .task {
+                // push (Notification Service Extension / background push) や開発者メニューで登録・取消されたアラームと、発火による状態の変化を
+                // 再読み込みを待たずに反映する
+                for await alarms in AlarmKitScheduler.alarmUpdates {
+                    self.alarms = alarms
+                }
+            }
+            .onChange(of: session.alarmApplyReportsFlushedAt) {
+                // この端末の反映結果がサーバーに届いたので、履歴の状態表示を読み直す
+                Task { await loadHistory() }
             }
             .sheet(item: $paywallTrigger) { trigger in
                 PaywallPage(trigger: trigger)
@@ -298,9 +310,12 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
             Text(entry.fireAt, format: .dateTime.month().day().hour().minute())
-            historyStatusText(entry, now: .now)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            // 発火時刻を迎えた瞬間に「登録済み」から「鳴りました」へ切り替えるため、発火時刻でだけ描き直す
+            TimelineView(.explicit([entry.fireAt])) { context in
+                historyStatusText(entry, now: context.date)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .accessibilityIdentifier("home_history_\(entry.id)")
     }
@@ -310,6 +325,25 @@ struct ContentView: View {
     private func historyStatusText(_ entry: AlarmHistoryEntry, now: Date) -> Text {
         switch entry.status {
         case .canceled:
+            let report = entry.deviceReport(deviceID: DeviceIdentifier.current)
+            if let report, report.action == .cancel, report.result == .failed {
+                // この iPhone にはアラームが残っていて鳴り得るので、取り消し済みと言い切らない
+                // ja: この iPhone で取り消しに失敗: %@
+                return Text("Failed to cancel on this iPhone: \(report.error ?? "")")
+            }
+            if let report, report.action == .cancel {
+                // ja: 取り消し済み
+                return Text("Canceled")
+            }
+            if let delivery = entry.delivery, delivery.failureCount > 0, delivery.successCount == 0 {
+                // ja: 取り消しの push を配送できませんでした
+                return Text("Cancel push could not be delivered")
+            }
+            if let report, report.action == .schedule, report.result == .applied {
+                // この iPhone に登録済みのまま、取り消しの指示がまだ反映されていない
+                // ja: 取り消し済み (この iPhone への反映を待っています)
+                return Text("Canceled, waiting for this iPhone")
+            }
             // ja: 取り消し済み
             return Text("Canceled")
         case .scheduled:
@@ -354,12 +388,16 @@ struct ContentView: View {
         historyLoading = true
         defer { historyLoading = false }
         do {
-            history = try await session.client.alarmHistory(limit: Self.historyLimit)
+            let loaded = try await session.client.alarmHistory(limit: Self.historyLimit)
+            guard !Task.isCancelled else { return }
+            history = loaded
             historyError = nil
         } catch AlarmifyAPIError.notSignedIn {
             history = []
             historyError = nil
         } catch {
+            // サインインの完了で `.task(id:)` が読み直す時、進行中の取得は取り消される。取り消しはエラーではなく、後続の取得結果に任せる
+            guard !Task.isCancelled else { return }
             history = []
             historyError = error.localizedDescription
         }

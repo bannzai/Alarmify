@@ -22,10 +22,15 @@ enum AlarmifyAPIError: Error, Equatable, LocalizedError {
         return false
     }
 
-    /// 対象がサーバーに存在しない応答 (HTTP 404) かどうか。適用結果の報告先のアラームが無い時に、報告を捨ててよい判定に使う
-    var isNotFound: Bool {
-        if case .server(404, _, _) = self {
-            return true
+    /// 適用結果の報告 (`POST /v1/alarms/{id}/device-reports`) の「報告先が無い」応答のコード。
+    /// アラームがサーバーに無い (`alarm_not_found`) か、この端末が登録されていない (`device_not_found`)
+    static let alarmApplyReportTargetMissingCodes: Set<String> = ["alarm_not_found", "device_not_found"]
+
+    /// 適用結果の報告先がサーバーに無い応答かどうか。報告を捨ててよい判定に使う。
+    /// 同じ 404 でも code が `not_found` の応答はエンドポイント自体が無い古いデプロイの appApi から来るため対象にせず、報告を残して後で送り直す
+    var isAlarmApplyReportTargetMissing: Bool {
+        if case .server(404, let code?, _) = self {
+            return Self.alarmApplyReportTargetMissingCodes.contains(code)
         }
         return false
     }

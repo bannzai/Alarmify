@@ -101,6 +101,16 @@
         }
       }
     },
+    "Cancel push could not be delivered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消しの push を配送できませんでした"
+          }
+        }
+      }
+    },
     "Canceled" : {
       "localizations" : {
         "ja" : {
@@ -111,12 +121,32 @@
         }
       }
     },
+    "Canceled, waiting for this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消し済み (この iPhone への反映を待っています)"
+          }
+        }
+      }
+    },
     "Failed on this iPhone: %@" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "この iPhone で登録に失敗: %@"
+          }
+        }
+      }
+    },
+    "Failed to cancel on this iPhone: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone で取り消しに失敗: %@"
           }
         }
       }
@@ -191,12 +221,12 @@
         }
       }
     },
-    "See the full history with Pro" : {
+    "See more history with Pro" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pro で全期間の履歴を見る"
+            "value" : "Pro でもっと履歴を見る"
           }
         }
       }
@@ -1153,12 +1183,12 @@
         }
       }
     },
-    "The free plan shows the 3 most recent alarms. Pro keeps 30 days of history" : {
+    "The free plan shows the 3 most recent alarms. Pro shows more of your alarm history" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無料プランで見られる履歴は直近 3 件です。Pro なら 30 日分の履歴を確認できます"
+            "value" : "無料プランで見られる履歴は直近 3 件です。Pro ならもっと多くの履歴を確認できます"
           }
         }
       }

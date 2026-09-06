@@ -35,6 +35,8 @@ struct AlarmSchedulerDependencies: @unchecked Sendable {
     var cancel: @Sendable (UUID) throws -> Void
     /// タイトル (`AlarmTitleStore`) と適用結果の報告キュー (`AlarmApplyReportQueue`) の保存先
     var userDefaults: UserDefaults
+    /// 保存先の書き換えを app 本体と Extension の間で直列化するロック
+    var storeLock: SharedStoreLock
     var now: @Sendable () -> Date
 
     static let live = AlarmSchedulerDependencies(
@@ -56,6 +58,7 @@ struct AlarmSchedulerDependencies: @unchecked Sendable {
         },
         cancel: { id in try AlarmManager.shared.cancel(id: id) },
         userDefaults: AppGroup.userDefaults,
+        storeLock: .appGroup,
         now: { .now }
     )
 }
@@ -75,11 +78,17 @@ enum AlarmKitScheduler {
         (try? AlarmManager.shared.alarms) ?? []
     }
 
+    /// 登録済みアラームの変化 (登録・取消・発火)。別プロセス (Notification Service Extension) からの登録も AlarmKit 側で 1 つに合流して届くため、
+    /// ホームはこれを購読して push で届いたアラームをその場で表示に反映する
+    static var alarmUpdates: some AsyncSequence<[Alarm], Never> {
+        AlarmManager.shared.alarmUpdates
+    }
+
     /// AlarmRequest を AlarmKit に反映し、結果 (登録できた / 失敗した / 取り消した) を報告キューへ積む。
     /// 同じ id の再 schedule は登録し直し (取消 → 登録) で上書きするため、同じ指示の再送は冪等。
     /// 報告キューは push の到着元 (Notification Service Extension / background push / 開発者メニュー) を問わず app 本体がバックエンドへ送る
     static func apply(_ request: AlarmRequest, dependencies: AlarmSchedulerDependencies = .live) async throws {
-        let reports = AlarmApplyReportQueue(userDefaults: dependencies.userDefaults)
+        let reports = AlarmApplyReportQueue(userDefaults: dependencies.userDefaults, lock: dependencies.storeLock)
         do {
             switch request.action {
             case .schedule:
@@ -100,7 +109,7 @@ enum AlarmKitScheduler {
     /// (`.claude/rules/ios-alarmkit-constraints.md`)。整理しても上限に達した場合のエラー (`maximumLimitReached`) はそのまま投げ、
     /// 未来のアラームを勝手に消して枠を作ることはしない
     static func schedule(id: UUID, fireDate: Date, title: String, dependencies: AlarmSchedulerDependencies = .live) async throws {
-        let titles = AlarmTitleStore(userDefaults: dependencies.userDefaults)
+        let titles = AlarmTitleStore(userDefaults: dependencies.userDefaults, lock: dependencies.storeLock)
         // 一覧の取得に失敗しても登録は進める (整理は次の登録で再試行できる)
         if let alarms = try? dependencies.registeredAlarms() {
             for expiredID in expiredAlarmIDs(alarms: alarms, now: dependencies.now()) {
@@ -115,7 +124,7 @@ enum AlarmKitScheduler {
 
     static func cancel(id: UUID, dependencies: AlarmSchedulerDependencies = .live) throws {
         try dependencies.cancel(id)
-        AlarmTitleStore(userDefaults: dependencies.userDefaults).remove(id: id)
+        AlarmTitleStore(userDefaults: dependencies.userDefaults, lock: dependencies.storeLock).remove(id: id)
     }
 
     /// 整理の対象にする id。発火時刻を過ぎた固定日時のアラームのうち、鳴動中でないもの
