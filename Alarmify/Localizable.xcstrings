@@ -101,12 +101,12 @@
         }
       }
     },
-    "Cancel push could not be delivered" : {
+    "Cancel push may not have reached this iPhone" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取り消しの push を配送できませんでした"
+            "value" : "取り消しの push がこの iPhone に届いていない可能性があります"
           }
         }
       }

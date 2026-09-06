@@ -266,16 +266,23 @@ struct ContentView: View {
             }
             .task {
                 // push (Notification Service Extension / background push) や開発者メニューで登録・取消されたアラームと、発火による状態の変化を
-                // 再読み込みを待たずに反映する
+                // 再読み込みを待たずに反映する。前面中に Extension が登録した時は、この app 本体しか報告を送れず前面復帰も起きないため、
+                // ここで Extension が積んだ報告を送り、サーバー側に増えた履歴も読み直す
                 for await alarms in AlarmKitScheduler.alarmUpdates {
                     self.alarms = alarms
+                    await session.flushAlarmApplyReports()
+                    await loadHistory()
                 }
             }
             .onChange(of: session.alarmApplyReportsFlushedAt) {
                 // この端末の反映結果がサーバーに届いたので、履歴の状態表示を読み直す
                 Task { await loadHistory() }
             }
-            .sheet(item: $paywallTrigger) { trigger in
+            .sheet(item: $paywallTrigger, onDismiss: {
+                // Pro を購入・復元して閉じた時に、無料プランの 3 件のままの履歴を読み直す (サーバーのプランは RevenueCat の webhook で変わるため、
+                // 反映が遅れていればこの読み直しではまだ 3 件で、次の再読み込みで増える)
+                Task { await loadHistory() }
+            }) { trigger in
                 PaywallPage(trigger: trigger)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
@@ -336,9 +343,10 @@ struct ContentView: View {
                 // ja: 取り消し済み
                 return Text("Canceled")
             }
-            if let delivery = entry.delivery, delivery.failureCount > 0, delivery.successCount == 0 {
-                // ja: 取り消しの push を配送できませんでした
-                return Text("Cancel push could not be delivered")
+            if let delivery = entry.delivery, delivery.failureCount > 0 {
+                // 配送結果は端末ごとではなく全端末の合計のため、他の端末には届いていても、報告の無いこの端末に届いていない可能性がある間は取り消し済みと言い切らない
+                // ja: 取り消しの push がこの iPhone に届いていない可能性があります
+                return Text("Cancel push may not have reached this iPhone")
             }
             if let report, report.action == .schedule, report.result == .applied {
                 // この iPhone に登録済みのまま、取り消しの指示がまだ反映されていない

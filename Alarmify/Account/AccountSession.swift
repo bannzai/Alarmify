@@ -97,7 +97,7 @@ final class AccountSession {
     }
 
     /// 未送信の適用結果 (`AlarmApplyReportQueue`) をバックエンドへ送る。
-    /// 送れた報告と、サーバーに報告先が無い報告 (開発者メニューの固定 id や保持期間を過ぎたアラーム、未登録の端末) はキューから消し、
+    /// 送れた報告と、送り直しても受け付けられない報告 (開発者メニューの固定 id や保持期間を過ぎたアラーム、未登録の端末、再スケジュール前の登録への報告) はキューから消し、
     /// それ以外の失敗 (未サインイン・通信エラー・エンドポイントが無い古いデプロイの 404) は次の機会に送り直せるよう残す。
     /// 何度呼んでも未送信分を送るだけで冪等。1 件でも送れたら `alarmApplyReportsFlushedAt` を更新し、ホームが履歴を読み直す
     func flushAlarmApplyReports() async {
@@ -108,7 +108,7 @@ final class AccountSession {
                 try await apiClient.reportAlarmApply(report)
                 queue.remove(report)
                 sent = true
-            } catch let error as AlarmifyAPIError where error.isAlarmApplyReportTargetMissing {
+            } catch let error as AlarmifyAPIError where error.rejectsAlarmApplyReport {
                 queue.remove(report)
             } catch {
                 Logger.push.error("Reporting alarm apply result failed: \(error.localizedDescription)")

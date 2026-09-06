@@ -110,7 +110,17 @@ final class AlarmKitSchedulerTests: XCTestCase {
         try await AlarmKitScheduler.apply(scheduleRequest(fireDate: now.addingTimeInterval(600)), dependencies: dependencies)
 
         let pending = AlarmApplyReportQueue(userDefaults: userDefaults, lock: noLock).pending
-        XCTAssertEqual(pending, [AlarmApplyReport(alarmID: id, action: .schedule, result: .applied, error: nil, occurredAt: now)])
+        XCTAssertEqual(pending, [AlarmApplyReport(alarmID: id, action: .schedule, result: .applied, error: nil, occurredAt: now, fireAt: now.addingTimeInterval(600))])
+    }
+
+    func testFailedReportTruncatesTheErrorToTheServerLimit() async {
+        store.scheduleError = FakeAlarmStore.Failure.tooLongDescription
+
+        try? await AlarmKitScheduler.apply(scheduleRequest(fireDate: now.addingTimeInterval(600)), dependencies: dependencies)
+
+        let pending = AlarmApplyReportQueue(userDefaults: userDefaults, lock: noLock).pending
+        XCTAssertEqual(pending.first?.error?.count, AlarmApplyReport.maxErrorLength)
+        XCTAssertEqual(pending.first?.error, String(FakeAlarmStore.Failure.tooLongDescription.localizedDescription.prefix(AlarmApplyReport.maxErrorLength)))
     }
 
     func testApplyEnqueuesAFailedReportAndRethrows() async {
@@ -148,9 +158,20 @@ final class FakeAlarmStore: @unchecked Sendable {
         var isAlerting: Bool { entry.isAlerting }
     }
 
-    enum Failure: Error, Equatable {
+    enum Failure: Error, Equatable, LocalizedError {
         case unavailable
         case limitReached
+        /// サーバーが受け付ける長さ (500 文字) を超える説明を持つエラー
+        case tooLongDescription
+
+        var errorDescription: String? {
+            switch self {
+            case .unavailable, .limitReached:
+                return nil
+            case .tooLongDescription:
+                return String(repeating: "x", count: AlarmApplyReport.maxErrorLength + 100)
+            }
+        }
     }
 
     var alarms: [UUID: Entry] = [:]

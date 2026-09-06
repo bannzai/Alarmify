@@ -7,6 +7,10 @@ struct AlarmApplyReport: Codable, Equatable, Sendable {
         case failed
     }
 
+    /// サーバーが受け付けるエラーの説明の長さ (`reportDeviceResultRequestSchema` の `error` の上限)。
+    /// 超えると 400 で永久に送れず、後ろの報告まで止めてしまうため、積む時点でこの長さに切り詰める
+    static let maxErrorLength = 500
+
     var alarmID: UUID
     var action: AlarmRequest.Action
     var result: Result
@@ -14,6 +18,9 @@ struct AlarmApplyReport: Codable, Equatable, Sendable {
     var error: String?
     /// 端末が反映を行った時刻
     var occurredAt: Date
+    /// `schedule` で AlarmKit に登録した発火時刻。サーバーはこれが現在の登録と一致する報告だけ受け付ける
+    /// (再スケジュール後に遅れて届いた前の登録の報告で、空にした反映結果を埋め直さないため)。`cancel` では nil
+    var fireAt: Date?
 }
 
 /// バックエンドへ未送信の適用結果。

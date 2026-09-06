@@ -22,15 +22,16 @@ enum AlarmifyAPIError: Error, Equatable, LocalizedError {
         return false
     }
 
-    /// 適用結果の報告 (`POST /v1/alarms/{id}/device-reports`) の「報告先が無い」応答のコード。
-    /// アラームがサーバーに無い (`alarm_not_found`) か、この端末が登録されていない (`device_not_found`)
-    static let alarmApplyReportTargetMissingCodes: Set<String> = ["alarm_not_found", "device_not_found"]
+    /// 適用結果の報告 (`POST /v1/alarms/{id}/device-reports`) をサーバーが受け付けない応答のコード。
+    /// アラームがサーバーに無い (`alarm_not_found`)、この端末が登録されていない (`device_not_found`)、
+    /// 再スケジュール後に届いた前の登録の報告 (`alarm_revision_mismatch`)、内容がスキーマに合わない (`invalid_argument`)
+    static let alarmApplyReportRejectedCodes: Set<String> = ["alarm_not_found", "device_not_found", "alarm_revision_mismatch", "invalid_argument"]
 
-    /// 適用結果の報告先がサーバーに無い応答かどうか。報告を捨ててよい判定に使う。
+    /// 適用結果の報告を送り直しても受け付けられない応答かどうか。報告をキューから捨ててよい判定に使う (残すと後ろの報告まで止める)。
     /// 同じ 404 でも code が `not_found` の応答はエンドポイント自体が無い古いデプロイの appApi から来るため対象にせず、報告を残して後で送り直す
-    var isAlarmApplyReportTargetMissing: Bool {
-        if case .server(404, let code?, _) = self {
-            return Self.alarmApplyReportTargetMissingCodes.contains(code)
+    var rejectsAlarmApplyReport: Bool {
+        if case .server(_, let code?, _) = self {
+            return Self.alarmApplyReportRejectedCodes.contains(code)
         }
         return false
     }

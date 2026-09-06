@@ -97,9 +97,16 @@ enum AlarmKitScheduler {
             case .cancel:
                 try cancel(id: request.id, dependencies: dependencies)
             }
-            reports.enqueue(AlarmApplyReport(alarmID: request.id, action: request.action, result: .applied, error: nil, occurredAt: dependencies.now()))
+            reports.enqueue(AlarmApplyReport(alarmID: request.id, action: request.action, result: .applied, error: nil, occurredAt: dependencies.now(), fireAt: request.fireDate))
         } catch {
-            reports.enqueue(AlarmApplyReport(alarmID: request.id, action: request.action, result: .failed, error: error.localizedDescription, occurredAt: dependencies.now()))
+            reports.enqueue(AlarmApplyReport(
+                alarmID: request.id,
+                action: request.action,
+                result: .failed,
+                error: String(error.localizedDescription.prefix(AlarmApplyReport.maxErrorLength)),
+                occurredAt: dependencies.now(),
+                fireAt: request.fireDate
+            ))
             throw error
         }
     }

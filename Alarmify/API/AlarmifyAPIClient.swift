@@ -104,6 +104,9 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         if let error = report.error {
             body["error"] = error
         }
+        if let fireAt = report.fireAt {
+            body["fire_at"] = ISO8601DateFormatter().string(from: fireAt)
+        }
         // アラーム id は小文字の UUID で保存されている。サーバー側でも小文字に寄せるが、パスの見た目を揃えておく
         _ = try await send(method: "POST", path: "/v1/alarms/\(report.alarmID.uuidString.lowercased())/device-reports", body: body)
     }

@@ -73,8 +73,25 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // 適用結果の報告は成否に関わらずキューに積まれるため、app 本体が動いているこの経路では戻る前に送り切る
         // (戻った後は iOS が app を中断し得るため、切り離した Task では送れないことがある)。
         // 送れなかった報告は次のサインイン・前面復帰で送るので、送信の成否で AlarmKit への反映結果は変えない
-        await AccountSession.shared.flushAlarmApplyReports()
+        await Self.flushAlarmApplyReportsWithinBackgroundBudget()
         return result
+    }
+
+    /// background push の処理に iOS が与える時間 (約 30 秒) のうち、報告の送信に使ってよい上限。
+    /// AlarmKit への反映と戻り値の返却に残りを充て、通信が固まっても処理時間の超過で後続の background push を絞られないようにする
+    private static let backgroundFlushTimeout: Duration = .seconds(10)
+
+    /// 未送信の報告を上限時間つきで送る。時間内に終わらなければ送信を取り消して戻り、報告はキューに残す (次の前面復帰で送る)
+    private static func flushAlarmApplyReportsWithinBackgroundBudget() async {
+        let flush = Task { @MainActor in
+            await AccountSession.shared.flushAlarmApplyReports()
+        }
+        let deadline = Task {
+            try await Task.sleep(for: backgroundFlushTimeout)
+            flush.cancel()
+        }
+        await flush.value
+        deadline.cancel()
     }
 }
 

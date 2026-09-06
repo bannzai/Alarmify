@@ -273,7 +273,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
         XCTAssertEqual(history[1].deviceReports, [])
     }
 
-    /// 端末側の反映結果は、この端末の device_id と秒精度の occurred_at を付けてアラーム id のパスへ送る
+    /// 端末側の反映結果は、この端末の device_id・秒精度の occurred_at・登録した発火時刻 (fire_at) を付けてアラーム id のパスへ送る
     func testReportAlarmApplySendsTheDeviceIdAndResult() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
@@ -285,6 +285,7 @@ final class AlarmifyAPIClientTests: XCTestCase {
                 "result": "failed",
                 "error": "maximumLimitReached",
                 "occurred_at": "2026-09-03T07:00:00Z",
+                "fire_at": "2026-09-03T08:00:00Z",
             ])
             return (200, Data(#"{"alarm_id":"3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e","device_id":"device-1"}"#.utf8))
         }
@@ -294,11 +295,12 @@ final class AlarmifyAPIClientTests: XCTestCase {
             action: .schedule,
             result: .failed,
             error: "maximumLimitReached",
-            occurredAt: Date(timeIntervalSince1970: 1_788_418_800)
+            occurredAt: Date(timeIntervalSince1970: 1_788_418_800),
+            fireAt: Date(timeIntervalSince1970: 1_788_422_400)
         ))
     }
 
-    /// 成功した報告は error を送らない (サーバー側で null になる)
+    /// 成功した取り消しの報告は error も fire_at も送らない (サーバー側で error は null になる)
     func testReportAlarmApplyOmitsTheErrorWhenApplied() async throws {
         StubURLProtocol.handler = { request in
             let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
@@ -316,33 +318,33 @@ final class AlarmifyAPIClientTests: XCTestCase {
         ))
     }
 
-    /// 報告先のアラームが無い 404 (`alarm_not_found`) と端末が未登録の 404 (`device_not_found`) は、報告を捨てる側の分岐 (`isAlarmApplyReportTargetMissing`) になる
-    func testMissingReportTargetIsRecognizedFromTheErrorCode() async {
-        for code in ["alarm_not_found", "device_not_found"] {
+    /// 送り直しても受け付けられない応答 (アラームが無い・端末が未登録・再スケジュール前の登録への報告・スキーマ違反) は、報告を捨てる側の分岐 (`rejectsAlarmApplyReport`) になる
+    func testRejectedReportIsRecognizedFromTheErrorCode() async {
+        for (status, code) in [(404, "alarm_not_found"), (404, "device_not_found"), (409, "alarm_revision_mismatch"), (400, "invalid_argument")] {
             StubURLProtocol.handler = { _ in
-                (404, Data(#"{"error":{"code":"\#(code)","message":"見つかりません"}}"#.utf8))
+                (status, Data(#"{"error":{"code":"\#(code)","message":"受け付けられません"}}"#.utf8))
             }
 
             do {
                 try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
                 XCTFail("Expected an error for \(code)")
             } catch {
-                XCTAssertEqual((error as? AlarmifyAPIError)?.isAlarmApplyReportTargetMissing, true, code)
+                XCTAssertEqual((error as? AlarmifyAPIError)?.rejectsAlarmApplyReport, true, code)
             }
         }
     }
 
-    /// エンドポイント自体が無い古いデプロイの 404 (`not_found`) は報告先の有無を示さないため、報告を捨てる側の分岐にならない (残して後で送り直す)
-    func testGenericNotFoundDoesNotDiscardTheReport() async {
-        StubURLProtocol.handler = { _ in
-            (404, Data(#"{"error":{"code":"not_found","message":"エンドポイントが見つかりません"}}"#.utf8))
-        }
+    /// エンドポイント自体が無い古いデプロイの 404 (`not_found`) と一時的な失敗 (5xx) は、報告を捨てる側の分岐にならない (残して後で送り直す)
+    func testRetryableFailuresDoNotDiscardTheReport() async {
+        for (status, body) in [(404, #"{"error":{"code":"not_found","message":"エンドポイントが見つかりません"}}"#), (503, "unavailable")] {
+            StubURLProtocol.handler = { _ in (status, Data(body.utf8)) }
 
-        do {
-            try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
-            XCTFail("Expected an error")
-        } catch {
-            XCTAssertEqual((error as? AlarmifyAPIError)?.isAlarmApplyReportTargetMissing, false)
+            do {
+                try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
+                XCTFail("Expected an error for \(status)")
+            } catch {
+                XCTAssertEqual((error as? AlarmifyAPIError)?.rejectsAlarmApplyReport, false, String(status))
+            }
         }
     }
 
