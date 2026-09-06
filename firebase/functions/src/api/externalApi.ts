@@ -364,6 +364,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         updatedAt: Timestamp.fromDate(now),
         expiresAt: expiresAtOf(now, fireAt),
         delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
+        deviceReports: {},
       };
       transaction.set(alarmRef, alarm);
       return true;

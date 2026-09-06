@@ -875,6 +875,8 @@ describe("アラーム履歴", () => {
   it("cursor で続きを取得できる", async () => {
     await registerDevice();
     const issued = await issueApiToken();
+    // 無料プランは 3 件で cursor を無視するため、cursor によるページングは pro プラン前提で確かめる
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
     const ids: string[] = [];
     for (const index of [0, 1, 2]) {
       context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
@@ -928,6 +930,8 @@ describe("アラーム履歴", () => {
   it("cursor のアラームが削除されていても続きを辿れる", async () => {
     await registerDevice();
     const issued = await issueApiToken();
+    // 無料プランは 3 件で cursor を無視するため、cursor によるページングは pro プラン前提で確かめる
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
     const ids: string[] = [];
     for (const index of [0, 1, 2]) {
       context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
@@ -964,5 +968,213 @@ describe("アラーム履歴", () => {
       .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
       .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(400);
+  });
+
+  it("各要素に delivery と updated_at が含まれる", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0]).toMatchObject({
+      id: created.body.id,
+      delivery: { success_count: 1, failure_count: 0 },
+      updated_at: TEST_NOW.toISOString(),
+      device_reports: [],
+    });
+  });
+
+  it("無料プランは直近 3 件までで、cursor を渡しても next_cursor は常に null", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const ids: string[] = [];
+    for (const index of [0, 1, 2, 3]) {
+      context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
+      const created = await request(externalApi)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT), title: `alarm-${index}` })
+        .expect(201);
+      ids.push(created.body.id);
+    }
+
+    const response = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(response.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([
+      ids[3],
+      ids[2],
+      ids[1],
+    ]);
+    expect(response.body.next_cursor).toBeNull();
+
+    // 形式として妥当な cursor でも、無料プランでは先頭ページに固定する
+    const validCursor = Buffer.from("0:some-id", "utf8").toString("base64url");
+    const withCursor = await request(appApi)
+      .get(`/v1/alarms?cursor=${validCursor}`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(withCursor.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([
+      ids[3],
+      ids[2],
+      ids[1],
+    ]);
+    expect(withCursor.body.next_cursor).toBeNull();
+
+    const limited = await request(appApi)
+      .get("/v1/alarms?limit=1")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(limited.body.alarms.map((alarm: { id: string }) => alarm.id)).toEqual([ids[3]]);
+  });
+
+  it("pro プランは全件返り、limit を渡すと next_cursor が返る", async () => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
+    const ids: string[] = [];
+    for (const index of [0, 1, 2, 3]) {
+      context.setNow(new Date(TEST_NOW.getTime() + index * 1000));
+      const created = await request(externalApi)
+        .post("/v1/alarms")
+        .set("authorization", `Bearer ${issued.token}`)
+        .send({ fire_at: toIso8601Seconds(FIRE_AT), title: `alarm-${index}` })
+        .expect(201);
+      ids.push(created.body.id);
+    }
+
+    const all = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(all.body.alarms).toHaveLength(4);
+    expect(all.body.next_cursor).toBeNull();
+
+    const paged = await request(appApi)
+      .get("/v1/alarms?limit=2")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(paged.body.alarms).toHaveLength(2);
+    expect(paged.body.next_cursor).not.toBeNull();
+  });
+});
+
+describe("端末からの反映結果の報告", () => {
+  async function createAlarm(): Promise<{ id: string; token: string }> {
+    await registerDevice();
+    const issued = await issueApiToken();
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
+    return { id: created.body.id, token: issued.token };
+  }
+
+  function postDeviceReport(alarmId: string, body: Record<string, unknown>) {
+    return request(appApi)
+      .post(`/v1/alarms/${alarmId}/device-reports`)
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .send(body);
+  }
+
+  it("報告を送ると deviceReports に保存され、GET /v1/alarms の device_reports に出る (reported_at は出ない)", async () => {
+    const { id } = await createAlarm();
+    const response = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+    expect(response.body).toEqual({ alarm_id: id, device_id: "device-1" });
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([
+      {
+        device_id: "device-1",
+        action: "schedule",
+        result: "applied",
+        error: null,
+        occurred_at: "2026-09-02T00:00:10.000Z",
+      },
+    ]);
+  });
+
+  it("同じ報告を 2 回送っても 1 件のまま (冪等)。内容を変えて送ると上書きされる", async () => {
+    const { id } = await createAlarm();
+    const base = {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    };
+    await postDeviceReport(id, base).expect(200);
+    await postDeviceReport(id, base).expect(200);
+
+    const alarmRef = userRef(context.deps.firestore, context.uid).collection(collections.alarms).doc(id);
+    const afterRepeat = await alarmRef.get();
+    expect(Object.keys(afterRepeat.get("deviceReports"))).toEqual(["device-1"]);
+
+    await postDeviceReport(id, { ...base, result: "failed", error: "AlarmKit denied" }).expect(200);
+    const afterOverwrite = await alarmRef.get();
+    expect(Object.keys(afterOverwrite.get("deviceReports"))).toEqual(["device-1"]);
+    expect(afterOverwrite.get("deviceReports")["device-1"]).toMatchObject({
+      result: "failed",
+      error: "AlarmKit denied",
+    });
+  });
+
+  it("存在しないアラームへの報告は 404、alarmId が UUID でなければ 400、body 不正は 400", async () => {
+    const { id } = await createAlarm();
+    const validBody = {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    };
+    const notFound = await postDeviceReport(
+      "00000000-0000-4000-8000-000000000000",
+      validBody,
+    ).expect(404);
+    expect(notFound.body.error.code).toBe("not_found");
+
+    await postDeviceReport("not-a-uuid", validBody).expect(400);
+    await postDeviceReport(id, { ...validBody, result: "ok" }).expect(400);
+  });
+
+  it("大文字の UUID で報告しても小文字のアラームに届く", async () => {
+    const { id } = await createAlarm();
+    const response = await postDeviceReport(id.toUpperCase(), {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+    expect(response.body.alarm_id).toBe(id);
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(id)
+      .get();
+    expect(stored.get("deviceReports")).toHaveProperty("device-1");
   });
 });
