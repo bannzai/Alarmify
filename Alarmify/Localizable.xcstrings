@@ -22057,10 +22057,214 @@
     },
     "The purchase finished, but Pro couldn't be confirmed. Please try restoring purchases later." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اكتملت عملية الشراء، ولكن تعذّر تأكيد Pro. يُرجى محاولة استعادة المشتريات لاحقًا."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La compra s’ha completat, però no s’ha pogut confirmar Pro. Torna a provar de restaurar les compres més tard."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nákup byl dokončen, ale Pro se nepodařilo potvrdit. Zkuste nákupy obnovit později."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Købet blev gennemført, men Pro kunne ikke bekræftes. Prøv at gendanne køb senere."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf wurde abgeschlossen, aber Pro konnte nicht bestätigt werden. Versuche später, deine Käufe wiederherzustellen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η αγορά ολοκληρώθηκε, αλλά δεν ήταν δυνατή η επιβεβαίωση του Pro. Δοκίμασε να επαναφέρεις τις αγορές αργότερα."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La compra se completó, pero no se pudo confirmar Pro. Intenta restaurar las compras más tarde."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La compra se completó, pero no se pudo confirmar Pro. Intenta restablecer tus compras más tarde."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Osto valmistui, mutta Prota ei voitu vahvistaa. Yritä palauttaa ostot myöhemmin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’achat est terminé, mais Pro n’a pas pu être confirmé. Veuillez essayer de restaurer vos achats plus tard."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הרכישה הושלמה, אך לא ניתן היה לאשר את Pro. נסה לשחזר את הרכישות מאוחר יותר."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खरीदारी पूरी हो गई, लेकिन Pro की पुष्टि नहीं हो सकी। कृपया बाद में खरीदारी बहाल करने की कोशिश करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kupnja je dovršena, ali Pro nije bilo moguće potvrditi. Pokušaj kasnije obnoviti kupnje."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A vásárlás befejeződött, de a Pro megerősítése nem sikerült. Próbáld később visszaállítani a vásárlásokat."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelian selesai, tetapi Pro tidak dapat dikonfirmasi. Coba pulihkan pembelian nanti."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’acquisto è stato completato, ma non è stato possibile confermare Pro. Prova a ripristinare gli acquisti più tardi."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "購入は完了しましたが、Pro の反映を確認できませんでした。時間をおいて購入の復元をお試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매가 완료되었지만 Pro를 확인할 수 없습니다. 나중에 구매 항목 복원을 다시 시도해 주세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelian selesai, tetapi Pro tidak dapat disahkan. Cuba pulihkan pembelian kemudian."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kjøpet er fullført, men Pro kunne ikke bekreftes. Prøv å gjenopprette kjøpene senere."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De aankoop is voltooid, maar Pro kon niet worden bevestigd. Probeer je aankopen later te herstellen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zakup został ukończony, ale nie udało się potwierdzić Pro. Spróbuj później przywrócić zakupy."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A compra foi concluída, mas não foi possível confirmar o Pro. Tente restaurar as compras mais tarde."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A compra foi concluída, mas não foi possível confirmar o Pro. Tenta restaurar as compras mais tarde."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achiziția s-a finalizat, dar Pro nu a putut fi confirmat. Încearcă să restaurezi achizițiile mai târziu."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покупка завершена, но подтвердить Pro не удалось. Попробуйте восстановить покупки позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nákup bol dokončený, ale Pro sa nepodarilo potvrdiť. Skús neskôr obnoviť nákupy."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Köpet slutfördes, men Pro kunde inte bekräftas. Försök återställa köpen senare."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซื้อเสร็จสมบูรณ์แล้ว แต่ไม่สามารถยืนยัน Pro ได้ โปรดลองกู้คืนรายการซื้อภายหลัง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın alma tamamlandı ancak Pro doğrulanamadı. Satın alımları daha sonra geri yüklemeyi dene."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покупку завершено, але підтвердити Pro не вдалося. Спробуйте відновити покупки пізніше."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã hoàn tất giao dịch mua, nhưng không thể xác nhận Pro. Hãy thử khôi phục các giao dịch mua sau."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買已完成，但無法確認 Pro。請稍後再嘗試還原購買項目。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买已完成，但无法确认 Pro。请稍后再尝试恢复购买。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買已完成，但無法確認 Pro。請稍後再嘗試回復購買項目。"
           }
         }
       }
