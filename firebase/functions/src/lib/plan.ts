@@ -6,12 +6,20 @@ export interface PlanLimits {
   apiTokens: number;
   /** 1 か月 (UTC) に登録できるアラームの数 */
   alarmsPerMonth: number;
+  /** GET /v1/alarms で返す履歴の件数の上限 */
+  alarmHistory: number;
 }
 
 /** プランごとの上限。plan の更新は RevenueCat の webhook (api/revenueCatWebhook.ts) が行う */
 export const planLimits: Record<Plan, PlanLimits> = {
-  free: { apiTokens: 1, alarmsPerMonth: 20 },
-  pro: { apiTokens: Number.POSITIVE_INFINITY, alarmsPerMonth: Number.POSITIVE_INFINITY },
+  // alarmHistory の 3 件は「直近の Webhook が届いたか」を確かめられる最小の件数。
+  // 履歴は Pro の機能 (documents/PROJECT.md「コア体験」4) のため、無料では機能の存在が分かる程度に留める
+  free: { apiTokens: 1, alarmsPerMonth: 20, alarmHistory: 3 },
+  pro: {
+    apiTokens: Number.POSITIVE_INFINITY,
+    alarmsPerMonth: Number.POSITIVE_INFINITY,
+    alarmHistory: Number.POSITIVE_INFINITY,
+  },
 };
 
 /** 月間上限の集計キー (UTC の YYYY-MM) */

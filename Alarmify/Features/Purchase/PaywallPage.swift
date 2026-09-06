@@ -9,6 +9,8 @@ enum PaywallTrigger: Identifiable {
     /// 無料プランの上限 (トークン数・月間のアラーム数) に達した操作から開いた。
     /// アプリが受け取るのは API トークン発行の `plan_limit_exceeded` (APITokenModel.issue)
     case freeQuotaExceeded
+    /// ホームの履歴 (無料プランは直近数件だけ) から、もっと多くの履歴を求めて開いた
+    case alarmHistory
 
     var id: Self { self }
 }
@@ -142,6 +144,11 @@ struct PaywallPage: View {
             // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
             // ja: 無料プランの上限に達しました
             return Text("You've reached the limit of the free plan")
+        case .alarmHistory:
+            // 件数はサーバーの planLimits.free.alarmHistory (functions/src/lib/plan.ts) と揃える。
+            // ホームは Pro でも直近 20 件 (ContentView.historyLimit) までの表示のため、全期間・30 日分とは言わない
+            // ja: 無料プランで見られる履歴は直近 3 件です。Pro ならもっと多くの履歴を確認できます
+            return Text("The free plan shows the 3 most recent alarms. Pro shows more of your alarm history")
         }
     }
 

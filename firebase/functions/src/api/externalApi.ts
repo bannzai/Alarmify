@@ -352,6 +352,11 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
           tokenId,
           updatedAt: Timestamp.fromDate(now),
           expiresAt: expiresAtOf(now, fireAt),
+          // 以前の発火時刻に対する端末の反映結果なので、新しい発火時刻の登録には引き継がない
+          deviceReports: {},
+          // 前の登録の配送結果を新しい登録のものとして GET /v1/alarms に見せないため。
+          // 直後の recordDelivery が失敗した時に、前の push の成否で新しい登録が説明されるのを防ぐ
+          delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
         });
         return false;
       }
@@ -364,6 +369,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         updatedAt: Timestamp.fromDate(now),
         expiresAt: expiresAtOf(now, fireAt),
         delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
+        deviceReports: {},
       };
       transaction.set(alarmRef, alarm);
       return true;

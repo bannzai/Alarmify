@@ -7,7 +7,8 @@ import Foundation
 /// { "alarm": { "id": "<UUID>", "action": "schedule", "fire_at": "2026-09-03T07:00:00Z", "title": "Deploy finished" } }
 /// ```
 struct AlarmRequest: Equatable, Sendable {
-    enum Action: String, Sendable {
+    /// Codable は適用結果の報告 (`AlarmApplyReport`) の保存と、履歴 (`AlarmHistoryEntry`) の受信で使う
+    enum Action: String, Codable, Sendable {
         case schedule
         case cancel
     }

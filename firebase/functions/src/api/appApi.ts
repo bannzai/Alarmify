@@ -4,6 +4,7 @@ import {
   Timestamp,
   type DocumentData,
   type Query,
+  type QueryDocumentSnapshot,
   type QuerySnapshot,
   type Transaction,
 } from "firebase-admin/firestore";
@@ -16,11 +17,15 @@ import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
 import { deletionMarkerRef, MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
 import {
   alarmHistoryLimitSchema,
+  canonicalUuidSchema,
   collections,
   listCursorSchema,
   createApiTokenRequestSchema,
   registerDeviceRequestSchema,
+  reportDeviceResultRequestSchema,
   userSchema,
+  type DeviceReport,
+  type Plan,
 } from "../schema/index.js";
 
 /**
@@ -87,6 +92,37 @@ function nextCursor(snapshot: QuerySnapshot<DocumentData>, limit: number): strin
   }
   const last = snapshot.docs[snapshot.size - 1];
   return encodeCursor({ createdAt: last.get("createdAt") as Timestamp, id: last.id });
+}
+
+/** ユーザードキュメントが無ければ free (端末登録や課金前に履歴を見に来た場合) */
+async function currentPlan(deps: Deps, uid: string, now: Date): Promise<Plan> {
+  const snapshot = await userRef(deps.firestore, uid).get();
+  return snapshot.exists ? effectivePlan(userSchema.parse(snapshot.data()), now) : "free";
+}
+
+function alarmHistoryItem(doc: QueryDocumentSnapshot<DocumentData>): Record<string, unknown> {
+  const delivery = doc.get("delivery") as { successCount: number; failureCount: number };
+  const deviceReports = (doc.get("deviceReports") as Record<string, DeviceReport> | undefined) ?? {};
+  return {
+    id: doc.id,
+    status: doc.get("status"),
+    title: doc.get("title"),
+    fire_at: (doc.get("fireAt") as Timestamp).toDate().toISOString(),
+    created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
+    updated_at: (doc.get("updatedAt") as Timestamp).toDate().toISOString(),
+    token_id: doc.get("tokenId"),
+    delivery: { success_count: delivery.successCount, failure_count: delivery.failureCount },
+    // device_id の昇順に並べる (順序を安定させ、iOS 側の差分表示を予測可能にする)
+    device_reports: Object.entries(deviceReports)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([deviceId, report]) => ({
+        device_id: deviceId,
+        action: report.action,
+        result: report.result,
+        error: report.error,
+        occurred_at: (report.occurredAt as Timestamp).toDate().toISOString(),
+      })),
+  };
 }
 
 function authenticate(deps: Deps) {
@@ -280,21 +316,92 @@ export function createAppApi(deps: Deps): Express {
   app.get("/v1/alarms", async (req, res) => {
     const page = parsePage(req);
     const uid = currentUid(res);
+    const plan = await currentPlan(deps, uid, deps.now());
+    const limit = Math.min(page.limit, planLimits[plan].alarmHistory);
+    // free は直近 N 件だけを見せる機能のため、cursor を受け取っても先頭ページに固定し、次のページも案内しない
+    const resolvedPage: Page = plan === "free" ? { limit, cursor: null } : { limit, cursor: page.cursor };
     const snapshot = await paginate(
       userRef(deps.firestore, uid).collection(collections.alarms),
-      page,
+      resolvedPage,
     );
     res.status(200).json({
-      alarms: snapshot.docs.map((doc) => ({
-        id: doc.id,
-        status: doc.get("status"),
-        title: doc.get("title"),
-        fire_at: (doc.get("fireAt") as Timestamp).toDate().toISOString(),
-        created_at: (doc.get("createdAt") as Timestamp).toDate().toISOString(),
-        token_id: doc.get("tokenId"),
-      })),
-      next_cursor: nextCursor(snapshot, page.limit),
+      alarms: snapshot.docs.map((doc) => alarmHistoryItem(doc)),
+      next_cursor: plan === "free" ? null : nextCursor(snapshot, limit),
     });
+  });
+
+  // 端末が push で届いた AlarmRequest を AlarmKit へ反映した結果を報告する。同じ device_id の再送は上書きになる (冪等)
+  app.post("/v1/alarms/:alarmId/device-reports", async (req, res) => {
+    const parsedId = canonicalUuidSchema.safeParse(req.params.alarmId);
+    if (!parsedId.success) {
+      throw badRequestFromZod(parsedId.error);
+    }
+    const parsedBody = reportDeviceResultRequestSchema.safeParse(req.body);
+    if (!parsedBody.success) {
+      throw badRequestFromZod(parsedBody.error);
+    }
+    const uid = currentUid(res);
+    const alarmId = parsedId.data;
+    const now = deps.now();
+    const alarmRef = userRef(deps.firestore, uid).collection(collections.alarms).doc(alarmId);
+
+    const deviceRef = userRef(deps.firestore, uid)
+      .collection(collections.devices)
+      .doc(parsedBody.data.device_id);
+
+    await deps.firestore.runTransaction(async (transaction) => {
+      await rejectIfAccountDeleted(transaction, deps, uid);
+      const snapshot = await transaction.get(alarmRef);
+      if (!snapshot.exists) {
+        // 古いデプロイの appApi はこのエンドポイント自体が無く、notFoundHandler が code "not_found" の 404 を返す。
+        // iOS 側はアラームが本当に無い 404 だけ報告を捨てられるよう、code で区別できるようにする
+        throw new ApiError(404, "alarm_not_found", "アラームが見つかりません");
+      }
+      // 任意の device_id で報告を書けると 1 つのアラーム文書に無制限にキーが増える (端末登録の上限を迂回する)ため、
+      // 登録済みの端末からの報告だけ受け付ける
+      const deviceSnapshot = await transaction.get(deviceRef);
+      if (!deviceSnapshot.exists) {
+        throw new ApiError(404, "device_not_found", "端末が登録されていません");
+      }
+      if (parsedBody.data.action === "schedule" && parsedBody.data.fire_at !== undefined) {
+        // push payload の fire_at は toIso8601Seconds で秒までに丸めて配送し、端末もその値をそのまま返す。
+        // 一方 fire_in で登録したアラームの Firestore 上の fireAt はミリ秒を持つため、秒単位に揃えてから比べる
+        const registeredFireAtSeconds = Math.floor(
+          (snapshot.get("fireAt") as Timestamp).toMillis() / 1000,
+        );
+        const reportedFireAtSeconds = Math.floor(parsedBody.data.fire_at.getTime() / 1000);
+        if (registeredFireAtSeconds !== reportedFireAtSeconds) {
+          // 同じ id で再スケジュールされた後に遅れて届いた、前の登録に対する報告を弾く。
+          // 再スケジュール時に空にした deviceReports を古い内容で埋め直さないよう、何も書き込まない
+          throw new ApiError(
+            409,
+            "alarm_revision_mismatch",
+            "報告の発火時刻が現在の登録と一致しません",
+          );
+        }
+      }
+      const deviceReports =
+        (snapshot.get("deviceReports") as Record<string, DeviceReport> | undefined) ?? {};
+      const existingReport = deviceReports[parsedBody.data.device_id];
+      const occurredAt = Timestamp.fromDate(parsedBody.data.occurred_at);
+      // 同じ登録に対する報告でも、再試行や並行送信で HTTP の到着順が入れ替わると後着が勝ってしまい、
+      // 新しい失敗を古い成功で上書きし得るため、端末の時計 (occurredAt) で見て古い報告は捨てる。
+      // occurredAt が同じ場合は上書きする (内容を変えて再送した場合の既存の挙動を維持する)
+      if (existingReport && existingReport.occurredAt.toMillis() > occurredAt.toMillis()) {
+        return;
+      }
+      const report: DeviceReport = {
+        action: parsedBody.data.action,
+        result: parsedBody.data.result,
+        error: parsedBody.data.error ?? null,
+        occurredAt,
+        reportedAt: Timestamp.fromDate(now),
+      };
+      // device_id に "." が含まれても入れ子として解釈させないよう、文字列のドットパスではなく FieldPath のセグメントで書き込む
+      transaction.update(alarmRef, new FieldPath("deviceReports", parsedBody.data.device_id), report);
+    });
+
+    res.status(200).json({ alarm_id: alarmId, device_id: parsedBody.data.device_id });
   });
 
   app.use(notFoundHandler);

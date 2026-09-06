@@ -127,8 +127,10 @@ struct DeveloperMenuView: View {
         }
     }
 
-    /// 組み立てた push payload を push 受信時と同じ経路で AlarmKit に反映し、結果を表示する
+    /// 組み立てた push payload を push 受信時と同じ経路で AlarmKit に反映し、結果を表示する。
+    /// 適用結果の報告も push 受信時と同じ経路 (キュー → バックエンド) で送る (固定 id はサーバーに記録が無いため 404 で捨てられる)
     private func applyPushPayload(_ userInfo: [AnyHashable: Any]) async {
+        defer { Task { await session.flushAlarmApplyReports() } }
         do {
             let request = try await DebugPushPayload.apply(userInfo: userInfo)
             switch request.action {

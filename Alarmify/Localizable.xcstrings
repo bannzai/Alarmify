@@ -1071,6 +1071,16 @@
         }
       }
     },
+    "Alarm time has passed" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発火時刻を過ぎました"
+          }
+        }
+      }
+    },
     "API reference" : {
       "localizations" : {
         "ar" : {
@@ -5140,6 +5150,36 @@
         }
       }
     },
+    "Cancel push may not have reached this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消しの push がこの iPhone に届いていない可能性があります"
+          }
+        }
+      }
+    },
+    "Canceled" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消し済み"
+          }
+        }
+      }
+    },
+    "Canceled, waiting for this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消し済み (この iPhone への反映を待っています)"
+          }
+        }
+      }
+    },
     "Cancelled %@" : {
       "localizations" : {
         "ar" : {
@@ -8778,6 +8818,26 @@
         }
       }
     },
+    "Failed on this iPhone: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone で登録に失敗: %@"
+          }
+        }
+      }
+    },
+    "Failed to cancel on this iPhone: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone で取り消しに失敗: %@"
+          }
+        }
+      }
+    },
     "FCM registration token" : {
       "localizations" : {
         "ar" : {
@@ -11346,6 +11406,16 @@
         }
       }
     },
+    "Next alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次に鳴るアラーム"
+          }
+        }
+      }
+    },
     "No alarms scheduled" : {
       "localizations" : {
         "ar" : {
@@ -11556,6 +11626,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有安排鬧鐘"
+          }
+        }
+      }
+    },
+    "No alarms yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴はまだありません"
           }
         }
       }
@@ -11984,6 +12064,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暫無 Token"
+          }
+        }
+      }
+    },
+    "No upcoming alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次に鳴るアラームはありません"
           }
         }
       }
@@ -15204,6 +15294,16 @@
         }
       }
     },
+    "Push could not be delivered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "push を配送できませんでした"
+          }
+        }
+      }
+    },
     "Push payload" : {
       "localizations" : {
         "ar" : {
@@ -15842,6 +15942,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將 curl 呼叫放在腳本末尾或 crontab 中。'fire_in' 從收到請求開始計算秒數，因此無需進行日期計算。"
+          }
+        }
+      }
+    },
+    "Rang" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鳴りました"
+          }
+        }
+      }
+    },
+    "Recent alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直近の履歴"
           }
         }
       }
@@ -18410,6 +18530,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已排程的鬧鐘"
+          }
+        }
+      }
+    },
+    "Scheduled on this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone に登録済み"
+          }
+        }
+      }
+    },
+    "See more history with Pro" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro でもっと履歴を見る"
           }
         }
       }
@@ -21841,6 +21981,16 @@
         }
       }
     },
+    "The free plan shows the 3 most recent alarms. Pro shows more of your alarm history" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランで見られる履歴は直近 3 件です。Pro ならもっと多くの履歴を確認できます"
+          }
+        }
+      }
+    },
     "The purchase couldn't be completed." : {
       "localizations" : {
         "ar" : {
@@ -23767,6 +23917,16 @@
         }
       }
     },
+    "Untitled alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトルなし"
+          }
+        }
+      }
+    },
     "Upgrade to Pro" : {
       "localizations" : {
         "ar" : {
@@ -24405,6 +24565,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用模擬 API 用戶端"
+          }
+        }
+      }
+    },
+    "Waiting for this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone への反映を待っています"
           }
         }
       }
