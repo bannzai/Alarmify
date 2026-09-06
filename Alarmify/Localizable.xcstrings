@@ -23555,10 +23555,214 @@
     },
     "Unlock a token per service, unlimited alarm scheduling, alarm history, and delivery to multiple devices" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتح رمزًا لكل خدمة، وجدولة منبهات بلا حدود، وسجل المنبهات، والتوصيل إلى أجهزة متعددة"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloqueja un token per servei, programació il·limitada d’alarmes, historial d’alarmes i lliurament a diversos dispositius"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odemkni token pro každou službu, neomezené plánování alarmů, historii alarmů a doručování do více zařízení"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lås op for et token pr. tjeneste, ubegrænset alarmplanlægning, alarmhistorik og levering til flere enheder"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schalte ein Token pro Dienst, unbegrenzt viele geplante Alarme, den Alarmverlauf und die Zustellung an mehrere Geräte frei"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ξεκλείδωσε ένα token ανά υπηρεσία, απεριόριστο προγραμματισμό συναγερμών, ιστορικό συναγερμών και παράδοση σε πολλές συσκευές"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquea un token por servicio, programación ilimitada de alarmas, historial de alarmas y entrega a varios dispositivos"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquea un token por servicio, programación ilimitada de alarmas, historial de alarmas y envío a varios dispositivos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota käyttöön token jokaiselle palvelulle, rajaton hälytysten ajastus, hälytyshistoria ja toimitus useille laitteille"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Débloquez un token par service, la programmation illimitée d’alarmes, l’historique des alarmes et l’envoi vers plusieurs appareils"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "קבל טוקן לכל שירות, תזמון בלתי מוגבל של התראות, היסטוריית התראות ומסירה למספר מכשירים"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हर सेवा के लिए एक टोकन, असीमित अलार्म शेड्यूलिंग, अलार्म इतिहास और कई डिवाइस पर डिलीवरी अनलॉक करें"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otključaj token za svaku uslugu, neograničeno zakazivanje alarma, povijest alarma i isporuku na više uređaja"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oldd fel szolgáltatásonként egy token, korlátlan riasztásütemezés, riasztási előzmények és több eszközre történő kézbesítés használatát"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buka token untuk setiap layanan, penjadwalan alarm tanpa batas, riwayat alarm, dan pengiriman ke beberapa perangkat"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sblocca un token per ogni servizio, la pianificazione illimitata degli allarmi, la cronologia degli allarmi e la consegna su più dispositivi"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "サービスごとのトークン、無制限のアラーム登録、アラーム履歴、複数端末への配送を解放します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스별 토큰, 무제한 알람 예약, 알람 기록, 여러 기기로의 전송을 이용할 수 있어요"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buka kunci token bagi setiap perkhidmatan, penjadualan penggera tanpa had, sejarah penggera dan penghantaran ke berbilang peranti"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lås opp ett token per tjeneste, ubegrenset alarmplanlegging, alarmlogg og levering til flere enheter"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ontgrendel één token per service, onbeperkt alarmen plannen, alarmgeschiedenis en levering aan meerdere apparaten"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odblokuj token dla każdej usługi, nieograniczone planowanie alarmów, historię alarmów i dostarczanie na wiele urządzeń"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloqueie um token por serviço, agendamento ilimitado de alarmes, histórico de alarmes e entrega para vários dispositivos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloqueia um token por serviço, agendamento ilimitado de alarmes, histórico de alarmes e entrega para vários dispositivos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deblochează un token pentru fiecare serviciu, programarea nelimitată a alarmelor, istoricul alarmelor și livrarea către mai multe dispozitive"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разблокируйте токен для каждого сервиса, неограниченное планирование будильников, историю будильников и доставку на несколько устройств"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odomkni token pre každú službu, neobmedzené plánovanie alarmov, históriu alarmov a doručovanie na viacero zariadení"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lås upp en token per tjänst, obegränsad schemaläggning av alarm, alarmhistorik och leverans till flera enheter"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปลดล็อกโทเค็นสำหรับแต่ละบริการ การตั้งปลุกไม่จำกัด ประวัติการตั้งปลุก และการส่งไปยังอุปกรณ์หลายเครื่อง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her hizmet için token, sınırsız alarm planlama, alarm geçmişi ve birden fazla cihaza teslimatın kilidini aç"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розблокуйте токен для кожного сервісу, необмежене планування будильників, історію будильників і доставку на кілька пристроїв"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mở khóa token cho từng dịch vụ, lên lịch báo thức không giới hạn, lịch sử báo thức và gửi đến nhiều thiết bị"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解鎖每項服務的 Token、無限制設定鬧鐘、鬧鐘記錄，以及傳送至多部裝置的功能"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解锁每项服务的 Token、无限闹钟安排、闹钟记录，以及发送到多个设备的功能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解鎖每項服務的 Token、無限制安排鬧鐘、鬧鐘記錄，以及傳送至多部裝置的功能"
           }
         }
       }
