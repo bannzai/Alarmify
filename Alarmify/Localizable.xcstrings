@@ -6426,10 +6426,214 @@
     },
     "Define the rest_command in 'configuration.yaml' and restart Home Assistant." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عرّف rest_command في 'configuration.yaml' ثم أعد تشغيل Home Assistant."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defineix rest_command a 'configuration.yaml' i reinicia Home Assistant."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definuj rest_command v souboru 'configuration.yaml' a restartuj Home Assistant."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definér rest_command i 'configuration.yaml', og genstart Home Assistant."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definiere rest_command in 'configuration.yaml' und starte Home Assistant neu."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Όρισε το rest_command στο 'configuration.yaml' και επανεκκίνησε το Home Assistant."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define rest_command en 'configuration.yaml' y reinicia Home Assistant."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define rest_command en 'configuration.yaml' y reinicia Home Assistant."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Määritä rest_command tiedostossa 'configuration.yaml' ja käynnistä Home Assistant uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez rest_command dans 'configuration.yaml', puis redémarrez Home Assistant."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדר את rest_command ב־'configuration.yaml' והפעל מחדש את Home Assistant."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'configuration.yaml' में rest_command परिभाषित करें और Home Assistant को पुनरारंभ करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definiraj rest_command u datoteci 'configuration.yaml' i ponovno pokreni Home Assistant."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definiáld a rest_commandot a(z) 'configuration.yaml' fájlban, majd indítsd újra a Home Assistantot."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definisikan rest_command di 'configuration.yaml', lalu mulai ulang Home Assistant."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definisci rest_command in 'configuration.yaml' e riavvia Home Assistant."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "「configuration.yaml」に rest_command を定義し、Home Assistant を再起動します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'configuration.yaml'에 rest_command를 정의하고 Home Assistant를 재시작하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takrifkan rest_command dalam 'configuration.yaml' dan mulakan semula Home Assistant."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definer rest_command i 'configuration.yaml', og start Home Assistant på nytt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definieer rest_command in 'configuration.yaml' en herstart Home Assistant."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zdefiniuj rest_command w pliku 'configuration.yaml' i uruchom ponownie Home Assistant."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina rest_command em 'configuration.yaml' e reinicie o Home Assistant."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define rest_command em 'configuration.yaml' e reinicia o Home Assistant."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definește rest_command în 'configuration.yaml' și repornește Home Assistant."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Определите rest_command в файле 'configuration.yaml' и перезапустите Home Assistant."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definuj rest_command v súbore 'configuration.yaml' a reštartuj Home Assistant."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definiera rest_command i 'configuration.yaml' och starta om Home Assistant."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำหนด rest_command ใน 'configuration.yaml' แล้วรีสตาร์ท Home Assistant"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'configuration.yaml' içinde rest_command'u tanımla ve Home Assistant'ı yeniden başlat."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Визначте rest_command у файлі 'configuration.yaml' і перезапустіть Home Assistant."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy định nghĩa rest_command trong 'configuration.yaml', rồi khởi động lại Home Assistant."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 'configuration.yaml' 中定義 rest_command，然後重新啟動 Home Assistant。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 'configuration.yaml' 中定义 rest_command，然后重启 Home Assistant。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 'configuration.yaml' 中定義 rest_command，然後重新啟動 Home Assistant。"
           }
         }
       }
