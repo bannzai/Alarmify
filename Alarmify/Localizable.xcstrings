@@ -20559,10 +20559,214 @@
     },
     "Store the token as the repository secret 'ALARMIFY_TOKEN'. 'gh secret set' prompts for the value, so the token stays out of your shell history." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خزّن الرمز المميز باعتباره سر المستودع 'ALARMIFY_TOKEN'. يطلب 'gh secret set' القيمة، لذا لا يبقى الرمز المميز في سجل أوامر الصدفة لديك."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desa el token com a secret del repositori 'ALARMIFY_TOKEN'. 'gh secret set' demana el valor, de manera que el token no queda a l'historial del shell."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulož token jako tajný údaj repozitáře 'ALARMIFY_TOKEN'. 'gh secret set' si vyžádá hodnotu, takže token nezůstane v historii shellu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gem tokenet som repository-hemmeligheden 'ALARMIFY_TOKEN'. 'gh secret set' beder om værdien, så tokenet ikke gemmes i din shell-historik."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichere das Token als Repository-Secret 'ALARMIFY_TOKEN'. 'gh secret set' fragt den Wert ab, sodass das Token nicht in deiner Shell-Historie landet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αποθήκευσε το token ως μυστικό του repository 'ALARMIFY_TOKEN'. Το 'gh secret set' ζητά την τιμή, οπότε το token δεν παραμένει στο ιστορικό του shell σου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda el token como el secreto del repositorio 'ALARMIFY_TOKEN'. 'gh secret set' solicita el valor, así que el token no queda en tu historial de shell."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda el token como el secreto del repositorio 'ALARMIFY_TOKEN'. 'gh secret set' solicita el valor, así que el token no queda en tu historial de shell."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallenna tokeni repositorion salaisuutena 'ALARMIFY_TOKEN'. 'gh secret set' pyytää arvoa, joten token ei jää shell-historiaasi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrez le token en tant que secret du dépôt 'ALARMIFY_TOKEN'. 'gh secret set' vous demande la valeur, afin que le token ne reste pas dans l'historique de votre shell."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שמור את הטוקן כסוד של המאגר 'ALARMIFY_TOKEN'. הפקודה 'gh secret set' מבקשת את הערך, כך שהטוקן לא יישאר בהיסטוריית ה־shell שלך."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टोकन को रिपॉज़िटरी सीक्रेट 'ALARMIFY_TOKEN' के रूप में सेव करें। 'gh secret set' मान के लिए प्रॉम्प्ट करता है, इसलिए टोकन आपके शेल इतिहास में सेव नहीं होता।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spremi token kao tajnu repozitorija 'ALARMIFY_TOKEN'. 'gh secret set' traži vrijednost, pa token ne ostaje u tvojoj povijesti shella."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mentsd a tokent a repository 'ALARMIFY_TOKEN' nevű titkaként. A 'gh secret set' bekéri az értéket, így a token nem kerül a shell-előzményeidbe."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simpan token sebagai rahasia repositori 'ALARMIFY_TOKEN'. 'gh secret set' meminta nilainya, jadi token tidak tersimpan dalam riwayat shell kamu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva il token come segreto del repository 'ALARMIFY_TOKEN'. 'gh secret set' richiede il valore, quindi il token non rimane nella cronologia della shell."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "トークンをリポジトリの secret「ALARMIFY_TOKEN」に登録します。「gh secret set」はプロンプトでトークンを貼り付けるため、シェルの履歴に残りません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "토큰을 리포지토리 시크릿 'ALARMIFY_TOKEN'으로 저장하세요. 'gh secret set'이 값을 입력하도록 요청하므로 토큰이 셸 기록에 남지 않습니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simpan token sebagai rahsia repositori 'ALARMIFY_TOKEN'. 'gh secret set' meminta nilainya, jadi token tidak kekal dalam sejarah shell anda."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lagre tokenet som en repositoryhemmelighet 'ALARMIFY_TOKEN'. 'gh secret set' ber om verdien, så tokenet blir ikke liggende i shell-historikken din."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sla de token op als repositorygeheim 'ALARMIFY_TOKEN'. 'gh secret set' vraagt om de waarde, zodat de token niet in je shellgeschiedenis terechtkomt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapisz token jako sekret repozytorium 'ALARMIFY_TOKEN'. 'gh secret set' prosi o podanie wartości, więc token nie pozostanie w historii powłoki."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armazene o token como o segredo do repositório 'ALARMIFY_TOKEN'. O comando 'gh secret set' solicita o valor, então o token não fica no histórico do seu shell."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda o token como segredo do repositório 'ALARMIFY_TOKEN'. O comando 'gh secret set' pede o valor, por isso o token não fica no histórico da tua shell."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvează tokenul ca secret al depozitului 'ALARMIFY_TOKEN'. 'gh secret set' solicită valoarea, astfel încât tokenul nu rămâne în istoricul shell-ului tău."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохраните токен как секрет репозитория 'ALARMIFY_TOKEN'. 'gh secret set' запрашивает значение, поэтому токен не попадает в историю вашей оболочки."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulož token ako tajný údaj repozitára 'ALARMIFY_TOKEN'. 'gh secret set' si vyžiada hodnotu, takže token nezostane v histórii tvojho shellu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spara tokenet som repository-hemligheten 'ALARMIFY_TOKEN'. 'gh secret set' frågar efter värdet, så tokenet hamnar inte i din shellhistorik."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บันทึกโทเคนเป็นข้อมูลลับของรีโพซิทอรี 'ALARMIFY_TOKEN' 'gh secret set' จะขอให้ป้อนค่า โทเคนจึงไม่อยู่ในประวัติ shell ของคุณ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token'ı 'ALARMIFY_TOKEN' adlı repository secret olarak kaydet. 'gh secret set' değeri girmeni ister; böylece token shell geçmişinde kalmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережіть токен як секрет репозиторію 'ALARMIFY_TOKEN'. 'gh secret set' запитує значення, тож токен не залишиться в історії вашої оболонки."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lưu token dưới dạng secret của repository 'ALARMIFY_TOKEN'. 'gh secret set' sẽ yêu cầu nhập giá trị, nên token không nằm trong lịch sử shell của bạn."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 token 儲存為 repository secret 'ALARMIFY_TOKEN'。'gh secret set' 會提示輸入值，因此 token 不會留在你的 shell 歷史記錄中。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 token 保存为仓库机密 'ALARMIFY_TOKEN'。'gh secret set' 会提示输入值，因此 token 不会留在你的 shell 历史记录中。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 token 儲存為儲存庫機密 'ALARMIFY_TOKEN'。'gh secret set' 會提示輸入值，因此 token 不會留在你的 shell 歷史記錄中。"
           }
         }
       }
