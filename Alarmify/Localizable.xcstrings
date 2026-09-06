@@ -1531,10 +1531,214 @@
     },
     "Add the 'Get Contents of URL' action and set the URL." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أضف إجراء «الحصول على محتويات URL» واضبط عنوان URL."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afegeix l’acció «Obtenir continguts de l’URL» i configura l’URL."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidej akci „Načíst obsah URL“ a nastav URL."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj handlingen „Hent indhold fra URL“ og angiv URL’en."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge die Aktion „Inhalte von URL abrufen“ hinzu und lege die URL fest."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πρόσθεσε την ενέργεια «Λήψη περιεχομένου URL» και όρισε το URL."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade la acción «Obtener contenido de URL» y configura la URL."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega la acción «Obtener contenido de URL» y configura la URL."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää ”Hae URL:n sisältö” -toiminto ja määritä URL."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez l’action « Obtenir le contenu de l’URL » et définissez l’URL."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוסף את הפעולה „קבלת תוכן מכתובת URL“ והגדר את כתובת ה‑URL."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘URL की सामग्री प्राप्त करें’ ऐक्शन जोड़ें और URL सेट करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj radnju „Dohvati sadržaj URL-a” i postavi URL."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add hozzá a „URL tartalmának lekérése” műveletet, és állítsd be az URL-t."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambahkan tindakan “Dapatkan Isi URL” dan atur URL-nya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi l’azione «Ottieni contenuto dell’URL» e imposta l’URL."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "「URL の内容を取得」アクションを追加し、URL を設定します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘URL 내용 가져오기’ 동작을 추가하고 URL을 설정해요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambah tindakan 'Dapatkan Kandungan URL' dan tetapkan URL."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legg til handlingen «Hent innhold fra URL» og angi URL-en."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg de actie ‘Haal inhoud van URL op’ toe en stel de URL in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj działanie „Pobierz zawartość URL” i ustaw URL."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione a ação “Obter Conteúdo de URL” e defina a URL."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adiciona a ação «Obter conteúdo do URL» e define o URL."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaugă acțiunea „Obține conținutul URL-ului” și setează URL-ul."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте действие «Получить содержимое URL» и укажите URL."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pridaj akciu „Získať obsah URL” a nastav URL."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till åtgärden ”Hämta innehåll från URL” och ange URL:en."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพิ่มการทำงาน «รับเนื้อหาของ URL» และตั้งค่า URL"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“URL İçeriğini Al” eylemini ekle ve URL’yi ayarla."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте дію «Отримати вміст URL» і вкажіть URL."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thêm tác vụ “Lấy nội dung URL” và đặt URL."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入「取得 URL 內容」動作，並設定 URL。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加“获取 URL 内容”操作，并设置 URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入「取得 URL 內容」動作，並設定 URL。"
           }
         }
       }
