@@ -108,7 +108,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ / 월"
+            "value" : "%@/월"
           }
         },
         "ms" : {
@@ -322,7 +322,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ / 년"
+            "value" : "%@/년"
           }
         },
         "ms" : {
@@ -750,7 +750,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "알림이 발생하면 울리는 Webhook 연락 지점"
+            "value" : "알림이 발생하면 알람을 울리는 Webhook contact point"
           }
         },
         "ms" : {
@@ -886,7 +886,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eine Webhook-Benachrichtigung, die den Alarm auslöst, wenn ein Monitor ausfällt"
+            "value" : "Eine Webhook-Benachrichtigung, die klingelt, wenn ein Monitor ausfällt"
           }
         },
         "el" : {
@@ -916,7 +916,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une notification Webhook qui déclenche l’alarme lorsqu’un moniteur tombe en panne"
+            "value" : "Une notification Webhook qui fait sonner l’alarme lorsqu’un moniteur tombe en panne"
           }
         },
         "he" : {
@@ -1060,7 +1060,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "监控器停止运行时响起闹钟的 Webhook 通知"
+            "value" : "监控项停止运行时响铃的 Webhook 通知"
           }
         },
         "zh-Hant" : {
@@ -1314,7 +1314,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-Tokens"
+            "value" : "API-Token"
           }
         },
         "el" : {
@@ -2414,7 +2414,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoutez l'étape à la fin du job. 'if: always()' sonne aussi après une erreur ; 'if: failure()' sonne uniquement en cas de problème."
+            "value" : "Ajoutez l’étape à la fin du job. 'if: always()' sonne aussi après une erreur ; 'if: failure()' sonne uniquement en cas de problème."
           }
         },
         "he" : {
@@ -2462,7 +2462,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "작업 끝에 단계를 추가하세요. 'if: always()'는 실패 후에도 울리고, 'if: failure()'는 문제가 발생했을 때만 울립니다."
+            "value" : "작업 끝에 단계를 추가하세요. 'if: always()'는 실패 후에도 울리고, 'if: failure()'는 문제가 발생했을 때만 울려요."
           }
         },
         "ms" : {
@@ -2558,7 +2558,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将步骤添加到作业末尾。'if: always()' 失败后也会响起；'if: failure()' 只有出现问题时才会响起。"
+            "value" : "将步骤添加到作业末尾。'if: always()' 失败后也会响铃；'if: failure()' 只有出现问题时才会响铃。"
           }
         },
         "zh-Hant" : {
@@ -2679,7 +2679,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 iPhone에 이미 예약된 알람은 그대로 유지됩니다. 더 이상 필요하지 않다면 알람 목록에서 취소하세요."
+            "value" : "이 iPhone에 이미 예약된 알람은 그대로 유지돼요. 더 이상 필요하지 않다면 알람 목록에서 취소하세요."
           }
         },
         "ms" : {
@@ -2989,7 +2989,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alerting > Contact points：添加 Webhook 联系点，设置 URL 和 HTTP 方法 POST。"
+            "value" : "Alerting > Contact points：添加 Webhook 联系点，将 URL 和 HTTP 方法设置为 POST。"
           }
         },
         "zh-Hant" : {
@@ -3107,7 +3107,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서버의 모든 데이터가 삭제됩니다. 이 작업은 취소할 수 없습니다."
+            "value" : "서버의 모든 데이터가 삭제돼요. 이 작업은 되돌릴 수 없어요."
           }
         },
         "ms" : {
@@ -3417,7 +3417,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许闹钟"
+            "value" : "允许使用闹钟"
           }
         },
         "zh-Hant" : {
@@ -3671,7 +3671,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abbruch-Payload anwenden"
+            "value" : "Cancel-Payload anwenden"
           }
         },
         "el" : {
@@ -3845,7 +3845,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用取消 payload"
+            "value" : "应用 cancel payload"
           }
         },
         "zh-Hant" : {
@@ -3885,7 +3885,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeitplan-Payload anwenden (wird in 90 Sekunden ausgelöst)"
+            "value" : "Schedule-Payload anwenden (der Alarm wird in 90 Sekunden ausgelöst)"
           }
         },
         "el" : {
@@ -3897,7 +3897,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplicar payload de programación (se activa en 90 segundos)"
+            "value" : "Aplicar un payload de programación (se activa en 90 segundos)"
           }
         },
         "es-419" : {
@@ -3963,7 +3963,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "일정 페이로드 적용 (90초 후 울림)"
+            "value" : "예약 페이로드 적용 (90초 후 울림)"
           }
         },
         "ms" : {
@@ -4059,7 +4059,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用日程 payload（90 秒后响起）"
+            "value" : "应用 schedule payload（90 秒后响铃）"
           }
         },
         "zh-Hant" : {
@@ -4325,7 +4325,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Servidor backend"
+            "value" : "Backend"
           }
         },
         "es-419" : {
@@ -4557,7 +4557,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appelez 'rest_command.alarmify_alarm' depuis les actions d'une automatisation avec 'fire_in' et 'title'."
+            "value" : "Appelez 'rest_command.alarmify_alarm' depuis les actions d’une automatisation avec 'fire_in' et 'title'."
           }
         },
         "he" : {
@@ -4605,7 +4605,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "'fire_in'과 'title'을 사용해 자동화의 동작에서 'rest_command.alarmify_alarm'을 호출해요."
+            "value" : "'fire_in'과 'title'을 사용해 자동화의 actions에서 'rest_command.alarmify_alarm'을 호출해요."
           }
         },
         "ms" : {
@@ -5247,7 +5247,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@이(가) 취소되었어요"
+            "value" : "%@을(를) 취소했어요"
           }
         },
         "ms" : {
@@ -6055,7 +6055,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copier le token"
+            "value" : "Copier le jeton"
           }
         },
         "he" : {
@@ -6199,7 +6199,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制 Token"
+            "value" : "复制令牌"
           }
         },
         "zh-Hant" : {
@@ -6413,7 +6413,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法将购买项目关联到你的账户。请检查网络连接，然后重试。"
+            "value" : "无法将购买记录关联到你的账户。请检查网络连接，然后重试。"
           }
         },
         "zh-Hant" : {
@@ -7095,7 +7095,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Möchtest du deinen Account löschen?"
+            "value" : "Möchtest du dein Konto löschen?"
           }
         },
         "el" : {
@@ -7535,7 +7535,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pasos de eliminación y datos eliminados"
+            "value" : "Pasos de eliminación y datos que se eliminan"
           }
         },
         "es-419" : {
@@ -7601,7 +7601,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "삭제 단계 및 삭제되는 데이터"
+            "value" : "삭제 절차 및 삭제되는 데이터"
           }
         },
         "ms" : {
@@ -8553,7 +8553,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在需要唤醒你的监控项上启用通知，然后按 Test。UP 事件也会响起闹钟，标题为“is up”。"
+            "value" : "在需要唤醒你的监控项上启用通知，然后按 Test。UP 事件也会响铃，标题为“is up”。"
           }
         },
         "zh-Hant" : {
@@ -8837,7 +8837,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeton d’inscription FCM"
+            "value" : "Jeton d’enregistrement FCM"
           }
         },
         "he" : {
@@ -9265,7 +9265,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indiquez cet identifiant de compte lorsque vous demandez sa suppression par e-mail."
+            "value" : "Incluez cet identifiant de compte lorsque vous demandez la suppression du compte par e-mail."
           }
         },
         "he" : {
@@ -9409,7 +9409,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过电子邮件请求删除时，请附上此账号 ID。"
+            "value" : "通过电子邮件请求删除时，请附上此账户 ID。"
           }
         },
         "zh-Hant" : {
@@ -9449,7 +9449,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Integrationsrezepte"
+            "value" : "Integrationsbeispiele"
           }
         },
         "el" : {
@@ -9623,7 +9623,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "集成配方"
+            "value" : "集成示例"
           }
         },
         "zh-Hant" : {
@@ -9663,7 +9663,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Integrationsrezepte mit diesem Token"
+            "value" : "Integrationsbeispiele mit diesem Token"
           }
         },
         "el" : {
@@ -9693,7 +9693,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recettes d’intégration avec ce token"
+            "value" : "Recettes d’intégration avec ce jeton"
           }
         },
         "he" : {
@@ -9837,7 +9837,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用此 token 的集成配方"
+            "value" : "使用此令牌的集成示例"
           }
         },
         "zh-Hant" : {
@@ -9907,7 +9907,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Générer un token"
+            "value" : "Générer un jeton"
           }
         },
         "he" : {
@@ -10051,7 +10051,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "签发 Token"
+            "value" : "签发令牌"
           }
         },
         "zh-Hant" : {
@@ -10091,7 +10091,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erstelle ein API-Token, um diese Snippets mit deinem Token zu sehen."
+            "value" : "Erstelle ein API-Token, um diese Snippets mit deinem Token ausgefüllt zu sehen."
           }
         },
         "el" : {
@@ -10121,7 +10121,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Générez un token API pour voir ces extraits avec votre token prérempli."
+            "value" : "Générez un jeton d’API pour voir ces extraits avec votre jeton prérempli."
           }
         },
         "he" : {
@@ -10265,7 +10265,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "生成 API token，即可查看已填入你 token 的这些代码片段。"
+            "value" : "生成 API 令牌，即可查看已填入你的令牌的这些代码片段。"
           }
         },
         "zh-Hant" : {
@@ -10335,7 +10335,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Token émis"
+            "value" : "Jeton émis"
           }
         },
         "he" : {
@@ -10479,7 +10479,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已签发的 Token"
+            "value" : "已签发的令牌"
           }
         },
         "zh-Hant" : {
@@ -10531,7 +10531,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guarda el token en la variable de entorno 'ALARMIFY_TOKEN' en lugar de incluirlo en un archivo que confirmes."
+            "value" : "Guarda el token en la variable de entorno 'ALARMIFY_TOKEN' en lugar de incluirlo en un archivo que añadas a un commit."
           }
         },
         "es-419" : {
@@ -10549,7 +10549,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conservez le token dans la variable d’environnement 'ALARMIFY_TOKEN' plutôt que dans un fichier que vous commitez."
+            "value" : "Conservez le jeton dans la variable d’environnement 'ALARMIFY_TOKEN' plutôt que dans un fichier que vous commitez."
           }
         },
         "he" : {
@@ -10693,7 +10693,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将 token 放在环境变量 'ALARMIFY_TOKEN' 中，不要放在你提交的文件里。"
+            "value" : "将令牌放在环境变量 'ALARMIFY_TOKEN' 中，不要放在你提交的文件里。"
           }
         },
         "zh-Hant" : {
@@ -10763,7 +10763,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mentions légales"
+            "value" : "Informations légales"
           }
         },
         "he" : {
@@ -11191,7 +11191,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous permet de tester l’émission et la révocation de tokens sans backend en cours d’exécution."
+            "value" : "Vous permet de tester l’émission et la révocation de jetons sans backend en cours d’exécution."
           }
         },
         "he" : {
@@ -11549,7 +11549,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有安排闹钟"
+            "value" : "没有已安排的闹钟"
           }
         },
         "zh-Hant" : {
@@ -11803,7 +11803,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Noch keine Tokens"
+            "value" : "Noch keine Token"
           }
         },
         "el" : {
@@ -11833,7 +11833,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun token pour l’instant"
+            "value" : "Aucun jeton pour l’instant"
           }
         },
         "he" : {
@@ -11977,7 +11977,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂无 Token"
+            "value" : "暂无令牌"
           }
         },
         "zh-Hant" : {
@@ -12191,7 +12191,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂不可用"
+            "value" : "尚未获取"
           }
         },
         "zh-Hant" : {
@@ -12833,7 +12833,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未注册（仅可在实体设备上使用）"
+            "value" : "未注册（仅可在实体设备上获取）"
           }
         },
         "zh-Hant" : {
@@ -13264,7 +13264,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "供脚本、crontab 和 CI 任务使用的一行 curl"
+            "value" : "供脚本、crontab 和 CI 任务使用的一行 curl 命令"
           }
         },
         "zh-Hant" : {
@@ -13478,7 +13478,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在网上打开此食谱"
+            "value" : "在网上打开此集成示例"
           }
         },
         "zh-Hant" : {
@@ -13810,7 +13810,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "요금제"
+            "value" : "플랜"
           }
         },
         "ms" : {
@@ -14374,7 +14374,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Datenschutzrichtlinie"
+            "value" : "Datenschutzerklärung"
           }
         },
         "el" : {
@@ -14621,7 +14621,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les achats et les restaurations ne sont pas disponibles lorsque vous êtes connecté à l’émulateur. Repassez le backend en production dans le menu développeur."
+            "value" : "Les achats et les restaurations ne sont pas disponibles lorsque l’application est connectée à l’émulateur. Repassez le backend en production dans le menu développeur."
           }
         },
         "he" : {
@@ -14669,7 +14669,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "에뮬레이터에 연결되어 있는 동안에는 구입 및 복원을 사용할 수 없어요. 개발자 메뉴에서 백엔드를 production으로 다시 전환해 주세요."
+            "value" : "에뮬레이터에 연결되어 있는 동안에는 구매 및 복원을 사용할 수 없어요. 개발자 메뉴에서 백엔드를 production으로 다시 전환해 주세요."
           }
         },
         "ms" : {
@@ -14765,7 +14765,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接模拟器时无法购买或恢复。请在开发者菜单中将后端切换回 production。"
+            "value" : "连接到模拟器时无法购买或恢复购买项目。请在开发者菜单中将后端切换回 production。"
           }
         },
         "zh-Hant" : {
@@ -14805,7 +14805,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Käufe sind noch nicht bereit. Bitte versuche es später erneut."
+            "value" : "Käufe sind noch nicht verfügbar. Bitte versuche es später erneut."
           }
         },
         "el" : {
@@ -15097,7 +15097,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "구입 항목을 복원할 수 없습니다."
+            "value" : "구매 항목을 복원할 수 없어요."
           }
         },
         "ms" : {
@@ -15407,7 +15407,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "推送负载"
+            "value" : "推送 payload"
           }
         },
         "zh-Hant" : {
@@ -15661,7 +15661,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platziere den curl-Aufruf am Ende eines Skripts oder in einem Crontab. 'fire_in' zählt die Sekunden ab der Anfrage, daher sind keine Datumsberechnungen nötig."
+            "value" : "Platziere den curl-Aufruf am Ende eines Skripts oder in einer crontab. 'fire_in' zählt die Sekunden ab der Anfrage, daher sind keine Datumsberechnungen nötig."
           }
         },
         "el" : {
@@ -16101,7 +16101,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Registrada"
+            "value" : "Registrado"
           }
         },
         "es-419" : {
@@ -16119,7 +16119,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enregistrée"
+            "value" : "Enregistré"
           }
         },
         "he" : {
@@ -17587,7 +17587,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwendet denselben Pfad wie ein empfangener Push (AlarmRequest → AlarmKitScheduler.apply), um einen Wecker mit einer festen ID zu planen oder abzubrechen. Verwende ihn im Simulator, da simctl push diesen Pfad nicht erreicht."
+            "value" : "Verwendet denselben Pfad wie ein empfangener Push (AlarmRequest → AlarmKitScheduler.apply), um einen Alarm mit einer festen ID zu planen oder abzubrechen. Verwende ihn im Simulator, da simctl push diesen Pfad nicht erreicht."
           }
         },
         "el" : {
@@ -17617,7 +17617,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utilise le même chemin qu’une notification push reçue (AlarmRequest → AlarmKitScheduler.apply) pour programmer ou annuler une alarme avec un identifiant fixe. Utilisez-le dans le simulateur, où simctl push n’emprunte pas ce chemin."
+            "value" : "Utilise le même chemin qu’une notification push reçue (AlarmRequest → AlarmKitScheduler.apply) pour programmer ou annuler une alarme avec un identifiant fixe. Utilisez cette option dans le simulateur, où simctl push n’emprunte pas ce chemin."
           }
         },
         "he" : {
@@ -17761,7 +17761,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用与接收 push 相同的路径（AlarmRequest → AlarmKitScheduler.apply）来安排或取消具有固定 ID 的闹钟。在模拟器上使用，因为 simctl push 不会到达此路径。"
+            "value" : "执行与收到 push 时相同的路径（AlarmRequest → AlarmKitScheduler.apply），使用固定 ID 安排或取消闹钟。由于 simctl push 在模拟器上无法触发此路径，请使用此功能进行验证。"
           }
         },
         "zh-Hant" : {
@@ -17975,7 +17975,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1分钟后安排测试闹钟"
+            "value" : "1 分钟后安排测试闹钟"
           }
         },
         "zh-Hant" : {
@@ -18015,7 +18015,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ wurde für %@ geplant."
+            "value" : "%@ wurde für %@ geplant"
           }
         },
         "el" : {
@@ -18045,7 +18045,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ a été programé pour %@"
+            "value" : "%@ a été programmé pour %@"
           }
         },
         "he" : {
@@ -18093,7 +18093,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@을(를) %@에 예약했어요."
+            "value" : "%@을(를) %@에 예약했어요"
           }
         },
         "ms" : {
@@ -18189,7 +18189,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已安排 %@ 于 %@"
+            "value" : "已安排 %@，时间为 %@"
           }
         },
         "zh-Hant" : {
@@ -18617,7 +18617,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将 Authentication Header Scheme 设置为 Bearer，然后将 token 粘贴到 Credentials。"
+            "value" : "将 Authentication Header Scheme 设置为 Bearer，然后将令牌粘贴到 Credentials。"
           }
         },
         "zh-Hant" : {
@@ -18883,7 +18883,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura Request Body como Custom Body, pega la plantilla y pega los encabezados en Additional Headers."
+            "value" : "Configura Request Body como Custom Body, pega la plantilla y pega las cabeceras en Additional Headers."
           }
         },
         "es-419" : {
@@ -19045,7 +19045,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将 Request Body 设置为 Custom Body，粘贴模板，然后将请求头粘贴到 Additional Headers。"
+            "value" : "将 Request Body 设置为 Custom Body，粘贴模板，然后将标头粘贴到 Additional Headers。"
           }
         },
         "zh-Hant" : {
@@ -19085,7 +19085,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Setze den Anfragetext auf JSON und füge 'fire_in' (Zahl) und 'title' (Text) hinzu."
+            "value" : "Setze Request Body auf JSON und füge 'fire_in' (Zahl) und 'title' (Text) hinzu."
           }
         },
         "el" : {
@@ -19115,7 +19115,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Définissez le corps de la requête sur JSON et ajoutez 'fire_in' (Nombre) et 'title' (Texte)."
+            "value" : "Définissez Request Body sur JSON et ajoutez 'fire_in' (Nombre) et 'title' (Texte)."
           }
         },
         "he" : {
@@ -19259,7 +19259,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将请求正文设置为 JSON，并添加 'fire_in'（数字）和 'title'（文本）。"
+            "value" : "将 Request Body 设置为 JSON，并添加 'fire_in'（数字）和 'title'（文本）。"
           }
         },
         "zh-Hant" : {
@@ -19513,7 +19513,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einstellungen > Mitteilungen: Füge eine Webhook-Mitteilung mit Post URL hinzu."
+            "value" : "Einstellungen > Mitteilungen: Füge eine Webhook-Mitteilung mit der Post URL hinzu."
           }
         },
         "el" : {
@@ -19757,7 +19757,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher le paywall du quota gratuit"
+            "value" : "Afficher le paywall de la limite du quota gratuit"
           }
         },
         "he" : {
@@ -19901,7 +19901,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示免费配额付费墙"
+            "value" : "显示免费配额上限的付费墙"
           }
         },
         "zh-Hant" : {
@@ -20616,7 +20616,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enregistrez le token en tant que secret du dépôt 'ALARMIFY_TOKEN'. 'gh secret set' vous demande la valeur, afin que le token ne reste pas dans l'historique de votre shell."
+            "value" : "Enregistrez le jeton en tant que secret du dépôt 'ALARMIFY_TOKEN'. 'gh secret set' vous demande la valeur, afin que le jeton ne reste pas dans l’historique de votre shell."
           }
         },
         "he" : {
@@ -20664,7 +20664,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "토큰을 리포지토리 시크릿 'ALARMIFY_TOKEN'으로 저장하세요. 'gh secret set'이 값을 입력하도록 요청하므로 토큰이 셸 기록에 남지 않습니다."
+            "value" : "토큰을 리포지토리 시크릿 'ALARMIFY_TOKEN'으로 저장하세요. 'gh secret set'이 값을 입력하도록 요청하므로 토큰이 셸 기록에 남지 않아요."
           }
         },
         "ms" : {
@@ -20760,7 +20760,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将 token 保存为仓库机密 'ALARMIFY_TOKEN'。'gh secret set' 会提示输入值，因此 token 不会留在你的 shell 历史记录中。"
+            "value" : "将令牌保存为仓库机密 'ALARMIFY_TOKEN'。'gh secret set' 会提示输入值，因此令牌不会留在你的 shell 历史记录中。"
           }
         },
         "zh-Hant" : {
@@ -21454,7 +21454,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La acción «Obtener contenido de URL» para automatizaciones de Shortcuts"
+            "value" : "La acción «Obtener contenido de URL» para automatizaciones de Atajos"
           }
         },
         "es-419" : {
@@ -21472,7 +21472,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’action « Obtenir le contenu de l’URL » pour les automatisations de Shortcuts"
+            "value" : "L’action « Obtenir le contenu de l’URL » pour les automatisations de Raccourcis"
           }
         },
         "he" : {
@@ -21520,7 +21520,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shortcuts 자동화에서 사용하는 ‘URL 콘텐츠 가져오기’ 동작"
+            "value" : "Shortcuts 자동화에서 사용하는 ‘URL 내용 가져오기’ 동작"
           }
         },
         "ms" : {
@@ -21656,7 +21656,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der kostenlose Plan umfasst ein token und bis zu 20 Alarme pro Monat"
+            "value" : "Der kostenlose Tarif umfasst ein Token und bis zu 20 Alarme pro Monat"
           }
         },
         "el" : {
@@ -21686,7 +21686,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le forfait gratuit inclut un token et jusqu’à 20 alarmes par mois"
+            "value" : "Le forfait gratuit inclut un jeton et jusqu’à 20 alarmes par mois"
           }
         },
         "he" : {
@@ -21734,7 +21734,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "무료 플랜에는 token 1개와 월 최대 알람 20개가 포함돼요"
+            "value" : "무료 플랜에는 토큰 1개와 월 최대 알람 20개가 포함돼요"
           }
         },
         "ms" : {
@@ -21830,7 +21830,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "免费方案包括 1 个 token，每月最多可设置 20 个闹钟"
+            "value" : "免费方案包括 1 个令牌，每月最多可设置 20 个闹钟"
           }
         },
         "zh-Hant" : {
@@ -22162,7 +22162,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "구매가 완료되었지만 Pro를 확인할 수 없습니다. 나중에 구매 항목 복원을 다시 시도해 주세요."
+            "value" : "구매가 완료되었지만 Pro를 확인할 수 없어요. 나중에 구매 항목 복원을 다시 시도해 주세요."
           }
         },
         "ms" : {
@@ -22524,7 +22524,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para que suene solo cuando falle un comando, guarda su estado de salida en una variable y termina con ese estado después de enviar la alarma, para que CI siga detectando el fallo."
+            "value" : "Para que suene solo cuando falle un comando, guarda el código de salida en una variable y usa ese código para salir después de enviar la alarma, de modo que CI siga detectando el fallo."
           }
         },
         "es-419" : {
@@ -22940,7 +22940,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiviere „Disable resolved message“, damit ein behobener Alarm nicht erneut klingelt."
+            "value" : "Aktiviere „Disable resolved message“, damit ein behobener Alert nicht erneut klingelt."
           }
         },
         "el" : {
@@ -22970,7 +22970,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez « Disable resolved message » pour qu’une alerte résolue ne sonne pas à nouveau."
+            "value" : "Activez « Disable resolved message » pour qu’une alerte résolue ne sonne plus."
           }
         },
         "he" : {
@@ -23114,7 +23114,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启“Disable resolved message”，避免已解决的提醒再次响起。"
+            "value" : "开启“Disable resolved message”，避免已解决的警报再次响铃。"
           }
         },
         "zh-Hant" : {
@@ -23612,7 +23612,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Débloquez un token par service, la programmation illimitée d’alarmes, l’historique des alarmes et l’envoi vers plusieurs appareils"
+            "value" : "Débloquez un jeton par service, la programmation illimitée d’alarmes, l’historique des alarmes et l’envoi vers plusieurs appareils"
           }
         },
         "he" : {
@@ -23756,7 +23756,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解锁每项服务的 Token、无限闹钟安排、闹钟记录，以及发送到多个设备的功能"
+            "value" : "解锁每项服务的令牌、无限安排闹钟、闹钟记录，以及发送到多个设备的功能"
           }
         },
         "zh-Hant" : {
@@ -24010,7 +24010,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwende Test beim Kontaktpunkt; dein iPhone sollte innerhalb einer Minute klingeln."
+            "value" : "Wähle beim Kontaktpunkt „Test“; dein iPhone sollte innerhalb einer Minute klingeln."
           }
         },
         "el" : {
@@ -24022,7 +24022,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa Test en el punto de contacto; tu iPhone debería sonar en un minuto."
+            "value" : "Usa Test en el punto de contacto; tu iPhone debería sonar en menos de un minuto."
           }
         },
         "es-419" : {
@@ -24730,7 +24730,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "계정이 삭제되었습니다"
+            "value" : "계정이 삭제됐어요"
           }
         },
         "ms" : {
@@ -24826,7 +24826,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的账号已删除"
+            "value" : "你的账户已删除"
           }
         },
         "zh-Hant" : {
