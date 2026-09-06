@@ -21629,10 +21629,214 @@
     },
     "The free plan includes one token and up to 20 alarms a month" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتضمن الخطة المجانية token واحدًا وما يصل إلى 20 منبهًا شهريًا"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El pla gratuït inclou un token i fins a 20 alarmes al mes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bezplatný plán zahrnuje jeden token a až 20 alarmů měsíčně"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den gratis plan inkluderer ét token og op til 20 alarmer om måneden"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der kostenlose Plan umfasst ein token und bis zu 20 Alarme pro Monat"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το δωρεάν πρόγραμμα περιλαμβάνει ένα token και έως 20 ξυπνητήρια τον μήνα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El plan gratuito incluye un token y hasta 20 alarmas al mes"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El plan gratuito incluye un token y hasta 20 alarmas al mes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmaispaketti sisältää yhden tokenin ja enintään 20 hälytystä kuukaudessa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le forfait gratuit inclut un token et jusqu’à 20 alarmes par mois"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "התוכנית החינמית כוללת token אחד ועד 20 התראות בחודש"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मुफ़्त प्लान में एक token और महीने में अधिकतम 20 अलार्म शामिल हैं"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Besplatni plan uključuje jedan token i do 20 alarma mjesečno"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az ingyenes csomag egy tokent és havonta legfeljebb 20 riasztást tartalmaz"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paket gratis mencakup satu token dan hingga 20 alarm per bulan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il piano gratuito include un token e fino a 20 sveglie al mese"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "無料プランではトークン 1 つ・月 20 回までアラームを登録できます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료 플랜에는 token 1개와 월 최대 알람 20개가 포함돼요"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelan percuma merangkumi satu token dan sehingga 20 penggera sebulan"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratisplanen inkluderer ett token og opptil 20 alarmer i måneden"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het gratis abonnement bevat één token en maximaal 20 alarmen per maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan bezpłatny obejmuje jeden token i maksymalnie 20 alarmów miesięcznie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O plano gratuito inclui um token e até 20 alarmes por mês"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O plano gratuito inclui um token e até 20 alarmes por mês"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planul gratuit include un token și până la 20 de alarme pe lună"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бесплатный план включает один token и до 20 будильников в месяц"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bezplatný plán zahŕňa jeden token a až 20 alarmov mesačne"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratisplanen inkluderar en token och upp till 20 alarm per månad"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แผนฟรีมี token 1 รายการและตั้งปลุกได้สูงสุด 20 ครั้งต่อเดือน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ücretsiz plan bir token ve ayda en fazla 20 alarm içerir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Безкоштовний план включає один token і до 20 будильників на місяць"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gói miễn phí bao gồm một token và tối đa 20 báo thức mỗi tháng"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免費方案包括 1 個 token，每月最多可設定 20 個鬧鐘"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费方案包括 1 个 token，每月最多可设置 20 个闹钟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免費方案包括 1 個 token，每月最多可設定 20 個鬧鐘"
           }
         }
       }
