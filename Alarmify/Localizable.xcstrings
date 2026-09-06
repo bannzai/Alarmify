@@ -7282,10 +7282,214 @@
     },
     "Deleting your account permanently removes your API tokens, device information, and alarm history from the server. This cannot be undone.\n\nAlarms already scheduled on this iPhone are not cancelled. Cancel them individually from the alarm list." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يؤدي حذف حسابك إلى إزالة رموز API ومعلومات الجهاز وسجل المنبهات نهائيًا من الخادم. لا يمكن التراجع عن ذلك.\n\nلن تُلغى المنبهات المجدولة مسبقًا على هذا الـ iPhone. ألغِ كل منبه على حدة من قائمة المنبهات."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En suprimir el compte, s'eliminaran permanentment del servidor els teus tokens d'API, la informació del dispositiu i l'historial d'alarmes. Aquesta acció no es pot desfer.\n\nLes alarmes que ja estan programades en aquest iPhone no es cancel·laran. Cancel·la-les individualment des de la llista d'alarmes."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smazáním účtu se ze serveru trvale odstraní tvé API tokeny, informace o zařízení a historie alarmů. Tuto akci nelze vrátit zpět.\n\nAlarmy, které už jsou naplánované na tomto iPhonu, se nezruší. Zruš je jednotlivě ze seznamu alarmů."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ved sletning af din konto fjernes dine API-tokens, enhedsoplysninger og alarmhistorik permanent fra serveren. Dette kan ikke fortrydes.\n\nAlarmer, der allerede er planlagt på denne iPhone, annulleres ikke. Annuller dem enkeltvis fra alarmlisten."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durch das Löschen deines Kontos werden deine API-Tokens, Geräteinformationen und dein Alarmverlauf dauerhaft vom Server entfernt. Dies kann nicht rückgängig gemacht werden.\n\nAlarme, die bereits auf diesem iPhone geplant sind, werden nicht abgebrochen. Brich sie einzeln in der Alarmliste ab."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η διαγραφή του λογαριασμού σου αφαιρεί οριστικά από τον διακομιστή τα API token σου, τις πληροφορίες της συσκευής και το ιστορικό συναγερμών. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.\n\nΟι συναγερμοί που έχουν ήδη προγραμματιστεί σε αυτό το iPhone δεν ακυρώνονται. Ακύρωσέ τους ξεχωριστά από τη λίστα συναγερμών."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al eliminar tu cuenta, se borran permanentemente del servidor tus tokens de API, la información del dispositivo y el historial de alarmas. Esta acción no se puede deshacer.\n\nLas alarmas ya programadas en este iPhone no se cancelan. Cancélalas individualmente desde la lista de alarmas."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al eliminar tu cuenta, se borran permanentemente del servidor tus tokens de API, la información del dispositivo y el historial de alarmas. Esta acción no se puede deshacer.\n\nLas alarmas ya programadas en este iPhone no se cancelan. Cancélalas individualmente desde la lista de alarmas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilin poistaminen poistaa API-tunnuksesi, laitetietosi ja hälytyshistoriasi pysyvästi palvelimelta. Tätä ei voi kumota.\n\nTälle iPhonelle jo ajastettuja hälytyksiä ei peruta. Peru ne yksitellen hälytyslistasta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La suppression de votre compte supprime définitivement du serveur vos jetons d’API, les informations de votre appareil et l’historique des alarmes. Cette action est irréversible.\n\nLes alarmes déjà programmées sur cet iPhone ne sont pas annulées. Annulez-les individuellement depuis la liste des alarmes."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקת החשבון שלך מסירה לצמיתות מהשרת את אסימוני ה-API שלך, את פרטי המכשיר ואת היסטוריית ההתראות. אי אפשר לבטל פעולה זו.\n\nהתראות שכבר תוזמנו ב-iPhone הזה לא יבוטלו. בטל אותן בנפרד מרשימת ההתראות."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपका खाता हटाने से आपके API टोकन, डिवाइस की जानकारी और अलार्म इतिहास सर्वर से स्थायी रूप से हट जाते हैं। इसे पूर्ववत नहीं किया जा सकता।\n\nइस iPhone पर पहले से शेड्यूल किए गए अलार्म रद्द नहीं किए जाएंगे। उन्हें अलार्म सूची से एक-एक करके रद्द करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brisanjem računa s poslužitelja se trajno uklanjaju tvoji API tokeni, podaci o uređaju i povijest alarma. To se ne može poništiti.\n\nAlarmi koji su već zakazani na ovom iPhoneu neće se otkazati. Otkaži ih pojedinačno na popisu alarma."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A fiókod törlése véglegesen eltávolítja a szerverről az API-tokenjeidet, az eszközadataidat és a riasztási előzményeidet. Ez nem vonható vissza.\n\nAz ezen az iPhone-on már beállított riasztások nem lesznek törölve. Töröld őket egyenként a riasztási listából."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menghapus akun akan menghapus token API, informasi perangkat, dan riwayat alarm kamu secara permanen dari server. Tindakan ini tidak dapat dibatalkan.\n\nAlarm yang sudah dijadwalkan di iPhone ini tidak akan dibatalkan. Batalkan satu per satu dari daftar alarm."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'eliminazione del tuo account rimuove definitivamente dal server i tuoi token API, le informazioni sul dispositivo e la cronologia degli allarmi. Questa operazione non può essere annullata.\n\nGli allarmi già programmati su questo iPhone non vengono annullati. Annullali singolarmente dall'elenco degli allarmi."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "削除すると、サーバー上の API トークン・端末情報・アラーム履歴がすべて消え、取り消せません。\n\nこの iPhone に登録済みのアラームは解除されません。アラーム一覧から個別に取り消してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정을 삭제하면 서버에서 API 토큰, 기기 정보 및 알람 기록이 영구적으로 삭제돼요. 이 작업은 되돌릴 수 없어요.\n\n이 iPhone에 이미 예약된 알람은 취소되지 않아요. 알람 목록에서 하나씩 취소하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memadam akaun anda akan mengalih keluar token API, maklumat peranti dan sejarah penggera anda secara kekal daripada pelayan. Tindakan ini tidak boleh dibuat asal.\n\nPenggera yang telah dijadualkan pada iPhone ini tidak akan dibatalkan. Batalkan setiap penggera secara berasingan daripada senarai penggera."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når du sletter kontoen din, fjernes API-tokenene dine, enhetsinformasjonen og alarmhistorikken din permanent fra serveren. Dette kan ikke angres.\n\nAlarmer som allerede er planlagt på denne iPhonen, blir ikke avlyst. Avlys dem enkeltvis fra alarmlisten."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als je je account verwijdert, worden je API-tokens, apparaatgegevens en alarmgeschiedenis permanent van de server verwijderd. Dit kan niet ongedaan worden gemaakt.\n\nAlarmer die al op deze iPhone zijn gepland, worden niet geannuleerd. Annuleer ze afzonderlijk vanuit de alarmlijst."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunięcie konta trwale usuwa z serwera twoje tokeny API, informacje o urządzeniu i historię alarmów. Tej czynności nie można cofnąć.\n\nAlarmy zaplanowane już na tym iPhonie nie zostaną anulowane. Anuluj je pojedynczo z listy alarmów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao excluir sua conta, seus tokens de API, as informações do dispositivo e o histórico de alarmes serão removidos permanentemente do servidor. Não é possível desfazer essa ação.\n\nOs alarmes já programados neste iPhone não serão cancelados. Cancele-os individualmente na lista de alarmes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao eliminar a tua conta, os teus tokens de API, as informações do dispositivo e o histórico de alarmes serão removidos permanentemente do servidor. Não é possível anular esta ação.\n\nOs alarmes já agendados neste iPhone não serão cancelados. Cancela-os individualmente na lista de alarmes."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ștergerea contului elimină definitiv de pe server tokenurile API, informațiile despre dispozitiv și istoricul alarmelor. Această acțiune nu poate fi anulată.\n\nAlarmele deja programate pe acest iPhone nu sunt anulate. Anulează-le individual din lista de alarme."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удаление аккаунта навсегда удалит с сервера ваши API-токены, информацию об устройстве и историю будильников. Это действие нельзя отменить.\n\nБудильники, уже запланированные на этом iPhone, не отменяются. Отменяйте их по отдельности в списке будильников."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odstránením účtu sa zo servera natrvalo odstránia tvoje API tokeny, informácie o zariadení a história alarmov. Túto akciu nemožno vrátiť späť.\n\nAlarmy, ktoré už boli naplánované na tomto iPhone, sa nezrušia. Zruš ich jednotlivo v zozname alarmov."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "När du raderar kontot tas dina API-token, enhetsinformation och larmloggen permanent bort från servern. Det går inte att ångra.\n\nAlarm som redan har schemalagts på den här iPhonen avbryts inte. Avbryt dem en och en från alarmlistan."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การลบบัญชีจะลบโทเค็น API ข้อมูลอุปกรณ์ และประวัติการปลุกของคุณออกจากเซิร์ฟเวอร์อย่างถาวร การดำเนินการนี้ไม่สามารถยกเลิกได้\n\nการปลุกที่ตั้งเวลาไว้แล้วบน iPhone เครื่องนี้จะไม่ถูกยกเลิก ยกเลิกทีละรายการจากรายการการปลุก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesabını silmek, API jetonlarını, cihaz bilgilerini ve alarm geçmişini sunucudan kalıcı olarak kaldırır. Bu işlem geri alınamaz.\n\nBu iPhone'da zaten planlanmış alarmlar iptal edilmez. Bunları alarm listesinden tek tek iptal et."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалення облікового запису назавжди видаляє із сервера ваші API-токени, інформацію про пристрій та історію будильників. Цю дію неможливо скасувати.\n\nБудильники, уже заплановані на цьому iPhone, не скасовуються. Скасовуйте їх окремо зі списку будильників."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa tài khoản sẽ xóa vĩnh viễn các token API, thông tin thiết bị và lịch sử báo thức của bạn khỏi máy chủ. Không thể hoàn tác thao tác này.\n\nCác báo thức đã được lên lịch trên iPhone này sẽ không bị hủy. Hãy hủy từng báo thức từ danh sách báo thức."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除帳戶會永久從伺服器移除你的 API 權杖、裝置資料及鬧鐘記錄。此操作無法復原。\n\n這部 iPhone 上已排程的鬧鐘不會被取消。請從鬧鐘列表逐一取消。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除账户会永久从服务器移除你的 API 令牌、设备信息和闹钟记录。此操作无法撤销。\n\n这台 iPhone 上已安排的闹钟不会被取消。请从闹钟列表中逐一取消。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除帳戶會永久從伺服器移除你的 API 權杖、裝置資訊和鬧鐘記錄。此操作無法復原。\n\n這部 iPhone 上已排程的鬧鐘不會被取消。請從鬧鐘列表中逐一取消。"
           }
         }
       }
