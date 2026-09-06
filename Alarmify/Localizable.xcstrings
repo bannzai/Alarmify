@@ -18844,10 +18844,214 @@
     },
     "Set Request Body to Custom Body, paste the template, and paste the headers into Additional Headers." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضبط Request Body على Custom Body، ثم الصق القالب والصق الرؤوس في Additional Headers."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estableix Request Body com a Custom Body, enganxa la plantilla i enganxa les capçaleres a Additional Headers."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav Request Body na Custom Body, vlož šablonu a vlož hlavičky do Additional Headers."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstil Request Body til Custom Body, indsæt skabelonen, og indsæt headerne i Additional Headers."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setze Request Body auf Custom Body, füge die Vorlage ein und füge die Header in Additional Headers ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρύθμισε το Request Body σε Custom Body, επικόλλησε το πρότυπο και επικόλλησε τις κεφαλίδες στο Additional Headers."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura Request Body como Custom Body, pega la plantilla y pega los encabezados en Additional Headers."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura Request Body como Custom Body, pega la plantilla y pega los encabezados en Additional Headers."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta Request Body arvoksi Custom Body, liitä mallipohja ja liitä otsakkeet kohtaan Additional Headers."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez Request Body sur Custom Body, collez le modèle, puis collez les en-têtes dans Additional Headers."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדר את Request Body ל‑Custom Body, הדבק את התבנית והדבק את הכותרות ב‑Additional Headers."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Body को Custom Body पर सेट करें, टेम्पलेट पेस्ट करें और हेडर Additional Headers में पेस्ट करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi Request Body na Custom Body, zalijepi predložak i zalijepi zaglavlja u Additional Headers."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Állítsd a Request Body értékét Custom Body értékre, illeszd be a sablont, majd illeszd be a fejléceket az Additional Headers mezőbe."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atur Request Body ke Custom Body, tempel template, lalu tempel header ke Additional Headers."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta Request Body su Custom Body, incolla il modello e incolla le intestazioni in Additional Headers."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Request Body を Custom Body にしてテンプレートを貼り付け、Additional Headers にトークンを貼り付けます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Body를 Custom Body로 설정하고, 템플릿을 붙여넣은 다음 헤더를 Additional Headers에 붙여넣어요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tetapkan Request Body kepada Custom Body, tampal templat, kemudian tampal pengepala ke dalam Additional Headers."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sett Request Body til Custom Body, lim inn malen, og lim inn headerne i Additional Headers."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel Request Body in op Custom Body, plak de template en plak de headers in Additional Headers."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustaw Request Body na Custom Body, wklej szablon, a następnie wklej nagłówki do Additional Headers."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina Request Body como Custom Body, cole o modelo e cole os cabeçalhos em Additional Headers."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define Request Body como Custom Body, cola o modelo e cola os cabeçalhos em Additional Headers."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setează Request Body la Custom Body, lipește șablonul, apoi lipește antetele în Additional Headers."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите для Request Body значение Custom Body, вставьте шаблон, а заголовки — в Additional Headers."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav Request Body na Custom Body, vlož šablónu a vlož hlavičky do Additional Headers."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ställ in Request Body på Custom Body, klistra in mallen och klistra in rubrikerna i Additional Headers."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตั้งค่า Request Body เป็น Custom Body วางเทมเพลต แล้ววางส่วนหัวใน Additional Headers"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Body'yi Custom Body olarak ayarla, şablonu yapıştır ve header'ları Additional Headers'a yapıştır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установіть для Request Body значення Custom Body, вставте шаблон, а заголовки — у Additional Headers."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt Request Body thành Custom Body, dán mẫu, rồi dán các header vào Additional Headers."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Request Body 設為 Custom Body，貼上範本，再將標頭貼到 Additional Headers。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 Request Body 设置为 Custom Body，粘贴模板，然后将请求头粘贴到 Additional Headers。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Request Body 設為 Custom Body，貼上範本，然後將標頭貼到 Additional Headers。"
           }
         }
       }
