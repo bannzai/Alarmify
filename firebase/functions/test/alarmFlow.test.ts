@@ -1155,7 +1155,7 @@ describe("端末からの反映結果の報告", () => {
       "00000000-0000-4000-8000-000000000000",
       validBody,
     ).expect(404);
-    expect(notFound.body.error.code).toBe("not_found");
+    expect(notFound.body.error.code).toBe("alarm_not_found");
 
     await postDeviceReport("not-a-uuid", validBody).expect(400);
     await postDeviceReport(id, { ...validBody, result: "ok" }).expect(400);
@@ -1176,5 +1176,92 @@ describe("端末からの反映結果の報告", () => {
       .doc(id)
       .get();
     expect(stored.get("deviceReports")).toHaveProperty("device-1");
+  });
+
+  it("登録していない device_id で報告すると 404 device_not_found、GET の device_reports は空のまま", async () => {
+    const { id } = await createAlarm();
+    const response = await postDeviceReport(id, {
+      device_id: "device-unregistered",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(404);
+    expect(response.body.error.code).toBe("device_not_found");
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([]);
+  });
+
+  it("報告を保存した後に外部 API で再スケジュールすると device_reports が空になる", async () => {
+    const { id, token } = await createAlarm();
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+
+    const rescheduled = new Date(FIRE_AT.getTime() + 60 * 60 * 1000);
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${token}`)
+      .send({ id, fire_at: toIso8601Seconds(rescheduled), title: "Deploy finished" })
+      .expect(200);
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([]);
+  });
+
+  it("報告を保存した後に外部 API で同じ内容を再送しても device_reports は残る", async () => {
+    const { id, token } = await createAlarm();
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${token}`)
+      .send({ id, fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(200);
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(id)
+      .get();
+    expect(Object.keys(stored.get("deviceReports"))).toEqual(["device-1"]);
+  });
+
+  it("報告を保存した後に DELETE で取り消しても device_reports は残る", async () => {
+    const { id, token } = await createAlarm();
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+
+    const response = await request(externalApi)
+      .delete(`/v1/alarms/${id}`)
+      .set("authorization", `Bearer ${token}`)
+      .expect(200);
+    expect(response.body.status).toBe("canceled");
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(id)
+      .get();
+    expect(stored.get("status")).toBe("canceled");
+    expect(Object.keys(stored.get("deviceReports"))).toEqual(["device-1"]);
   });
 });

@@ -345,11 +345,23 @@ export function createAppApi(deps: Deps): Express {
     const now = deps.now();
     const alarmRef = userRef(deps.firestore, uid).collection(collections.alarms).doc(alarmId);
 
+    const deviceRef = userRef(deps.firestore, uid)
+      .collection(collections.devices)
+      .doc(parsedBody.data.device_id);
+
     await deps.firestore.runTransaction(async (transaction) => {
       await rejectIfAccountDeleted(transaction, deps, uid);
       const snapshot = await transaction.get(alarmRef);
       if (!snapshot.exists) {
-        throw new ApiError(404, "not_found", "アラームが見つかりません");
+        // 古いデプロイの appApi はこのエンドポイント自体が無く、notFoundHandler が code "not_found" の 404 を返す。
+        // iOS 側はアラームが本当に無い 404 だけ報告を捨てられるよう、code で区別できるようにする
+        throw new ApiError(404, "alarm_not_found", "アラームが見つかりません");
+      }
+      // 任意の device_id で報告を書けると 1 つのアラーム文書に無制限にキーが増える (端末登録の上限を迂回する)ため、
+      // 登録済みの端末からの報告だけ受け付ける
+      const deviceSnapshot = await transaction.get(deviceRef);
+      if (!deviceSnapshot.exists) {
+        throw new ApiError(404, "device_not_found", "端末が登録されていません");
       }
       const report: DeviceReport = {
         action: parsedBody.data.action,

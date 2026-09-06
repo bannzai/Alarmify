@@ -352,6 +352,8 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
           tokenId,
           updatedAt: Timestamp.fromDate(now),
           expiresAt: expiresAtOf(now, fireAt),
+          // 以前の発火時刻に対する端末の反映結果なので、新しい発火時刻の登録には引き継がない
+          deviceReports: {},
         });
         return false;
       }
