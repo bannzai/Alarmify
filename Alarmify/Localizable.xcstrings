@@ -1745,10 +1745,214 @@
     },
     "Add the step at the end of the job. 'if: always()' also rings after a failure; 'if: failure()' rings only when something broke." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أضف الخطوة في نهاية المهمة. 'if: always()' يرنّ أيضًا بعد الفشل؛ 'if: failure()' يرنّ فقط عند حدوث خطأ."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afegeix el pas al final del job. 'if: always()' també fa sonar l'alarma després d'un error; 'if: failure()' només la fa sonar quan alguna cosa falla."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidej krok na konec jobu. 'if: always()' zazvoní i po selhání; 'if: failure()' zazvoní jen tehdy, když se něco pokazí."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj trinnet i slutningen af jobbet. 'if: always()' ringer også efter en fejl; 'if: failure()' ringer kun, når noget går galt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge den Schritt am Ende des Jobs hinzu. 'if: always()' lässt den Alarm auch nach einem Fehler klingeln; 'if: failure()' lässt ihn nur klingeln, wenn etwas schiefgeht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πρόσθεσε το βήμα στο τέλος του job. 'if: always()' χτυπάει και μετά από αποτυχία· 'if: failure()' χτυπάει μόνο όταν κάτι πάει στραβά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade el paso al final del job. 'if: always()' también hace sonar la alarma después de un fallo; 'if: failure()' solo la hace sonar cuando algo falla."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade el paso al final del job. 'if: always()' también hace sonar la alarma después de un fallo; 'if: failure()' solo la hace sonar cuando algo falla."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää vaihe jobin loppuun. 'if: always()' soi myös virheen jälkeen; 'if: failure()' soi vain, kun jokin menee pieleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez l'étape à la fin du job. 'if: always()' sonne aussi après une erreur ; 'if: failure()' sonne uniquement en cas de problème."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוסף את השלב בסוף ה־job. 'if: always()' מצלצל גם אחרי כשל; 'if: failure()' מצלצל רק כשמשהו משתבש."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जॉब के अंत में यह चरण जोड़ें। 'if: always()' विफलता के बाद भी अलार्म बजाता है; 'if: failure()' केवल तब बजता है जब कुछ गड़बड़ हो।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj korak na kraj posla. 'if: always()' zvoni i nakon neuspjeha; 'if: failure()' zvoni samo kada nešto pođe po zlu."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add hozzá a lépést a job végéhez. Az 'if: always()' hiba után is megszólal; az 'if: failure()' csak akkor szólal meg, ha valami elromlik."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambahkan langkah di akhir job. 'if: always()' juga berbunyi setelah kegagalan; 'if: failure()' hanya berbunyi saat terjadi masalah."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi il passaggio alla fine del job. 'if: always()' suona anche dopo un errore; 'if: failure()' suona solo quando qualcosa va storto."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "job の末尾にステップを追加します。「if: always()」で失敗時にも鳴り、「if: failure()」なら失敗時だけ鳴ります"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작업 끝에 단계를 추가하세요. 'if: always()'는 실패 후에도 울리고, 'if: failure()'는 문제가 발생했을 때만 울립니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambahkan langkah pada penghujung job. 'if: always()' turut berbunyi selepas kegagalan; 'if: failure()' hanya berbunyi apabila berlaku masalah."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legg til steget på slutten av jobben. 'if: always()' ringer også etter en feil; 'if: failure()' ringer bare når noe går galt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg de stap toe aan het einde van de job. 'if: always()' gaat ook af na een fout; 'if: failure()' gaat alleen af als er iets misgaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj krok na końcu zadania. 'if: always()' dzwoni również po błędzie; 'if: failure()' dzwoni tylko wtedy, gdy coś pójdzie nie tak."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione a etapa ao final do job. 'if: always()' também dispara após uma falha; 'if: failure()' dispara somente quando algo dá errado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adiciona o passo no final do job. 'if: always()' também toca após uma falha; 'if: failure()' toca apenas quando algo corre mal."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaugă pasul la sfârșitul jobului. 'if: always()' sună și după o eroare; 'if: failure()' sună doar când ceva nu funcționează."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте шаг в конце задания. 'if: always()' также сработает после сбоя; 'if: failure()' сработает только если что-то пошло не так."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pridaj krok na koniec jobu. 'if: always()' zazvoní aj po zlyhaní; 'if: failure()' zazvoní iba vtedy, keď sa niečo pokazí."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till steget i slutet av jobbet. 'if: always()' ringer även efter ett fel; 'if: failure()' ringer bara när något går fel."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพิ่มขั้นตอนนี้ที่ท้ายงาน 'if: always()' จะปลุกให้ดังหลังเกิดข้อผิดพลาดด้วย ส่วน 'if: failure()' จะปลุกให้ดังเฉพาะเมื่อมีบางอย่างผิดพลาด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adımı işin sonuna ekle. 'if: always()' bir hata sonrasında da çalar; 'if: failure()' yalnızca bir şeyler ters gittiğinde çalar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте крок наприкінці завдання. 'if: always()' також спрацює після помилки; 'if: failure()' спрацює лише тоді, коли щось пішло не так."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thêm bước này vào cuối job. 'if: always()' cũng đổ chuông sau khi xảy ra lỗi; 'if: failure()' chỉ đổ chuông khi có sự cố."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將步驟加到工作流程的末尾。'if: always()' 在失敗後也會響起；'if: failure()' 只會在出現問題時響起。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将步骤添加到作业末尾。'if: always()' 失败后也会响起；'if: failure()' 只有出现问题时才会响起。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將步驟加到作業末尾。'if: always()' 失敗後也會響起；'if: failure()' 只有發生問題時才會響起。"
           }
         }
       }
