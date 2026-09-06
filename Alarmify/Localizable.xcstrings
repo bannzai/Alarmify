@@ -14564,10 +14564,214 @@
     },
     "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا تتوفر عمليات الشراء والاستعادة أثناء الاتصال بالمحاكي. بدّل الواجهة الخلفية إلى production مجددًا من قائمة المطوّر."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les compres i les restauracions no estan disponibles mentre estiguis connectat a l’emulador. Torna a canviar el backend a production al menú de desenvolupador."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nákupy a obnovení nejsou při připojení k emulátoru k dispozici. V nabídce pro vývojáře přepni backend zpět na production."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Køb og gendannelse er ikke tilgængelige, mens du er tilsluttet emulatoren. Skift backend tilbage til production i udviklermenuen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe und Wiederherstellungen sind nicht verfügbar, solange du mit dem Emulator verbunden bist. Stelle das Backend im Entwicklermenü wieder auf production um."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι αγορές και η επαναφορά δεν είναι διαθέσιμες όσο είσαι συνδεδεμένος στον εξομοιωτή. Άλλαξε το backend ξανά σε production από το μενού προγραμματιστή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las compras y las restauraciones no están disponibles mientras estés conectado al emulador. Vuelve a cambiar el backend a production en el menú de desarrollador."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las compras y las restauraciones no están disponibles mientras estés conectado al emulador. Vuelve a cambiar el backend a production en el menú de desarrollador."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ostokset ja palautukset eivät ole käytettävissä, kun olet yhteydessä emulaattoriin. Vaihda backend takaisin production-ympäristöön kehittäjävalikossa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les achats et les restaurations ne sont pas disponibles lorsque vous êtes connecté à l’émulateur. Repassez le backend en production dans le menu développeur."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "רכישות ושחזורן אינם זמינים בזמן שאתה מחובר לאמולטור. החלף את ה-backend חזרה ל-production בתפריט המפתחים."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "एमुलेटर से कनेक्ट रहने के दौरान खरीदारी और पुनर्स्थापन उपलब्ध नहीं हैं। डेवलपर मेन्यू में बैकएंड को production पर वापस स्विच करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kupnje i obnavljanja nisu dostupni dok si povezan s emulatorom. U izborniku za razvojne programere vrati backend na production."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A vásárlások és a visszaállítások nem érhetők el, amíg az emulátorhoz csatlakozol. A fejlesztői menüben váltsd vissza a backendet production környezetre."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelian dan pemulihan tidak tersedia saat kamu terhubung ke emulator. Alihkan backend kembali ke production di menu developer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli acquisti e i ripristini non sono disponibili mentre sei connesso all’emulatore. Nel menu sviluppatore, reimposta il backend su production."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "에뮬레이터에 연결되어 있는 동안에는 구입 및 복원을 사용할 수 없어요. 개발자 메뉴에서 백엔드를 production으로 다시 전환해 주세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelian dan pemulihan tidak tersedia semasa anda disambungkan ke emulator. Tukar backend kembali kepada production dalam menu pembangun."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kjøp og gjenoppretting er ikke tilgjengelig mens du er koblet til emulatoren. Bytt backend tilbake til production i utviklermenyen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aankopen en herstellen zijn niet beschikbaar wanneer je met de emulator verbonden bent. Schakel de backend in het ontwikkelaarsmenu terug naar production."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zakupy i przywracanie nie są dostępne podczas połączenia z emulatorem. W menu dewelopera przełącz backend z powrotem na production."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compras e restaurações não estão disponíveis enquanto você estiver conectado ao emulador. Mude o backend de volta para production no menu do desenvolvedor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As compras e os restauros não estão disponíveis enquanto estiveres ligado ao emulador. Muda o backend novamente para production no menu do programador."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achizițiile și restaurările nu sunt disponibile cât timp ești conectat la emulator. Comută backendul înapoi la production din meniul pentru dezvoltatori."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покупки и восстановление недоступны при подключении к эмулятору. Переключите backend обратно на production в меню разработчика."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nákupy a obnovenie nie sú dostupné, keď si pripojený k emulátoru. V ponuke pre vývojárov prepni backend späť na production."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Köp och återställning är inte tillgängliga när du är ansluten till emulatorn. Växla tillbaka backend till production i utvecklarmenyn."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การซื้อและการกู้คืนไม่สามารถใช้ได้ขณะเชื่อมต่อกับโปรแกรมจำลอง สลับ backend กลับเป็น production ในเมนูนักพัฒนา"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emülatöre bağlıyken satın alma ve geri yükleme kullanılamaz. Geliştirici menüsünden backend’i yeniden production’a geçir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Купівля та відновлення недоступні під час підключення до емулятора. Перемкніть backend назад на production у меню розробника."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không thể mua hoặc khôi phục khi đang kết nối với trình mô phỏng. Hãy chuyển backend về production trong menu dành cho nhà phát triển."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連接至模擬器時無法購買或還原。請在開發者選單中將後端切換回 production。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接模拟器时无法购买或恢复。请在开发者菜单中将后端切换回 production。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連接模擬器時無法購買或還原。請在開發者選單中將後端切換回 production。"
           }
         }
       }
