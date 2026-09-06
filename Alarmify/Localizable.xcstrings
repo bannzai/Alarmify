@@ -22271,10 +22271,214 @@
     },
     "This value is shown only once. Save it into your service before closing." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا تُعرض هذه القيمة إلا مرة واحدة. احفظها في خدمتك قبل الإغلاق."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquest valor només es mostra una vegada. Desa'l al teu servei abans de tancar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tato hodnota se zobrazí pouze jednou. Před zavřením ji ulož do své služby."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne værdi vises kun én gang. Gem den i din tjeneste, før du lukker."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Wert wird nur einmal angezeigt. Speichere ihn in deinem Dienst, bevor du schließt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αυτή η τιμή εμφανίζεται μόνο μία φορά. Αποθήκευσέ την στην υπηρεσία σου πριν κλείσεις."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este valor se muestra una sola vez. Guárdalo en tu servicio antes de cerrar."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este valor se muestra una sola vez. Guárdalo en tu servicio antes de cerrar."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä arvo näytetään vain kerran. Tallenna se palveluusi ennen sulkemista."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette valeur ne s’affiche qu’une seule fois. Enregistrez-la dans votre service avant de fermer."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הערך הזה יוצג פעם אחת בלבד. שמור אותו בשירות שלך לפני שתסגור."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह मान केवल एक बार दिखाया जाता है। बंद करने से पहले इसे अपनी सेवा में सहेज लें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ova se vrijednost prikazuje samo jednom. Spremi je u svoju uslugu prije zatvaranja."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez az érték csak egyszer jelenik meg. Mentsd el a szolgáltatásodba bezárás előtt."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nilai ini hanya ditampilkan sekali. Simpan ke layanan kamu sebelum menutupnya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo valore viene mostrato una sola volta. Salvalo nel tuo servizio prima di chiudere."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "この値を見られるのは今だけです。外部サービスに設定してから閉じてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 값은 한 번만 표시돼요. 닫기 전에 서비스에 저장해 두세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nilai ini hanya dipaparkan sekali. Simpan dalam perkhidmatan anda sebelum menutupnya."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne verdien vises bare én gang. Lagre den i tjenesten din før du lukker."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze waarde wordt maar één keer weergegeven. Sla deze op in je service voordat je sluit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta wartość jest wyświetlana tylko raz. Zapisz ją w swojej usłudze przed zamknięciem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este valor é exibido apenas uma vez. Salve-o no seu serviço antes de fechar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este valor é apresentado apenas uma vez. Guarda-o no teu serviço antes de fechar."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Această valoare este afișată o singură dată. Salveaz-o în serviciul tău înainte de a închide."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это значение показывается только один раз. Сохраните его в своём сервисе перед закрытием."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Táto hodnota sa zobrazí iba raz. Pred zatvorením si ju ulož do svojej služby."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det här värdet visas bara en gång. Spara det i din tjänst innan du stänger."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ค่านี้จะแสดงเพียงครั้งเดียว โปรดบันทึกไว้ในบริการของคุณก่อนปิด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu değer yalnızca bir kez gösterilir. Kapatmadan önce kendi hizmetine kaydet."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Це значення показується лише один раз. Збережіть його у своєму сервісі перед закриттям."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giá trị này chỉ hiển thị một lần. Hãy lưu vào dịch vụ của bạn trước khi đóng."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此值只會顯示一次。關閉前，請將其儲存到你的服務中。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此值仅显示一次。关闭前，请将其保存到你的服务中。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此值只會顯示一次。關閉前，請將其儲存到你的服務中。"
           }
         }
       }
