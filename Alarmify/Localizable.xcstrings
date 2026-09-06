@@ -23983,10 +23983,214 @@
     },
     "Use Test on the contact point; your iPhone should ring within a minute." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدم Test في نقطة الاتصال؛ من المفترض أن يرن iPhone خلال دقيقة."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fes servir Test al punt de contacte; el teu iPhone hauria de sonar en un minut."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použij Test u kontaktního bodu; tvůj iPhone by měl zazvonit do minuty."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brug Test på kontaktpunktet; din iPhone burde ringe inden for et minut."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwende Test beim Kontaktpunkt; dein iPhone sollte innerhalb einer Minute klingeln."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χρησιμοποίησε το Test στο σημείο επαφής· το iPhone σου θα πρέπει να χτυπήσει μέσα σε ένα λεπτό."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa Test en el punto de contacto; tu iPhone debería sonar en un minuto."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa Test en el punto de contacto; tu iPhone debería sonar en un minuto."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytä Test-toimintoa yhteyspisteessä; iPhonesi pitäisi soida minuutin kuluessa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez Test sur le point de contact ; votre iPhone devrait sonner dans la minute."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "השתמש ב‑Test בנקודת הקשר; ה‑iPhone שלך אמור לצלצל בתוך דקה."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कॉन्टैक्ट पॉइंट पर Test का इस्तेमाल करें; आपका iPhone एक मिनट के भीतर बजना चाहिए।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upotrijebi Test na kontaktnoj točki; tvoj iPhone trebao bi zazvoniti u roku od minute."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Használd a Test lehetőséget a kapcsolattartási pontnál; az iPhone-odnak egy percen belül csörögnie kell."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gunakan Test pada contact point; iPhone kamu seharusnya berdering dalam satu menit."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa Test sul punto di contatto; il tuo iPhone dovrebbe squillare entro un minuto."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知先の Test で、1 分以内に iPhone が鳴ることを確認します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "contact point에서 Test를 사용하면 1분 이내에 iPhone이 울려야 해요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gunakan Test pada titik hubungan; iPhone anda sepatutnya berdering dalam masa seminit."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bruk Test på kontaktpunktet; iPhone-en din bør ringe innen ett minutt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruik Test bij het contactpunt; je iPhone zou binnen een minuut moeten overgaan."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Użyj opcji Test w punkcie kontaktowym; twój iPhone powinien zadzwonić w ciągu minuty."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Test no ponto de contato; seu iPhone deve tocar em até um minuto."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa Test no ponto de contacto; o teu iPhone deverá tocar dentro de um minuto."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folosește Test în punctul de contact; iPhone-ul tău ar trebui să sune în decurs de un minut."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используйте Test в точке контакта; ваш iPhone должен зазвонить в течение минуты."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použi Test v kontaktnom bode; tvoj iPhone by mal zazvoniť do minúty."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd Test på kontaktpunkten; din iPhone bör ringa inom en minut."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้ Test ที่จุดติดต่อ iPhone ของคุณควรดังขึ้นภายในหนึ่งนาที"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İletişim noktasında Test'i kullan; iPhone'un bir dakika içinde çalmalı."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скористайтеся Test у контактній точці; ваш iPhone має задзвонити протягом хвилини."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy dùng Test trên điểm liên hệ; iPhone của bạn sẽ đổ chuông trong vòng một phút."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在聯絡點使用 Test；你的 iPhone 應在一分鐘內響起。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在联系点使用 Test；你的 iPhone 应在一分钟内响铃。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在聯絡點使用 Test；你的 iPhone 應在一分鐘內響鈴。"
           }
         }
       }
