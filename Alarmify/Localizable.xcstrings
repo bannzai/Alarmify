@@ -10492,10 +10492,214 @@
     },
     "Keep the token in the 'ALARMIFY_TOKEN' environment variable rather than in a file you commit." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "احتفظ بالرمز في متغير البيئة 'ALARMIFY_TOKEN' بدلًا من وضعه في ملف تلتزم به."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desa el token a la variable d’entorn 'ALARMIFY_TOKEN' en lloc de posar-lo en un fitxer que fas commit."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uchovávej token v proměnné prostředí 'ALARMIFY_TOKEN' místo v souboru, který commituješ."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gem tokenet i miljøvariablen 'ALARMIFY_TOKEN' i stedet for i en fil, du committer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewahre das Token in der Umgebungsvariable 'ALARMIFY_TOKEN' auf, statt in einer Datei, die du committest."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διατήρησε το token στη μεταβλητή περιβάλλοντος 'ALARMIFY_TOKEN' αντί για ένα αρχείο που κάνεις commit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda el token en la variable de entorno 'ALARMIFY_TOKEN' en lugar de incluirlo en un archivo que confirmes."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda el token en la variable de entorno 'ALARMIFY_TOKEN' en lugar de incluirlo en un archivo que confirmes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säilytä token ympäristömuuttujassa 'ALARMIFY_TOKEN' äläkä tiedostossa, jonka commitoit."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conservez le token dans la variable d’environnement 'ALARMIFY_TOKEN' plutôt que dans un fichier que vous commitez."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שמור את האסימון במשתנה הסביבה 'ALARMIFY_TOKEN' ולא בקובץ שאתה עושה לו commit."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टोकन को 'ALARMIFY_TOKEN' पर्यावरण चर में रखें, उस फ़ाइल में नहीं जिसे आप कमिट करते हैं।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token drži u varijabli okruženja 'ALARMIFY_TOKEN', a ne u datoteci koju commitaš."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A tokent az 'ALARMIFY_TOKEN' környezeti változóban tartsd, ne egy olyan fájlban, amelyet commitolsz."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simpan token di variabel lingkungan 'ALARMIFY_TOKEN', bukan di file yang kamu commit."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conserva il token nella variabile d’ambiente 'ALARMIFY_TOKEN' invece che in un file di cui fai commit."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "トークンは環境変数「ALARMIFY_TOKEN」に置き、コミットするファイルに書かないようにします"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "토큰은 'ALARMIFY_TOKEN' 환경 변수에 보관하고 커밋하는 파일에는 넣지 마세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simpan token dalam pemboleh ubah persekitaran 'ALARMIFY_TOKEN' dan bukannya dalam fail yang anda commit."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Behold tokenet i miljøvariabelen 'ALARMIFY_TOKEN' i stedet for i en fil du committer."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewaar het token in de omgevingsvariabele 'ALARMIFY_TOKEN' in plaats van in een bestand dat je commit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przechowuj token w zmiennej środowiskowej 'ALARMIFY_TOKEN', a nie w pliku, który commitujesz."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantenha o token na variável de ambiente 'ALARMIFY_TOKEN' em vez de em um arquivo que você commita."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda o token na variável de ambiente 'ALARMIFY_TOKEN' em vez de num ficheiro que adicionas ao commit."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Păstrează tokenul în variabila de mediu 'ALARMIFY_TOKEN', nu într-un fișier pe care îl incluzi în commit."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Храните токен в переменной окружения 'ALARMIFY_TOKEN', а не в файле, который вы добавляете в commit."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token uchovávaj v premennej prostredia 'ALARMIFY_TOKEN' namiesto v súbore, ktorý commituješ."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Behåll tokenet i miljövariabeln 'ALARMIFY_TOKEN' i stället för i en fil du committar."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เก็บโทเค็นไว้ในตัวแปรสภาพแวดล้อม 'ALARMIFY_TOKEN' แทนที่จะเก็บไว้ในไฟล์ที่คุณ commit"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token'ı 'ALARMIFY_TOKEN' ortam değişkeninde tut; commit ettiğin bir dosyaya koyma."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зберігайте токен у змінній середовища 'ALARMIFY_TOKEN', а не у файлі, який ви комітите."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lưu token trong biến môi trường 'ALARMIFY_TOKEN' thay vì trong tệp bạn commit."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 token 放在環境變數 'ALARMIFY_TOKEN' 中，不要放在你提交的檔案裡。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 token 放在环境变量 'ALARMIFY_TOKEN' 中，不要放在你提交的文件里。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 token 放在環境變數 'ALARMIFY_TOKEN' 中，不要放在你提交的檔案裡。"
           }
         }
       }
