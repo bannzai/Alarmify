@@ -81,17 +81,32 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     /// AlarmKit への反映と戻り値の返却に残りを充て、通信が固まっても処理時間の超過で後続の background push を絞られないようにする
     private static let backgroundFlushTimeout: Duration = .seconds(10)
 
-    /// 未送信の報告を上限時間つきで送る。時間内に終わらなければ送信を取り消して戻り、報告はキューに残す (次の前面復帰で送る)
+    /// 未送信の報告を上限時間つきで送る。送信の完了と上限時間のどちらか早い方で戻る。
+    /// 上限に達したら送信のタスクに取り消しを伝えるが、その完了は待たない (ID トークンの取得など取り消しに応じない処理で待ち続けないため)。
+    /// 送れなかった報告はキューに残り、次の前面復帰で送る
     private static func flushAlarmApplyReportsWithinBackgroundBudget() async {
-        let flush = Task { @MainActor in
-            await AccountSession.shared.flushAlarmApplyReports()
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            // 送信の完了と上限時間の両方から呼ばれるため、先に着いた側だけが continuation を再開する
+            let resumed = OSAllocatedUnfairLock(initialState: false)
+            let finish: @Sendable () -> Void = {
+                let isFirst = resumed.withLock { alreadyResumed in
+                    defer { alreadyResumed = true }
+                    return !alreadyResumed
+                }
+                if isFirst {
+                    continuation.resume()
+                }
+            }
+            let flush = Task { @MainActor in
+                await AccountSession.shared.flushAlarmApplyReports()
+                finish()
+            }
+            Task {
+                try? await Task.sleep(for: backgroundFlushTimeout)
+                flush.cancel()
+                finish()
+            }
         }
-        let deadline = Task {
-            try await Task.sleep(for: backgroundFlushTimeout)
-            flush.cancel()
-        }
-        await flush.value
-        deadline.cancel()
     }
 }
 
