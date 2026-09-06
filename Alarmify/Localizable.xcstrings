@@ -1962,10 +1962,214 @@
     },
     "Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ستظل المنبّهات المجدولة بالفعل على هذا الـiPhone. ألغِها من قائمة المنبّهات إذا لم تعد بحاجة إليها."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les alarmes que ja estan programades en aquest iPhone es conservaran. Cancel·la-les des de la llista d’alarmes si ja no les necessites."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Budíky již naplánované na tomto iPhonu zůstanou zachovány. Pokud je už nepotřebuješ, zruš je v seznamu budíků."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmer, der allerede er planlagt på denne iPhone, forbliver. Annuller dem fra alarmlisten, hvis du ikke længere har brug for dem."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereits auf diesem iPhone geplante Alarme bleiben bestehen. Wenn du sie nicht mehr benötigst, kannst du sie in der Alarmliste abbrechen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι συναγερμοί που έχουν ήδη προγραμματιστεί σε αυτό το iPhone παραμένουν. Αν δεν τους χρειάζεσαι πλέον, ακύρωσέ τους από τη λίστα συναγερμών."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las alarmas ya programadas en este iPhone permanecerán. Cancélalas desde la lista de alarmas si ya no las necesitas."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las alarmas ya programadas en este iPhone permanecerán. Cancélalas desde la lista de alarmas si ya no las necesitas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tälle iPhonelle jo ajastetut hälytykset säilyvät. Peruuta ne hälytyslistalta, jos et enää tarvitse niitä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les alarmes déjà programmées sur cet iPhone resteront actives. Annulez-les depuis la liste des alarmes si vous n’en avez plus besoin."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ההתראות שכבר תוכננו ב‑iPhone הזה יישארו. אם אינך זקוק להן עוד, בטל אותן מרשימת ההתראות."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस iPhone पर पहले से शेड्यूल किए गए अलार्म मौजूद रहेंगे। अगर आपको उनकी ज़रूरत नहीं है, तो अलार्म सूची से उन्हें रद्द करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmi koji su već zakazani na ovom iPhoneu ostat će. Ako ti više nisu potrebni, otkaži ih na popisu alarma."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az ezen az iPhone-on már beállított ébresztések megmaradnak. Ha már nincs rájuk szükséged, mondd le őket az ébresztések listájából."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarm yang sudah dijadwalkan di iPhone ini akan tetap ada. Batalkan dari daftar alarm jika kamu sudah tidak membutuhkannya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sveglie già programmate su questo iPhone rimarranno attive. Annullale dall’elenco delle sveglie se non ti servono più."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "この iPhone に登録済みのアラームは残っています。不要な場合はアラーム一覧から取り消してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 iPhone에 이미 예약된 알람은 그대로 유지됩니다. 더 이상 필요하지 않다면 알람 목록에서 취소하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Penggera yang telah dijadualkan pada iPhone ini akan kekal. Batalkannya daripada senarai penggera jika anda tidak lagi memerlukannya."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmer som allerede er planlagt på denne iPhonen, blir værende. Avbryt dem fra alarmlisten hvis du ikke trenger dem lenger."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarms die al op deze iPhone zijn gepland, blijven staan. Annuleer ze vanuit de alarmlijst als je ze niet meer nodig hebt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmy już zaplanowane na tym iPhonie pozostaną. Jeśli nie są Ci już potrzebne, anuluj je na liście alarmów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os alarmes já programados neste iPhone permanecerão. Cancele-os na lista de alarmes se você não precisar mais deles."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os alarmes já programados neste iPhone permanecerão. Cancele-os na lista de alarmes se já não precisar deles."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmele deja programate pe acest iPhone vor rămâne. Anulează-le din lista de alarme dacă nu mai ai nevoie de ele."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Будильники, уже запланированные на этом iPhone, останутся. Если они вам больше не нужны, отмените их в списке будильников."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Budíky naplánované na tomto iPhone zostanú zachované. Ak ich už nepotrebuješ, zruš ich v zozname budíkov."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarm som redan har schemalagts på den här iPhonen finns kvar. Avbryt dem i alarmlistan om du inte längre behöver dem."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "นาฬิกาปลุกที่ตั้งเวลาไว้แล้วบน iPhone เครื่องนี้จะยังคงอยู่ หากคุณไม่ต้องการใช้แล้ว ให้ยกเลิกจากรายการนาฬิกาปลุก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu iPhone’da daha önce planlanan alarmlar kalır. Artık ihtiyacın yoksa alarmlar listesinden iptal et."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Будильники, уже заплановані на цьому iPhone, залишаться. Якщо вони вам більше не потрібні, скасуйте їх у списку будильників."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Các báo thức đã được lên lịch trên iPhone này sẽ vẫn còn. Nếu bạn không còn cần chúng, hãy hủy trong danh sách báo thức."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這部 iPhone 上已排程的鬧鐘會保留。如果你不再需要，請從鬧鐘列表中取消。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 iPhone 上已设定的闹钟会保留。如果你不再需要，请从闹钟列表中取消。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這部 iPhone 上已設定的鬧鐘會保留。如果你不再需要，請從鬧鐘列表中取消。"
           }
         }
       }
