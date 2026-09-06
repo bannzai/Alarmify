@@ -380,11 +380,21 @@ export function createAppApi(deps: Deps): Express {
           );
         }
       }
+      const deviceReports =
+        (snapshot.get("deviceReports") as Record<string, DeviceReport> | undefined) ?? {};
+      const existingReport = deviceReports[parsedBody.data.device_id];
+      const occurredAt = Timestamp.fromDate(parsedBody.data.occurred_at);
+      // 同じ登録に対する報告でも、再試行や並行送信で HTTP の到着順が入れ替わると後着が勝ってしまい、
+      // 新しい失敗を古い成功で上書きし得るため、端末の時計 (occurredAt) で見て古い報告は捨てる。
+      // occurredAt が同じ場合は上書きする (内容を変えて再送した場合の既存の挙動を維持する)
+      if (existingReport && existingReport.occurredAt.toMillis() > occurredAt.toMillis()) {
+        return;
+      }
       const report: DeviceReport = {
         action: parsedBody.data.action,
         result: parsedBody.data.result,
         error: parsedBody.data.error ?? null,
-        occurredAt: Timestamp.fromDate(parsedBody.data.occurred_at),
+        occurredAt,
         reportedAt: Timestamp.fromDate(now),
       };
       // device_id に "." が含まれても入れ子として解釈させないよう、文字列のドットパスではなく FieldPath のセグメントで書き込む

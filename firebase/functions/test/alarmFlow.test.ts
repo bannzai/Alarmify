@@ -1224,6 +1224,15 @@ describe("端末からの反映結果の報告", () => {
       .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(history.body.alarms[0].device_reports).toEqual([]);
+    // 再スケジュールの push の結果 (端末 1 台への配送) が、前の登録の配送結果に上書きされず反映されている
+    expect(history.body.alarms[0].delivery).toEqual({ success_count: 1, failure_count: 0 });
+
+    const rescheduledAlarm = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(id)
+      .get();
+    // 再スケジュールの配送が記録されている (前の登録の delivery.sentAt が引き継がれて null のままになっていない)
+    expect(rescheduledAlarm.get("delivery").sentAt).not.toBeNull();
 
     // 再スケジュール前の登録に対する報告が遅れて届いた場合。現在の登録の fireAt と一致しないため 409 で弾き、書き込まない
     const stale = await postDeviceReport(id, {
@@ -1360,5 +1369,77 @@ describe("端末からの反映結果の報告", () => {
       .get();
     expect(stored.get("status")).toBe("canceled");
     expect(Object.keys(stored.get("deviceReports"))).toEqual(["device-1"]);
+  });
+
+  it("occurred_at が新しい失敗報告の後に古い成功報告が届いても、失敗のまま残る (200 は返す)", async () => {
+    const { id } = await createAlarm();
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "failed",
+      error: "AlarmKit denied",
+      occurred_at: "2026-09-02T00:00:20Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
+    }).expect(200);
+
+    const response = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
+    }).expect(200);
+    // 古い報告でも、端末はキューから消してよいので通常どおり 200 を返す
+    expect(response.body).toEqual({ alarm_id: id, device_id: "device-1" });
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([
+      {
+        device_id: "device-1",
+        action: "schedule",
+        result: "failed",
+        error: "AlarmKit denied",
+        occurred_at: "2026-09-02T00:00:20.000Z",
+      },
+    ]);
+  });
+
+  it("occurred_at が古い報告の後に新しい報告が届くと上書きされる", async () => {
+    const { id } = await createAlarm();
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "failed",
+      error: "AlarmKit denied",
+      occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
+    }).expect(200);
+
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:20Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
+    }).expect(200);
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([
+      {
+        device_id: "device-1",
+        action: "schedule",
+        result: "applied",
+        error: null,
+        occurred_at: "2026-09-02T00:00:20.000Z",
+      },
+    ]);
   });
 });
