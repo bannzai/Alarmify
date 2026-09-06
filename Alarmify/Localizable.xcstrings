@@ -22913,10 +22913,214 @@
     },
     "Turn on Disable resolved message so a resolved alert does not ring again." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فعّل خيار Disable resolved message حتى لا يرنّ التنبيه الذي تمت معالجته مرة أخرى."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa «Disable resolved message» perquè una alerta resolta no torni a sonar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapněte „Disable resolved message“, aby vyřešené upozornění znovu nezaznělo."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slå «Disable resolved message» til, så en løst alarm ikke ringer igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviere „Disable resolved message“, damit ein behobener Alarm nicht erneut klingelt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενεργοποίησε το «Disable resolved message», ώστε μια επιλυμένη ειδοποίηση να μην ηχήσει ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa «Disable resolved message» para que una alerta resuelta no vuelva a sonar."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa «Disable resolved message» para que una alerta resuelta no vuelva a sonar."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota „Disable resolved message“ käyttöön, jotta ratkaistu hälytys ei soi uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activez « Disable resolved message » pour qu’une alerte résolue ne sonne pas à nouveau."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפעל את «Disable resolved message» כדי שהתראה שנפתרה לא תצלצל שוב."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Disable resolved message” चालू करें, ताकि हल किया गया अलर्ट फिर से न बजे।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uključi „Disable resolved message“ kako riješeno upozorenje ne bi ponovno zazvonilo."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapcsold be a „Disable resolved message“ beállítást, hogy a megoldott riasztás ne szólaljon meg újra."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktifkan “Disable resolved message” agar peringatan yang terselesaikan tidak berbunyi lagi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva «Disable resolved message» per evitare che un avviso risolto suoni di nuovo."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "解決時にも鳴らないよう、Disable resolved message をオンにします"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Disable resolved message”를 켜서 해결된 알림이 다시 울리지 않도록 해요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hidupkan “Disable resolved message” supaya amaran yang telah diselesaikan tidak berbunyi lagi."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slå på «Disable resolved message» slik at et løst varsel ikke ringer igjen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel „Disable resolved message“ in, zodat een opgeloste melding niet opnieuw afgaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz „Disable resolved message“, aby rozwiązany alert nie zadzwonił ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ative “Disable resolved message” para que um alerta resolvido não toque novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativa “Disable resolved message” para que um alerta resolvido não volte a tocar."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activează „Disable resolved message” pentru ca o alertă rezolvată să nu sune din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включите «Disable resolved message», чтобы оповещение после устранения проблемы не прозвучало снова."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapnite „Disable resolved message“, aby vyriešené upozornenie znova nezaznelo."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera ”Disable resolved message” så att en löst avisering inte ringer igen."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้ “Disable resolved message” เพื่อไม่ให้การแจ้งเตือนที่แก้ไขแล้วดังอีกครั้ง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözülmüş bir uyarının tekrar çalmaması için “Disable resolved message” seçeneğini aç."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увімкніть «Disable resolved message», щоб сповіщення про вирішену проблему не пролунало знову."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bật “Disable resolved message” để cảnh báo đã được xử lý không reo lại."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「Disable resolved message」，避免已解決的警報再次響起。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启“Disable resolved message”，避免已解决的提醒再次响起。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「Disable resolved message」，避免已解決的提醒再次響起。"
           }
         }
       }
