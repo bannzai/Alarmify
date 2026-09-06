@@ -62,6 +62,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any]
     ) async -> UIBackgroundFetchResult {
         guard let request = AlarmRequest(userInfo: userInfo) else { return .noData }
+        // 適用結果の報告は成否に関わらずキューに積まれるため、app 本体が動いているこの経路ではその場で送る
+        defer { Task { @MainActor in await AccountSession.shared.flushAlarmApplyReports() } }
         do {
             try await AlarmKitScheduler.apply(request)
             return .newData

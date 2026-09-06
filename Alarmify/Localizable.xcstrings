@@ -91,6 +91,116 @@
         }
       }
     },
+    "Alarm time has passed" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "発火時刻を過ぎました"
+          }
+        }
+      }
+    },
+    "Canceled" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消し済み"
+          }
+        }
+      }
+    },
+    "Failed on this iPhone: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone で登録に失敗: %@"
+          }
+        }
+      }
+    },
+    "Next alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次に鳴るアラーム"
+          }
+        }
+      }
+    },
+    "No alarms yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴はまだありません"
+          }
+        }
+      }
+    },
+    "No upcoming alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次に鳴るアラームはありません"
+          }
+        }
+      }
+    },
+    "Push could not be delivered" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "push を配送できませんでした"
+          }
+        }
+      }
+    },
+    "Rang" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鳴りました"
+          }
+        }
+      }
+    },
+    "Recent alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直近の履歴"
+          }
+        }
+      }
+    },
+    "Scheduled on this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone に登録済み"
+          }
+        }
+      }
+    },
+    "See the full history with Pro" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro で全期間の履歴を見る"
+          }
+        }
+      }
+    },
     "Signalarm" : {
       "shouldTranslate" : false
     },
@@ -1043,6 +1153,16 @@
         }
       }
     },
+    "The free plan shows the 3 most recent alarms. Pro keeps 30 days of history" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランで見られる履歴は直近 3 件です。Pro なら 30 日分の履歴を確認できます"
+          }
+        }
+      }
+    },
     "The purchase couldn't be completed." : {
       "localizations" : {
         "ja" : {
@@ -1133,6 +1253,16 @@
         }
       }
     },
+    "Untitled alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトルなし"
+          }
+        }
+      }
+    },
     "Upgrade to Pro" : {
       "localizations" : {
         "ja" : {
@@ -1159,6 +1289,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知先の Test で、1 分以内に iPhone が鳴ることを確認します"
+          }
+        }
+      }
+    },
+    "Waiting for this iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone への反映を待っています"
           }
         }
       }
