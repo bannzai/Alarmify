@@ -1100,6 +1100,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(200);
     expect(response.body).toEqual({ alarm_id: id, device_id: "device-1" });
 
@@ -1126,6 +1127,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     };
     await postDeviceReport(id, base).expect(200);
     await postDeviceReport(id, base).expect(200);
@@ -1150,6 +1152,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     };
     const notFound = await postDeviceReport(
       "00000000-0000-4000-8000-000000000000",
@@ -1168,6 +1171,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(200);
     expect(response.body.alarm_id).toBe(id);
 
@@ -1185,6 +1189,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(404);
     expect(response.body.error.code).toBe("device_not_found");
 
@@ -1196,13 +1201,14 @@ describe("端末からの反映結果の報告", () => {
     expect(history.body.alarms[0].device_reports).toEqual([]);
   });
 
-  it("報告を保存した後に外部 API で再スケジュールすると device_reports が空になる", async () => {
+  it("報告を保存した後に外部 API で再スケジュールすると device_reports が空になる。古い fire_at の報告は 409 で弾かれ、新しい fire_at の報告は入る", async () => {
     const { id, token } = await createAlarm();
     await postDeviceReport(id, {
       device_id: "device-1",
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(200);
 
     const rescheduled = new Date(FIRE_AT.getTime() + 60 * 60 * 1000);
@@ -1218,6 +1224,95 @@ describe("端末からの反映結果の報告", () => {
       .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
       .expect(200);
     expect(history.body.alarms[0].device_reports).toEqual([]);
+
+    // 再スケジュール前の登録に対する報告が遅れて届いた場合。現在の登録の fireAt と一致しないため 409 で弾き、書き込まない
+    const stale = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:20Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
+    }).expect(409);
+    expect(stale.body.error.code).toBe("alarm_revision_mismatch");
+
+    const afterStale = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(afterStale.body.alarms[0].device_reports).toEqual([]);
+
+    // 現在の登録の fireAt と一致する報告は受け付ける
+    await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:30Z",
+      fire_at: toIso8601Seconds(rescheduled),
+    }).expect(200);
+
+    const afterCurrent = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(afterCurrent.body.alarms[0].device_reports).toHaveLength(1);
+  });
+
+  it("fire_at が現在の登録と 1 時間ずれた schedule 報告は 409 alarm_revision_mismatch、deviceReports は空のまま", async () => {
+    const { id } = await createAlarm();
+    const mismatched = new Date(FIRE_AT.getTime() + 60 * 60 * 1000);
+    const response = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(mismatched),
+    }).expect(409);
+    expect(response.body.error.code).toBe("alarm_revision_mismatch");
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(id)
+      .get();
+    expect(stored.get("deviceReports")).toEqual({});
+  });
+
+  it("action が schedule で fire_at を省くと 400 invalid_argument", async () => {
+    const { id } = await createAlarm();
+    const response = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "schedule",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(400);
+    expect(response.body.error.code).toBe("invalid_argument");
+  });
+
+  it("action が cancel なら fire_at が無くても 200 で device_reports に出る", async () => {
+    const { id } = await createAlarm();
+    const response = await postDeviceReport(id, {
+      device_id: "device-1",
+      action: "cancel",
+      result: "applied",
+      occurred_at: "2026-09-02T00:00:10Z",
+    }).expect(200);
+    expect(response.body).toEqual({ alarm_id: id, device_id: "device-1" });
+
+    const history = await request(appApi)
+      .get("/v1/alarms")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(history.body.alarms[0].device_reports).toEqual([
+      {
+        device_id: "device-1",
+        action: "cancel",
+        result: "applied",
+        error: null,
+        occurred_at: "2026-09-02T00:00:10.000Z",
+      },
+    ]);
   });
 
   it("報告を保存した後に外部 API で同じ内容を再送しても device_reports は残る", async () => {
@@ -1227,6 +1322,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(200);
 
     await request(externalApi)
@@ -1249,6 +1345,7 @@ describe("端末からの反映結果の報告", () => {
       action: "schedule",
       result: "applied",
       occurred_at: "2026-09-02T00:00:10Z",
+      fire_at: toIso8601Seconds(FIRE_AT),
     }).expect(200);
 
     const response = await request(externalApi)

@@ -363,6 +363,23 @@ export function createAppApi(deps: Deps): Express {
       if (!deviceSnapshot.exists) {
         throw new ApiError(404, "device_not_found", "端末が登録されていません");
       }
+      if (parsedBody.data.action === "schedule" && parsedBody.data.fire_at !== undefined) {
+        // push payload の fire_at は toIso8601Seconds で秒までに丸めて配送し、端末もその値をそのまま返す。
+        // 一方 fire_in で登録したアラームの Firestore 上の fireAt はミリ秒を持つため、秒単位に揃えてから比べる
+        const registeredFireAtSeconds = Math.floor(
+          (snapshot.get("fireAt") as Timestamp).toMillis() / 1000,
+        );
+        const reportedFireAtSeconds = Math.floor(parsedBody.data.fire_at.getTime() / 1000);
+        if (registeredFireAtSeconds !== reportedFireAtSeconds) {
+          // 同じ id で再スケジュールされた後に遅れて届いた、前の登録に対する報告を弾く。
+          // 再スケジュール時に空にした deviceReports を古い内容で埋め直さないよう、何も書き込まない
+          throw new ApiError(
+            409,
+            "alarm_revision_mismatch",
+            "報告の発火時刻が現在の登録と一致しません",
+          );
+        }
+      }
       const report: DeviceReport = {
         action: parsedBody.data.action,
         result: parsedBody.data.result,

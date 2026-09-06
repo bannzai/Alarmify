@@ -93,14 +93,27 @@ export const registerDeviceRequestSchema = z.object({
 export type RegisterDeviceRequest = z.infer<typeof registerDeviceRequestSchema>;
 
 /** アプリ向け: POST /v1/alarms/{alarmId}/device-reports */
-export const reportDeviceResultRequestSchema = z.object({
-  device_id: deviceIdSchema,
-  action: deviceReportActionSchema,
-  result: deviceReportResultSchema,
-  // エラーの説明は端末の localizedDescription。長さの上限は express.json の 32kb より十分小さく、Firestore のドキュメントを膨らませない 500 文字にする
-  error: z.string().max(500).nullable().optional(),
-  occurred_at: isoDateTimeSchema,
-});
+export const reportDeviceResultRequestSchema = z
+  .object({
+    device_id: deviceIdSchema,
+    action: deviceReportActionSchema,
+    result: deviceReportResultSchema,
+    // エラーの説明は端末の localizedDescription。長さの上限は express.json の 32kb より十分小さく、Firestore のドキュメントを膨らませない 500 文字にする
+    error: z.string().max(500).nullable().optional(),
+    occurred_at: isoDateTimeSchema,
+    // 端末が AlarmKit に登録した発火時刻。再スケジュール後に遅れて届いた前の登録の報告を弾くために、現在の登録の fireAt と突き合わせる
+    fire_at: isoDateTimeSchema.optional(),
+  })
+  .superRefine((value, ctx) => {
+    // cancel には端末側に発火時刻の概念が無いため fire_at を持たない。schedule だけ突き合わせに使うので必須にする
+    if (value.action === "schedule" && value.fire_at === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: "action が schedule の時は fire_at を指定してください",
+        path: ["fire_at"],
+      });
+    }
+  });
 export type ReportDeviceResultRequest = z.infer<typeof reportDeviceResultRequestSchema>;
 
 /** アプリ向け: POST /v1/api-tokens */
