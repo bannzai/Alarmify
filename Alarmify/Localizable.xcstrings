@@ -15420,10 +15420,214 @@
     },
     "Put the Authorization header value in 'secrets.yaml'." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ضع قيمة ترويسة Authorization في 'secrets.yaml'."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posa el valor de la capçalera Authorization a 'secrets.yaml'."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vlož hodnotu hlavičky Authorization do 'secrets.yaml'."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angiv værdien for Authorization-headeren i 'secrets.yaml'."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lege den Wert des Authorization-Headers in 'secrets.yaml' ab."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Βάλε την τιμή της κεφαλίδας Authorization στο 'secrets.yaml'."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon el valor de la cabecera Authorization en 'secrets.yaml'."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloca el valor del encabezado Authorization en 'secrets.yaml'."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää Authorization-otsakkeen arvo tiedostoon 'secrets.yaml'."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Placez la valeur de l’en-tête Authorization dans 'secrets.yaml'."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הצב את ערך כותרת ה־Authorization ב־'secrets.yaml'."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'secrets.yaml' में Authorization हेडर का मान डालें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi vrijednost zaglavlja Authorization u 'secrets.yaml'."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helyezd az Authorization fejléc értékét a 'secrets.yaml' fájlba."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masukkan nilai header Authorization ke 'secrets.yaml'."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci il valore dell'intestazione Authorization in 'secrets.yaml'."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "「secrets.yaml」に Authorization ヘッダーの値を置きます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'secrets.yaml'에 Authorization 헤더 값을 입력하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masukkan nilai pengepala Authorization ke dalam 'secrets.yaml'."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legg verdien til Authorization-headeren i 'secrets.yaml'."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zet de waarde van de Authorization-header in 'secrets.yaml'."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wstaw wartość nagłówka Authorization do 'secrets.yaml'."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloque o valor do cabeçalho Authorization em 'secrets.yaml'."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloca o valor do cabeçalho Authorization em 'secrets.yaml'."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introdu valoarea antetului Authorization în 'secrets.yaml'."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поместите значение заголовка Authorization в 'secrets.yaml'."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vlož hodnotu hlavičky Authorization do 'secrets.yaml'."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg in värdet för Authorization-headern i 'secrets.yaml'."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใส่ค่าของเฮดเดอร์ Authorization ใน 'secrets.yaml'"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization başlığının değerini 'secrets.yaml' dosyasına ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте значення заголовка Authorization у файл 'secrets.yaml'."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt giá trị của header Authorization vào 'secrets.yaml'."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Authorization 標頭值放入 'secrets.yaml'。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 Authorization 标头值放入 'secrets.yaml'。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Authorization 標頭值放入 'secrets.yaml'。"
           }
         }
       }
