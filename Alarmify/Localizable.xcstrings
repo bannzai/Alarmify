@@ -859,10 +859,214 @@
     },
     "A webhook notification that rings when a monitor goes down" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إشعار Webhook يُطلق المنبّه عند توقف المراقب عن العمل"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notificació de Webhook que fa sonar l’alarma quan un monitor deixa de funcionar"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oznámení Webhook, které spustí alarm, když monitor přestane fungovat"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Webhook-notifikation, der får alarmen til at ringe, når en monitor går ned"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Webhook-Benachrichtigung, die den Alarm auslöst, wenn ein Monitor ausfällt"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Μια ειδοποίηση Webhook που ενεργοποιεί το ξυπνητήρι όταν ένα monitor σταματήσει να λειτουργεί"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notificación de Webhook que hace sonar la alarma cuando un monitor deja de funcionar"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notificación de Webhook que hace sonar la alarma cuando un monitor deja de funcionar"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook-ilmoitus, joka soittaa hälytyksen, kun monitori lakkaa toimimasta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une notification Webhook qui déclenche l’alarme lorsqu’un moniteur tombe en panne"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הודעת Webhook שמשמיעה את האזעקה כשמוניטור מפסיק לפעול"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook सूचना, जो मॉनिटर बंद होने पर अलार्म बजाती है"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook obavijest koja aktivira alarm kada monitor prestane raditi"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook-értesítés, amely megszólaltatja az ébresztőt, ha egy monitor leáll"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifikasi Webhook yang membunyikan alarm saat monitor berhenti berfungsi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notifica Webhook che fa suonare la sveglia quando un monitor va offline"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "モニターがダウンした時に鳴らす Webhook 通知"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모니터가 다운되면 알람을 울리는 Webhook 알림"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pemberitahuan Webhook yang membunyikan penggera apabila monitor tidak berfungsi"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et Webhook-varsel som utløser alarmen når en monitor går ned"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een Webhook-melding die het alarm laat afgaan wanneer een monitor uitvalt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powiadomienie Webhook, które uruchamia alarm, gdy monitor przestanie działać"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma notificação Webhook que faz o alarme tocar quando um monitor fica indisponível"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma notificação Webhook que faz o alarme tocar quando um monitor fica indisponível"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O notificare Webhook care declanșează alarma când un monitor nu mai funcționează"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уведомление Webhook, которое включает будильник, когда монитор перестаёт работать"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oznámenie Webhook, ktoré spustí alarm, keď monitor prestane fungovať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Webhook-notis som utlöser alarmet när en monitor slutar fungera"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแจ้งเตือน Webhook ที่ส่งเสียงปลุกเมื่อมอนิเตอร์หยุดทำงาน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir monitör çalışmayı durdurduğunda alarmı çaldıran Webhook bildirimi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сповіщення Webhook, яке вмикає будильник, коли монітор перестає працювати"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông báo Webhook phát chuông báo khi một màn hình ngừng hoạt động"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監測器停止運作時響起鬧鐘的 Webhook 通知"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "监控器停止运行时响起闹钟的 Webhook 通知"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監控器停止運行時響起鬧鐘的 Webhook 通知"
           }
         }
       }
