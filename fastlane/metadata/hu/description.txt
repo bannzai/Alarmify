@@ -1,0 +1,26 @@
+A Signalarm bármely szolgáltatás HTTP-kérését valódi riasztássá alakítja iPhone-odon.
+
+Ez nem értesítés. A Signalarm az iOS 26 AlarmKit rendszerét használja, ezért a riasztás Néma módban és Fókusz módban is megszólal, nagy méretben megjelenik a zárolási képernyőn, és akkor is működik, ha az app zárva van.
+
+■ Három lépés
+- Engedélyezd a riasztásokat az appban, és hozz létre egy API-tokent
+- Hívd meg a Signalarm API-ját bármely szolgáltatásból, amely képes HTTP-kérést küldeni: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Parancsok
+- A beállított időpontban iPhone-od valódi riasztást ad. Soha nem kell megnyitnod az appot
+
+■ Neked készült
+- A telepítés vagy kötegelt feladat eredményének fogadásához kihagyhatatlan riasztásként
+- Hogy a monitorozás kritikus riasztása megbízhatóan felébresszen hajnali 3-kor
+- Hogy otthonautomatizálási események (behatolás, érzékelők) megszólaltassák a telefonodat
+- A holnapi ébresztés beütemezéséhez szerveroldali naptárból
+
+■ Az API használatával
+- Riasztások ütemezése, újraütemezése és visszavonása
+- Adj címet minden riasztásnak, hogy tudd, melyik szolgáltatás váltotta ki
+
+■ Csomagok
+- Ingyenes: egy API-token és havi riasztási keret
+- Pro: több token, korlátlan riasztás, riasztási előzmények
+
+■ Adatvédelem
+- A szerver csak a kézbesítéshez szükséges adatokat tárolja: fiókazonosítót, eszköztokeneket és riasztási kéréseket. A riasztási kérések 30 nap után automatikusan törlődnek
+- Nincs hirdetési SDK és nincs elemzési SDK

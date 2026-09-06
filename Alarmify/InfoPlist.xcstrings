@@ -4,16 +4,220 @@
     "NSAlarmKitUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يُستخدم لجدولة المنبّهات وإطلاقها استجابةً لخدماتك الخارجية."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’utilitza per programar i fer sonar alarmes activades pels teus serveis externs."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slouží k plánování a spuštění alarmů aktivovaných externími službami."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bruges til at planlægge og få alarmer til at ringe, når de udløses af dine eksterne tjenester."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Planen und Auslösen von Alarmen, die durch deine externen Dienste aktiviert werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χρησιμοποιείται για τον προγραμματισμό και την ενεργοποίηση ξυπνητηριών που πυροδοτούνται από τις εξωτερικές υπηρεσίες σου."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Used to schedule and ring alarms triggered by your external services."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa para programar y hacer sonar alarmas activadas por tus servicios externos."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa para programar y hacer sonar alarmas activadas por tus servicios externos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytetään ulkoisten palvelujesi käynnistämien hälytysten ajastamiseen ja soittamiseen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permet de programmer et de faire sonner des alarmes déclenchées par vos services externes."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "משמש לתזמון ולהשמעת התראות שמופעלות על ידי השירותים החיצוניים שלך."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपकी बाहरी सेवाओं से ट्रिगर होने वाले अलार्म शेड्यूल करने और बजाने के लिए उपयोग किया जाता है।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Služi za zakazivanje i oglašavanje alarma koje pokreću tvoje vanjske usluge."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A külső szolgáltatásaid által aktivált riasztások ütemezésére és megszólaltatására szolgál."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digunakan untuk menjadwalkan dan membunyikan alarm yang dipicu oleh layanan eksternal kamu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serve per programmare e far suonare gli allarmi attivati dai tuoi servizi esterni."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "外部サービスからの指示でアラームを登録し、設定した時刻に鳴らすために使用します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "외부 서비스가 트리거한 알람을 예약하고 울리는 데 사용됩니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digunakan untuk menjadualkan dan membunyikan penggera yang dicetuskan oleh perkhidmatan luaran anda."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brukes til å planlegge og få alarmer til å ringe når de utløses av de eksterne tjenestene dine."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt gebruikt om alarmen te plannen en te laten afgaan wanneer je externe services ze activeren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Służy do planowania i uruchamiania alarmów wyzwalanych przez twoje usługi zewnętrzne."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usado para programar e fazer soar alarmes acionados pelos seus serviços externos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usado para agendar e fazer soar alarmes acionados pelos teus serviços externos."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folosit pentru a programa și a face să sune alarme declanșate de serviciile tale externe."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используется для планирования и запуска будильников, активируемых вашими внешними сервисами."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slúži na plánovanie a spúšťanie alarmov aktivovaných tvojimi externými službami."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Används för att schemalägga och utlösa alarm som aktiveras av dina externa tjänster."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้สำหรับตั้งเวลาและสั่งให้นาฬิกาปลุกดังเมื่อบริการภายนอกของคุณทริกเกอร์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Harici hizmetlerin tarafından tetiklenen alarmları zamanlamak ve çaldırmak için kullanılır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Використовується для планування та запуску будильників, активованих вашими зовнішніми сервісами."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dùng để lên lịch và đổ chuông báo thức được các dịch vụ bên ngoài của bạn kích hoạt."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於排程並讓由你的外部服務觸發的鬧鐘響起。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于安排并让由你的外部服务触发的闹钟响起。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於安排並讓由你的外部服務觸發的鬧鐘響起。"
           }
         }
       }

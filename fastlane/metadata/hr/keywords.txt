@@ -1,0 +1,1 @@
+dežurstvo,automatizacija,home assistant,nadzor,buđenje,podsjetnik,programer

@@ -1,0 +1,26 @@
+Signalarm muuttaa minkä tahansa palvelun HTTP-pyynnön oikeaksi hälytykseksi iPhonessasi.
+
+Kyse ei ole ilmoituksesta. Signalarm käyttää iOS 26:n AlarmKitia, joten hälytys soi myös äänettömässä tilassa ja Keskity-tilassa, näkyy suurena lukitusnäytöllä ja toimii, vaikka sovellus olisi suljettu.
+
+■ Kolme vaihetta
+- Salli hälytykset sovelluksessa ja luo API-tunnus
+- Kutsu Signalarm APIa mistä tahansa HTTP-pyyntöjä lähettävästä palvelusta: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Oikotiet
+- Kun asettamasi aika koittaa, iPhonesi soittaa oikean hälytyksen. Sinun ei tarvitse avata sovellusta
+
+■ Suunniteltu tilanteisiin
+- Kun haluat saada käyttöönoton tai eräajon tuloksen hälytyksenä, jonka huomaat varmasti
+- Kun haluat herätä varmasti valvontasi kriittiseen hälytykseen 3 a.m.
+- Kun haluat saada iPhonesi soimaan kotiautomaation tapahtumista (tunkeutuminen, anturit)
+- Kun haluat ajastaa huomisen herätyksen palvelimen kalenterista
+
+■ API:n kautta
+- Ajasta hälytyksiä, muuta niiden ajankohtaa ja peruuta ne
+- Anna jokaiselle hälytykselle otsikko, jotta tiedät, mikä palvelu käynnisti sen
+
+■ Palvelupaketit
+- Ilmainen: yksi API-tunnus ja kuukausittainen hälytyskiintiö
+- Pro: useita API-tunnuksia, rajattomasti hälytyksiä ja hälytyshistoria
+
+■ Yksityisyys
+- Palvelimelle tallennetaan vain toimitukseen tarvittavat tiedot: tilin tunniste, laitetunnisteet ja hälytyspyynnöt. Hälytyspyynnöt poistetaan automaattisesti 30 päivän kuluttua
+- Ei mainos-SDK:ta eikä analytiikka-SDK:ta

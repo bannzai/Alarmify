@@ -1,0 +1,1 @@
+ügyelet,automatizálás,home assistant,monitorozás,ébresztő,emlékeztető,fejlesztő,szerverfigyelés

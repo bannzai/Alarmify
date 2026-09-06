@@ -1,0 +1,26 @@
+Signalarm mengubah permintaan HTTP dari layanan apa pun menjadi alarm nyata di iPhone kamu.
+
+Bukan notifikasi. Signalarm menggunakan AlarmKit di iOS 26, sehingga alarm berbunyi dalam mode Hening dan Fokus, tampil besar di layar kunci, dan tetap berfungsi meskipun aplikasi ditutup.
+
+■ Tiga langkah
+• Izinkan alarm di aplikasi dan buat token API
+• Panggil API Signalarm dari apa pun yang dapat mengirim permintaan HTTP: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Pintasan
+• Pada waktu yang kamu tetapkan, iPhone kamu membunyikan alarm nyata. Kamu tidak perlu membuka aplikasi
+
+■ Dirancang untuk
+• Mendapatkan hasil deploy atau tugas batch sebagai alarm yang tidak mungkin kamu lewatkan
+• Dibangunkan dengan andal oleh alert kritis dari sistem pemantauanmu pada pukul 3 pagi
+• Membunyikan ponselmu melalui event otomatisasi rumah (penyusupan, sensor)
+• Menjadwalkan alarm bangun besok dari kalender di server
+
+■ Melalui API
+• Menjadwalkan, menjadwalkan ulang, dan membatalkan alarm
+• Memberi judul pada setiap alarm agar kamu tahu layanan mana yang memicunya
+
+■ Paket
+• Gratis: satu token API dan kuota alarm bulanan
+• Pro: beberapa token, alarm tak terbatas, dan riwayat alarm
+
+■ Privasi
+• Server hanya menyimpan yang diperlukan untuk pengiriman: pengenal akun, token perangkat, dan permintaan alarm. Permintaan alarm dihapus otomatis setelah 30 hari
+• Tanpa SDK iklan, tanpa SDK analitik

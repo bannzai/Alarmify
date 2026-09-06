@@ -1,0 +1,1 @@
+on-call,automatizace,home assistant,monitoring,probuzení,připomínka,vývojář,upozornění,server

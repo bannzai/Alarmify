@@ -1,0 +1,1 @@
+Signalarm - Alarmy z API

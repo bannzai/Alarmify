@@ -1,0 +1,26 @@
+Signalarm premení HTTP požiadavku z ľubovoľnej služby na skutočný alarm v iPhone.
+
+Nie je to notifikácia. Signalarm používa AlarmKit v iOS 26, takže alarm zazvoní aj v režime ticha a počas Sústredenia, výrazne sa zobrazí na zamknutej obrazovke a funguje aj po zatvorení aplikácie.
+
+■ Tri kroky
+- Povoľ alarmy v aplikácii a vytvor API token
+- Zavolaj API Signalarm zo všetkého, čo dokáže odoslať HTTP požiadavku: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Skratky
+- V nastavenom čase tvoj iPhone spustí skutočný alarm. Aplikáciu nemusíš nikdy otvárať
+
+■ Na čo sa hodí
+- Dostaneš výsledok nasadenia alebo dávkovej úlohy ako alarm, ktorý nemôžeš prehliadnuť
+- Kritické upozornenie z monitorovania ťa spoľahlivo zobudí o 3 a.m.
+- Tvoj telefón zazvoní pri udalostiach domácej automatizácie (vniknutie, senzory)
+- Zajtrajšie zobudenie naplánuješ podľa kalendára na serveri
+
+■ Z API
+- Naplánovanie, preplánovanie a zrušenie alarmov
+- Každému alarmu priradíš názov, aby si vedel, ktorá služba ho spustila
+
+■ Plány
+- Bezplatný: jeden API token a mesačný limit alarmov
+- Pro: viac tokenov, neobmedzené alarmy, história alarmov
+
+■ Súkromie
+- Server ukladá iba údaje potrebné na doručenie: identifikátor účtu, tokeny zariadení a požiadavky na alarmy. Požiadavky na alarmy sa po 30 dňoch automaticky vymažú
+- Žiadny SDK na reklamy ani analytický SDK

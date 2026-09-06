@@ -12,9 +12,6 @@ struct SettingsView: View {
         case failed(message: String)
     }
 
-    /// 公開している削除手順のページ (英語版)。ロケール別の URL が壊れた時の戻り先
-    private static let englishAccountDeletionGuideURL = URL(string: "https://bannzai.github.io/Alarmify/AccountDeletion-en")!
-
     @State private var session = AccountSession.shared
     @State private var deletionState: DeletionState = .idle
 
@@ -115,7 +112,7 @@ struct SettingsView: View {
                 .accessibilityIdentifier("settings_delete_account")
                 .disabled(session.uid == nil || deletionState == .deleting)
 
-                Link(destination: accountDeletionGuideURL) {
+                Link(destination: LegalLinks.accountDeletionGuide) {
                     // ja: 削除の手順と削除されるデータ
                     Text("Deletion steps and the data that is deleted")
                 }
@@ -199,12 +196,6 @@ struct SettingsView: View {
             // ja: この iPhone に登録済みのアラームは残っています。不要な場合はアラーム一覧から取り消してください
             Text("Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them.")
         }
-    }
-
-    /// 表示中の言語に対応する削除手順のページ
-    private var accountDeletionGuideURL: URL {
-        // ja: https://bannzai.github.io/Alarmify/AccountDeletion-ja
-        URL(string: String(localized: "https://bannzai.github.io/Alarmify/AccountDeletion-en")) ?? Self.englishAccountDeletionGuideURL
     }
 
     /// キャッシュした entitlement が今この瞬間も有効か
