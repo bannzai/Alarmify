@@ -15634,10 +15634,214 @@
     },
     "Put the curl call at the end of a script or in a crontab. 'fire_in' counts seconds from the request, so no date arithmetic is needed." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ضع استدعاء curl في نهاية برنامج نصي أو في crontab. يحسب 'fire_in' عدد الثواني من وقت الطلب، لذا لا حاجة إلى حساب التواريخ."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Col·loca la crida a curl al final d’un script o en un crontab. 'fire_in' compta els segons des de la sol·licitud, de manera que no cal fer càlculs de dates."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umístěte volání curl na konec skriptu nebo do crontabu. 'fire_in' počítá sekundy od požadavku, takže není potřeba počítat s daty."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Placér curl-kaldet i slutningen af et script eller i en crontab. 'fire_in' tæller sekunder fra anmodningen, så du behøver ikke beregne datoer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platziere den curl-Aufruf am Ende eines Skripts oder in einem Crontab. 'fire_in' zählt die Sekunden ab der Anfrage, daher sind keine Datumsberechnungen nötig."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Βάλε την κλήση curl στο τέλος ενός script ή σε ένα crontab. Το 'fire_in' μετρά τα δευτερόλεπτα από το αίτημα, επομένως δεν χρειάζονται υπολογισμοί ημερομηνιών."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloca la llamada a curl al final de un script o en un crontab. 'fire_in' cuenta los segundos desde la solicitud, así que no necesitas hacer cálculos de fechas."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon la llamada a curl al final de un script o en un crontab. 'fire_in' cuenta los segundos desde la solicitud, así que no tienes que hacer cálculos de fechas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää curl-kutsu komentosarjan loppuun tai crontabiin. 'fire_in' laskee sekunnit pyynnöstä alkaen, joten päivämäärien laskemista ei tarvita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Placez l’appel curl à la fin d’un script ou dans un crontab. 'fire_in' compte les secondes à partir de la requête : aucun calcul de date n’est nécessaire."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוסף את קריאת curl בסוף סקריפט או ב-crontab. 'fire_in' סופר את השניות מרגע הבקשה, לכן אין צורך בחישובי תאריכים."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "किसी स्क्रिप्ट के अंत में या crontab में curl कॉल रखें। 'fire_in' अनुरोध के बाद के सेकंड गिनता है, इसलिए तारीखों की गणना करने की आवश्यकता नहीं है।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi poziv curl na kraj skripte ili u crontab. 'fire_in' broji sekunde od zahtjeva, pa nije potrebno računati datume."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helyezd a curl-hívást egy szkript végére vagy egy crontabba. A 'fire_in' a kéréstől számított másodperceket számolja, ezért nincs szükség dátumszámításra."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letakkan panggilan curl di akhir skrip atau dalam crontab. 'fire_in' menghitung detik sejak permintaan, jadi kamu tidak perlu menghitung tanggal."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci la chiamata curl alla fine di uno script o in un crontab. 'fire_in' conta i secondi dalla richiesta, quindi non servono calcoli sulle date."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "スクリプトの末尾や crontab に curl を置きます。「fire_in」は受信からの秒数なので日時の計算は不要です"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스크립트 끝이나 crontab에 curl 호출을 넣으세요. 'fire_in'은 요청부터 경과한 초를 세므로 날짜를 계산할 필요가 없어요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letakkan panggilan curl di hujung skrip atau dalam crontab. 'fire_in' mengira saat dari permintaan, jadi anda tidak perlu membuat pengiraan tarikh."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legg curl-kallet til på slutten av et skript eller i en crontab. 'fire_in' teller sekunder fra forespørselen, så du trenger ikke beregne datoer."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zet de curl-aanroep aan het einde van een script of in een crontab. 'fire_in' telt de seconden vanaf het verzoek, dus je hoeft geen datumberekeningen te maken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umieść wywołanie curl na końcu skryptu lub w crontabie. 'fire_in' liczy sekundy od żądania, więc nie musisz wykonywać obliczeń daty."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloque a chamada curl no final de um script ou em um crontab. 'fire_in' conta os segundos a partir da solicitação, então você não precisa fazer cálculos de data."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloca a chamada curl no final de um script ou num crontab. 'fire_in' conta os segundos desde o pedido, por isso não precisas de fazer cálculos de datas."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plasează apelul curl la finalul unui script sau într-un crontab. 'fire_in' numără secundele de la solicitare, deci nu trebuie să calculezi date."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разместите вызов curl в конце скрипта или в crontab. 'fire_in' отсчитывает секунды с момента запроса, поэтому вычислять даты не нужно."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umiestni volanie curl na koniec skriptu alebo do crontabu. 'fire_in' počíta sekundy od požiadavky, takže nemusíš počítať dátumy."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg curl-anropet i slutet av ett skript eller i en crontab. 'fire_in' räknar sekunder från begäran, så du behöver inte beräkna datum."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "วางการเรียกใช้ curl ไว้ท้ายสคริปต์หรือใน crontab 'fire_in' จะนับจำนวนวินาทีตั้งแต่ได้รับคำขอ จึงไม่ต้องคำนวณวันที่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "curl çağrısını bir betiğin sonuna veya crontab'a ekle. 'fire_in', isteğin alınmasından itibaren geçen saniyeleri sayar; bu nedenle tarih hesaplaması yapmana gerek yok."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте виклик curl у кінці скрипту або в crontab. 'fire_in' відлічує секунди від моменту запиту, тому обчислювати дати не потрібно."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt lệnh gọi curl ở cuối tập lệnh hoặc trong crontab. 'fire_in' đếm số giây kể từ yêu cầu, vì vậy bạn không cần tính toán ngày tháng."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 curl 呼叫放在腳本末尾或 crontab 中。'fire_in' 會從收到請求開始計算秒數，因此無需計算日期。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 curl 调用放在脚本末尾或 crontab 中。'fire_in' 从请求开始计算秒数，因此无需进行日期计算。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 curl 呼叫放在腳本末尾或 crontab 中。'fire_in' 從收到請求開始計算秒數，因此無需進行日期計算。"
           }
         }
       }
