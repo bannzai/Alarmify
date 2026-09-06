@@ -22485,10 +22485,214 @@
     },
     "To ring only when a command fails, keep its exit status in a variable and exit with it after sending the alarm, so CI still sees the failure." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لإصدار الرنين عند فشل أحد الأوامر فقط، خزّن حالة خروجه في متغير، ثم اخرج بهذه الحالة بعد إرسال الإنذار، حتى يظل CI يرى الفشل."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per fer sonar l’alarma només quan una ordre falla, desa’n l’estat de sortida en una variable i surt amb aquest estat després d’enviar l’alarma perquè CI continuï detectant el fall."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby alarm zazvonil jen při selhání příkazu, ulož jeho návratový kód do proměnné a po odeslání alarmu ukonči skript s tímto kódem, aby CI stále zaznamenalo selhání."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvis alarmen kun skal gå, når en kommando mislykkes, skal du gemme dens exitstatus i en variabel og afslutte med den efter at have sendt alarmen, så CI stadig registrerer fejlen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damit der Alarm nur bei einem fehlgeschlagenen Befehl klingelt, speichere seinen Exit-Status in einer Variablen und beende den Prozess nach dem Senden des Alarms mit diesem Status, damit CI den Fehler weiterhin erkennt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Για να χτυπάει μόνο όταν αποτυγχάνει μια εντολή, αποθήκευσε τον κωδικό εξόδου της σε μια μεταβλητή και τερμάτισε με αυτόν μετά την αποστολή του συναγερμού, ώστε το CI να εξακολουθεί να βλέπει την αποτυχία."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que suene solo cuando falle un comando, guarda su estado de salida en una variable y termina con ese estado después de enviar la alarma, para que CI siga detectando el fallo."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que suene solo cuando falle un comando, guarda su estado de salida en una variable y termina con ese estado después de enviar la alarma, para que CI siga detectando el fallo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jos haluat hälytyksen soivan vain komennon epäonnistuessa, tallenna sen poistumiskoodi muuttujaan ja lopeta sillä hälytyksen lähettämisen jälkeen, jotta CI havaitsee edelleen virheen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour que l’alarme sonne uniquement en cas d’échec d’une commande, conservez son code de sortie dans une variable, puis quittez avec ce code après avoir envoyé l’alarme afin que CI détecte toujours l’échec."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כדי שההתראה תצלצל רק כשפקודה נכשלת, שמור את סטטוס היציאה שלה במשתנה וצא עם הסטטוס הזה לאחר שליחת ההתראה, כדי ש-CI עדיין יזהה את הכישלון."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अगर आप चाहते हैं कि कमांड विफल होने पर ही अलार्म बजे, तो उसका एग्ज़िट स्टेटस किसी वैरिएबल में रखें और अलार्म भेजने के बाद उसी स्टेटस के साथ बाहर निकलें, ताकि CI अब भी विफलता देख सके।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Da bi alarm zazvonio samo kada naredba ne uspije, spremi njezin izlazni status u varijablu i izađi s tim statusom nakon slanja alarma kako bi CI i dalje vidio neuspjeh."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ha azt szeretnéd, hogy az ébresztő csak parancshiba esetén szólaljon meg, mentsd a kilépési állapotát egy változóba, majd az ébresztő elküldése után ezzel az állapottal lépj ki, hogy a CI továbbra is észlelje a hibát."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agar alarm hanya berbunyi saat sebuah perintah gagal, simpan status keluarnya dalam variabel, lalu keluar dengan status tersebut setelah mengirim alarm agar CI tetap melihat kegagalannya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per far suonare l’allarme solo quando un comando fallisce, conserva il suo stato di uscita in una variabile e termina con quello dopo aver inviato l’allarme, così CI continuerà a rilevare l’errore."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "失敗時だけ鳴らす時は終了ステータスを変数に取り、アラーム送信後にその値で exit します (CI が失敗を検知できるように)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "명령이 실패한 경우에만 알람이 울리게 하려면 종료 상태를 변수에 저장한 다음 알람을 보낸 후 해당 상태로 종료해야 CI에서 실패를 계속 감지할 수 있어요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untuk membunyikan penggera hanya apabila arahan gagal, simpan status keluarannya dalam pemboleh ubah dan keluar dengan status itu selepas menghantar penggera supaya CI masih mengesan kegagalan."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvis alarmen bare skal ringe når en kommando mislykkes, lagre avslutningsstatusen i en variabel og avslutt med den etter at du har sendt alarmen, slik at CI fortsatt registrerer feilen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als je de alarmbel alleen wilt laten afgaan wanneer een opdracht mislukt, bewaar dan de exitstatus in een variabele en beëindig het proces daarmee nadat je het alarm hebt verzonden, zodat CI de fout blijft zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby alarm uruchamiał się tylko po niepowodzeniu polecenia, zapisz jego kod wyjścia w zmiennej, a po wysłaniu alarmu zakończ działanie z tym kodem, aby CI nadal wykrywało błąd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para o alarme tocar somente quando um comando falhar, armazene o status de saída em uma variável e saia com esse status após enviar o alarme, para que o CI continue identificando a falha."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para o alarme tocar apenas quando um comando falhar, guarda o respetivo estado de saída numa variável e termina com esse estado depois de enviar o alarme, para que o CI continue a detetar a falha."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pentru ca alarma să sune doar când o comandă eșuează, salvează codul de ieșire într-o variabilă și încheie execuția cu el după trimiterea alarmei, astfel încât CI să detecteze în continuare eroarea."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы сигнал срабатывал только при ошибке команды, сохраните её код завершения в переменной и завершите выполнение с этим кодом после отправки сигнала, чтобы CI по-прежнему видел ошибку."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ak chceš, aby alarm zaznel iba pri zlyhaní príkazu, ulož jeho návratový kód do premennej a po odoslaní alarmu ukonči skript s týmto kódom, aby CI naďalej zaznamenalo zlyhanie."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om alarmet bara ska ringa när ett kommando misslyckas, spara dess slutstatus i en variabel och avsluta med den efter att du har skickat alarmet, så att CI fortfarande registrerar felet."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "หากคุณต้องการให้เสียงเตือนดังเฉพาะเมื่อคำสั่งทำงานล้มเหลว ให้เก็บสถานะการออกของคำสั่งไว้ในตัวแปร แล้วออกด้วยสถานะนั้นหลังส่งสัญญาณเตือน เพื่อให้ CI ยังคงตรวจพบความล้มเหลว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarmın yalnızca bir komut başarısız olduğunda çalması için çıkış durumunu bir değişkende sakla ve alarmı gönderdikten sonra bu durumla çık; böylece CI hatayı görmeye devam eder."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоб сигнал спрацьовував лише в разі помилки команди, збережіть її код завершення у змінній і завершіть виконання з цим кодом після надсилання сигналу, щоб CI і далі бачила помилку."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Để chuông chỉ reo khi một lệnh thất bại, hãy lưu trạng thái thoát của lệnh vào một biến rồi thoát với trạng thái đó sau khi gửi báo thức, để CI vẫn nhận biết lỗi."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你只想在指令失敗時響起，請將其退出狀態儲存到變數中，傳送鬧鐘後以該狀態退出，讓 CI 仍能偵測到失敗。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你只想在命令失败时响铃，请将命令的退出状态保存到变量中，并在发送闹钟后以该状态退出，这样 CI 仍能检测到失败。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你只想在指令失敗時響起，請將指令的結束狀態儲存到變數中，並在傳送鬧鐘後以該狀態結束，讓 CI 仍能偵測到失敗。"
           }
         }
       }
