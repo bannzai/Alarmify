@@ -23127,10 +23127,214 @@
     },
     "Under Optional Webhook settings, enable Custom Payload and paste the template." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "في إعدادات Webhook الاختيارية، فعّل Custom Payload والصق القالب."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A la configuració opcional de Webhook, activa Custom Payload i enganxa la plantilla."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V nastavení Optional Webhook zapni Custom Payload a vlož šablonu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Under de valgfrie Webhook-indstillinger aktiverer du Custom Payload og indsætter skabelonen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviere in den optionalen Webhook-Einstellungen Custom Payload und füge die Vorlage ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Στις προαιρετικές ρυθμίσεις Webhook, ενεργοποίησε το Custom Payload και επικόλλησε το πρότυπο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la configuración opcional de Webhook, activa Custom Payload y pega la plantilla."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la configuración opcional de Webhook, activa Custom Payload y pega la plantilla."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota Optional Webhook -asetuksissa Custom Payload käyttöön ja liitä malli."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans les réglages facultatifs du Webhook, activez Custom Payload et collez le modèle."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בהגדרות ה‑Webhook האופציונליות, הפעל את Custom Payload והדבק את התבנית."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "वैकल्पिक Webhook सेटिंग्स में, Custom Payload सक्षम करें और टेम्पलेट पेस्ट करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "U neobaveznim postavkama Webhooka uključi Custom Payload i zalijepi predložak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az opcionális Webhook-beállításokban engedélyezd a Custom Payload funkciót, majd illeszd be a sablont."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di pengaturan Webhook opsional, aktifkan Custom Payload lalu tempel templat."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nelle impostazioni opzionali del Webhook, attiva Custom Payload e incolla il modello."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Optional Webhook settings で Custom Payload を有効にし、テンプレートを貼り付けます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional Webhook 설정에서 Custom Payload를 활성화하고 템플릿을 붙여 넣으세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dalam tetapan Webhook pilihan, aktifkan Custom Payload dan tampal templat."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Under valgfrie Webhook-innstillinger aktiverer du Custom Payload og limer inn malen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel in de optionele Webhook-instellingen Custom Payload in en plak de sjabloon."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W opcjonalnych ustawieniach Webhook włącz Custom Payload i wklej szablon."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nas configurações opcionais do Webhook, ative Custom Payload e cole o modelo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nas definições opcionais do Webhook, ativa Custom Payload e cola o modelo."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "În setările opționale pentru Webhook, activează Custom Payload și lipește șablonul."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В дополнительных настройках Webhook включите Custom Payload и вставьте шаблон."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V voliteľných nastaveniach Webhooku zapni Custom Payload a vlož šablónu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Under valfria Webhook-inställningar aktiverar du Custom Payload och klistrar in mallen."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ในส่วนการตั้งค่า Webhook เสริม ให้เปิดใช้ Custom Payload แล้ววางเทมเพลต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İsteğe bağlı Webhook ayarlarında Custom Payload'ı etkinleştirip şablonu yapıştır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У необов’язкових налаштуваннях Webhook увімкніть Custom Payload і вставте шаблон."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trong phần cài đặt Webhook tùy chọn, hãy bật Custom Payload rồi dán mẫu."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在「Optional Webhook」設定中，啟用「Custom Payload」並貼上範本。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在“Optional Webhook”设置中，启用“Custom Payload”并粘贴模板。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在「Optional Webhook」設定中，啟用「Custom Payload」並貼上範本。"
           }
         }
       }
