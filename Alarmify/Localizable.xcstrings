@@ -4500,10 +4500,214 @@
     },
     "Call 'rest_command.alarmify_alarm' from an automation's actions with 'fire_in' and 'title'." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استدعِ 'rest_command.alarmify_alarm' من إجراءات الأتمتة باستخدام 'fire_in' و'title'."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crida 'rest_command.alarmify_alarm' des de les accions d'una automatització amb 'fire_in' i 'title'."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V akcích automatizace zavolej 'rest_command.alarmify_alarm' s 'fire_in' a 'title'."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kald 'rest_command.alarmify_alarm' fra handlingerne i en automatisering med 'fire_in' og 'title'."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rufe 'rest_command.alarmify_alarm' in den Aktionen einer Automatisierung mit 'fire_in' und 'title' auf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κάλεσε το 'rest_command.alarmify_alarm' από τις ενέργειες ενός αυτοματισμού με 'fire_in' και 'title'."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama a 'rest_command.alarmify_alarm' desde las acciones de una automatización con 'fire_in' y 'title'."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama a 'rest_command.alarmify_alarm' desde las acciones de una automatización con 'fire_in' y 'title'."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kutsu 'rest_command.alarmify_alarm' automaation toiminnoista käyttäen parametreja 'fire_in' ja 'title'."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appelez 'rest_command.alarmify_alarm' depuis les actions d'une automatisation avec 'fire_in' et 'title'."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "קרא ל־'rest_command.alarmify_alarm' מתוך הפעולות של אוטומציה, עם 'fire_in' ו־'title'."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "किसी ऑटोमेशन की कार्रवाइयों से 'fire_in' और 'title' के साथ 'rest_command.alarmify_alarm' को कॉल करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozovi 'rest_command.alarmify_alarm' iz radnji automatizacije uz 'fire_in' i 'title'."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az automatizálás műveleteiből hívd meg a 'rest_command.alarmify_alarm' parancsot a 'fire_in' és 'title' paraméterekkel."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Panggil 'rest_command.alarmify_alarm' dari tindakan otomatisasi dengan 'fire_in' dan 'title'."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiama 'rest_command.alarmify_alarm' dalle azioni di un'automazione con 'fire_in' e 'title'."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "オートメーションの actions から「rest_command.alarmify_alarm」を「fire_in」と「title」付きで呼びます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'fire_in'과 'title'을 사용해 자동화의 동작에서 'rest_command.alarmify_alarm'을 호출해요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Panggil 'rest_command.alarmify_alarm' daripada tindakan automasi dengan 'fire_in' dan 'title'."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kall 'rest_command.alarmify_alarm' fra handlingene i en automatisering med 'fire_in' og 'title'."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roep 'rest_command.alarmify_alarm' aan vanuit de acties van een automatisering met 'fire_in' en 'title'."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wywołaj 'rest_command.alarmify_alarm' z akcji automatyzacji, używając 'fire_in' i 'title'."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chame 'rest_command.alarmify_alarm' nas ações de uma automação usando 'fire_in' e 'title'."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chama 'rest_command.alarmify_alarm' a partir das ações de uma automação com 'fire_in' e 'title'."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apelează 'rest_command.alarmify_alarm' din acțiunile unei automatizări, cu 'fire_in' și 'title'."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вызовите 'rest_command.alarmify_alarm' из действий автоматизации с помощью 'fire_in' и 'title'."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zavolaj 'rest_command.alarmify_alarm' z akcií automatizácie pomocou 'fire_in' a 'title'."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anropa 'rest_command.alarmify_alarm' från åtgärderna i en automatisering med 'fire_in' och 'title'."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เรียกใช้ 'rest_command.alarmify_alarm' จากการทำงานของระบบอัตโนมัติโดยใช้ 'fire_in' และ 'title'"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir otomasyonun eylemlerinden 'rest_command.alarmify_alarm' komutunu 'fire_in' ve 'title' ile çağır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Викличте 'rest_command.alarmify_alarm' із дій автоматизації за допомогою 'fire_in' і 'title'."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gọi 'rest_command.alarmify_alarm' từ các tác vụ của một quy trình tự động bằng 'fire_in' và 'title'."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在自動化的動作中，使用 'fire_in' 和 'title' 呼叫 'rest_command.alarmify_alarm'。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在自动化操作中，使用 'fire_in' 和 'title' 调用 'rest_command.alarmify_alarm'。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在自動化的動作中，使用 'fire_in' 和 'title' 呼叫 'rest_command.alarmify_alarm'。"
           }
         }
       }
