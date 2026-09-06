@@ -13063,10 +13063,214 @@
     },
     "One curl line for scripts, crontab and CI jobs" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سطر curl واحد للبرامج النصية وcrontab ومهام CI"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una línia de curl per a scripts, crontab i tasques de CI"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden řádek curl pro skripty, crontab a úlohy CI"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Én curl-linje til scripts, crontab og CI-job"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine curl-Zeile für Skripte, crontab und CI-Jobs"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Μία γραμμή curl για σενάρια, crontab και εργασίες CI"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una línea de curl para scripts, crontab y trabajos de CI"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una línea de curl para scripts, crontab y trabajos de CI"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yksi curl-rivi skripteille, crontabille ja CI-töille"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une ligne curl pour les scripts, crontab et les tâches CI"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שורת curl אחת לסקריפטים, ל־crontab ולמשימות CI"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "स्क्रिप्ट, crontab और CI जॉब के लिए curl की एक पंक्ति"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jedan curl redak za skripte, crontab i CI zadatke"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egy curl-sor szkriptekhez, crontabhoz és CI-feladatokhoz"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satu baris curl untuk skrip, crontab, dan tugas CI"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una riga curl per script, crontab e attività CI"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "スクリプト・crontab・CI から 1 行の curl で鳴らす"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스크립트, crontab 및 CI 작업을 위한 curl 한 줄"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satu baris curl untuk skrip, crontab dan tugas CI"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Én curl-linje for skript, crontab og CI-jobber"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eén curl-regel voor scripts, crontab en CI-taken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jedna linia curl do skryptów, crontaba i zadań CI"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma linha de curl para scripts, crontab e tarefas de CI"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma linha de curl para scripts, crontab e tarefas de CI"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O singură linie curl pentru scripturi, crontab și sarcini CI"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Одна строка curl для скриптов, crontab и задач CI"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden riadok curl pre skripty, crontab a úlohy CI"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En curl-rad för skript, crontab och CI-jobb"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "curl หนึ่งบรรทัดสำหรับสคริปต์ crontab และงาน CI"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Betikler, crontab ve CI işleri için tek curl satırı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Один рядок curl для скриптів, crontab і завдань CI"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Một dòng curl cho tập lệnh, crontab và tác vụ CI"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "供指令碼、crontab 和 CI 工作使用的一行 curl"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "供脚本、crontab 和 CI 任务使用的一行 curl"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "供指令碼、crontab 和 CI 工作使用的一行 curl"
           }
         }
       }
