@@ -8352,10 +8352,214 @@
     },
     "Enable the notification on the monitors that should wake you, then press Test. UP events ring too, with an 'is up' title." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فعّل الإشعارات على أجهزة المراقبة التي تريد أن توقظك، ثم اضغط على Test. ترنّ أحداث UP أيضًا، بعنوان \"is up\"."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa la notificació als monitors que t’han de despertar i prem Test. Els esdeveniments UP també fan sonar l’alarma, amb el títol «is up»."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povol oznámení u monitorů, které tě mají vzbudit, a pak stiskni Test. Události UP také spustí alarm s názvem „is up“."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivér notifikationer på de monitorer, der skal vække dig, og tryk derefter på Test. UP-hændelser udløser også alarmen med titlen \"is up\"."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviere die Benachrichtigung für die Monitore, die dich wecken sollen, und tippe dann auf Test. Auch UP-Ereignisse lösen mit dem Titel „is up“ einen Alarm aus."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενεργοποίησε την ειδοποίηση στα monitor που πρέπει να σε ξυπνούν και πάτησε Test. Τα συμβάντα UP χτυπούν επίσης, με τίτλο «is up»."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa la notificación en los monitores que deben despertarte y pulsa Test. Los eventos UP también hacen sonar la alarma, con el título «is up»."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa la notificación en los monitores que deben despertarte y presiona Test. Los eventos UP también hacen sonar la alarma, con el título «is up»."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota ilmoitukset käyttöön monitoreissa, joiden on tarkoitus herättää sinut, ja napauta sitten Test. Myös UP-tapahtumat soittavat hälytyksen, jonka otsikko on ”is up”."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activez la notification sur les moniteurs qui doivent vous réveiller, puis appuyez sur Test. Les événements UP font aussi sonner l’alarme, avec le titre « is up »."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפעל את ההתראה במוניטורים שאמורים להעיר אותך, ואז לחץ על Test. גם אירועי UP מצלצלים, עם הכותרת \"is up\"."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जिन मॉनिटरों से आप जागना चाहते हैं, उन पर सूचनाएँ सक्षम करें, फिर Test दबाएँ। UP इवेंट भी \"is up\" शीर्षक के साथ अलार्म बजाते हैं।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omogući obavijesti na monitorima koji te trebaju probuditi, a zatim pritisni Test. Događaji UP također pokreću alarm s naslovom „is up“."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engedélyezd az értesítést azokon a monitorokon, amelyeknek fel kell ébreszteniük, majd koppints a Test gombra. Az UP-események is megszólaltatják a riasztást „is up” címmel."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktifkan notifikasi pada monitor yang harus membangunkan kamu, lalu tekan Test. Peristiwa UP juga membunyikan alarm dengan judul \"is up\"."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita la notifica sui monitor che devono svegliarti, poi premi Test. Anche gli eventi UP fanno suonare la sveglia, con il titolo «is up»."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "鳴らしたいモニターで通知を有効にし、Test で確認します。UP でも鳴ります (タイトルが「is up」になります)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "깨워야 할 모니터에서 알림을 활성화한 다음 Test를 누르세요. UP 이벤트도 \"is up\"이라는 제목으로 알람을 울려요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktifkan pemberitahuan pada monitor yang sepatutnya mengejutkan anda, kemudian tekan Test. Peristiwa UP turut membunyikan penggera dengan tajuk \"is up\"."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver varsler på monitorene som skal vekke deg, og trykk deretter på Test. UP-hendelser utløser også alarmen med tittelen «is up»."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel de melding in voor de monitors die je moeten wekken en tik daarna op Test. Ook UP-gebeurtenissen laten een alarm afgaan met de titel ‘is up’."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz powiadomienia na monitorach, które mają cię obudzić, a następnie naciśnij Test. Zdarzenia UP również uruchamiają alarm z tytułem „is up“."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ative a notificação nos monitores que devem acordar você e toque em Test. Eventos UP também fazem o alarme tocar, com o título \"is up\"."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativa a notificação nos monitores que te devem acordar e toca em Test. Os eventos UP também fazem soar o alarme, com o título \"is up\"."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activează notificarea pentru monitoarele care trebuie să te trezească, apoi apasă Test. Și evenimentele UP declanșează alarma, cu titlul „is up“."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включите уведомления для мониторов, которые должны вас разбудить, затем нажмите Test. События UP также запускают сигнал тревоги с заголовком «is up»."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoľ upozornenia na monitoroch, ktoré ťa majú zobudiť, a potom stlač Test. Udalosti UP tiež spustia alarm s názvom „is up“."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera aviseringar på de monitorer som ska väcka dig och tryck sedan på Test. Även UP-händelser utlöser alarmet med titeln ”is up”."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้การแจ้งเตือนบนมอนิเตอร์ที่ต้องการให้ปลุก จากนั้นกด Test เหตุการณ์ UP จะส่งเสียงปลุกด้วย โดยใช้ชื่อ \"is up\""
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seni uyandırması gereken monitörlerde bildirimi etkinleştir, ardından Test'e bas. UP etkinlikleri de \"is up\" başlığıyla alarmı çaldırır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увімкніть сповіщення на моніторах, які мають вас розбудити, а потім натисніть Test. Події UP також запускають сигнал із заголовком «is up»."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bật thông báo trên các monitor cần đánh thức bạn, rồi nhấn Test. Các sự kiện UP cũng phát chuông báo thức với tiêu đề \"is up\"."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用需要喚醒你的監控項目通知，然後按 Test。UP 事件也會響起鬧鐘，標題為「is up」。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在需要唤醒你的监控项上启用通知，然后按 Test。UP 事件也会响起闹钟，标题为“is up”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在需要喚醒你的監控項目上啟用通知，然後按 Test。UP 事件也會響起鬧鐘，標題為「is up」。"
           }
         }
       }
