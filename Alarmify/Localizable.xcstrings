@@ -18630,10 +18630,214 @@
     },
     "Set Method to POST and add the Authorization and Content-Type headers." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عيّن الطريقة إلى POST وأضف رأسي Authorization وContent-Type."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estableix el mètode en POST i afegeix les capçaleres Authorization i Content-Type."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav metodu na POST a přidej hlavičky Authorization a Content-Type."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstil metoden til POST, og tilføj headerne Authorization og Content-Type."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setze die Methode auf POST und füge die Header Authorization und Content-Type hinzu."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρύθμισε τη μέθοδο σε POST και πρόσθεσε τις κεφαλίδες Authorization και Content-Type."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece el método en POST y añade las cabeceras Authorization y Content-Type."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece el método en POST y añade los encabezados Authorization y Content-Type."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta menetelmäksi POST ja lisää Authorization- ja Content-Type-otsakkeet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez la méthode sur POST et ajoutez les en-têtes Authorization et Content-Type."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדר את השיטה ל‑POST והוסף את הכותרות Authorization ו‑Content-Type."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "विधि को POST पर सेट करें और Authorization तथा Content-Type हेडर जोड़ें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi metodu na POST i dodaj zaglavlja Authorization i Content-Type."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Állítsd a metódust POST értékre, majd add hozzá az Authorization és a Content-Type fejléceket."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atur metode ke POST dan tambahkan header Authorization serta Content-Type."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta il metodo su POST e aggiungi gli header Authorization e Content-Type."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "メソッドを POST にし、ヘッダーに Authorization と Content-Type を追加します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메서드를 POST로 설정하고 Authorization 및 Content-Type 헤더를 추가하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tetapkan kaedah kepada POST dan tambahkan pengepala Authorization serta Content-Type."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angi metoden til POST, og legg til topptekstene Authorization og Content-Type."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel de methode in op POST en voeg de headers Authorization en Content-Type toe."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustaw metodę na POST i dodaj nagłówki Authorization oraz Content-Type."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina o método como POST e adicione os cabeçalhos Authorization e Content-Type."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define o método como POST e adiciona os cabeçalhos Authorization e Content-Type."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setează metoda la POST și adaugă antetele Authorization și Content-Type."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите метод POST и добавьте заголовки Authorization и Content-Type."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav metódu na POST a pridaj hlavičky Authorization a Content-Type."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ställ in metoden på POST och lägg till rubrikerna Authorization och Content-Type."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตั้งค่าวิธีการเป็น POST แล้วเพิ่มส่วนหัว Authorization และ Content-Type"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yöntemi POST olarak ayarla ve Authorization ile Content-Type üst bilgilerini ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установіть метод POST і додайте заголовки Authorization та Content-Type."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt phương thức thành POST rồi thêm các tiêu đề Authorization và Content-Type."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將方法設為 POST，並加入 Authorization 和 Content-Type 標頭。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将方法设置为 POST，并添加 Authorization 和 Content-Type 标头。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將方法設為 POST，並新增 Authorization 與 Content-Type 標頭。"
           }
         }
       }
