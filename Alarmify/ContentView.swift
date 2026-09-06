@@ -341,8 +341,13 @@ struct ContentView: View {
     }
 
     /// バックエンドの履歴を読み直す。失敗はエラーとして表示し、前回の内容は残さない (古い履歴を最新として見せない)。
-    /// 未サインインは起動直後・多言語スクリーンショット撮影で通る正常な経路のためエラーにせず、サインイン後の読み直しに任せる
+    /// 未サインインは起動直後に通る正常な経路のためエラーにせず、サインイン後の読み直しに任せる
     private func loadHistory() async {
+        #if DEBUG
+        // 多言語スクリーンショット撮影はサインインしないが、keychain に残った匿名アカウントで本番の履歴を読んでしまうと
+        // 撮影結果がネットワークと keychain の状態に依存する (AlarmifyApp の方針) ため、履歴は読まず空のまま撮る
+        if isSnapshotUITest { return }
+        #endif
         historyLoading = true
         defer { historyLoading = false }
         do {
