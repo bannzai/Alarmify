@@ -25,25 +25,29 @@ struct ContentView: View {
         NavigationStack {
             List {
                 Section {
-                    if let nextAlarm, let fireDate = nextAlarm.fixedFireDate {
-                        VStack(alignment: .leading, spacing: 4) {
-                            if let title = AlarmTitleStore.shared.title(id: nextAlarm.id) {
-                                // 外部サービスから送られたタイトルはそのまま表示する
-                                Text(verbatim: title)
-                                    .font(.headline)
+                    // 発火時刻を過ぎたアラームを (再読み込みを待たずに) その場でカードから外すため、
+                    // 残り時間の表示と同じ 1 秒周期で「次に鳴るアラーム」を判定し直す
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        if let nextAlarm = nextAlarm(now: context.date), let fireDate = nextAlarm.fixedFireDate {
+                            VStack(alignment: .leading, spacing: 4) {
+                                if let title = AlarmTitleStore.shared.title(id: nextAlarm.id) {
+                                    // 外部サービスから送られたタイトルはそのまま表示する
+                                    Text(verbatim: title)
+                                        .font(.headline)
+                                }
+                                Text(fireDate, format: .dateTime.month().day().hour().minute())
+                                    .font(.title2.monospacedDigit())
+                                Text(fireDate, style: .relative)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            Text(fireDate, format: .dateTime.month().day().hour().minute())
-                                .font(.title2.monospacedDigit())
-                            Text(fireDate, style: .relative)
-                                .font(.caption)
+                            .accessibilityIdentifier("home_next_alarm")
+                        } else {
+                            // ja: 次に鳴るアラームはありません
+                            Text("No upcoming alarm")
                                 .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("home_next_alarm_empty")
                         }
-                        .accessibilityIdentifier("home_next_alarm")
-                    } else {
-                        // ja: 次に鳴るアラームはありません
-                        Text("No upcoming alarm")
-                            .foregroundStyle(.secondary)
-                            .accessibilityIdentifier("home_next_alarm_empty")
                     }
                 } header: {
                     // ja: 次に鳴るアラーム
@@ -274,10 +278,9 @@ struct ContentView: View {
         }
     }
 
-    /// 次に鳴るアラーム。この端末に登録済みの固定日時のアラームのうち、発火時刻がまだ来ていない最も早いもの
-    private var nextAlarm: Alarm? {
-        let now = Date.now
-        return alarms
+    /// 次に鳴るアラーム。この端末に登録済みの固定日時のアラームのうち、発火時刻が `now` より後の最も早いもの
+    private func nextAlarm(now: Date) -> Alarm? {
+        alarms
             .filter { ($0.fixedFireDate ?? .distantPast) > now }
             .min { ($0.fixedFireDate ?? .distantFuture) < ($1.fixedFireDate ?? .distantFuture) }
     }
