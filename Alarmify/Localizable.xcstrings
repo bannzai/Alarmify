@@ -3,10 +3,214 @@
   "strings" : {
     "%@ / month" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / شهر"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / měsíc"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / måned"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / Monat"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / μήνα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mes"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / kuukausi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mois"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / חודש"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / माह"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mj."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / hónap"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / bulan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mese"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "月 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / 월"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / bulan"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / måned"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / miesiąc"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mês"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mês"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / lună"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / месяц"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / mesiac"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / månad"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / เดือน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / ay"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / місяць"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / tháng"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / 月"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / 月"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / 月"
           }
         }
       }
@@ -51,6 +255,36 @@
         }
       }
     },
+    "API reference" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API リファレンス"
+          }
+        }
+      }
+    },
+    "API tokens" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API トークン"
+          }
+        }
+      }
+    },
+    "APNs device token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APNs デバイストークン"
+          }
+        }
+      }
+    },
     "Account" : {
       "localizations" : {
         "ja" : {
@@ -91,9 +325,6 @@
         }
       }
     },
-    "Signalarm" : {
-      "shouldTranslate" : false
-    },
     "AlarmKit" : {
       "shouldTranslate" : false
     },
@@ -133,36 +364,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アラームの権限を許可する"
-          }
-        }
-      }
-    },
-    "API reference" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "API リファレンス"
-          }
-        }
-      }
-    },
-    "API tokens" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "API トークン"
-          }
-        }
-      }
-    },
-    "APNs device token" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "APNs デバイストークン"
           }
         }
       }
@@ -437,16 +638,6 @@
         }
       }
     },
-    "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ja"
-          }
-        }
-      }
-    },
     "Include this account ID when you request deletion by email." : {
       "localizations" : {
         "ja" : {
@@ -703,6 +894,16 @@
     "Pro" : {
       "shouldTranslate" : false
     },
+    "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。"
+          }
+        }
+      }
+    },
     "Purchases aren't ready yet. Please try again later." : {
       "localizations" : {
         "ja" : {
@@ -719,16 +920,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "購入を復元できませんでした。"
-          }
-        }
-      }
-    },
-    "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "エミュレータに接続している間は購入と復元を行えません。開発者メニューで接続先を production に戻してください。"
           }
         }
       }
@@ -953,6 +1144,9 @@
         }
       }
     },
+    "Signalarm" : {
+      "shouldTranslate" : false
+    },
     "Signing in" : {
       "localizations" : {
         "ja" : {
@@ -1143,22 +1337,22 @@
         }
       }
     },
-    "Use a stubbed API client" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通信をスタブに差し替える"
-          }
-        }
-      }
-    },
     "Use Test on the contact point; your iPhone should ring within a minute." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知先の Test で、1 分以内に iPhone が鳴ることを確認します"
+          }
+        }
+      }
+    },
+    "Use a stubbed API client" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信をスタブに差し替える"
           }
         }
       }
@@ -1179,6 +1373,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アカウントを削除しました"
+          }
+        }
+      }
+    },
+    "https://bannzai.github.io/Alarmify/AccountDeletion-en" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://bannzai.github.io/Alarmify/AccountDeletion-ja"
           }
         }
       }
