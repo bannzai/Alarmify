@@ -1,0 +1,1 @@
+päivystys,automaatio,home assistant,valvonta,herätys,muistutus,kehittäjä,integraatio,ilmoitus

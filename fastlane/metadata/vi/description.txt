@@ -1,0 +1,26 @@
+Signalarm biến một HTTP request từ bất kỳ dịch vụ nào thành một báo thức thật trên iPhone của bạn.
+
+Không phải là thông báo. Signalarm sử dụng AlarmKit trên iOS 26, nên báo thức sẽ reo qua Chế độ im lặng và Tập trung, chiếm trọn màn hình khóa và hoạt động ngay cả khi ứng dụng đã đóng.
+
+■ Ba bước
+- Cho phép báo thức trong ứng dụng và tạo API token
+- Gọi API Signalarm từ bất kỳ dịch vụ nào có thể gửi HTTP request: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Phím tắt
+- Đến thời điểm đã đặt, iPhone của bạn sẽ reo bằng một báo thức thật. Bạn không cần mở ứng dụng
+
+■ Dành cho
+- Nhận kết quả triển khai hoặc tác vụ hàng loạt dưới dạng báo thức không thể bỏ lỡ
+- Được đánh thức chắc chắn bởi cảnh báo nghiêm trọng từ hệ thống giám sát lúc 3 giờ sáng
+- Kích hoạt chuông iPhone từ các sự kiện tự động hóa nhà (phát hiện xâm nhập, cảm biến)
+- Lên lịch báo thức ngày mai từ lịch trên máy chủ
+
+■ Từ API
+- Lên lịch, lên lịch lại và hủy báo thức
+- Đặt tiêu đề cho từng báo thức để biết dịch vụ nào đã kích hoạt báo thức đó
+
+■ Gói dịch vụ
+- Miễn phí: một API token và hạn mức báo thức hàng tháng
+- Pro: nhiều token, báo thức không giới hạn, lịch sử báo thức
+
+■ Quyền riêng tư
+- Máy chủ chỉ lưu những gì cần cho việc gửi: mã định danh tài khoản, device token và yêu cầu báo thức. Các yêu cầu báo thức tự động bị xóa sau 30 ngày
+- Không dùng SDK quảng cáo hay SDK phân tích

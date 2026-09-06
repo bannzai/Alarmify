@@ -1,0 +1,26 @@
+Signalarm menukar permintaan HTTP daripada mana-mana perkhidmatan menjadi penggera sebenar pada iPhone anda.
+
+Ini bukan sekadar pemberitahuan. Signalarm menggunakan AlarmKit pada iOS 26, jadi penggera berbunyi walaupun dalam mod Senyap dan Fokus, memenuhi skrin kunci, dan berfungsi walaupun aplikasi ditutup.
+
+■ Tiga langkah
+- Benarkan penggera dalam aplikasi dan cipta token API
+- Panggil API Signalarm daripada apa sahaja yang boleh menghantar permintaan HTTP: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Pintasan
+- Pada waktu yang anda tetapkan, iPhone anda membunyikan penggera sebenar. Anda tidak perlu membuka aplikasi
+
+■ Sesuai untuk
+- Mendapatkan hasil deploy atau kerja kelompok sebagai penggera yang tidak boleh terlepas
+- Dikejutkan dengan pasti oleh amaran kritikal daripada pemantauan anda pada 3 a.m.
+- Membunyikan telefon melalui peristiwa automasi rumah (pencerobohan, sensor)
+- Menjadualkan penggera bangun esok daripada kalendar di pelayan
+
+■ Daripada API
+- Menjadualkan, menjadualkan semula dan membatalkan penggera
+- Memberikan tajuk pada setiap penggera supaya anda tahu perkhidmatan yang mencetuskannya
+
+■ Pelan
+- Percuma: satu token API dan kuota penggera bulanan
+- Pro: berbilang token, penggera tanpa had, sejarah penggera
+
+■ Privasi
+- Pelayan hanya menyimpan perkara yang diperlukan untuk penghantaran: pengecam akaun, token peranti dan permintaan penggera. Permintaan penggera dipadam secara automatik selepas 30 hari
+- Tiada SDK iklan, tiada SDK analitik

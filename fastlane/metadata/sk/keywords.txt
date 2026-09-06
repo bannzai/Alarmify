@@ -1,0 +1,1 @@
+pohotovosť,automatizácia,home assistant,monitoring,zobudenie,pripomienka,vývojár,server,budík

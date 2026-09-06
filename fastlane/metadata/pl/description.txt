@@ -1,0 +1,26 @@
+Signalarm zamienia żądanie HTTP z dowolnej usługi w prawdziwy alarm na iPhonie.
+
+To nie jest powiadomienie. Signalarm korzysta z AlarmKit w iOS 26, więc alarm dzwoni mimo trybu cichego i trybu skupienia, wyświetla się na całym ekranie blokady i działa nawet po zamknięciu aplikacji.
+
+■ Trzy kroki
+- Zezwól na alarmy w aplikacji i utwórz token API
+- Wywołuj API Signalarm z dowolnego narzędzia, które potrafi wysyłać żądania HTTP: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Skróty
+- O wybranej godzinie iPhone uruchomi prawdziwy alarm. Nie musisz otwierać aplikacji
+
+■ Dla
+- Otrzymywania wyniku wdrożenia lub zadania wsadowego jako alarmu, którego nie da się przeoczyć
+- Niezawodnego budzenia przez krytyczny alert z monitoringu o 3 nad ranem
+- Uruchamiania alarmu na telefonie na podstawie zdarzeń automatyki domowej (wykrycie wtargnięcia, czujniki)
+- Planowania jutrzejszego alarmu pobudki na podstawie kalendarza po stronie serwera
+
+■ Z poziomu API
+- Planowanie, ponowne planowanie i anulowanie alarmów
+- Nadawanie każdemu alarmowi tytułu, aby wiedzieć, która usługa go uruchomiła
+
+■ Plany
+- Bezpłatny: jeden token API i miesięczny limit alarmów
+- Pro: wiele tokenów, nielimitowane alarmy i historia alarmów
+
+■ Prywatność
+- Serwer przechowuje tylko dane niezbędne do dostarczenia: identyfikator konta, tokeny urządzeń i żądania alarmów. Żądania alarmów są automatycznie usuwane po 30 dniach
+- Nie używamy reklamowych ani analitycznych SDK

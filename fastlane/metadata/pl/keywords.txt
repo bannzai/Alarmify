@@ -1,0 +1,1 @@
+webhook,dyżur,automatyzacja,home assistant,monitoring,pobudka,przypomnienie,deweloper

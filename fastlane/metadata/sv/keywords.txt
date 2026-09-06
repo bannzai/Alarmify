@@ -1,0 +1,1 @@
+webhook,automation,home assistant,övervakning,väckning,påminnelse,jour,utvecklare
