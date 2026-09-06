@@ -2176,10 +2176,214 @@
     },
     "Alerting > Contact points: add a Webhook contact point with the URL and HTTP Method POST." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: أضف نقطة اتصال Webhook باستخدام عنوان URL وطريقة HTTP POST."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: afegeix un punt de contacte de Webhook amb l’URL i el mètode HTTP POST."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: přidej kontaktní bod Webhook s URL a metodou HTTP POST."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: tilføj et Webhook-kontaktpunkt med URL'en og HTTP-metoden POST."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: Füge einen Webhook-Kontaktpunkt mit der URL und der HTTP-Methode POST hinzu."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: πρόσθεσε ένα σημείο επαφής Webhook με το URL και τη μέθοδο HTTP POST."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: añade un punto de contacto de Webhook con la URL y el método HTTP POST."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: agrega un punto de contacto de Webhook con la URL y el método HTTP POST."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: lisää Webhook-yhteyspiste, jossa käytetään URL-osoitetta ja HTTP-menetelmää POST."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points : ajoutez un point de contact Webhook avec l’URL et la méthode HTTP POST."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: הוסף נקודת קשר של Webhook עם כתובת ה-URL ושיטת ה-HTTP POST."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: URL और HTTP विधि POST के साथ Webhook संपर्क बिंदु जोड़ें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: dodaj kontaktnu točku Webhook s URL-om i HTTP metodom POST."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: adj hozzá egy Webhook-kapcsolati pontot az URL-lel és a POST HTTP-módszerrel."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: tambahkan titik kontak Webhook dengan URL dan metode HTTP POST."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: aggiungi un punto di contatto Webhook con l’URL e il metodo HTTP POST."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alerting > Contact points で Webhook の通知先を追加し、URL と HTTP Method (POST) を設定します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: URL과 HTTP 메서드 POST를 사용해 Webhook 연락처를 추가해요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: tambahkan titik hubungan Webhook dengan URL dan kaedah HTTP POST."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: legg til et Webhook-kontaktpunkt med URL-en og HTTP-metoden POST."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: voeg een Webhook-contactpunt toe met de URL en de HTTP-methode POST."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: dodaj punkt kontaktowy Webhook z adresem URL i metodą HTTP POST."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: adicione um ponto de contato Webhook com a URL e o método HTTP POST."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: adiciona um ponto de contacto Webhook com o URL e o método HTTP POST."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: adaugă un punct de contact Webhook cu URL-ul și metoda HTTP POST."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: добавьте контактную точку Webhook с URL и методом HTTP POST."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: pridaj kontaktný bod Webhook s URL a metódou HTTP POST."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: lägg till en Webhook-kontaktpunkt med URL:en och HTTP-metoden POST."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: เพิ่มจุดติดต่อ Webhook พร้อม URL และวิธี HTTP POST"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: URL ve POST HTTP yöntemiyle bir Webhook iletişim noktası ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: додайте контактну точку Webhook з URL і методом HTTP POST."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points: thêm điểm liên hệ Webhook với URL và phương thức HTTP POST."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points：加入 Webhook 聯絡點，設定 URL 及 HTTP 方法 POST。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points：添加 Webhook 联系点，设置 URL 和 HTTP 方法 POST。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerting > Contact points：新增 Webhook 聯絡點，設定 URL 與 HTTP 方法 POST。"
           }
         }
       }
