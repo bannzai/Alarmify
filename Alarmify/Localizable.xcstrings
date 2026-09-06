@@ -18416,10 +18416,214 @@
     },
     "Set Authentication Header Scheme to Bearer and paste the token into Credentials." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضبط Authentication Header Scheme على Bearer والصق الرمز في Credentials."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estableix Authentication Header Scheme en Bearer i enganxa el token a Credentials."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav Authentication Header Scheme na Bearer a vlož token do Credentials."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstil Authentication Header Scheme til Bearer, og indsæt tokenet i Credentials."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setze Authentication Header Scheme auf Bearer und füge das Token in Credentials ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρύθμισε το Authentication Header Scheme σε Bearer και επικόλλησε το token στο Credentials."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece Authentication Header Scheme en Bearer y pega el token en Credentials."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece Authentication Header Scheme en Bearer y pega el token en Credentials."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta Authentication Header Scheme -asetukseksi Bearer ja liitä token Credentials-kohtaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez Authentication Header Scheme sur Bearer, puis collez le token dans Credentials."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדר את Authentication Header Scheme ל‑Bearer והדבק את האסימון ב‑Credentials."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication Header Scheme को Bearer पर सेट करें और token को Credentials में पेस्ट करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi Authentication Header Scheme na Bearer i zalijepi token u Credentials."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Állítsd az Authentication Header Scheme értékét Bearerre, és illeszd be a tokent a Credentials mezőbe."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atur Authentication Header Scheme ke Bearer, lalu tempel token ke Credentials."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta Authentication Header Scheme su Bearer e incolla il token in Credentials."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Authentication Header Scheme を Bearer にし、Credentials にトークンを貼り付けます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication Header Scheme을 Bearer로 설정하고 Credentials에 토큰을 붙여 넣으세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tetapkan Authentication Header Scheme kepada Bearer dan tampalkan token ke dalam Credentials."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angi Authentication Header Scheme til Bearer, og lim inn tokenet i Credentials."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel Authentication Header Scheme in op Bearer en plak de token in Credentials."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustaw Authentication Header Scheme na Bearer i wklej token do Credentials."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina Authentication Header Scheme como Bearer e cole o token em Credentials."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina Authentication Header Scheme como Bearer e cole o token em Credentials."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setează Authentication Header Scheme la Bearer și lipește tokenul în Credentials."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите Authentication Header Scheme в значение Bearer и вставьте токен в Credentials."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav Authentication Header Scheme na Bearer a vlož token do Credentials."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ställ in Authentication Header Scheme på Bearer och klistra in tokenet i Credentials."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตั้งค่า Authentication Header Scheme เป็น Bearer แล้ววางโทเค็นลงใน Credentials"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication Header Scheme'i Bearer olarak ayarlayın ve token'ı Credentials'a yapıştırın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установіть Authentication Header Scheme у значення Bearer і вставте токен у Credentials."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt Authentication Header Scheme thành Bearer rồi dán token vào Credentials."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Authentication Header Scheme 設為 Bearer，然後將 token 貼到 Credentials。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 Authentication Header Scheme 设置为 Bearer，然后将 token 粘贴到 Credentials。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 Authentication Header Scheme 設為 Bearer，然後將 token 貼到 Credentials。"
           }
         }
       }
