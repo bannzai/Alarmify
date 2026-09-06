@@ -645,10 +645,214 @@
     },
     "A webhook contact point that rings when an alert fires" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نقطة اتصال Webhook تُصدر رنينًا عند تشغيل تنبيه"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un punt de contacte de Webhook que sona quan s’activa una alerta"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontaktní bod Webhooku, který zazvoní při aktivaci upozornění"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et Webhook-kontaktpunkt, der ringer, når en advarsel udløses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Webhook-Kontaktpunkt, der klingelt, wenn ein Alert ausgelöst wird"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ένα σημείο επαφής Webhook που χτυπά όταν ενεργοποιείται μια ειδοποίηση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un punto de contacto de Webhook que suena cuando se activa una alerta"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un punto de contacto de Webhook que suena cuando se activa una alerta"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook-yhteyspiste, joka soi hälytyksen lauetessa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un point de contact Webhook qui sonne lorsqu’une alerte se déclenche"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "נקודת קשר של Webhook שמצלצלת כשמופעלת התראה"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "एक Webhook संपर्क बिंदु, जो अलर्ट ट्रिगर होने पर बजता है"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webhook kontaktna točka koja zvoni kada se aktivira upozorenje"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riasztás aktiválásakor megszólaló Webhook-kapcsolattartási pont"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titik kontak Webhook yang berdering saat peringatan terpicu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un punto di contatto Webhook che squilla quando scatta un avviso"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "アラートの発火時に鳴らす Webhook 通知先"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림이 발생하면 울리는 Webhook 연락 지점"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titik hubungan Webhook yang berdering apabila amaran dicetuskan"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et Webhook-kontaktpunkt som ringer når et varsel utløses"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een Webhook-contactpunt dat afgaat wanneer een waarschuwing wordt geactiveerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punkt kontaktowy Webhook, który dzwoni po uruchomieniu alertu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um ponto de contato Webhook que toca quando um alerta é acionado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um ponto de contacto Webhook que toca quando um alerta é acionado"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un punct de contact Webhook care sună când se declanșează o alertă"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Контактная точка Webhook, которая звонит при срабатывании оповещения"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontaktný bod Webhooku, ktorý zazvoní pri aktivácii upozornenia"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Webhook-kontaktpunkt som ringer när en avisering utlöses"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จุดติดต่อ Webhook ที่ส่งเสียงเมื่อการแจ้งเตือนทำงาน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir uyarı tetiklendiğinde çalan Webhook iletişim noktası"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Контактна точка Webhook, яка дзвонить під час спрацювання сповіщення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Điểm liên hệ Webhook đổ chuông khi cảnh báo được kích hoạt"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警報觸發時響鈴的 Webhook 聯絡點"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警报触发时响铃的 Webhook 联系点"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警報觸發時響鈴的 Webhook 聯絡點"
           }
         }
       }
