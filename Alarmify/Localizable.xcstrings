@@ -10064,10 +10064,214 @@
     },
     "Issue an API token to see these snippets with your token filled in." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أصدر رمز API لرؤية هذه المقاطع البرمجية مع تعبئة رمزك فيها."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emet un token d'API per veure aquests fragments amb el teu token emplenat."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vydaj API token a uvidíš tyto úryvky s vyplněným tokenem."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udsted et API-token for at se disse kodestykker med dit token udfyldt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstelle ein API-Token, um diese Snippets mit deinem Token zu sehen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Έκδωσε ένα API token για να δεις αυτά τα αποσπάσματα με το token σου συμπληρωμένο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genera un token de API para ver estos fragmentos con tu token ya incluido."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genera un token de API para ver estos fragmentos con tu token ya incluido."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo API-tunnus, jotta näet nämä katkelmat tunnuksesi valmiiksi täytettynä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Générez un token API pour voir ces extraits avec votre token prérempli."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הנפק טוקן API כדי לראות את הקטעים האלה כשהטוקן שלך כבר משולב בהם."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इन स्निपेट्स में अपना टोकन भरा हुआ देखने के लिए API टोकन जारी करें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izdaj API token da vidiš ove isječke sa svojim tokenom."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igényelj API-tokent, hogy ezeket a kódrészleteket a tokeneddel kitöltve lásd."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terbitkan token API untuk melihat cuplikan ini dengan token kamu yang sudah terisi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emetti un token API per vedere questi snippet con il tuo token già inserito."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API トークンを発行すると、スニペットにトークンが埋め込まれた状態で表示されます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 토큰을 발급하면 토큰이 입력된 스니펫을 볼 수 있어요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jana token API untuk melihat snippet ini dengan token anda diisi."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utsted et API-token for å se disse kodeutdragene med tokenet ditt utfylt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak een API-token aan om deze snippets te bekijken met je token ingevuld."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wydaj token API, aby zobaczyć te fragmenty z wstawionym tokenem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emita um token de API para ver estes snippets com seu token preenchido."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emite um token de API para veres estes snippets com o teu token preenchido."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emite un token API pentru a vedea aceste fragmente cu tokenul tău completat."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выпустите API-токен, чтобы увидеть эти фрагменты с подставленным токеном."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vydaj API token a uvidíš tieto úryvky s vyplneným tokenom."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utfärda en API-token för att se dessa kodsnuttar med din token ifylld."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ออกโทเค็น API เพื่อดูโค้ดตัวอย่างเหล่านี้โดยกรอกโทเค็นของคุณไว้แล้ว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API belirteci oluşturarak bu kod parçacıklarını belirtecinin doldurulmuş hâliyle görebilirsin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Випустіть API-токен, щоб переглянути ці фрагменти із заповненим токеном."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cấp token API để xem các đoạn mã này với token của bạn đã được điền sẵn."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發出 API token，即可查看已填入你 token 的這些程式碼片段。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成 API token，即可查看已填入你 token 的这些代码片段。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "產生 API token，即可查看已填入你 token 的這些程式碼片段。"
           }
         }
       }
