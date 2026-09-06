@@ -310,8 +310,9 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
             Text(entry.fireAt, format: .dateTime.month().day().hour().minute())
-            // 発火時刻を迎えた瞬間に「登録済み」から「鳴りました」へ切り替えるため、発火時刻でだけ描き直す
-            TimelineView(.explicit([entry.fireAt])) { context in
+            // 発火時刻を迎えた瞬間に「登録済み」から「鳴りました」へ切り替えるため、次に鳴るアラームのカードと同じ 1 秒周期で判定し直す。
+            // `.explicit([entry.fireAt])` は最初の描画から context.date が発火時刻になり、未来の登録が「鳴りました」と出る (simtunnel で確認) ため使わない
+            TimelineView(.periodic(from: .now, by: 1)) { context in
                 historyStatusText(entry, now: context.date)
                     .font(.caption)
                     .foregroundStyle(.secondary)
