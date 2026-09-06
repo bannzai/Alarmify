@@ -19058,10 +19058,214 @@
     },
     "Set Request Body to JSON and add 'fire_in' (Number) and 'title' (Text)." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضبط جسم الطلب على JSON وأضف 'fire_in' (رقم) و'title' (نص)."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estableix el cos de la sol·licitud en JSON i afegeix 'fire_in' (Número) i 'title' (Text)."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav tělo požadavku na JSON a přidej 'fire_in' (Číslo) a 'title' (Text)."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstil anmodningens brødtekst til JSON, og tilføj 'fire_in' (Tal) og 'title' (Tekst)."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setze den Anfragetext auf JSON und füge 'fire_in' (Zahl) und 'title' (Text) hinzu."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Όρισε το σώμα του αιτήματος ως JSON και πρόσθεσε 'fire_in' (Αριθμός) και 'title' (Κείμενο)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece el cuerpo de la solicitud en JSON y añade 'fire_in' (Número) y 'title' (Texto)."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establece el cuerpo de la solicitud en JSON y añade 'fire_in' (Número) y 'title' (Texto)."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta pyynnön runko JSON-muotoon ja lisää 'fire_in' (Numero) ja 'title' (Teksti)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez le corps de la requête sur JSON et ajoutez 'fire_in' (Nombre) et 'title' (Texte)."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדר את גוף הבקשה ל‑JSON והוסף 'fire_in' (מספר) ו‑'title' (טקסט)."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अनुरोध के मुख्य भाग को JSON पर सेट करें और 'fire_in' (संख्या) और 'title' (टेक्स्ट) जोड़ें।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postavi tijelo zahtjeva na JSON i dodaj 'fire_in' (Broj) i 'title' (Tekst)."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Állítsd be a kérés törzsét JSON-ra, és add hozzá a „fire_in” (Szám) és „title” (Szöveg) mezőt."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atur isi permintaan ke JSON dan tambahkan 'fire_in' (Angka) dan 'title' (Teks)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta il corpo della richiesta su JSON e aggiungi 'fire_in' (Numero) e 'title' (Testo)."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "要求本文を JSON にし、「fire_in」(数値) と「title」(テキスト) を追加します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요청 본문을 JSON으로 설정하고 'fire_in'(숫자)과 'title'(텍스트)을 추가하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tetapkan badan permintaan kepada JSON dan tambahkan 'fire_in' (Nombor) dan 'title' (Teks)."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sett forespørselsinnholdet til JSON, og legg til 'fire_in' (Tall) og 'title' (Tekst)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel de body van het verzoek in op JSON en voeg 'fire_in' (Getal) en 'title' (Tekst) toe."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustaw treść żądania na JSON i dodaj 'fire_in' (Liczba) oraz 'title' (Tekst)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina o corpo da solicitação como JSON e adicione 'fire_in' (Número) e 'title' (Texto)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define o corpo do pedido como JSON e adiciona 'fire_in' (Número) e 'title' (Texto)."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setează corpul cererii ca JSON și adaugă 'fire_in' (Număr) și 'title' (Text)."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите тело запроса в формате JSON и добавьте 'fire_in' (Число) и 'title' (Текст)."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastav telo požiadavky na JSON a pridaj 'fire_in' (Číslo) a 'title' (Text)."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange brödtexten i begäran som JSON och lägg till 'fire_in' (Tal) och 'title' (Text)."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตั้งค่าเนื้อหาคำขอเป็น JSON แล้วเพิ่ม 'fire_in' (ตัวเลข) และ 'title' (ข้อความ)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek gövdesini JSON olarak ayarla ve 'fire_in' (Sayı) ile 'title' (Metin) alanlarını ekle."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установіть тіло запиту у форматі JSON і додайте 'fire_in' (Число) та 'title' (Текст)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt phần thân của yêu cầu thành JSON và thêm 'fire_in' (Số) và 'title' (Văn bản)."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將請求本文設定為 JSON，並新增 'fire_in'（數字）和 'title'（文字）。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将请求正文设置为 JSON，并添加 'fire_in'（数字）和 'title'（文本）。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將請求本文設定為 JSON，並新增 'fire_in'（數字）和 'title'（文字）。"
           }
         }
       }
