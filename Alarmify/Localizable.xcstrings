@@ -17560,10 +17560,214 @@
     },
     "Runs the same path as a received push (AlarmRequest → AlarmKitScheduler.apply) to schedule or cancel an alarm with a fixed id. Use this on the simulator, where simctl push does not reach that path." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يستخدم المسار نفسه للإشعار الفوري المستلم (AlarmRequest → AlarmKitScheduler.apply) لجدولة منبّه أو إلغائه باستخدام معرّف ثابت. استخدمه على المحاكي، حيث لا يصل simctl push إلى هذا المسار."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilitza el mateix flux que una notificació push rebuda (AlarmRequest → AlarmKitScheduler.apply) per programar o cancel·lar una alarma amb un identificador fix. Fes-lo servir al simulador, on simctl push no arriba a aquest flux."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Používá stejnou cestu jako přijatá push notifikace (AlarmRequest → AlarmKitScheduler.apply) k naplánování nebo zrušení alarmu s pevným ID. Použijte ji v simulátoru, kde se simctl push touto cestou nedostane."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bruger samme sti som et modtaget push (AlarmRequest → AlarmKitScheduler.apply) til at planlægge eller annullere en alarm med et fast id. Brug den i simulatoren, hvor simctl push ikke når denne sti."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwendet denselben Pfad wie ein empfangener Push (AlarmRequest → AlarmKitScheduler.apply), um einen Wecker mit einer festen ID zu planen oder abzubrechen. Verwende ihn im Simulator, da simctl push diesen Pfad nicht erreicht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χρησιμοποιεί την ίδια διαδρομή με ένα ληφθέν push (AlarmRequest → AlarmKitScheduler.apply) για τον προγραμματισμό ή την ακύρωση μιας ειδοποίησης με σταθερό ID. Χρησιμοποίησέ το στον simulator, όπου το simctl push δεν ακολουθεί αυτή τη διαδρομή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa la misma ruta que un push recibido (AlarmRequest → AlarmKitScheduler.apply) para programar o cancelar una alarma con un ID fijo. Úsalo en el simulador, donde simctl push no llega a esa ruta."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa la misma ruta que un push recibido (AlarmRequest → AlarmKitScheduler.apply) para programar o cancelar una alarma con un ID fijo. Úsalo en el simulador, donde simctl push no llega a esa ruta."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käyttää samaa polkua kuin vastaanotettu push (AlarmRequest → AlarmKitScheduler.apply) hälytyksen ajastamiseen tai peruuttamiseen kiinteällä tunnuksella. Käytä tätä simulaattorissa, jossa simctl push ei kulje tätä polkua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilise le même chemin qu’une notification push reçue (AlarmRequest → AlarmKitScheduler.apply) pour programmer ou annuler une alarme avec un identifiant fixe. Utilisez-le dans le simulateur, où simctl push n’emprunte pas ce chemin."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "משתמש באותו מסלול כמו push שהתקבל (AlarmRequest → AlarmKitScheduler.apply) כדי לתזמן או לבטל התראה עם מזהה קבוע. השתמש בו בסימולטור, שבו simctl push לא מגיע למסלול הזה."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्राप्त push (AlarmRequest → AlarmKitScheduler.apply) के समान पथ का उपयोग करके एक निश्चित ID वाली अलार्म को शेड्यूल या रद्द करता है। सिम्युलेटर में इसका उपयोग करें, जहाँ simctl push इस पथ तक नहीं पहुँचता।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koristi isti put kao primljeni push (AlarmRequest → AlarmKitScheduler.apply) za zakazivanje ili otkazivanje alarma s fiksnim ID-om. Koristi ga u simulatoru, gdje simctl push ne prolazi tim putem."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A fogadott push értesítéssel azonos útvonalat használja (AlarmRequest → AlarmKitScheduler.apply) egy rögzített azonosítójú ébresztés ütemezéséhez vagy törléséhez. Használd a szimulátoron, ahol a simctl push nem éri el ezt az útvonalat."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menggunakan jalur yang sama seperti push yang diterima (AlarmRequest → AlarmKitScheduler.apply) untuk menjadwalkan atau membatalkan alarm dengan ID tetap. Gunakan di simulator, karena simctl push tidak mencapai jalur tersebut."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa lo stesso percorso di un push ricevuto (AlarmRequest → AlarmKitScheduler.apply) per programmare o annullare una sveglia con un ID fisso. Usalo nel simulatore, dove simctl push non raggiunge questo percorso."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "push 受信時と同じ経路 (AlarmRequest → AlarmKitScheduler.apply) で、固定 id のアラームを AlarmKit に登録・取消します。simulator では simctl push がこの経路を通らないため、ここから検証します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수신된 푸시와 동일한 경로(AlarmRequest → AlarmKitScheduler.apply)를 사용해 고정 ID의 알람을 예약하거나 취소해요. simctl push가 이 경로에 도달하지 않는 시뮬레이터에서 사용하세요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menggunakan laluan yang sama seperti push yang diterima (AlarmRequest → AlarmKitScheduler.apply) untuk menjadualkan atau membatalkan penggera dengan ID tetap. Gunakannya pada simulator, kerana simctl push tidak melalui laluan ini."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bruker samme bane som en mottatt push (AlarmRequest → AlarmKitScheduler.apply) for å planlegge eller avbryte en alarm med en fast ID. Bruk den i simulatoren, der simctl push ikke når denne banen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruikt hetzelfde pad als een ontvangen push (AlarmRequest → AlarmKitScheduler.apply) om een alarm met een vaste ID in te plannen of te annuleren. Gebruik dit in de simulator, waar simctl push dit pad niet bereikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Używa tej samej ścieżki co odebrany push (AlarmRequest → AlarmKitScheduler.apply), aby zaplanować lub anulować alarm ze stałym identyfikatorem. Użyj tego w symulatorze, gdzie simctl push nie dociera tą ścieżką."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa o mesmo caminho de um push recebido (AlarmRequest → AlarmKitScheduler.apply) para agendar ou cancelar um alarme com um ID fixo. Use no simulador, onde simctl push não chega a esse caminho."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa o mesmo percurso que um push recebido (AlarmRequest → AlarmKitScheduler.apply) para agendar ou cancelar um alarme com um ID fixo. Usa-o no simulador, onde o simctl push não chega a este percurso."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folosește aceeași cale ca un push primit (AlarmRequest → AlarmKitScheduler.apply) pentru a programa sau anula o alarmă cu un ID fix. Folosește-l în simulator, unde simctl push nu ajunge pe această cale."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использует тот же путь, что и полученный push (AlarmRequest → AlarmKitScheduler.apply), чтобы запланировать или отменить будильник с фиксированным идентификатором. Используйте его в симуляторе, где simctl push не проходит по этому пути."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Používa rovnakú cestu ako prijatý push (AlarmRequest → AlarmKitScheduler.apply) na naplánovanie alebo zrušenie alarmu s pevným ID. Použi ho v simulátore, kde simctl push touto cestou neprechádza."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använder samma väg som en mottagen push (AlarmRequest → AlarmKitScheduler.apply) för att schemalägga eller avbryta ett alarm med ett fast ID. Använd den i simulatorn, där simctl push inte når den här vägen."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้เส้นทางเดียวกับ push ที่ได้รับ (AlarmRequest → AlarmKitScheduler.apply) เพื่อกำหนดเวลาหรือยกเลิกการตั้งปลุกด้วย ID แบบคงที่ ใช้ในตัวจำลอง ซึ่ง simctl push ไปไม่ถึงเส้นทางนี้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alınan bir push ile aynı yolu (AlarmRequest → AlarmKitScheduler.apply) kullanarak sabit kimliğe sahip bir alarmı zamanlar veya iptal eder. simctl push bu yola ulaşamadığı için simülatörde kullanın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Використовує той самий шлях, що й отриманий push (AlarmRequest → AlarmKitScheduler.apply), щоб запланувати або скасувати будильник із фіксованим ідентифікатором. Використовуйте його в симуляторі, де simctl push не проходить цим шляхом."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sử dụng cùng đường dẫn với push đã nhận (AlarmRequest → AlarmKitScheduler.apply) để lên lịch hoặc hủy báo thức có ID cố định. Hãy dùng trên trình mô phỏng, nơi simctl push không đi qua đường dẫn này."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用與已接收 push 相同的路徑（AlarmRequest → AlarmKitScheduler.apply），以排程或取消具有固定 ID 的鬧鐘。在模擬器上使用，因為 simctl push 不會到達此路徑。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用与接收 push 相同的路径（AlarmRequest → AlarmKitScheduler.apply）来安排或取消具有固定 ID 的闹钟。在模拟器上使用，因为 simctl push 不会到达此路径。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用與接收 push 相同的路徑（AlarmRequest → AlarmKitScheduler.apply）來排程或取消具有固定 ID 的鬧鐘。在模擬器上使用，因為 simctl push 不會到達此路徑。"
           }
         }
       }
