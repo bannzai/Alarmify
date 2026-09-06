@@ -1,0 +1,26 @@
+Signalarm omvandlar en HTTP-begäran från valfri tjänst till ett riktigt alarm på din iPhone.
+
+Det är ingen notis. Signalarm använder AlarmKit i iOS 26, så alarmet ringer även i ljudlöst läge och Fokus, visas stort på låsskärmen och fungerar även när appen är stängd.
+
+■ Tre steg
+- Tillåt alarm i appen och skapa en API-token
+- Anropa Signalarm API från allt som kan skicka en HTTP-begäran: GitHub Actions, Home Assistant, Grafana, Uptime Kuma, cron, Zapier, Genvägar
+- Vid den tid du anger ringer din iPhone med ett riktigt alarm. Du behöver aldrig öppna appen
+
+■ För dig som vill
+- Få resultatet av en driftsättning eller ett batchjobb som ett alarm du inte kan missa
+- Bli pålitligt väckt av en kritisk övervakningsnotis klockan 3 på morgonen
+- Få telefonen att ringa vid händelser i hemautomation (intrång, sensorer)
+- Schemalägg morgondagens väckning från en kalender på servern
+
+■ Från API:t
+- Schemalägg, schemalägg om och avbryt alarm
+- Ge varje alarm en titel så att du vet vilken tjänst som utlöste det
+
+■ Abonnemang
+- Gratis: en API-token och ett månatligt antal inkluderade alarm
+- Pro: flera tokens, obegränsat antal alarm och alarmhistorik
+
+■ Integritet
+- Servern lagrar bara det som behövs för leveransen: en kontoidentifierare, enhetstokens och alarmbegäranden. Alarmbegäranden raderas automatiskt efter 30 dagar
+- Inga annons-SDK:er och inga analys-SDK:er

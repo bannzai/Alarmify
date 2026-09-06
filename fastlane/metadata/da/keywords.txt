@@ -1,0 +1,1 @@
+vagt,automatisering,home assistant,overvågning,vækning,påmindelse,udvikler,server,notifikation
