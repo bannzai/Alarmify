@@ -239,6 +239,97 @@ final class AlarmifyAPIClientTests: XCTestCase {
         try await makeClient(appCheckToken: "app-check-token").deleteAccount()
     }
 
+    /// 履歴は配送結果と端末側の反映結果つきで届く。古いバックエンドの応答 (`delivery` / `device_reports` 無し) も受け付ける
+    func testAlarmHistoryIsDecodedWithDeliveryAndDeviceReports() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "GET")
+            let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            XCTAssertEqual(components?.path, "/demo-alarmify/asia-northeast1/appApi/v1/alarms")
+            XCTAssertEqual(components?.queryItems?.first { $0.name == "limit" }?.value, "20")
+            let body = """
+            {"alarms":[
+              {"id":"3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e","status":"scheduled","title":"Deploy finished","fire_at":"2026-09-03T07:00:00.000Z","created_at":"2026-09-02T10:00:00.000Z","updated_at":"2026-09-02T10:00:00.000Z","token_id":"tok_1","delivery":{"success_count":1,"failure_count":0},"device_reports":[{"device_id":"device-1","action":"schedule","result":"failed","error":"maximumLimitReached","occurred_at":"2026-09-02T10:00:05Z"}]},
+              {"id":"7f6d8c1a-2b3e-4f50-9a61-0b1c2d3e4f5a","status":"canceled","title":null,"fire_at":"2026-09-03T08:00:00.000Z","created_at":"2026-09-02T11:00:00.000Z","token_id":"tok_1"}
+            ],"next_cursor":null}
+            """
+            return (200, Data(body.utf8))
+        }
+
+        let history = try await makeClient().alarmHistory(limit: 20)
+
+        XCTAssertEqual(history.map(\.id), ["3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e", "7f6d8c1a-2b3e-4f50-9a61-0b1c2d3e4f5a"])
+        XCTAssertEqual(history[0].status, .scheduled)
+        XCTAssertEqual(history[0].title, "Deploy finished")
+        XCTAssertEqual(history[0].fireAt, Date(timeIntervalSince1970: 1_788_418_800))
+        XCTAssertEqual(history[0].delivery, AlarmHistoryEntry.Delivery(successCount: 1, failureCount: 0))
+        XCTAssertEqual(
+            history[0].deviceReport(deviceID: "device-1"),
+            AlarmHistoryEntry.DeviceReport(deviceID: "device-1", action: .schedule, result: .failed, error: "maximumLimitReached", occurredAt: Date(timeIntervalSince1970: 1_788_343_205))
+        )
+        XCTAssertNil(history[0].deviceReport(deviceID: "device-2"))
+        XCTAssertEqual(history[1].status, .canceled)
+        XCTAssertNil(history[1].title)
+        XCTAssertNil(history[1].delivery)
+        XCTAssertEqual(history[1].deviceReports, [])
+    }
+
+    /// 端末側の反映結果は、この端末の device_id と秒精度の occurred_at を付けてアラーム id のパスへ送る
+    func testReportAlarmApplySendsTheDeviceIdAndResult() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/alarms/3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e/device-reports")
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            XCTAssertEqual(body, [
+                "device_id": "device-1",
+                "action": "schedule",
+                "result": "failed",
+                "error": "maximumLimitReached",
+                "occurred_at": "2026-09-03T07:00:00Z",
+            ])
+            return (200, Data(#"{"alarm_id":"3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e","device_id":"device-1"}"#.utf8))
+        }
+
+        try await makeClient().reportAlarmApply(AlarmApplyReport(
+            alarmID: UUID(uuidString: "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E")!,
+            action: .schedule,
+            result: .failed,
+            error: "maximumLimitReached",
+            occurredAt: Date(timeIntervalSince1970: 1_788_418_800)
+        ))
+    }
+
+    /// 成功した報告は error を送らない (サーバー側で null になる)
+    func testReportAlarmApplyOmitsTheErrorWhenApplied() async throws {
+        StubURLProtocol.handler = { request in
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            XCTAssertEqual(Set(body?.keys.map { $0 } ?? []), ["device_id", "action", "result", "occurred_at"])
+            XCTAssertEqual(body?["result"], "applied")
+            return (200, Data(#"{"alarm_id":"3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e","device_id":"device-1"}"#.utf8))
+        }
+
+        try await makeClient().reportAlarmApply(AlarmApplyReport(
+            alarmID: UUID(uuidString: "3B0E0C6E-9F1B-4C0A-9E7D-1F2A3B4C5D6E")!,
+            action: .cancel,
+            result: .applied,
+            error: nil,
+            occurredAt: Date(timeIntervalSince1970: 1_788_418_800)
+        ))
+    }
+
+    /// 404 は「報告先のアラームがサーバーに無い」判定 (`isNotFound`) として受け取り、報告を捨てる側の分岐に使う
+    func testNotFoundIsRecognizedFromTheStatusCode() async {
+        StubURLProtocol.handler = { _ in
+            (404, Data(#"{"error":{"code":"not_found","message":"アラームが見つかりません"}}"#.utf8))
+        }
+
+        do {
+            try await makeClient().reportAlarmApply(AlarmApplyReport(alarmID: UUID(), action: .schedule, result: .applied, error: nil, occurredAt: .now))
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual((error as? AlarmifyAPIError)?.isNotFound, true)
+        }
+    }
+
     func testMalformedSuccessBodyIsRejectedInsteadOfDefaulted() async {
         StubURLProtocol.handler = { _ in (200, Data(#"{"api_tokens":[{"id":"tok_4"}]}"#.utf8)) }
 

@@ -83,13 +83,33 @@ final class AccountSession {
     }
 
     /// 配送先の登録と RevenueCat の identity 連携を並行して行う。
-    /// RevenueCat の応答を待つ間に配送先の登録 (サインインの完了前に届いていた FCM トークンの登録を含む) を遅らせない
+    /// RevenueCat の応答を待つ間に配送先の登録 (サインインの完了前に届いていた FCM トークンの登録を含む) を遅らせない。
+    /// サインインが済んだこのタイミングで、Extension や前回の起動が積んだ適用結果の報告も送る
     private func registerDeviceAndLinkPurchases(uid: String) async {
         let linking = Task { @MainActor [weak self] in
             await self?.linkPurchases(uid: uid)
         }
         await registerDeviceIfPossible()
+        await flushAlarmApplyReports()
         await linking.value
+    }
+
+    /// 未送信の適用結果 (`AlarmApplyReportQueue`) をバックエンドへ送る。
+    /// 送れた報告と、サーバーに記録先が無い報告 (開発者メニューの固定 id や保持期間を過ぎたアラームへの 404) はキューから消し、
+    /// それ以外の失敗 (未サインイン・通信エラー) は次の機会に送り直せるよう残す。何度呼んでも未送信分を送るだけで冪等
+    func flushAlarmApplyReports() async {
+        let queue = AlarmApplyReportQueue.shared
+        for report in queue.pending {
+            do {
+                try await apiClient.reportAlarmApply(report)
+                queue.remove(report)
+            } catch let error as AlarmifyAPIError where error.isNotFound {
+                queue.remove(report)
+            } catch {
+                Logger.push.error("Reporting alarm apply result failed: \(error.localizedDescription)")
+                return
+            }
+        }
     }
 
     /// サインイン済みの uid を RevenueCat の App User ID にする。

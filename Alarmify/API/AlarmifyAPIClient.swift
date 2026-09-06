@@ -11,6 +11,10 @@ protocol AlarmifyAPIClient: Sendable {
     func issueAPIToken() async throws -> IssuedAPIToken
     /// API トークンを失効させる
     func revokeAPIToken(id: String) async throws
+    /// アラーム履歴を新しい順に取得する。返る件数の上限はサーバーがプランで決める (無料は直近数件、Pro は `limit` まで)
+    func alarmHistory(limit: Int) async throws -> [AlarmHistoryEntry]
+    /// この端末が AlarmRequest を AlarmKit へ反映した結果を報告する
+    func reportAlarmApply(_ report: AlarmApplyReport) async throws
     /// 呼び出し元自身のアカウントとサーバー上のデータ (API トークン・配送先・アラーム履歴) を削除する
     func deleteAccount() async throws
 }
@@ -83,6 +87,27 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         _ = try await send(method: "DELETE", path: "/v1/api-tokens/\(Self.escaped(id))", body: nil)
     }
 
+    /// 履歴は最新の 1 ページだけを見せる (ホームの「直近の履歴」用)。cursor を辿る全件取得は行わない
+    func alarmHistory(limit: Int) async throws -> [AlarmHistoryEntry] {
+        let data = try await send(method: "GET", path: "/v1/alarms", query: [URLQueryItem(name: "limit", value: String(limit))], body: nil)
+        return try decode(AlarmHistoryResponse.self, from: data).alarms
+    }
+
+    func reportAlarmApply(_ report: AlarmApplyReport) async throws {
+        var body: [String: Any] = [
+            "device_id": deviceID,
+            "action": report.action.rawValue,
+            "result": report.result.rawValue,
+            // サーバーの isoDateTimeSchema は秒までの ISO 8601 を受け付ける
+            "occurred_at": ISO8601DateFormatter().string(from: report.occurredAt),
+        ]
+        if let error = report.error {
+            body["error"] = error
+        }
+        // アラーム id は小文字の UUID で保存されている。サーバー側でも小文字に寄せるが、パスの見た目を揃えておく
+        _ = try await send(method: "POST", path: "/v1/alarms/\(report.alarmID.uuidString.lowercased())/device-reports", body: body)
+    }
+
     /// Callable 関数のプロトコル (`{"data": ...}` を POST し、成功時は `{"result": ...}`、失敗時は `{"error": {"message": ...}}`) で呼ぶ。
     /// 削除対象は ID トークンの uid でサーバーが決めるため、パラメータは送らない。
     /// 成功の判定はステータスコードだけでなく `result` の中身で行う (プロキシ等が 200 を返しても、削除していないのに成功扱いにしない)
@@ -119,6 +144,11 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
             case apiTokens = "api_tokens"
             case nextCursor = "next_cursor"
         }
+    }
+
+    /// 履歴の応答。`nextCursor` は Pro で続きがある時だけ返るが、ホームでは辿らないため読まない
+    private struct AlarmHistoryResponse: Decodable {
+        let alarms: [AlarmHistoryEntry]
     }
 
     /// サーバーのエラー応答。`error.message` をそのまま画面に出し、`error.code` で分岐する

@@ -22,6 +22,14 @@ enum AlarmifyAPIError: Error, Equatable, LocalizedError {
         return false
     }
 
+    /// 対象がサーバーに存在しない応答 (HTTP 404) かどうか。適用結果の報告先のアラームが無い時に、報告を捨ててよい判定に使う
+    var isNotFound: Bool {
+        if case .server(404, _, _) = self {
+            return true
+        }
+        return false
+    }
+
     var errorDescription: String? {
         switch self {
         case .notSignedIn:
