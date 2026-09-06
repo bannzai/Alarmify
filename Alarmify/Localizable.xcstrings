@@ -11134,10 +11134,214 @@
     },
     "Lets you exercise issuing and revoking tokens without a running backend." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتيح لك اختبار إصدار الرموز وإبطالها دون تشغيل الواجهة الخلفية."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et permet provar l’emissió i la revocació de tokens sense tenir el backend en execució."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umožní ti testovat vydávání a odvolávání tokenů bez spuštěného backendu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giver dig mulighed for at teste udstedelse og tilbagekaldelse af tokens uden en kørende backend."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damit kannst du das Ausstellen und Widerrufen von Tokens testen, ohne dass ein Backend läuft."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Σου επιτρέπει να δοκιμάσεις την έκδοση και την ανάκληση token χωρίς να εκτελείται το backend."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te permite probar la emisión y revocación de tokens sin un backend en ejecución."
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te permite probar la emisión y revocación de tokens sin un backend en ejecución."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voit testata tokenien myöntämistä ja kumoamista ilman käynnissä olevaa backend-palvelua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous permet de tester l’émission et la révocation de tokens sans backend en cours d’exécution."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מאפשר לך לבדוק הנפקה וביטול של אסימונים בלי שה-backend פועל."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आप बैकएंड चलाए बिना टोकन जारी करने और रद्द करने की प्रक्रिया आज़मा सकते हैं।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omogućuje ti testiranje izdavanja i opoziva tokena bez pokrenutog backenda."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lehetővé teszi a tokenek kiadásának és visszavonásának tesztelését futó backend nélkül."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memungkinkan kamu menguji penerbitan dan pencabutan token tanpa backend yang berjalan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ti permette di provare l’emissione e la revoca dei token senza un backend in esecuzione."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "バックエンドを起動していなくても、API トークンの発行と失効の画面を確認できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "백엔드가 실행 중이 아니어도 토큰 발급 및 폐기를 테스트할 수 있어요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membolehkan anda menguji pengeluaran dan pembatalan token tanpa backend yang sedang berjalan."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lar deg teste utstedelse og tilbakekalling av token uten en kjørende backend."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiermee kun je tokens uitgeven en intrekken zonder een actieve backend."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwala ci testować wydawanie i unieważnianie tokenów bez działającego backendu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que você teste a emissão e a revogação de tokens sem um backend em execução."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite-te testar a emissão e revogação de tokens sem um backend em execução."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Îți permite să testezi emiterea și revocarea tokenurilor fără un backend activ."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволяет вам тестировать выдачу и отзыв токенов без запущенного бэкенда."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umožní ti testovať vydávanie a odvolávanie tokenov bez spusteného backendu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låter dig testa utfärdande och återkallande av token utan en körande backend."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ให้คุณทดสอบการออกและเพิกถอนโทเค็นได้โดยไม่ต้องเปิดใช้แบ็กเอนด์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışan bir backend olmadan token verme ve iptal etme işlemlerini test etmeni sağlar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дає вам змогу тестувати видачу та відкликання токенів без запущеного бекенду."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cho phép bạn thử cấp và thu hồi token mà không cần backend đang chạy."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "讓你在未執行後端的情況下測試簽發及撤銷 Token。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以在后端未运行时测试签发和撤销令牌。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "讓你在未執行後端的情況下測試簽發與撤銷權杖。"
           }
         }
       }
