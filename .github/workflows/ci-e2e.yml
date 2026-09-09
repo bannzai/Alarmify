@@ -1,0 +1,49 @@
+# managed-by: setup-ci (bannzai/castle)
+name: ci-e2e
+
+on:
+  schedule:
+    # 日本時間の朝に結果を確認できる時刻とし、毎時 0 分の混雑を避ける。
+    - cron: '23 20 * * *'
+  workflow_dispatch:
+  # workflow 自体の導入・変更はマージ前に実行確認する。
+  pull_request:
+    paths:
+      - '.github/workflows/ci-e2e.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot-ui-tests:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Xcode のバージョンを確認
+        run: xcodebuild -version
+      - name: 既存の画面遷移・多言語表示テストを実行
+        run: |
+          set -o pipefail
+          mkdir -p tmp
+          xcodebuild test -project Alarmify.xcodeproj -scheme AlarmifySnapshotUITests \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -resultBundlePath tmp/snapshot-ui-tests.xcresult \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES \
+            2>&1 | tee tmp/e2e.log
+      - name: テスト結果とログを保存
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: snapshot-ui-tests
+          path: |
+            tmp/snapshot-ui-tests.xcresult
+            tmp/e2e.log
+          if-no-files-found: error
+          retention-days: 7
