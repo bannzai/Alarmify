@@ -6,26 +6,22 @@ description: 多言語スクリーンショットを比較して翻訳品質を�
 # Detect Mistranslation
 
 多言語スクリーンショットを比較して翻訳品質をチェックし、問題があれば GitHub Issue を作成する。
-スクリーンショット生成の基盤は `AlarmifySnapshotUITests` ターゲット + `scripts/snapshot_ui_tests/` (詳細は `scripts/snapshot_ui_tests/README.md`)。
 
 ## 実行手順
 
-### 1. ガイドラインの確認
+翻訳方針は `.claude/rules/localization-guidelines.md`、スクリプトの使い方は `scripts/snapshot_ui_tests/README.md` に従う。
 
-- `.claude/rules/localization-guidelines.md` で翻訳ガイドラインを確認する
-- `scripts/snapshot_ui_tests/README.md` でスクリプト群の使い方を確認する
-
-### 2. 多言語スクリーンショットの生成
+### 多言語スクリーンショットの生成
 
 ```bash
 ./scripts/snapshot_ui_tests/generate_snapshot_ui_test_screenshots.sh
 ```
 
 - UITest はローカルシミュレータでしか実行できない (リモート simulator では不可。CLAUDE.md「検証方法」のローカル sim フォールバックに該当)
-- 対象言語は `AlarmifySnapshotUITests/Languages.swift` が SSOT (現状 ja / en)
+- 対象言語は `AlarmifySnapshotUITests/Languages.swift` が SSOT
 - 出力先: `scripts/snapshot_ui_tests/screenshots/{テストクラス名}/{インデックス}/{言語}.png`
 
-### 3. 翻訳品質チェックの実行
+### 翻訳品質チェックの実行
 
 ```bash
 # Issue 作成まで行う (デフォルト: Codex CLI で分析)
@@ -37,7 +33,7 @@ description: 多言語スクリーンショットを比較して翻訳品質を�
 
 チェック項目: 文脈に合わない翻訳 / 用語の不統一 / 文字切れ・表示崩れ / 未翻訳 / 機械翻訳の不自然さ
 
-### 4. 結果の確認と対応
+### 結果の確認と対応
 
 問題が検出された場合:
 
