@@ -10,7 +10,6 @@ DB は Firestore (`alarmify-prod`、asia-northeast1)。構成の決定は [ADR 0
 ## スキーマ定義の置き場所
 
 - コレクション・ドキュメントの型は `firebase/functions/src/schema/` に TypeScript の型 + zod スキーマとして定義し、Functions からもテストからもそこを参照する。コレクション名・フィールド名の文字列リテラルをコード内に散らばらせない
-- 予定するコレクション: `users/{uid}` (アカウント・プラン)、`users/{uid}/apiTokens/{tokenId}` (ハッシュ化した API トークン)、`users/{uid}/devices/{deviceId}` (デバイストークン・プラットフォーム・最終確認日時)、`users/{uid}/alarms/{alarmId}` (アラーム要求と配送状態。30 日で削除)
 - API トークンは平文で保存しない。SHA-256 のハッシュとプレフィックス (表示用) だけを保存し、平文は発行時に 1 度だけ返す
 
 ## クライアントからの直接アクセス
