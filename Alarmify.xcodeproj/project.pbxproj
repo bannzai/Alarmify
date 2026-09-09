@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AE41A5A1041B4C8082092701 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = AE41A5A1041B4C8082092702 /* LicenseList */; };
 		0FB8E33250E80EC144D8B196 /* AlarmifyNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		172885D547342920AEA2AE2C /* AlarmRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */; };
 		187089734143E64C82CBB81C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F0EDE7A7D5B739462304A9 /* NotificationService.swift */; };
@@ -259,6 +260,7 @@
 				3F7A1C4E9B052D6188E4A730 /* FirebaseAppCheck in Frameworks */,
 				96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */,
 				FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */,
+				AE41A5A1041B4C8082092701 /* LicenseList in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,6 +641,7 @@
 				5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */,
 				01958D05CA8D55574EE318D0 /* FirebaseMessaging */,
 				29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */,
+				AE41A5A1041B4C8082092702 /* LicenseList */,
 			);
 			productName = Alarmify;
 			productReference = B4CBF45DA44727442FBE4178 /* Alarmify.app */;
@@ -785,6 +788,7 @@
 			packageReferences = (
 				151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0C2E434DF069FBBC1E0AD4CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				AE41A5A1041B4C8082092703 /* XCRemoteSwiftPackageReference "LicenseList" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
@@ -1489,6 +1493,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		AE41A5A1041B4C8082092703 /* XCRemoteSwiftPackageReference "LicenseList" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/LicenseList.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.0;
+			};
+		};
 		151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -1508,6 +1520,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AE41A5A1041B4C8082092702 /* LicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE41A5A1041B4C8082092703 /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = LicenseList;
+		};
 		78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

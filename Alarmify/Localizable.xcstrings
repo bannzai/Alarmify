@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Open Source Licenses" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OSS ライセンス"
+          }
+        }
+      }
+    },
     "%@ / month" : {
       "localizations" : {
         "ar" : {

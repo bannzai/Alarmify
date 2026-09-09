@@ -1,3 +1,4 @@
+import LicenseList
 import SwiftUI
 
 /// 設定画面。現在のプランの表示とペイウォールへの導線、アカウント ID の確認、法務ドキュメントへのリンク、
@@ -91,6 +92,16 @@ struct SettingsView: View {
                 Link(destination: LegalLinks.privacyPolicy) { Text("Privacy Policy") }
                 // ja: 特定商取引法に基づく表記
                 Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal Notice") }
+                NavigationLink {
+                    LicenseListView()
+                        .licenseViewStyle(.withRepositoryAnchorLink)
+                        // ja: OSS ライセンス
+                        .navigationTitle("Open Source Licenses")
+                } label: {
+                    // ja: OSS ライセンス
+                    Text("Open Source Licenses")
+                }
+                .accessibilityIdentifier("settings_oss_licenses")
             } header: {
                 // ja: 法務情報
                 Text("Legal")
