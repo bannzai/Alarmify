@@ -23,7 +23,36 @@ on:
         default: "60"
 
 jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: ライセンス生成プラグインを準備
+        run: bash scripts/prepare_license_list_plugin.sh
+      - name: 検証用アプリをビルド
+        run: |
+          mkdir -p tmp
+          make build-ios > tmp/oss-build.log 2>&1
+      - name: 検証用アプリを梱包
+        run: ditto -c -k --keepParent tmp/DerivedData/Build/Products/Debug-iphonesimulator/Alarmify.app tmp/Alarmify.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: simulator-app
+          path: tmp/Alarmify.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: oss-build-evidence
+          path: |
+            tmp/oss-build.log
+            Alarmify.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
   session:
+    needs: build
     # id-token: write が必要なのは reusable workflow を呼ぶこの job だけのため、job 単位で最小権限にする
     permissions:
       id-token: write # Tailscale の OIDC (workload identity federation) 認証に必要
@@ -34,8 +63,7 @@ jobs:
       session: ${{ inputs.session }}
       device: ${{ inputs.device }}
       duration_minutes: ${{ inputs.duration_minutes }}
-      build_project: Alarmify.xcodeproj
-      build_scheme: Alarmify
+      app_artifact: simulator-app
     secrets:
       TS_OIDC_CLIENT_ID: ${{ secrets.TS_OIDC_CLIENT_ID }}
       TS_OIDC_AUDIENCE: ${{ secrets.TS_OIDC_AUDIENCE }}

@@ -25,6 +25,8 @@ jobs:
         with:
           persist-credentials: false
       - run: xcodebuild -version
+      - name: ライセンス生成プラグインを準備
+        run: bash scripts/prepare_license_list_plugin.sh
       - name: Build
         run: |
           set -o pipefail
