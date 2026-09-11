@@ -111,6 +111,10 @@ jobs:
 
       - run: xcodebuild -version
 
+      # LicenseList の PrepareLicenseList プラグインは未承認だと xcodebuild archive が Validate plug-in で止まる (exit 65)
+      - name: ライセンス生成プラグインを準備
+        run: bash scripts/prepare_license_list_plugin.sh
+
       # altool (Upload to TestFlight) が ~/.appstoreconnect/private_keys/AuthKey_<KEY_ID>.p8 を自動で探すためここに置く
       - name: Restore App Store Connect API key
         env:

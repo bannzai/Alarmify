@@ -28,6 +28,9 @@ jobs:
           persist-credentials: false
       - name: Xcode のバージョンを確認
         run: xcodebuild -version
+      # LicenseList の PrepareLicenseList プラグインは未承認だと xcodebuild が Validate plug-in で止まる (exit 65)
+      - name: ライセンス生成プラグインを準備
+        run: bash scripts/prepare_license_list_plugin.sh
       - name: 既存の画面遷移・多言語表示テストを実行
         run: |
           set -o pipefail
