@@ -13,7 +13,7 @@ Cloud Functions (gen2) を `firebase/.firebaserc` の alias で指定した Fire
 
 `alarmify-prod` へは 2026-09-03 に初回デプロイ済み。2026-09-12 に GitHub Actions から更新し、`revenueCatWebhook` を含む6関数が ACTIVE (gen2)、対応する Cloud Run の6サービスが Ready であることを確認した。`alarmsApi/v1/alarms` と `revenueCatWebhook` は Authorization 無しの POST に401を返した。
 
-配布 run: https://github.com/bannzai/Alarmify/actions/runs/34691216800 (`main` の `11f4683a6fd4d5134be702f840e945fe0e822ccf`)。その配布で、文書の監視段階と異なり設定ファイルが `enforce` だったことが判明したため、#58 の指定どおり `monitor` へ戻す。再配布の結果と監視開始日時は #58 に記録する。強制適用の判断は `documents/app-check.md` の手順に従い、監視期間を経てから行う。
+2026-09-12 の配布・再配布の結果は #58 に記録している。現在の App Check の適用段階と切り替え判断は `documents/app-check.md` を参照する。
 
 Secret `REVENUECAT_WEBHOOK_AUTHORIZATION` は登録済み。RevenueCat Dashboard 側の webhook 設定と値の受け渡しは #25 に記録している。関数の配布だけでは RevenueCat からのプラン同期は有効にならない (設定手順は `documents/revenuecat-webhook.md`)。
 
