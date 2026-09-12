@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/bannzai/castle/main/home/.claude/skills/appstore-in-app-purchase/config.schema.json",
+  "comment": "App Store Connect の自動更新サブスクリプション定義 (issue #61。価格は月 ¥450 / 年 ¥2,300、無料トライアルなしで確定)。~/.claude/skills/appstore-in-app-purchase の iap_apply_subscriptions.sh --config <このファイル> で冪等に適用し、全テリトリー価格は iap_expand_subscription_prices.sh <SUBSCRIPTION_ID> JPN <価格> で展開する。productId・価格・期間・日本語の表示名と説明は Alarmify.storekit と、fastlane/in_app_purchases/revenuecat.config.json の store_identifier と揃える",
+  "appId": "6808548984",
+  "defaults": {
+    "fail_strategy": "fail-fast",
+    "base_territory": "JPN"
+  },
+  "subscriptionGroups": [
+    {
+      "referenceName": "Pro",
+      "locales": [
+        { "locale": "ja", "name": "Pro" },
+        { "locale": "en-US", "name": "Pro" }
+      ],
+      "subscriptions": [
+        {
+          "productId": "alarmify_pro_monthly_450yen",
+          "referenceName": "Alarmify Pro Monthly",
+          "subscriptionPeriod": "ONE_MONTH",
+          "groupLevel": 1,
+          "price": { "base_territory": "JPN", "customer_price": "450" },
+          "availability": { "territories": "ALL", "available_in_new_territories": true },
+          "reviewNote": "設定画面から Pro の購入画面を開けます。無料トライアルはありません。",
+          "locales": [
+            { "locale": "ja", "name": "Pro (月額)", "description": "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します" },
+            { "locale": "en-US", "name": "Pro (Monthly)", "description": "Unlimited alarms, history, tokens and multiple devices" }
+          ]
+        },
+        {
+          "productId": "alarmify_pro_annual_2300yen",
+          "referenceName": "Alarmify Pro Annual",
+          "subscriptionPeriod": "ONE_YEAR",
+          "groupLevel": 1,
+          "price": { "base_territory": "JPN", "customer_price": "2300" },
+          "availability": { "territories": "ALL", "available_in_new_territories": true },
+          "reviewNote": "設定画面から Pro の購入画面を開けます。無料トライアルはありません。",
+          "locales": [
+            { "locale": "ja", "name": "Pro (年額)", "description": "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します" },
+            { "locale": "en-US", "name": "Pro (Annual)", "description": "Unlimited alarms, history, tokens and multiple devices" }
+          ]
+        }
+      ]
+    }
+  ]
+}
