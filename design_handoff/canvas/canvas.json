@@ -1,0 +1,251 @@
+{
+  "pages": [
+    {
+      "id": "dark",
+      "name": "Dark"
+    },
+    {
+      "id": "light",
+      "name": "Light"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Onboarding 1 · Concept (Dark)",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "OnboardingAlarmsDark.dc.html",
+      "title": "Onboarding 2 · Allow alarms (Dark)",
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "OnboardingPushDark.dc.html",
+      "title": "Onboarding 3 · Allow notifications (Dark)",
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "OnboardingTokenDark.dc.html",
+      "title": "Onboarding 4 · First token (Dark)",
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "OnboardingTestDark.dc.html",
+      "title": "Onboarding 5 · Test alarm (Dark)",
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "HomeDark.dc.html",
+      "title": "Home (Dark)",
+      "x": 0,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "TokensDark.dc.html",
+      "title": "API tokens (Dark)",
+      "x": 470,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "RecipesDark.dc.html",
+      "title": "Integration recipes (Dark)",
+      "x": 940,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "RecipeDetailDark.dc.html",
+      "title": "Recipe · GitHub Actions (Dark)",
+      "x": 1410,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "SettingsDark.dc.html",
+      "title": "Settings (Dark)",
+      "x": 1880,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "PaywallDark.dc.html",
+      "title": "Paywall (Dark)",
+      "x": 2350,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    },
+    {
+      "file": "OnboardingConceptLight.dc.html",
+      "title": "Onboarding 1 · Concept (Light)",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "OnboardingAlarmsLight.dc.html",
+      "title": "Onboarding 2 · Allow alarms (Light)",
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "OnboardingPushLight.dc.html",
+      "title": "Onboarding 3 · Allow notifications (Light)",
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "OnboardingTokenLight.dc.html",
+      "title": "Onboarding 4 · First token (Light)",
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "OnboardingTestLight.dc.html",
+      "title": "Onboarding 5 · Test alarm (Light)",
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "HomeLight.dc.html",
+      "title": "Home (Light)",
+      "x": 0,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "TokensLight.dc.html",
+      "title": "API tokens (Light)",
+      "x": 470,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "RecipesLight.dc.html",
+      "title": "Integration recipes (Light)",
+      "x": 940,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "RecipeDetailLight.dc.html",
+      "title": "Recipe · GitHub Actions (Light)",
+      "x": 1410,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "SettingsLight.dc.html",
+      "title": "Settings (Light)",
+      "x": 1880,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "PaywallLight.dc.html",
+      "title": "Paywall (Light)",
+      "x": 2350,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "light"
+    },
+    {
+      "file": "LockScreen.dc.html",
+      "title": "Lock Screen / Dynamic Island",
+      "x": 2820,
+      "y": 984,
+      "w": 390,
+      "h": 844,
+      "page": "dark"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-tone",
+      "x": 0,
+      "y": -260,
+      "w": 560,
+      "page": "dark",
+      "text": "Signalarm design canvas\nTone: a trustworthy instrument for developers. Dark first, high contrast, one accent (signal orange #F97316), typography and spacing over decoration. Monospace only for tokens, curl and code.\nCopy is English (the app's base language). Japanese copy lives in design_handoff/screens/*.md."
+    },
+    {
+      "id": "note-paywall-prices",
+      "x": 2350,
+      "y": 864,
+      "w": 390,
+      "page": "dark",
+      "text": "Prices on the paywall are SAMPLE values from documents/PROJECT.md. The app renders price, period and savings only from the RevenueCat offering and shows no fallback."
+    },
+    {
+      "id": "note-light",
+      "x": 0,
+      "y": -200,
+      "w": 560,
+      "page": "light",
+      "text": "Light theme is new: the repo only defines dark tokens (Alarmify/Shared/DesignTokens.swift, docs/index.html). Values are in design_handoff/tokens.md. Small orange text uses #C2410C on light for contrast; fills and large numerals keep #F97316."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "dark"
+  }
+}
