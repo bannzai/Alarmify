@@ -30,21 +30,51 @@ struct AlarmifyApp: App {
                 // 撮影結果がネットワークや keychain の状態に依存しないよう、匿名認証のサインインも行わない
                 SnapshotUITestPage()
             } else {
-                contentView
+                rootView
             }
             #else
-            contentView
+            rootView
             #endif
         }
     }
 
-    private var contentView: some View {
-        ContentView()
+    /// サインインと課金状態の監視は、オンボーディングとホームのどちらが出ていても続ける
+    /// (オンボーディングの最初のトークン発行にはサインインが要る)
+    private var rootView: some View {
+        RootView()
             // 匿名認証のアカウントは起動時に自動で作る (ユーザーの操作を挟まない)
             .task { await AccountSession.shared.signIn() }
             .task {
                 // 購入・復元・期限切れによる entitlement の変化をアプリの生存中ずっとキャッシュへ反映し続ける
                 await ProEntitlement.observeCustomerInfo()
             }
+    }
+}
+
+/// オンボーディングの完了前はオンボーディング、完了後はホームを表示する。
+/// 開発者メニューの外観の上書き (ダーク / ライトの動作確認用) もここで適用する
+struct RootView: View {
+    @AppStorage(.onboardingCompleted) private var onboardingCompleted = false
+    @AppStorage(.developerAppearance) private var developerAppearance = ""
+
+    var body: some View {
+        Group {
+            if onboardingCompleted {
+                ContentView()
+            } else {
+                OnboardingView()
+            }
+        }
+        .preferredColorScheme(overriddenColorScheme)
+    }
+
+    /// 開発者メニューで選んだ外観。解放されていない配布 (App Store) では常にシステムに従う
+    private var overriddenColorScheme: ColorScheme? {
+        guard DeveloperMenu.isAvailable else { return nil }
+        switch DeveloperAppearance(rawValue: developerAppearance) {
+        case .light: return .light
+        case .dark: return .dark
+        case nil: return nil
+        }
     }
 }
