@@ -253,12 +253,14 @@ struct Chip: View {
 }
 
 /// コードブロック。`nightInset` の地に等幅のコードと、下段に「Copy」の行。
-/// `wraps` が false のコード (YAML はインデントが意味を持つ) は折り返さず横スクロールにする
+/// `wraps` が false のコード (YAML はインデントが意味を持つ) は折り返さず横スクロールにする。
+/// `copyText` はコピーする瞬間に文字列を作り直す (curl の `fire_at` のように描画時の値が古くなるコードのため)。nil なら表示中の `code` をコピーする
 struct CodeBlock: View {
     let code: String
     var wraps = true
     /// 「Copy」ボタンの accessibilityIdentifier (mobile-mcp / Maestro からの検出用)
     var copyIdentifier: String
+    var copyText: (() -> String)? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -277,7 +279,7 @@ struct CodeBlock: View {
             HStack {
                 Spacer()
                 Button {
-                    UIPasteboard.general.string = code
+                    UIPasteboard.general.string = copyText?() ?? code
                 } label: {
                     // ja: コピー
                     Label("Copy", systemImage: "doc.on.doc")

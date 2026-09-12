@@ -181,10 +181,11 @@ struct APITokenView: View {
                 .disabled(model.loading)
                 .accessibilityIdentifier("api_token_revoke_\(token.id)")
             }
+            // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
             CodeBlock(
-                // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
-                code: APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: .now.addingTimeInterval(300)),
-                copyIdentifier: "api_token_curl_copy_\(token.id)"
+                code: curlExample(secret: secret, token: token),
+                copyIdentifier: "api_token_curl_copy_\(token.id)",
+                copyText: { curlExample(secret: secret, token: token) }
             )
             // チップは幅に収まらない分を次の行へ送る (名前を省略しない)
             FlowLayout(spacing: 8) {
@@ -206,6 +207,11 @@ struct APITokenView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
+    }
+
+    /// トークンカードの curl の例。平文が無いトークンは prefix + 省略記号で埋める。fire_at は呼ばれた瞬間の 5 分後
+    private func curlExample(secret: String?, token: APIToken) -> String {
+        APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: .now.addingTimeInterval(300))
     }
 }
 

@@ -37,28 +37,35 @@ struct OnboardingView: View {
             ProgressSegments(total: Step.allCases.count, filled: step.rawValue + 1)
                 .padding(.horizontal, DesignMetrics.textHorizontalPadding)
                 .frame(height: 44)
-            VStack(alignment: .leading, spacing: 0) {
-                heading
-                    .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-                    .padding(.top, 28)
-                Spacer(minLength: 16)
-                visual
-                    .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-                Spacer(minLength: 16)
-                if let errorMessage {
-                    Text(errorMessage)
-                        .font(.footnote)
-                        .foregroundStyle(Color.destructive)
-                        .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-                        .padding(.bottom, 12)
-                        .accessibilityIdentifier("onboarding_error")
+            // 見出しとビジュアルの間の余白は画面の高さに応じて伸ばし (ボタンを下に寄せる)、
+            // 収まらない高さ (大きな文字サイズ・トークンと curl を同時に出す画面) ではスクロールさせる
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        heading
+                            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                            .padding(.top, 28)
+                        Spacer(minLength: 16)
+                        visual
+                            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                        Spacer(minLength: 16)
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .font(.footnote)
+                                .foregroundStyle(Color.destructive)
+                                .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                                .padding(.bottom, 12)
+                                .accessibilityIdentifier("onboarding_error")
+                        }
+                        buttons
+                            .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+                            .padding(.bottom, 8)
+                    }
+                    .frame(minHeight: proxy.size.height)
+                    .id(step)
+                    .transition(.opacity)
                 }
-                buttons
-                    .padding(.horizontal, DesignMetrics.textHorizontalPadding)
-                    .padding(.bottom, 8)
             }
-            .id(step)
-            .transition(.opacity)
         }
         .screenBackground()
         .animation(.easeInOut(duration: 0.2), value: step)
@@ -296,7 +303,8 @@ struct OnboardingView: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .card(border: .signalLine)
-                CodeBlock(code: curlExample, copyIdentifier: "onboarding_curl_copy")
+                // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
+                CodeBlock(code: curlExample, copyIdentifier: "onboarding_curl_copy", copyText: { tokenModel.curlExample ?? curlExample })
             }
         } else if tokenPreparing {
             ProgressView()
@@ -509,11 +517,16 @@ struct OnboardingView: View {
     }
 
     /// 最初のトークンを発行する。既にトークンがある (再オンボーディング) 場合は発行せず、この画面を飛ばす。
-    /// 一覧の取得に失敗した (未サインイン等) 場合は発行を試みず、エラーと再試行ボタンを出す
+    /// 一覧の取得に失敗した (未サインイン等) 場合は発行を試みず、エラーと再試行ボタンを出す。
+    /// 起動時のサインインが失敗したままなら (オフラインでの初回起動等) ここでやり直す。前面復帰時の再試行はホームにしか無く、
+    /// オンボーディング中はこの再試行が唯一の回復経路になるため
     private func prepareToken() async {
         guard !tokenPreparing else { return }
         tokenPreparing = true
         defer { tokenPreparing = false }
+        if AccountSession.shared.uid == nil {
+            await AccountSession.shared.signIn()
+        }
         await tokenModel.load()
         guard tokenModel.errorMessage == nil else { return }
         guard tokenModel.tokens.isEmpty else {
