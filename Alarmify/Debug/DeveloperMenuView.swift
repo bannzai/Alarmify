@@ -1,6 +1,8 @@
+import AlarmKit
 import SwiftUI
 
-/// 動作確認用の設定を切り替える開発者メニュー。DEBUG / TestFlight でのみ導線を出す
+/// 動作確認用の設定を切り替える開発者メニュー。DEBUG / TestFlight でのみ導線を出す。
+/// 技術検証用の情報 (権限状態・登録済みアラーム・APNs / FCM トークン・配送先の登録) もホームからここへ移した
 struct DeveloperMenuView: View {
     @State private var session = AccountSession.shared
     @State private var settings = DeveloperMenu.settings
@@ -12,6 +14,17 @@ struct DeveloperMenuView: View {
     @State private var pushPayloadResult: PushPayloadResult?
     /// 進行中の push payload 適用。schedule (AlarmKit の登録完了を待つ) と cancel が重ならないよう、次の適用は前の完了を待ってから始める
     @State private var pushPayloadTask: Task<Void, Never>?
+    /// 外観の上書き (RootView が同じキーを購読して即時に反映する)。空はシステムに従う
+    @AppStorage(.developerAppearance) private var developerAppearance = ""
+    /// オンボーディングの完了フラグ。false に戻すとホームの代わりにオンボーディングが出る
+    @AppStorage(.onboardingCompleted) private var onboardingCompleted = false
+    /// 表示言語の上書き。反映には再起動が要るため、保存後に案内を出す
+    @State private var languageOverride = DeveloperMenu.languageOverride
+    @State private var authorizationState = AlarmKitScheduler.authorizationState
+    @State private var alarms: [Alarm] = []
+    @State private var deviceToken = DeviceTokenStore.load()
+    /// 権限の要求・テストアラームの登録・取消に失敗した時のエラー
+    @State private var errorMessage: String?
 
     private struct PushPayloadResult {
         var message: String
@@ -20,6 +33,51 @@ struct DeveloperMenuView: View {
 
     var body: some View {
         List {
+            Section {
+                Picker(selection: $developerAppearance) {
+                    // ja: システム
+                    Text("System").tag("")
+                    // ja: ライト
+                    Text("Light").tag(DeveloperAppearance.light.rawValue)
+                    // ja: ダーク
+                    Text("Dark").tag(DeveloperAppearance.dark.rawValue)
+                } label: {
+                    // ja: 外観
+                    Text("Appearance")
+                }
+                // 選択肢をその場に並べ、mobile-mcp / WDA からラベルで直接タップできるようにする (メニュー形式は開く操作が 1 段増える)
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("debug_appearance")
+                Picker(selection: $languageOverride) {
+                    // ja: システム
+                    Text("System").tag(DeveloperLanguage?.none)
+                    // 言語名。翻訳しない
+                    Text(verbatim: "English").tag(DeveloperLanguage?.some(.english))
+                    Text(verbatim: "日本語").tag(DeveloperLanguage?.some(.japanese))
+                } label: {
+                    // ja: 表示言語
+                    Text("Language")
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("debug_language")
+                .onChange(of: languageOverride) { _, newValue in
+                    DeveloperMenu.languageOverride = newValue
+                }
+                Button {
+                    onboardingCompleted = false
+                } label: {
+                    // ja: オンボーディングをもう一度表示する
+                    Text("Show onboarding again")
+                }
+                .accessibilityIdentifier("debug_show_onboarding")
+            } header: {
+                // ja: 画面の確認
+                Text("Screen verification")
+            } footer: {
+                // ja: 表示言語はアプリを再起動すると反映されます。
+                Text("Relaunch the app to apply the language.")
+            }
+
             Section {
                 Picker(selection: $settings.backend) {
                     ForEach(AlarmifyBackend.allCases, id: \.self) { backend in
@@ -110,11 +168,146 @@ struct DeveloperMenuView: View {
                 // ja: push 受信時と同じ経路 (AlarmRequest → AlarmKitScheduler.apply) で、固定 id のアラームを AlarmKit に登録・取消します。simulator では simctl push がこの経路を通らないため、ここから検証します。
                 Text("Runs the same path as a received push (AlarmRequest → AlarmKitScheduler.apply) to schedule or cancel an alarm with a fixed id. Use this on the simulator, where simctl push does not reach that path.")
             }
+
+            Section {
+                LabeledContent {
+                    if let uid = session.uid {
+                        Text(uid)
+                            .font(.caption.monospaced())
+                            .textSelection(.enabled)
+                    } else {
+                        // ja: サインイン中
+                        Text("Signing in")
+                            .foregroundStyle(.secondary)
+                    }
+                } label: {
+                    // ja: アカウント
+                    Text("Account")
+                }
+                LabeledContent {
+                    deviceRegistrationText
+                } label: {
+                    // ja: 配送先の登録
+                    Text("Device registration")
+                }
+                Button {
+                    Task { await session.retryDeviceRegistration() }
+                } label: {
+                    // ja: 配送先を登録し直す
+                    Text("Register this device again")
+                }
+                .accessibilityIdentifier("debug_register_device")
+                if let signInError = session.signInError {
+                    Text(signInError)
+                        .foregroundStyle(.red)
+                }
+            } header: {
+                // ja: アカウント
+                Text("Account")
+            }
+
+            Section {
+                LabeledContent {
+                    authorizationStateText
+                } label: {
+                    // ja: 権限
+                    Text("Permission")
+                }
+                Button {
+                    Task { await requestAuthorization() }
+                } label: {
+                    // ja: アラームの権限を許可する
+                    Text("Allow alarms")
+                }
+                Button {
+                    Task { await scheduleTestAlarm() }
+                } label: {
+                    // ja: 1 分後にテストアラームを登録する
+                    Text("Schedule a test alarm in 1 minute")
+                }
+                if let errorMessage {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                }
+            } header: {
+                Text("AlarmKit")
+            }
+
+            Section {
+                if alarms.isEmpty {
+                    // ja: 登録済みのアラームはありません
+                    Text("No alarms scheduled")
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(alarms, id: \.id) { alarm in
+                    VStack(alignment: .leading, spacing: 4) {
+                        if case .fixed(let fireDate)? = alarm.schedule {
+                            Text(fireDate, format: .dateTime.month().day().hour().minute())
+                        }
+                        Text(alarm.id.uuidString)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            cancel(alarm)
+                        } label: {
+                            // ja: アラームを取り消す
+                            Text("Cancel alarm")
+                        }
+                    }
+                }
+            } header: {
+                // ja: 登録済みのアラーム
+                Text("Scheduled alarms")
+            }
+
+            Section {
+                if let deviceToken {
+                    Text(deviceToken)
+                        .font(.caption.monospaced())
+                        .textSelection(.enabled)
+                } else {
+                    // ja: 未登録 (実機でのみ取得できます)
+                    Text("Not registered (available on a physical device only)")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                // ja: APNs デバイストークン
+                Text("APNs device token")
+            }
+            .accessibilityIdentifier("debug_apns_device_token")
+
+            Section {
+                if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
+                    Text(fcmRegistrationToken)
+                        .font(.caption.monospaced())
+                        .textSelection(.enabled)
+                } else {
+                    // ja: 未取得
+                    Text("Not available yet")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                // ja: FCM 登録トークン
+                Text("FCM registration token")
+            }
+            .accessibilityIdentifier("debug_fcm_registration_token")
         }
         // ja: 開発者メニュー
         .navigationTitle(Text("Developer menu"))
         .sheet(item: $paywallTrigger) { trigger in
             PaywallPage(trigger: trigger)
+        }
+        .task {
+            refresh()
+            // push 受信や開発者メニューの payload 適用で変わった登録済みアラームをその場で反映する
+            for await alarms in AlarmKitScheduler.alarmUpdates {
+                self.alarms = alarms
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            refresh()
         }
     }
 
@@ -145,6 +338,74 @@ struct DeveloperMenuView: View {
         } catch {
             pushPayloadResult = PushPayloadResult(message: error.localizedDescription, isError: true)
         }
+    }
+
+    private var deviceRegistrationText: Text {
+        switch session.deviceRegistration {
+        case .notRegistered:
+            // ja: 未登録
+            return Text("Not registered")
+        case .registering:
+            // ja: 登録中
+            return Text("Registering")
+        case .registered:
+            // ja: 登録済み
+            return Text("Registered")
+        case .failed(let message):
+            return Text(message)
+        }
+    }
+
+    private var authorizationStateText: Text {
+        switch authorizationState {
+        case .authorized:
+            // ja: 許可済み
+            return Text("Authorized")
+        case .denied:
+            // ja: 拒否
+            return Text("Denied")
+        case .notDetermined:
+            // ja: 未確認
+            return Text("Not determined")
+        @unknown default:
+            // ja: 不明
+            return Text("Unknown")
+        }
+    }
+
+    private func refresh() {
+        authorizationState = AlarmKitScheduler.authorizationState
+        alarms = AlarmKitScheduler.alarms
+        deviceToken = DeviceTokenStore.load()
+    }
+
+    private func requestAuthorization() async {
+        do {
+            authorizationState = try await AlarmKitScheduler.requestAuthorization()
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func scheduleTestAlarm() async {
+        do {
+            try await TestAlarm.schedule()
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        refresh()
+    }
+
+    private func cancel(_ alarm: Alarm) {
+        do {
+            try AlarmKitScheduler.cancel(id: alarm.id)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        refresh()
     }
 }
 

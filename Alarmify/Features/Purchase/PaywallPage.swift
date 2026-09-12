@@ -15,17 +15,18 @@ enum PaywallTrigger: Identifiable {
     var id: Self { self }
 }
 
-/// ペイウォール画面。年額を主・月額を副として提示する (課金設計は documents/PROJECT.md)。
-/// 価格・購読期間はストアが正のため RevenueCat の offering から取得できた package だけを描画し、
+/// ペイウォール画面。年額を主・月額を副として提示する (課金設計は documents/PROJECT.md、構成と文言は design_handoff/screens/paywall.md と paywall-review.md)。
+/// 価格・購読期間・月額換算はストアが正のため RevenueCat の offering から取得できた package だけを描画し、
 /// 取得できない間は購入導線を出さずに再読み込みへ倒す
-/// (~/.claude/rules/coding-rules-no-default-for-external-source-of-truth.md)。
-/// 見た目は仮 UI で、受領デザインの反映は #6 で行う
+/// (~/.claude/rules/coding-rules-no-default-for-external-source-of-truth.md)
 struct PaywallPage: View {
     /// このペイウォールを開いた文脈
     let trigger: PaywallTrigger
 
     /// RevenueCat の offering。読み込み中・取得失敗・API key 未設定の間は nil
     @State private var offering: Offering?
+    /// 選択中のプラン。offering の読み込み後に年額 (無ければ月額) を既定で選ぶ
+    @State private var selectedPackage: Package?
     /// 購入・復元の処理中かどうか。二重実行を防ぎ、ボタンを無効化する
     @State private var isPurchasing = false
     /// offering を取得できなかったかどうか。再読み込みの導線を出す
@@ -40,75 +41,35 @@ struct PaywallPage: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    triggerText
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    // ja: サービスごとのトークン、無制限のアラーム登録、アラーム履歴、複数端末への配送を解放します
-                    Text("Unlock a token per service, unlimited alarm scheduling, alarm history, and delivery to multiple devices")
-                } header: {
-                    Text("Pro")
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.paperSecondary)
+                        .frame(width: 30, height: 30)
+                        .background(Color.hairline, in: Circle())
                 }
-
-                Section {
-                    if let offering {
-                        planButtons(offering: offering)
-                    } else if offeringUnavailable {
-                        // ja: 価格を読み込めませんでした
-                        Text("Prices couldn't be loaded")
-                            .foregroundStyle(.secondary)
-                        Button {
-                            Task { await loadOffering() }
-                        } label: {
-                            // ja: 料金を再読み込み
-                            Text("Reload prices")
-                        }
-                        .accessibilityIdentifier("paywall_reload_offering")
-                    } else {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    }
-                } header: {
-                    // ja: プラン
-                    Text("Plans")
-                }
-
-                Section {
-                    Button {
-                        Task { await restore() }
-                    } label: {
-                        // ja: 購入を復元
-                        Text("Restore Purchases")
-                    }
-                    .disabled(isPurchasing)
-                    .accessibilityIdentifier("paywall_restore")
-
-                    // ja: 利用規約
-                    Link(destination: LegalLinks.terms) { Text("Terms of Use") }
-                    // ja: プライバシーポリシー
-                    Link(destination: LegalLinks.privacyPolicy) { Text("Privacy Policy") }
-                    // ja: 特定商取引法に基づく表記
-                    Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal Notice") }
-                        .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
-                }
+                // ja: 閉じる
+                .accessibilityLabel(Text("Close"))
+                .accessibilityIdentifier("paywall_close_button")
             }
-            // ja: Pro にアップグレード
-            .navigationTitle(Text("Upgrade to Pro"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        // ja: 閉じる
-                        Text("Close")
-                    }
-                    .accessibilityIdentifier("paywall_close_button")
+            .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+            .frame(height: 44)
+
+            // 特典とプランカードの間の余白は画面の高さに応じて伸ばし (プランカードと CTA を下に寄せる)、
+            // 収まらない高さ (日本語の長い見出し等) ではスクロールさせる
+            GeometryReader { proxy in
+                ScrollView {
+                    content
+                        .frame(minHeight: proxy.size.height)
                 }
             }
         }
+        .screenBackground()
         .task { await loadOffering() }
         .alert(purchaseError ?? "", isPresented: Binding(
             get: { purchaseError != nil },
@@ -117,6 +78,283 @@ struct PaywallPage: View {
             Button(String(localized: "OK")) { purchaseError = nil }
         }
     }
+
+    private var content: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
+                // 製品名 + Pro。翻訳しない
+                Text(verbatim: "Signalarm Pro").eyebrowStyle()
+                // ja: もっと多くのサービスと すべてのアラームの記録を
+                Text("More services and every alarm kept")
+                    .font(.title.bold())
+                    .foregroundStyle(Color.paper)
+                lead
+                    .font(.subheadline)
+                    .foregroundStyle(Color.paperSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+
+            VStack(alignment: .leading, spacing: 14) {
+                // ja: サービスごとのトークン
+                benefit(systemImage: "key.horizontal", text: Text("A token for every service"))
+                // ja: 無制限のアラーム
+                benefit(systemImage: "infinity", text: Text("Unlimited alarms"))
+                // ja: すべてのアラーム履歴
+                benefit(systemImage: "clock.arrow.circlepath", text: Text("Full alarm history"))
+                // ja: すべての iPhone で鳴る
+                benefit(systemImage: "iphone.gen3.radiowaves.left.and.right", text: Text("Rings on all your iPhones"))
+            }
+            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+            .padding(.top, 24)
+
+            Spacer(minLength: 32)
+
+            plans
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+
+            Button {
+                if let selectedPackage {
+                    Task { await purchase(package: selectedPackage) }
+                }
+            } label: {
+                continueLabel
+                    .opacity(isPurchasing ? 0 : 1)
+                    .overlay {
+                        if isPurchasing {
+                            ProgressView()
+                                .tint(Color.onSignal)
+                        }
+                    }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(selectedPackage == nil || isPurchasing)
+            .accessibilityIdentifier("paywall_continue_button")
+            .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+            .padding(.top, 16)
+
+            // ja: 設定で解約するまで自動更新されます。価格はお住まいの地域の通貨で表示されます。
+            Text("Renews automatically until canceled in Settings. Prices shown in your local currency.")
+                .font(.caption2)
+                .foregroundStyle(Color.paperQuaternary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                .padding(.top, 12)
+
+            // 4 つのリンクが 1 行に収まらない幅 (日本語の「特定商取引法に基づく表記」と 375pt の画面) では 2 行に分ける
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 18) {
+                    restoreButton
+                    termsLink
+                    privacyLink
+                    legalNoticeLink
+                }
+                VStack(spacing: 10) {
+                    HStack(spacing: 18) {
+                        restoreButton
+                        termsLink
+                        privacyLink
+                    }
+                    legalNoticeLink
+                }
+            }
+            .font(.footnote)
+            .foregroundStyle(Color.paperTertiary)
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 14)
+        }
+        .padding(.bottom, 24)
+    }
+
+    // MARK: - 本文
+
+    /// リード。1 文目はペイウォールを開いた文脈で変え、2 文目は共通
+    private var lead: Text {
+        // ja: Pro ではどちらの上限もなくなります。
+        let common = Text("Pro removes both limits.")
+        switch trigger {
+        case .settings:
+            // ja: 無料プランではトークン 1 つ・月 20 回までアラームを登録できます。%@
+            return Text("The free plan includes one token and 20 alarms a month. \(common)")
+        case .freeQuotaExceeded:
+            // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
+            // ja: 無料プランの上限に達しました。%@
+            return Text("You've reached the limit of the free plan. \(common)")
+        case .alarmHistory:
+            // 件数はサーバーの planLimits.free.alarmHistory (functions/src/lib/plan.ts) と揃える。
+            // ホームは Pro でも直近 20 件 (ContentView.historyLimit) までの表示のため、全期間・30 日分とは言わない
+            // ja: 無料プランで見られる履歴は直近 3 件です。%@
+            return Text("The free plan shows the 3 most recent alarms. \(common)")
+        }
+    }
+
+    private var restoreButton: some View {
+        Button {
+            Task { await restore() }
+        } label: {
+            // ja: 購入を復元
+            Text("Restore")
+        }
+        .disabled(isPurchasing)
+        .accessibilityIdentifier("paywall_restore")
+    }
+
+    private var termsLink: some View {
+        // ja: 利用規約
+        Link(destination: LegalLinks.terms) { Text("Terms") }
+    }
+
+    private var privacyLink: some View {
+        // ja: プライバシー
+        Link(destination: LegalLinks.privacyPolicy) { Text("Privacy") }
+    }
+
+    private var legalNoticeLink: some View {
+        // ja: 特定商取引法に基づく表記
+        Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal notice") }
+            .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
+    }
+
+    private func benefit(systemImage: String, text: Text) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: systemImage)
+                .font(.body)
+                .foregroundStyle(Color.signal)
+                .frame(width: 24)
+            text
+                .font(.body)
+                .foregroundStyle(Color.paper)
+        }
+    }
+
+    /// 取得できた package だけのプランカード。年額を上・月額を下に並べる。取得できない間は再読み込みの導線
+    @ViewBuilder
+    private var plans: some View {
+        if let offering {
+            VStack(spacing: 8) {
+                if let annual = offering.annual {
+                    planCard(
+                        package: annual,
+                        // ja: 年額
+                        name: Text("Yearly"),
+                        bestValue: true,
+                        // 月額換算はストアの価格から SDK が計算した値だけを出す (取得できなければ注記を出さない)
+                        // ja: 月あたり %@ (年払い)
+                        note: annual.storeProduct.localizedPricePerMonth.map { Text("\($0) a month billed yearly") },
+                        // ja: 年
+                        period: Text("per year"),
+                        identifier: "paywall_yearly_button"
+                    )
+                }
+                if let monthly = offering.monthly {
+                    planCard(
+                        package: monthly,
+                        // ja: 月額
+                        name: Text("Monthly"),
+                        bestValue: false,
+                        // ja: いつでも解約できます
+                        note: Text("Cancel anytime"),
+                        // ja: 月
+                        period: Text("per month"),
+                        identifier: "paywall_monthly_button"
+                    )
+                }
+            }
+        } else if offeringUnavailable {
+            VStack(spacing: 14) {
+                // ja: 価格を読み込めませんでした
+                Text("Prices couldn't be loaded")
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+                Button {
+                    Task { await loadOffering() }
+                } label: {
+                    // ja: 料金を再読み込み
+                    Text("Reload prices")
+                }
+                .buttonStyle(SecondaryButtonStyle())
+                .accessibilityIdentifier("paywall_reload_offering")
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+            .card()
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, minHeight: 120)
+        }
+    }
+
+    /// プラン 1 枚。選択中は枠を `signal` にし、ラジオを塗る
+    private func planCard(package: Package, name: Text, bestValue: Bool, note: Text?, period: Text, identifier: String) -> some View {
+        let selected = selectedPackage?.identifier == package.identifier
+        return Button {
+            selectedPackage = package
+        } label: {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(selected ? Color.signal : Color.clear)
+                    Circle()
+                        .strokeBorder(selected ? Color.signal : Color.hairlineStrong, lineWidth: 1.5)
+                    if selected {
+                        Image(systemName: "checkmark")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Color.onSignal)
+                    }
+                }
+                .frame(width: 22, height: 22)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        name
+                            .font(.headline)
+                            .foregroundStyle(Color.paper)
+                        if bestValue {
+                            // ja: おすすめ
+                            Chip(text: Text("Best value"))
+                        }
+                    }
+                    if let note {
+                        note
+                            .font(.footnote)
+                            .foregroundStyle(Color.paperTertiary)
+                    }
+                }
+                Spacer(minLength: 8)
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(verbatim: package.storeProduct.localizedPriceString)
+                        .font(.headline.monospacedDigit())
+                        .foregroundStyle(Color.paper)
+                    period
+                        .font(.footnote)
+                        .foregroundStyle(Color.paperTertiary)
+                }
+            }
+            .padding(.horizontal, DesignMetrics.rowHorizontalPadding)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.panel, in: RoundedRectangle(cornerRadius: DesignMetrics.cardCornerRadius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: DesignMetrics.cardCornerRadius, style: .continuous).strokeBorder(selected ? Color.signal : Color.hairlineStrong, lineWidth: 1.5))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isPurchasing)
+        .accessibilityIdentifier(identifier)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    /// CTA の文言。選択中のプランに合わせる。プランを選べない間 (読み込み中・取得失敗) は年額の文言のまま無効にする
+    private var continueLabel: Text {
+        if let selectedPackage, selectedPackage.identifier == offering?.monthly?.identifier {
+            // ja: 月額で続ける
+            return Text("Continue with Monthly")
+        }
+        // ja: 年額で続ける
+        return Text("Continue with Yearly")
+    }
+
+    // MARK: - 購入
 
     /// 購入・復元を始められない時のメッセージ。始めてよければ nil。
     /// 匿名 ID のまま購入するとサーバー側のプランが更新されないため、uid に結び付くまで購入・復元を始めない (AccountSession.purchaseLinkState)
@@ -134,51 +372,6 @@ struct PaywallPage: View {
         }
     }
 
-    /// ペイウォールを開いた文脈の導入文
-    private var triggerText: Text {
-        switch trigger {
-        case .settings:
-            // ja: 無料プランではトークン 1 つ・月 20 回までアラームを登録できます
-            return Text("The free plan includes one token and up to 20 alarms a month")
-        case .freeQuotaExceeded:
-            // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
-            // ja: 無料プランの上限に達しました
-            return Text("You've reached the limit of the free plan")
-        case .alarmHistory:
-            // 件数はサーバーの planLimits.free.alarmHistory (functions/src/lib/plan.ts) と揃える。
-            // ホームは Pro でも直近 20 件 (ContentView.historyLimit) までの表示のため、全期間・30 日分とは言わない
-            // ja: 無料プランで見られる履歴は直近 3 件です。Pro ならもっと多くの履歴を確認できます
-            return Text("The free plan shows the 3 most recent alarms. Pro shows more of your alarm history")
-        }
-    }
-
-    /// 取得できた package だけの購入ボタン。年額を主・月額を副として並べる
-    @ViewBuilder
-    private func planButtons(offering: Offering) -> some View {
-        if let annual = offering.annual {
-            Button {
-                Task { await purchase(package: annual) }
-            } label: {
-                // ja: 年 %@
-                Text("\(annual.storeProduct.localizedPriceString) / year")
-                    .font(.headline)
-            }
-            .disabled(isPurchasing)
-            .accessibilityIdentifier("paywall_yearly_button")
-        }
-
-        if let monthly = offering.monthly {
-            Button {
-                Task { await purchase(package: monthly) }
-            } label: {
-                // ja: 月 %@
-                Text("\(monthly.storeProduct.localizedPriceString) / month")
-            }
-            .disabled(isPurchasing)
-            .accessibilityIdentifier("paywall_monthly_button")
-        }
-    }
-
     /// offering を読み込む。
     /// lookup_key (ProEntitlement.offeringIdentifier) の識別子だけで取得する。`.current` へのフォールバックは
     /// Dashboard の Current 指定次第で別キャンペーン用 offering の商品を売ってしまうため使わない。
@@ -186,6 +379,7 @@ struct PaywallPage: View {
     private func loadOffering() async {
         guard Purchases.isConfigured else {
             offering = nil
+            selectedPackage = nil
             offeringUnavailable = true
             return
         }
@@ -194,12 +388,16 @@ struct PaywallPage: View {
             let resolved = try await Purchases.shared.offerings().offering(identifier: ProEntitlement.offeringIdentifier)
             if let resolved, resolved.annual != nil || resolved.monthly != nil {
                 offering = resolved
+                // 既定は年額 (課金設計の主プラン)。年額が無い offering では月額を選ぶ
+                selectedPackage = resolved.annual ?? resolved.monthly
             } else {
                 offering = nil
+                selectedPackage = nil
                 offeringUnavailable = true
             }
         } catch {
             offering = nil
+            selectedPackage = nil
             offeringUnavailable = true
         }
     }
