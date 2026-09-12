@@ -2,9 +2,9 @@
 
 Signalarm exposes one HTTPS API. Any system that can send an HTTP request with a header can schedule or cancel a real AlarmKit alarm on your iPhone with it.
 
-> **Pre-release.** `https://api.alarmify.app` is the planned host name. Until that domain is set up, the API is served at `https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsApi` (the in-app "Integration recipes" screen fills in the current host and your token for you). The request and response shapes below match the backend implementation in this repository (`functions/src/api/externalApi.ts`) and may still change before release.
+> **Pre-release.** The request and response shapes below match the backend implementation in this repository (`functions/src/api/externalApi.ts`) and may still change before release. The in-app "Integration recipes" screen fills in the host and your token for you.
 
-- Base URL: `https://api.alarmify.app` (planned; see the note above)
+- Base URL: `https://api.signalarm.app`
 - Format: JSON request and response bodies, UTF-8
 - Time: ISO 8601 with a time zone (`2026-09-03T07:00:00Z` or `2026-09-03T16:00:00+09:00`)
 - Recipes for GitHub Actions, Home Assistant, Shortcuts, Grafana, Uptime Kuma and cron: [Integration recipes](./recipes/)
@@ -45,7 +45,7 @@ Send exactly one of `fire_at` and `fire_in`.
 **Lead time.** The alarm time must be at least 30 seconds after the server receives the request, so the push can reach the phone before the alarm time (an AlarmKit alarm whose time has already passed cannot be registered). A `fire_at` closer than that is rejected with `400`; a `fire_in` below 30 is raised to 30, and the response shows the effective `fire_at`. In practice `fire_in: 0` rings about half a minute after the request.
 
 ```sh
-curl -X POST https://api.alarmify.app/v1/alarms \
+curl -X POST https://api.signalarm.app/v1/alarms \
   -H "Authorization: Bearer <API_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"fire_at":"2026-09-03T07:00:00Z","title":"Deploy finished"}'
@@ -85,7 +85,7 @@ Cancels an alarm that has not fired yet. Use the `id` returned by `POST /v1/alar
 ### Request
 
 ```sh
-curl -X DELETE https://api.alarmify.app/v1/alarms/3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e \
+curl -X DELETE https://api.signalarm.app/v1/alarms/3b0e0c6e-9f1b-4c0a-9e7d-1f2a3b4c5d6e \
   -H "Authorization: Bearer <API_TOKEN>"
 ```
 

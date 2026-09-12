@@ -9,7 +9,7 @@ Use the "Get Contents of URL" action. Any Shortcuts automation (arriving somewhe
 3. Set the URL to:
 
    ```
-   https://api.alarmify.app/v1/alarms
+   https://api.signalarm.app/v1/alarms
    ```
 
 4. Expand the action (tap the arrow), set **Method** to **POST**.
@@ -42,7 +42,7 @@ Replace `fire_in` with `fire_at` and build the value with the **Format Date** ac
 Save the `id` from the response (**Get Dictionary Value** with key `id`) and send a second **Get Contents of URL** with Method **DELETE** to:
 
 ```
-https://api.alarmify.app/v1/alarms/<id>
+https://api.signalarm.app/v1/alarms/<id>
 ```
 
 with the same `Authorization` header.

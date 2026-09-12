@@ -5,7 +5,7 @@ import { marked } from 'marked';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const source = resolve(root, 'docs');
-// 一時成果物だけを配信し、Markdown 原本や Jekyll 設定を公開物へ混ぜないため。
+// 一時成果物だけを配信し、Markdown 原本を公開物へ混ぜないため。
 const output = resolve(root, 'tmp/site');
 
 /** 文書の見出しを HTML の属性と title に安全に埋め込む。 */

@@ -31,10 +31,9 @@ test('全ページのリンク・アセット・ページ内アンカーが解�
   await checkDirectory(output);
 });
 
-test('API の表とコードが HTML になり、Markdown と Jekyll 設定が配信されない', async () => {
+test('API の表とコードが HTML になり、Markdown の原本が配信されない', async () => {
   assert.match(await readFile(resolve(output, 'api.html'), 'utf8'), /<table>/);
   assert.match(await readFile(resolve(output, 'api.html'), 'utf8'), /<pre><code/);
   await assert.rejects(access(resolve(output, 'api.md')));
-  await assert.rejects(access(resolve(output, '_config.yml')));
   await access(resolve(output, '404.html'));
 });

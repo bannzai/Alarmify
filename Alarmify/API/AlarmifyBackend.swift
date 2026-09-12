@@ -23,9 +23,15 @@ enum AlarmifyBackend: String, CaseIterable, Sendable {
     }
 
     /// 外部サービス向け API (`POST /v1/alarms` 等。Bearer = API トークン) のベース URL。
-    /// Functions の `alarmsApi` (firebase/functions/src/index.ts) で、アプリ向けの `appBaseURL` とは別の関数として公開されている
+    /// Functions の `alarmsApi` (firebase/functions/src/index.ts) で、アプリ向けの `appBaseURL` とは別の関数として公開されている。
+    /// production は公開ホスト api.signalarm.app (Cloudflare Worker が alarmsApi へ中継する。documents/adr/0006) で、docs/ の記載と一致させる
     var alarmsAPIBaseURL: URL {
-        functionsBaseURL.appending(path: "alarmsApi")
+        switch self {
+        case .production:
+            return URL(string: "https://api.signalarm.app")!
+        case .emulator:
+            return functionsBaseURL.appending(path: "alarmsApi")
+        }
     }
 
     /// アカウント削除の Callable 関数 `deleteAccount`

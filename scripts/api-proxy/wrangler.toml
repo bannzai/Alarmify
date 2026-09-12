@@ -1,0 +1,16 @@
+# api.signalarm.app を外部サービス向け API (Functions の alarmsApi) へ中継する Worker。
+# デプロイ: `direnv exec . wrangler deploy --config scripts/api-proxy/wrangler.toml` (CI は .github/workflows/api-proxy-deploy.yml)
+name = "signalarm-api"
+main = "worker.js"
+# 実装時点の wrangler 4.123.0 が知っている日付の範囲に収めている (未来の日付は警告になる)
+compatibility_date = "2026-08-01"
+# 公開する入口は custom domain だけにし、workers.dev / preview の URL から同じ API を晒さない
+workers_dev = false
+preview_urls = false
+# custom_domain = true で同じ zone の DNS レコードと証明書を wrangler が用意する
+routes = [{ pattern = "api.signalarm.app", custom_domain = true }]
+
+[vars]
+# alarmsApi の Cloud Run URL (`gcloud run services list --project alarmify-prod --region asia-northeast1`)。
+# cloudfunctions.net の URL は関数名がパスに付くため、パスを変えずに転送できる run.app の URL を使う
+ORIGIN_URL = "https://alarmsapi-320409781062.asia-northeast1.run.app"

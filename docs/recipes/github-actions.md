@@ -33,7 +33,7 @@ jobs:
           WORKFLOW: ${{ github.workflow }}
           STATUS: ${{ job.status }}
         run: |
-          curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
+          curl -sS --fail-with-body -X POST https://api.signalarm.app/v1/alarms \
             -H "Authorization: Bearer $ALARMIFY_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$(jq -cn --arg title "$WORKFLOW: $STATUS" '{fire_in: 0, title: $title}')"
@@ -55,7 +55,7 @@ A rehearsal alarm one hour before a scheduled release:
           ALARMIFY_TOKEN: ${{ secrets.ALARMIFY_TOKEN }}
         run: |
           FIRE_AT=$(date -u -d '+60 minutes' +%Y-%m-%dT%H:%M:%SZ)
-          curl -sS --fail-with-body -X POST https://api.alarmify.app/v1/alarms \
+          curl -sS --fail-with-body -X POST https://api.signalarm.app/v1/alarms \
             -H "Authorization: Bearer $ALARMIFY_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$(jq -cn --arg fire_at "$FIRE_AT" '{fire_at: $fire_at, title: "Release window opens in 1 hour"}')"

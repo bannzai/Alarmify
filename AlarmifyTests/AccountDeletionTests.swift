@@ -97,9 +97,9 @@ final class AccountDeletionTests: XCTestCase {
     /// 削除手順のページは ja 版と en 版しか公開していないため、日本語以外の表示言語では英語版へ寄せる
     /// (Localizable.xcstrings で言語別に URL を持つと、翻訳した言語ぶんの存在しないページへのリンクになる。PR #43 の Codex 指摘)
     func testAccountDeletionGuideFallsBackToEnglishForUnsupportedLanguages() {
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ja").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-ja")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "en").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-en")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ar").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-en")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "zh-Hans").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-en")
+        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ja").absoluteString, "https://signalarm.app/AccountDeletion-ja")
+        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "en").absoluteString, "https://signalarm.app/AccountDeletion-en")
+        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ar").absoluteString, "https://signalarm.app/AccountDeletion-en")
+        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "zh-Hans").absoluteString, "https://signalarm.app/AccountDeletion-en")
     }
 }

@@ -31,7 +31,7 @@ struct RecipesView: View {
             }
 
             Section {
-                Link(destination: URL(string: "https://bannzai.github.io/Alarmify/api")!) {
+                Link(destination: URL(string: "https://signalarm.app/api")!) {
                     // ja: API リファレンス
                     Label("API reference", systemImage: "book")
                 }
