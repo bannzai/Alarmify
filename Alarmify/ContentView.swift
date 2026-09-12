@@ -133,7 +133,8 @@ struct ContentView: View {
                             .foregroundStyle(Color.paperTertiary)
                     }
                     HStack(alignment: .lastTextBaseline, spacing: 12) {
-                        Text(fireDate, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+                        // 午前・午後は端末の時刻設定に従う。12 時間表示で省略すると 13:30 が「01:30」になり発火時刻を誤認させる (24 時間表示では表示されない)
+                        Text(fireDate, format: .dateTime.hour(.twoDigits(amPM: .abbreviated)).minute(.twoDigits))
                             .font(.clockDigits)
                             .monospacedDigit()
                             .foregroundStyle(Color.paper)
