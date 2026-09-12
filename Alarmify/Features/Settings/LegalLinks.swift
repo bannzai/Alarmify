@@ -13,6 +13,22 @@ enum LegalLinks {
     static var accountDeletionGuide: URL { accountDeletionGuide(displayLanguageCode: appDisplayLanguageCode) }
     /// 特定商取引法に基づく表記 (日本の法令に基づく表記のため日本語のみ)
     static let specifiedCommercialTransactionAct = URL(string: "https://bannzai.github.io/Alarmify/SpecifiedCommercialTransactionAct-ja")!
+    /// サポートの連絡先。公開している法務ドキュメント (docs/) と同じアドレス
+    static let supportEmail = "bannzai.app@gmail.com"
+
+    /// サポート宛のメール作成リンク。問い合わせの特定に使うアカウント ID を本文に添える (未サインインなら空)
+    static func supportMail(accountID: String?) -> URL {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = supportEmail
+        components.queryItems = [
+            // ja: Signalarm のお問い合わせ
+            URLQueryItem(name: "subject", value: String(localized: "Signalarm support")),
+            // ja: アカウント ID: %@
+            URLQueryItem(name: "body", value: String(localized: "Account ID: \(accountID ?? "")")),
+        ]
+        return components.url!
+    }
 
     /// 利用規約 (表示言語コード指定)。テストから表示言語を固定して検証するために分離している
     static func terms(displayLanguageCode: String) -> URL {

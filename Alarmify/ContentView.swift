@@ -1,13 +1,11 @@
 import AlarmKit
 import SwiftUI
 
-/// ホーム。次に鳴るアラームと直近の履歴を先頭に出し、その下に技術検証用の情報
-/// (AlarmKit の権限状態・登録済みアラーム・APNs デバイストークン) をまとめる。見た目は仮 UI で、受領デザインの反映は #6 で行う
+/// ホーム。次に鳴るアラームのカード、直近の履歴、連携 (API トークン・レシピ) への導線を出す。
+/// 構成と文言は design_handoff/screens/home.md。技術検証用の情報 (権限状態・登録済みアラーム・デバイストークン) は開発者メニューにある
 struct ContentView: View {
     @State private var session = AccountSession.shared
-    @State private var authorizationState = AlarmKitScheduler.authorizationState
     @State private var alarms: [Alarm] = []
-    @State private var deviceToken = DeviceTokenStore.load()
     @State private var errorMessage: String?
     /// バックエンドの履歴 (新しい順)。件数の上限はサーバーがプランで決める
     @State private var history: [AlarmHistoryEntry] = []
@@ -15,6 +13,8 @@ struct ContentView: View {
     @State private var historyError: String?
     /// 履歴を読み込み中かどうか。初回の空表示と「履歴なし」を区別する
     @State private var historyLoading = false
+    /// 発行済みの API トークン。履歴と次のアラームに送信元 (prefix) を出すことと、連携の行の件数に使う
+    @State private var tokens: [APIToken] = []
     /// 表示中のペイウォールの文脈。履歴の続きを見る導線から開く
     @State private var paywallTrigger: PaywallTrigger?
 
@@ -23,226 +23,43 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    // 発火時刻を過ぎたアラームを (再読み込みを待たずに) その場でカードから外すため、
-                    // 残り時間の表示と同じ 1 秒周期で「次に鳴るアラーム」を判定し直す
-                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                        if let nextAlarm = nextAlarm(now: context.date), let fireDate = nextAlarm.fixedFireDate {
-                            VStack(alignment: .leading, spacing: 4) {
-                                if let title = AlarmTitleStore.shared.title(id: nextAlarm.id) {
-                                    // 外部サービスから送られたタイトルはそのまま表示する
-                                    Text(verbatim: title)
-                                        .font(.headline)
-                                }
-                                Text(fireDate, format: .dateTime.month().day().hour().minute())
-                                    .font(.title2.monospacedDigit())
-                                Text(fireDate, style: .relative)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .accessibilityIdentifier("home_next_alarm")
-                        } else {
-                            // ja: 次に鳴るアラームはありません
-                            Text("No upcoming alarm")
-                                .foregroundStyle(.secondary)
-                                .accessibilityIdentifier("home_next_alarm_empty")
-                        }
-                    }
-                } header: {
-                    // ja: 次に鳴るアラーム
-                    Text("Next alarm")
-                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    nextAlarmCard
+                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+                        .padding(.top, 4)
 
-                Section {
-                    if historyLoading && history.isEmpty {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else if let historyError {
-                        Text(historyError)
-                            .foregroundStyle(.red)
-                    } else if session.uid == nil {
-                        // 履歴はサインイン後にしか取れない。サインイン中に「履歴なし」と見せない
-                        // ja: サインイン中
-                        Text("Signing in")
-                            .foregroundStyle(.secondary)
-                    } else if history.isEmpty {
-                        // ja: 履歴はまだありません
-                        Text("No alarms yet")
-                            .foregroundStyle(.secondary)
-                    }
-                    ForEach(history) { entry in
-                        historyRow(entry)
-                    }
-                    if !ProEntitlement.isPro {
+                    // ja: 直近のアラーム
+                    SectionHeader(Text("Recent alarms")) {
                         Button {
-                            paywallTrigger = .alarmHistory
+                            Task { await scheduleTestAlarm() }
                         } label: {
-                            // ja: Pro でもっと履歴を見る
-                            Text("See more history with Pro")
+                            // ja: テストを鳴らす
+                            Text("Ring a test")
                         }
-                        .accessibilityIdentifier("home_history_upgrade")
+                        .buttonStyle(AccentTextButtonStyle())
+                        .accessibilityIdentifier("home_ring_test")
                     }
-                } header: {
-                    // ja: 直近の履歴
-                    Text("Recent alarms")
-                }
+                    historyCard
+                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
 
-                Section {
-                    LabeledContent {
-                        if let uid = session.uid {
-                            Text(uid)
-                                .font(.caption.monospaced())
-                                .textSelection(.enabled)
-                        } else {
-                            // ja: サインイン中
-                            Text("Signing in")
-                                .foregroundStyle(.secondary)
-                        }
-                    } label: {
-                        // ja: アカウント
-                        Text("Account")
-                    }
-                    LabeledContent {
-                        deviceRegistrationText
-                    } label: {
-                        // ja: 配送先の登録
-                        Text("Device registration")
-                    }
-                    Button {
-                        Task { await session.retryDeviceRegistration() }
-                    } label: {
-                        // ja: 配送先を登録し直す
-                        Text("Register this device again")
-                    }
-                    NavigationLink {
-                        APITokenView()
-                    } label: {
-                        // ja: API トークン
-                        Text("API tokens")
-                    }
-                    .accessibilityIdentifier("account_api_tokens")
-                    if DeveloperMenu.isAvailable {
-                        NavigationLink {
-                            DeveloperMenuView()
-                        } label: {
-                            // ja: 開発者メニュー
-                            Text("Developer menu")
-                        }
-                        .accessibilityIdentifier("debug_menu")
-                    }
-                    if let signInError = session.signInError {
-                        Text(signInError)
-                            .foregroundStyle(.red)
-                    }
-                } header: {
-                    // ja: アカウント
-                    Text("Account")
-                }
+                    // ja: 連携
+                    SectionHeader(Text("Connect"))
+                    connectCard
+                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
 
-                Section {
-                    LabeledContent {
-                        authorizationStateText
-                    } label: {
-                        // ja: 権限
-                        Text("Permission")
-                    }
-                    Button {
-                        Task { await requestAuthorization() }
-                    } label: {
-                        // ja: アラームの権限を許可する
-                        Text("Allow alarms")
-                    }
-                    Button {
-                        Task { await scheduleTestAlarm() }
-                    } label: {
-                        // ja: 1 分後にテストアラームを登録する
-                        Text("Schedule a test alarm in 1 minute")
-                    }
-                } header: {
-                    Text("AlarmKit")
-                }
-
-                Section {
-                    if alarms.isEmpty {
-                        // ja: 登録済みのアラームはありません
-                        Text("No alarms scheduled")
-                            .foregroundStyle(.secondary)
-                    }
-                    ForEach(alarms, id: \.id) { alarm in
-                        VStack(alignment: .leading, spacing: 4) {
-                            if case .fixed(let fireDate)? = alarm.schedule {
-                                Text(fireDate, format: .dateTime.month().day().hour().minute())
-                            }
-                            Text(alarm.id.uuidString)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                cancel(alarm)
-                            } label: {
-                                // ja: アラームを取り消す
-                                Text("Cancel alarm")
-                            }
-                        }
-                    }
-                } header: {
-                    // ja: 登録済みのアラーム
-                    Text("Scheduled alarms")
-                }
-
-                Section {
-                    if let deviceToken {
-                        Text(deviceToken)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    } else {
-                        // ja: 未登録 (実機でのみ取得できます)
-                        Text("Not registered (available on a physical device only)")
-                            .foregroundStyle(.secondary)
-                    }
-                } header: {
-                    // ja: APNs デバイストークン
-                    Text("APNs device token")
-                }
-
-                Section {
-                    if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
-                        Text(fcmRegistrationToken)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    } else {
-                        // ja: 未取得
-                        Text("Not available yet")
-                            .foregroundStyle(.secondary)
-                    }
-                } header: {
-                    // ja: FCM 登録トークン
-                    Text("FCM registration token")
-                }
-
-                Section {
-                    NavigationLink {
-                        // 発行済みトークンの平文は発行直後の API トークン画面にしか無いため、ここからはプレースホルダ入りで表示する
-                        RecipesView(apiToken: nil, backend: session.settings.backend)
-                    } label: {
-                        // ja: 連携レシピ
-                        Label("Integration recipes", systemImage: "link")
-                    }
-                    .accessibilityIdentifier("open_recipes")
-                }
-
-                if let errorMessage {
-                    Section {
+                    if let errorMessage {
                         Text(errorMessage)
-                            .foregroundStyle(.red)
-                    } header: {
-                        // ja: エラー
-                        Text("Error")
+                            .font(.footnote)
+                            .foregroundStyle(Color.destructive)
+                            .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+                            .padding(.top, 16)
+                            .accessibilityIdentifier("home_error")
                     }
                 }
+                .padding(.bottom, 24)
             }
+            .screenBackground()
             .navigationTitle("Signalarm")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -257,12 +74,12 @@ struct ContentView: View {
             }
             .refreshable {
                 refresh()
-                await loadHistory()
+                await loadRemote()
             }
             // 起動直後はサインインの完了前に走って履歴を取れないため、uid が決まったらもう一度読む
             .task(id: session.uid) {
                 refresh()
-                await loadHistory()
+                await loadRemote()
             }
             .task {
                 // push (Notification Service Extension / background push) や開発者メニューで登録・取消されたアラームと、発火による状態の変化を
@@ -291,8 +108,82 @@ struct ContentView: View {
                 // サインインの中で未送信の適用結果も送られるため、その後に履歴を読み直す
                 Task {
                     await session.signIn()
-                    await loadHistory()
+                    await loadRemote()
                 }
+            }
+        }
+        .tint(Color.signalText)
+    }
+
+    // MARK: - 次に鳴るアラーム
+
+    /// 発火時刻を過ぎたアラームを (再読み込みを待たずに) その場でカードから外すため、
+    /// 残り時間の表示と同じ 1 秒周期で「次に鳴るアラーム」を判定し直す
+    private var nextAlarmCard: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            if let nextAlarm = nextAlarm(now: context.date), let fireDate = nextAlarm.fixedFireDate {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .firstTextBaseline) {
+                        // ja: 次に鳴るアラーム
+                        Text("Next alarm").eyebrowStyle()
+                        Spacer()
+                        // ja: %@後に鳴ります
+                        Text("Rings in \(Text(fireDate, style: .relative))")
+                            .font(.footnote)
+                            .foregroundStyle(Color.paperTertiary)
+                    }
+                    HStack(alignment: .lastTextBaseline, spacing: 12) {
+                        Text(fireDate, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+                            .font(.clockDigits)
+                            .monospacedDigit()
+                            .foregroundStyle(Color.paper)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                        nextAlarmDayText(fireDate: fireDate, now: context.date)
+                            .font(.body)
+                            .foregroundStyle(Color.paperSecondary)
+                    }
+                    if let title = AlarmTitleStore.shared.title(id: nextAlarm.id) {
+                        // 外部サービスから送られたタイトルはそのまま表示する
+                        Text(verbatim: title)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(Color.paper)
+                            .lineLimit(2)
+                    } else {
+                        // ja: タイトルなし
+                        Text("Untitled alarm")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(Color.paperTertiary)
+                    }
+                    // 送信元のトークン。サーバーの履歴に同じ id があるものだけ分かる (アプリ内のテストアラームには無い)。
+                    // サービス名は `APIToken.name` がアプリからの発行では常にサーバーの既定値のため出さない (design_handoff/README.md「前提と未確定事項」)
+                    if let prefix = history.first(where: { $0.id == nextAlarm.id.uuidString.lowercased() }).flatMap({ tokens.prefix(tokenID: $0.tokenID) }) {
+                        Chip(text: Text(verbatim: prefix))
+                    }
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .card(border: .signalLine)
+                .accessibilityIdentifier("home_next_alarm")
+            } else {
+                VStack(spacing: 16) {
+                    // ja: 次に鳴るアラームはありません
+                    Text("No upcoming alarm")
+                        .font(.body)
+                        .foregroundStyle(Color.paperTertiary)
+                    Button {
+                        Task { await scheduleTestAlarm() }
+                    } label: {
+                        // ja: 1 分後にテストアラームを鳴らす
+                        Text("Ring a test alarm in 1 minute")
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityIdentifier("home_next_alarm_ring_test")
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity)
+                .card()
+                .accessibilityIdentifier("home_next_alarm_empty")
             }
         }
     }
@@ -304,32 +195,118 @@ struct ContentView: View {
             .min { ($0.fixedFireDate ?? .distantFuture) < ($1.fixedFireDate ?? .distantFuture) }
     }
 
-    private func historyRow(_ entry: AlarmHistoryEntry) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if let title = entry.title {
-                // 外部サービスから送られたタイトルはそのまま表示する
-                Text(verbatim: title)
-                    .font(.headline)
-            } else {
-                // ja: タイトルなし
-                Text("Untitled alarm")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+    /// 発火日の表記。今日 / 明日は語で、それ以外は月日で出す
+    private func nextAlarmDayText(fireDate: Date, now: Date) -> Text {
+        switch nextAlarmDay(fireDate: fireDate, now: now) {
+        case .today:
+            // ja: 今日
+            return Text("Today")
+        case .tomorrow:
+            // ja: 明日
+            return Text("Tomorrow")
+        case .later:
+            return Text(fireDate, format: .dateTime.month(.abbreviated).day())
+        }
+    }
+
+    // MARK: - 直近の履歴
+
+    private var historyCard: some View {
+        VStack(spacing: 0) {
+            if historyLoading && history.isEmpty {
+                ProgressView()
+                    .rowPadding()
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else if let historyError {
+                Text(historyError)
+                    .font(.footnote)
+                    .foregroundStyle(Color.destructive)
+                    .rowPadding()
+                    .accessibilityIdentifier("home_history_error")
+            } else if session.uid == nil {
+                // 履歴はサインイン後にしか取れない。サインイン中に「履歴なし」と見せない
+                // ja: サインイン中
+                Text("Signing in")
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+                    .rowPadding()
+            } else if history.isEmpty {
+                // ja: 履歴はまだありません
+                Text("No alarms yet")
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+                    .rowPadding()
+                    .accessibilityIdentifier("home_history_empty")
             }
-            Text(entry.fireAt, format: .dateTime.month().day().hour().minute())
+            ForEach(history) { entry in
+                historyRow(entry)
+                HairlineDivider()
+            }
+            if !ProEntitlement.isPro {
+                Button {
+                    paywallTrigger = .alarmHistory
+                } label: {
+                    HStack {
+                        // ja: それより前の履歴は Pro で見られます
+                        Text("Older alarms are kept in Pro")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.paperTertiary)
+                        Spacer()
+                        RowChevron()
+                    }
+                    .rowPadding()
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("home_history_upgrade")
+            }
+        }
+        .card()
+    }
+
+    private func historyRow(_ entry: AlarmHistoryEntry) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                if let title = entry.title {
+                    // 外部サービスから送られたタイトルはそのまま表示する
+                    Text(verbatim: title)
+                        .font(.headline)
+                        .foregroundStyle(Color.paper)
+                        .lineLimit(1)
+                } else {
+                    // ja: タイトルなし
+                    Text("Untitled alarm")
+                        .font(.headline)
+                        .foregroundStyle(Color.paperTertiary)
+                }
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(entry.fireAt, format: .dateTime.month().day().hour().minute())
+                        .font(.footnote)
+                        .foregroundStyle(Color.paperTertiary)
+                    if let prefix = tokens.prefix(tokenID: entry.tokenID) {
+                        Text(verbatim: prefix)
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(Color.paperTertiary)
+                    }
+                }
+            }
+            Spacer(minLength: 8)
             // 発火時刻を迎えた瞬間に「登録済み」から「鳴りました」へ切り替えるため、次に鳴るアラームのカードと同じ 1 秒周期で判定し直す。
             // `.explicit([entry.fireAt])` は最初の描画から context.date が発火時刻になり、未来の登録が「鳴りました」と出る (simtunnel で確認) ため使わない
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 historyStatusText(entry, now: context.date)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(Color.paperTertiary)
+                    .multilineTextAlignment(.trailing)
             }
         }
+        .padding(.horizontal, DesignMetrics.rowHorizontalPadding)
+        .padding(.vertical, 12)
         .accessibilityIdentifier("home_history_\(entry.id)")
     }
 
     /// 履歴 1 件の状態。サーバーの状態と、この端末からの反映結果・配送結果を組み合わせて決める。
-    /// 発火したかどうかはサーバーにも端末にも記録が無い (AlarmKit は発火を通知しない) ため、発火時刻の経過で表す
+    /// 発火したかどうかはサーバーにも端末にも記録が無い (AlarmKit は発火を通知しない) ため、発火時刻の経過で表す。
+    /// 失敗系も色は変えず文言で伝える (橙は鳴ることにだけ使う。design_handoff/tokens.md「状態と強調」)
     private func historyStatusText(_ entry: AlarmHistoryEntry, now: Date) -> Text {
         switch entry.status {
         case .canceled:
@@ -386,6 +363,65 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - 連携
+
+    private var connectCard: some View {
+        VStack(spacing: 0) {
+            NavigationLink {
+                APITokenView()
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "key.horizontal")
+                        .font(.body)
+                        .foregroundStyle(Color.paperTertiary)
+                        .frame(width: 24)
+                    // ja: API トークン
+                    Text("API tokens")
+                        .font(.body)
+                        .foregroundStyle(Color.paper)
+                    Spacer()
+                    Text(tokens.count, format: .number)
+                        .font(.body)
+                        .foregroundStyle(Color.paperTertiary)
+                    RowChevron()
+                }
+                .rowPadding()
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("account_api_tokens")
+            HairlineDivider()
+            NavigationLink {
+                // 発行済みトークンの平文は発行直後の API トークン画面にしか無いため、ここからはプレースホルダ入りで表示する
+                RecipesView(apiToken: nil, backend: session.settings.backend)
+            } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "powerplug")
+                        .font(.body)
+                        .foregroundStyle(Color.paperTertiary)
+                        .frame(width: 24)
+                    // ja: 連携レシピ
+                    Text("Integration recipes")
+                        .font(.body)
+                        .foregroundStyle(Color.paper)
+                    Spacer()
+                    RowChevron()
+                }
+                .rowPadding()
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("open_recipes")
+        }
+        .card()
+    }
+
+    // MARK: - 読み込み
+
+    /// バックエンドの履歴とトークン一覧を読み直す
+    private func loadRemote() async {
+        await loadHistory()
+        await loadTokens()
+    }
+
     /// バックエンドの履歴を読み直す。失敗はエラーとして表示し、前回の内容は残さない (古い履歴を最新として見せない)。
     /// 未サインインは起動直後に通る正常な経路のためエラーにせず、サインイン後の読み直しに任せる
     private func loadHistory() async {
@@ -412,73 +448,58 @@ struct ContentView: View {
         }
     }
 
-    private var deviceRegistrationText: Text {
-        switch session.deviceRegistration {
-        case .notRegistered:
-            // ja: 未登録
-            return Text("Not registered")
-        case .registering:
-            // ja: 登録中
-            return Text("Registering")
-        case .registered:
-            // ja: 登録済み
-            return Text("Registered")
-        case .failed(let message):
-            return Text(message)
-        }
-    }
-
-    private var authorizationStateText: Text {
-        switch authorizationState {
-        case .authorized:
-            // ja: 許可済み
-            return Text("Authorized")
-        case .denied:
-            // ja: 拒否
-            return Text("Denied")
-        case .notDetermined:
-            // ja: 未確認
-            return Text("Not determined")
-        @unknown default:
-            // ja: 不明
-            return Text("Unknown")
+    /// トークン一覧を読み直す。送信元の表示と件数のためだけに使うので、失敗しても履歴の表示は妨げず、前回の内容を残さない
+    private func loadTokens() async {
+        #if DEBUG
+        if isSnapshotUITest { return }
+        #endif
+        do {
+            let loaded = try await session.client.apiTokens()
+            guard !Task.isCancelled else { return }
+            tokens = loaded
+        } catch {
+            guard !Task.isCancelled else { return }
+            tokens = []
         }
     }
 
     private func refresh() {
-        authorizationState = AlarmKitScheduler.authorizationState
         alarms = AlarmKitScheduler.alarms
-        deviceToken = DeviceTokenStore.load()
-    }
-
-    private func requestAuthorization() async {
-        do {
-            authorizationState = try await AlarmKitScheduler.requestAuthorization()
-            errorMessage = nil
-        } catch {
-            errorMessage = error.localizedDescription
-        }
     }
 
     private func scheduleTestAlarm() async {
         do {
-            // ja: テストアラーム
-            try await AlarmKitScheduler.schedule(id: UUID(), fireDate: .now.addingTimeInterval(60), title: String(localized: "Test alarm"))
+            try await TestAlarm.schedule()
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
         }
         refresh()
     }
+}
 
-    private func cancel(_ alarm: Alarm) {
-        do {
-            try AlarmKitScheduler.cancel(id: alarm.id)
-            errorMessage = nil
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        refresh()
+/// 次に鳴るアラームの発火日を今日 / 明日 / それ以外に分ける
+enum NextAlarmDay: Equatable {
+    case today
+    case tomorrow
+    case later
+}
+
+/// `fireDate` が `now` の暦日で見て今日か明日か、それより後か。純粋関数で、同じ入力に同じ結果を返す (冪等)
+func nextAlarmDay(fireDate: Date, now: Date, calendar: Calendar = .current) -> NextAlarmDay {
+    if calendar.isDate(fireDate, inSameDayAs: now) {
+        return .today
+    }
+    if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(fireDate, inSameDayAs: tomorrow) {
+        return .tomorrow
+    }
+    return .later
+}
+
+extension [APIToken] {
+    /// 履歴の `tokenID` に対応するトークンの prefix。失効済み等で一覧に無ければ nil
+    func prefix(tokenID: String) -> String? {
+        first { $0.id == tokenID }?.prefix
     }
 }
 
