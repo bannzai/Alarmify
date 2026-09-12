@@ -13,6 +13,8 @@ struct SettingsView: View {
         case failed(message: String)
     }
 
+    /// 設定を表示した時点の APNs トークン
+    @State private var deviceToken = DeviceTokenStore.load()
     @State private var session = AccountSession.shared
     @State private var deletionState: DeletionState = .idle
 
@@ -148,18 +150,78 @@ struct SettingsView: View {
                     Text("Error")
                 }
             }
+
+            if DeveloperMenu.isAvailable {
+                Section {
+                    NavigationLink {
+                        DeveloperMenuView()
+                    } label: {
+                        // ja: 開発者メニュー
+                        Text("Developer menu")
+                    }
+                    .accessibilityIdentifier("debug_menu")
+                    LabeledContent {
+                        deviceRegistrationText
+                    } label: {
+                        // ja: 配送先の登録
+                        Text("Device registration")
+                    }
+                    Button {
+                        Task { await session.retryDeviceRegistration() }
+                    } label: {
+                        // ja: 配送先を登録し直す
+                        Text("Register this device again")
+                    }
+                    .accessibilityIdentifier("debug_register_device")
+                    LabeledContent {
+                        if let deviceToken {
+                            Text(deviceToken)
+                                .font(.caption.monospaced())
+                                .textSelection(.enabled)
+                        } else {
+                            // ja: 未登録 (実機でのみ取得できます)
+                            Text("Not registered (available on a physical device only)")
+                                .foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        // ja: APNs デバイストークン
+                        Text("APNs device token")
+                    }
+                    .accessibilityIdentifier("debug_apns_device_token")
+                    LabeledContent {
+                        if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
+                            Text(fcmRegistrationToken)
+                                .font(.caption.monospaced())
+                                .textSelection(.enabled)
+                        } else {
+                            // ja: 未取得
+                            Text("Not available yet")
+                                .foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        // ja: FCM 登録トークン
+                        Text("FCM registration token")
+                    }
+                    .accessibilityIdentifier("debug_fcm_registration_token")
+                } header: {
+                    // ja: 開発者
+                    Text("Developer")
+                }
+            }
         }
         // ja: 設定
         .navigationTitle("Settings")
         .sheet(item: $paywallTrigger) { trigger in
             PaywallPage(trigger: trigger)
         }
+        .onAppear { deviceToken = DeviceTokenStore.load() }
         .task(id: proEntitlementExpiration) {
             await refreshNowAtExpiration()
         }
         .onChange(of: scenePhase) { _, phase in
             // Task.sleep はアプリが停止している間は進まないため、前面に戻った時にも取り直す
             if phase == .active {
+                deviceToken = DeviceTokenStore.load()
                 now = .now
             }
         }
@@ -206,6 +268,23 @@ struct SettingsView: View {
         } message: {
             // ja: この iPhone に登録済みのアラームは残っています。不要な場合はアラーム一覧から取り消してください
             Text("Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them.")
+        }
+    }
+
+    /// 端末登録の現在の状態
+    private var deviceRegistrationText: Text {
+        switch session.deviceRegistration {
+        case .notRegistered:
+            // ja: 未登録
+            return Text("Not registered")
+        case .registering:
+            // ja: 登録中
+            return Text("Registering")
+        case .registered:
+            // ja: 登録済み
+            return Text("Registered")
+        case .failed(let message):
+            return Text(message)
         }
     }
 
