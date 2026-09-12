@@ -176,8 +176,15 @@ describe("アカウント削除", () => {
       auth: {
         getUser: (id) => auth.getUser(id),
         deleteUser: async () => {
-          // この呼び出しが目印を置いた後、別の呼び出しが目印を置き直した状態を作る
-          await marker(uid).set({ [deletedAccountFields.requestedAt]: Timestamp.fromDate(new Date()) });
+          const previousMarker = await marker(uid).get();
+          // 同じミリ秒の現在時刻では目印の値が変わらず、updateTime が維持されることがある。
+          // 別の版への更新を確実に作るため、保存済みの時刻から 1 ミリ秒進める。
+          const rewrittenMarker = await marker(uid).set({
+            [deletedAccountFields.requestedAt]: Timestamp.fromMillis(
+              (previousMarker.get(deletedAccountFields.requestedAt) as Timestamp).toMillis() + 1,
+            ),
+          });
+          expect(rewrittenMarker.writeTime.isEqual(previousMarker.updateTime!)).toBe(false);
           throw new Error("auth unavailable");
         },
       },
