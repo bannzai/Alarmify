@@ -13,7 +13,7 @@
 
 - AlarmKit (iOS 26+) のアラームはサイレントモード・集中モードを突破し、ロック画面に表示され、アプリを閉じていても鳴る。push 通知にはできないことが差別化の核
 - 競合調査 (2026-09-02) の結論: 「汎用 Webhook / API × AlarmKit の本物のアラーム」を組み合わせた既存アプリは見つからなかった。AlarmKit 採用アプリ (Beacon、Pealo) はカレンダー連携専用、汎用 Webhook アプリ (PushWard、Echobell、AssistantPager、Pushcut、Pushover) は通知・Live Activity・自動音声電話で代替している
-- 一言説明: 「Webhook を iPhone の本物のアラームにする」
+- 一言説明: 「外部サービスから HTTP リクエストを送り iPhone の本物のアラームを指定時刻に鳴らす」
 
 ## ターゲット
 

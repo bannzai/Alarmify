@@ -21,6 +21,13 @@ on:
         description: "セッション維持時間（分）"
         required: true
         default: "60"
+      bundle_id:
+        description: "起動するアプリ（ストア画像の確認時は撮影用アプリを選択）"
+        type: choice
+        options:
+          - com.bannzai.Alarmify
+          - com.bannzai.Alarmify.AppStoreScreenshots
+        default: com.bannzai.Alarmify
 
 jobs:
   build:
@@ -33,13 +40,34 @@ jobs:
         with:
           persist-credentials: false
       - name: ライセンス生成プラグインを準備
+        if: inputs.bundle_id != 'com.bannzai.Alarmify.AppStoreScreenshots'
         run: bash scripts/prepare_license_list_plugin.sh
       - name: 検証用アプリをビルド
+        if: inputs.bundle_id != 'com.bannzai.Alarmify.AppStoreScreenshots'
         run: |
           mkdir -p tmp
           make build-ios > tmp/oss-build.log 2>&1
       - name: 検証用アプリを梱包
+        if: inputs.bundle_id != 'com.bannzai.Alarmify.AppStoreScreenshots'
         run: ditto -c -k --keepParent tmp/DerivedData/Build/Products/Debug-iphonesimulator/Alarmify.app tmp/Alarmify.zip
+      - name: ストア画像用アプリをビルドして梱包
+        if: inputs.bundle_id == 'com.bannzai.Alarmify.AppStoreScreenshots'
+        run: |
+          mkdir -p tmp
+          xcodebuild build -project Alarmify.xcodeproj -scheme AppStoreScreenshotsUITests \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath tmp/DerivedData \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES > tmp/oss-build.log 2>&1
+          ditto -c -k --keepParent tmp/DerivedData/Build/Products/Debug-iphonesimulator/AppStoreScreenshots.app tmp/Alarmify.zip
+          bash scripts/generate_header_creative/generate_header_creative.sh > tmp/header-creative.log 2>&1
+      - name: ヘッダーと OGP 画像を保存
+        if: inputs.bundle_id == 'com.bannzai.Alarmify.AppStoreScreenshots'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: creative-assets
+          path: |
+            fastlane/creative_assets/
+            docs/og.png
+            tmp/header-creative.log
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: simulator-app
@@ -64,6 +92,7 @@ jobs:
       device: ${{ inputs.device }}
       duration_minutes: ${{ inputs.duration_minutes }}
       app_artifact: simulator-app
+      bundle_id: ${{ inputs.bundle_id }}
     secrets:
       TS_OIDC_CLIENT_ID: ${{ secrets.TS_OIDC_CLIENT_ID }}
       TS_OIDC_AUDIENCE: ${{ secrets.TS_OIDC_AUDIENCE }}

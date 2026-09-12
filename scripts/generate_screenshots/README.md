@@ -47,7 +47,7 @@ scripts/generate_screenshots/
 
 | 番号 | 訴求軸 |
 | --- | --- |
-| 1 | Webhook が本物のアラームになる |
+| 1 | 外部サービスからアラームを予約する |
 | 2 | サイレントモード・集中モードを突破して鳴る |
 | 3 | 何とでもつながる (連携レシピ画面: GitHub Actions / Home Assistant / Shortcuts / Grafana / Uptime Kuma / cron) |
 | 4 | POST ひとつでアラームを登録できる |
