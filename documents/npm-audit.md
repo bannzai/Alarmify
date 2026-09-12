@@ -37,3 +37,10 @@ npm --prefix firebase/functions audit --omit=dev # 本番 (Cloud Functions に�
 - 残件の severity が high 以上に引き上げられた、または本プロジェクトが `auth:import` / `database:import` / Pub/Sub エミュレータを使い始めた (到達可能性の前提が崩れる)
 
 firebase-tools を更新した時は、`Makefile` と `.github/workflows/functions-deploy.yml` の `FIREBASE_TOOLS_VERSION`、`documents/revenuecat-webhook.md` の `npx firebase-tools@<version>` を同じバージョンに揃える。
+
+## セッション再開
+
+```sh
+cd /Users/bannzai/worktrees/bannzai/Alarmify/issue-67
+claude --resume 22657054-420b-4123-bd16-827196f76021
+```
