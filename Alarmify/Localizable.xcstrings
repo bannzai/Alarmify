@@ -3385,7 +3385,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アラームの権限を許可する"
+            "value" : "アラームを許可"
           }
         },
         "ko" : {
@@ -6287,7 +6287,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トークンをコピーする"
+            "value" : "トークンをコピー"
           }
         },
         "ko" : {
@@ -10269,7 +10269,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トークンを発行する"
+            "value" : "トークンを発行"
           }
         },
         "ko" : {
@@ -17841,7 +17841,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "失効させる"
+            "value" : "失効"
           }
         },
         "ko" : {
@@ -23708,7 +23708,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "発行済みのトークン"
+            "value" : "トークン"
           }
         },
         "ko" : {

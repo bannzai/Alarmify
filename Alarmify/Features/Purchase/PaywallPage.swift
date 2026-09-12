@@ -142,22 +142,22 @@ struct PaywallPage: View {
                 .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
                 .padding(.top, 12)
 
-            HStack(spacing: 18) {
-                Button {
-                    Task { await restore() }
-                } label: {
-                    // ja: 購入を復元
-                    Text("Restore")
+            // 4 つのリンクが 1 行に収まらない幅 (日本語の「特定商取引法に基づく表記」と 375pt の画面) では 2 行に分ける
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 18) {
+                    restoreButton
+                    termsLink
+                    privacyLink
+                    legalNoticeLink
                 }
-                .disabled(isPurchasing)
-                .accessibilityIdentifier("paywall_restore")
-                // ja: 利用規約
-                Link(destination: LegalLinks.terms) { Text("Terms") }
-                // ja: プライバシー
-                Link(destination: LegalLinks.privacyPolicy) { Text("Privacy") }
-                // ja: 特定商取引法に基づく表記
-                Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal notice") }
-                    .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
+                VStack(spacing: 10) {
+                    HStack(spacing: 18) {
+                        restoreButton
+                        termsLink
+                        privacyLink
+                    }
+                    legalNoticeLink
+                }
             }
             .font(.footnote)
             .foregroundStyle(Color.paperTertiary)
@@ -188,6 +188,33 @@ struct PaywallPage: View {
             // ja: 無料プランで見られる履歴は直近 3 件です。%@
             return Text("The free plan shows the 3 most recent alarms. \(common)")
         }
+    }
+
+    private var restoreButton: some View {
+        Button {
+            Task { await restore() }
+        } label: {
+            // ja: 購入を復元
+            Text("Restore")
+        }
+        .disabled(isPurchasing)
+        .accessibilityIdentifier("paywall_restore")
+    }
+
+    private var termsLink: some View {
+        // ja: 利用規約
+        Link(destination: LegalLinks.terms) { Text("Terms") }
+    }
+
+    private var privacyLink: some View {
+        // ja: プライバシー
+        Link(destination: LegalLinks.privacyPolicy) { Text("Privacy") }
+    }
+
+    private var legalNoticeLink: some View {
+        // ja: 特定商取引法に基づく表記
+        Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal notice") }
+            .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
     }
 
     private func benefit(systemImage: String, text: Text) -> some View {
