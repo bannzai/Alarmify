@@ -151,12 +151,12 @@
         }
       }
     },
-    "One HTTP request and your iPhone rings": {
+    "Send a time via HTTP and your iPhone alarm rings on schedule": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "HTTP リクエストひとつで\niPhone のアラームが鳴る"
+            "value": "HTTP で時刻を送ると\niPhone のアラームがその時刻に鳴る"
           }
         }
       }
@@ -311,12 +311,12 @@
         }
       }
     },
-    "Webhooks become\nreal alarms": {
+    "Schedule alarms\nfrom your server": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Webhook を\n本物のアラームに"
+            "value": "外部サービスから\nアラームを予約"
           }
         }
       }

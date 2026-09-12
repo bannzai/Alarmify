@@ -1,1 +1,1 @@
-APIやWebhookからiPhoneを鳴らす
+APIで時刻を指定してiPhoneの本物のアラームを鳴らす

@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// 訴求軸 signal (1〜5 枚目)。夜色の地に左揃えの極太見出し、上部にアイコンと同じ橙のシグナルの微光を敷き、
-/// 下部にデバイスフレーム付きのモック画面を置く。訴求は「Webhook → 本物のアラーム」「サイレント / 集中モードでも鳴る」
+/// 下部にデバイスフレーム付きのモック画面を置く。訴求は「外部サービスからアラームを予約」「サイレント / 集中モードでも鳴る」
 /// 「何とでもつながる」(issue #10) を軸に、API 1 回での登録と、手元で管理できる API トークンで締める。
 /// 見せる画面は実装済みの機能に限る (連携レシピ・API トークンは本番画面の構成をなぞる)
 /// スクリーンショット番号とバリアントの対応は scripts/generate_screenshots/appstore_screenshot_env.sh の get_variant_name が正
@@ -67,18 +67,12 @@ struct AppStoreScreenshotSignalLayout<Content: View>: View {
     }
 }
 
-/// App Store スクリーンショット 1 枚目 - signal - Webhook が本物のアラームになる (コアコンセプト)
+/// App Store スクリーンショット 1 枚目 - signal - 外部サービスからアラームを予約 (コアコンセプト)
 struct AppStoreScreenshot1Page: View {
     var body: some View {
         AppStoreScreenshotSignalLayout(
-            // ja: Webhook を
-            //
-            // 本物のアラームに
-            title: Text("Webhooks become\nreal alarms"),
-            // ja: HTTP リクエストひとつで
-            //
-            // iPhone のアラームが鳴る
-            subtitle: "One HTTP request and your iPhone rings"
+            title: Text("Schedule alarms\nfrom your server"),
+            subtitle: "Send a time via HTTP and your iPhone alarm rings on schedule"
         ) {
             MockAlarmRingingScreen(
                 // 送信元が付けたタイトルは翻訳されずそのまま届くため verbatim

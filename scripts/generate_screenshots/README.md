@@ -25,6 +25,24 @@ scripts/generate_screenshots/
 
 ## 使い方
 
+### simtunnel で撮影ページを確認する
+
+`simulator-session.yml` の `bundle_id` に撮影用アプリを指定すると、GitHub Actions 上でビルドして simtunnel にインストールする。ローカルの Xcode・Simulator は使わない。
+
+```bash
+SIMTUNNEL_REPO=bannzai/Alarmify ~/ghq/github.com/bannzai/simtunnel/local/simtunnel up issue-81 --ref issue-81 --device "iPhone 17 Pro Max" --bundle-id com.bannzai.Alarmify.AppStoreScreenshots --wait
+```
+
+セッション名と `--ref` は確認対象の worktree・ブランチに置き換える。アプリの一覧から `AppStoreScreenshot1Page_Previews_0` 等のボタンを開くと、UITest と同じ撮影ページを表示できる。操作は `/ios-simulator` の `ios-wda.sh --session <セッション名>` を使う。
+
+入稿用の PNG が必要な場合は WDA の `GET /screenshot` の base64 応答を復号する。通常の `ios-wda.sh shot` は確認用 JPEG のため、拡張子だけを PNG に変えない。言語は WDA のアプリ起動 API の `arguments` に、既存 UITest と同じ `-AppleLanguages` / `-AppleLocale` を渡して切り替える。撮影した画面と画像サイズを確認し、対応する `fastlane/screenshots/{locale}/` の画像を更新する。
+
+ヘッダーと OGP の生成結果は同じ run の `creative-assets` artifact、ビルドログは `oss-build-evidence` artifact に保存される。確認後は `simtunnel down <セッション名>` で閉じる。
+
+simtunnel は runner に存在する機種だけ起動できる。2026-09-12 の確認では iPhone 17 Pro Max は起動でき、iPhone 13 Pro Max は機種がなく起動できなかった。
+
+### XCUITest で自動生成する
+
 ```bash
 # 全言語 (ja, en)・全番号・全デバイス (6.9 インチ + 6.5 インチ) で生成
 ./scripts/generate_screenshots/generate_appstore_screenshots.sh
@@ -47,7 +65,7 @@ scripts/generate_screenshots/
 
 | 番号 | 訴求軸 |
 | --- | --- |
-| 1 | Webhook が本物のアラームになる |
+| 1 | 外部サービスからアラームを予約する |
 | 2 | サイレントモード・集中モードを突破して鳴る |
 | 3 | 何とでもつながる (連携レシピ画面: GitHub Actions / Home Assistant / Shortcuts / Grafana / Uptime Kuma / cron) |
 | 4 | POST ひとつでアラームを登録できる |

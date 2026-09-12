@@ -48,13 +48,13 @@ enum CreativeAssetLanguage: String, CaseIterable {
     case ja
     case enUS = "en-US"
 
-    /// 訴求コピー。SSOT は AppStoreScreenshots/Localizable.xcstrings の "Webhooks become\nreal alarms"
+    /// 訴求コピー。SSOT は AppStoreScreenshots/Localizable.xcstrings の "Schedule alarms\nfrom your server"
     /// (スクリーンショット 1 枚目のキャッチコピー) で、header はスクリーンショットと同じ 1 つのアイデアで統一する。
     /// 折り返し位置を制御するため明示的な改行を入れて転記する
     var copyText: String {
         switch self {
-        case .ja: "Webhook を\n本物のアラームに"
-        case .enUS: "Webhooks become\nreal alarms"
+        case .ja: "外部サービスから\nアラームを予約"
+        case .enUS: "Schedule alarms\nfrom your server"
         }
     }
 }
@@ -165,7 +165,7 @@ struct OpenGraphImageView: View {
                         .font(.system(size: 96, weight: .heavy))
                         .foregroundStyle(Color.paper)
                     // LP の <title> と同じ一言 (docs/index.html)
-                    Text(verbatim: "Turn any webhook into\na real iPhone alarm")
+                    Text(verbatim: "Send a time via HTTP\nto set your iPhone alarm")
                         .font(.system(size: 36, weight: .medium))
                         .lineSpacing(6)
                         .foregroundStyle(Color.paper.opacity(0.7))
