@@ -1,13 +1,11 @@
 import AlarmKit
 import SwiftUI
 
-/// ホーム。次に鳴るアラームと直近の履歴を先頭に出し、その下に技術検証用の情報
-/// (AlarmKit の権限状態・登録済みアラーム・APNs デバイストークン) をまとめる。見た目は仮 UI で、受領デザインの反映は #6 で行う
+/// ホーム。次に鳴るアラーム、直近の履歴、API トークンと連携レシピへの導線を表示する
 struct ContentView: View {
     @State private var session = AccountSession.shared
     @State private var authorizationState = AlarmKitScheduler.authorizationState
     @State private var alarms: [Alarm] = []
-    @State private var deviceToken = DeviceTokenStore.load()
     @State private var errorMessage: String?
     /// バックエンドの履歴 (新しい順)。件数の上限はサーバーがプランで決める
     @State private var history: [AlarmHistoryEntry] = []
@@ -49,6 +47,13 @@ struct ContentView: View {
                                 .accessibilityIdentifier("home_next_alarm_empty")
                         }
                     }
+                    NavigationLink {
+                        scheduledAlarmsList
+                    } label: {
+                        // ja: 登録済みのアラーム
+                        Text("Scheduled alarms")
+                    }
+                    .accessibilityIdentifier("home_scheduled_alarms")
                 } header: {
                     // ja: 次に鳴るアラーム
                     Text("Next alarm")
@@ -89,32 +94,6 @@ struct ContentView: View {
                 }
 
                 Section {
-                    LabeledContent {
-                        if let uid = session.uid {
-                            Text(uid)
-                                .font(.caption.monospaced())
-                                .textSelection(.enabled)
-                        } else {
-                            // ja: サインイン中
-                            Text("Signing in")
-                                .foregroundStyle(.secondary)
-                        }
-                    } label: {
-                        // ja: アカウント
-                        Text("Account")
-                    }
-                    LabeledContent {
-                        deviceRegistrationText
-                    } label: {
-                        // ja: 配送先の登録
-                        Text("Device registration")
-                    }
-                    Button {
-                        Task { await session.retryDeviceRegistration() }
-                    } label: {
-                        // ja: 配送先を登録し直す
-                        Text("Register this device again")
-                    }
                     NavigationLink {
                         APITokenView()
                     } label: {
@@ -122,15 +101,6 @@ struct ContentView: View {
                         Text("API tokens")
                     }
                     .accessibilityIdentifier("account_api_tokens")
-                    if DeveloperMenu.isAvailable {
-                        NavigationLink {
-                            DeveloperMenuView()
-                        } label: {
-                            // ja: 開発者メニュー
-                            Text("Developer menu")
-                        }
-                        .accessibilityIdentifier("debug_menu")
-                    }
                     if let signInError = session.signInError {
                         Text(signInError)
                             .foregroundStyle(.red)
@@ -141,85 +111,27 @@ struct ContentView: View {
                 }
 
                 Section {
-                    LabeledContent {
-                        authorizationStateText
-                    } label: {
-                        // ja: 権限
-                        Text("Permission")
-                    }
-                    Button {
-                        Task { await requestAuthorization() }
-                    } label: {
-                        // ja: アラームの権限を許可する
-                        Text("Allow alarms")
+                    if authorizationState != .authorized {
+                        LabeledContent {
+                            authorizationStateText
+                        } label: {
+                            // ja: 権限
+                            Text("Permission")
+                        }
+                        Button {
+                            Task { await requestAuthorization() }
+                        } label: {
+                            // ja: アラームの権限を許可する
+                            Text("Allow alarms")
+                        }
                     }
                     Button {
                         Task { await scheduleTestAlarm() }
                     } label: {
-                        // ja: 1 分後にテストアラームを登録する
-                        Text("Schedule a test alarm in 1 minute")
+                        // ja: テストアラームを鳴らす
+                        Text("Try a test alarm")
                     }
-                } header: {
-                    Text("AlarmKit")
-                }
-
-                Section {
-                    if alarms.isEmpty {
-                        // ja: 登録済みのアラームはありません
-                        Text("No alarms scheduled")
-                            .foregroundStyle(.secondary)
-                    }
-                    ForEach(alarms, id: \.id) { alarm in
-                        VStack(alignment: .leading, spacing: 4) {
-                            if case .fixed(let fireDate)? = alarm.schedule {
-                                Text(fireDate, format: .dateTime.month().day().hour().minute())
-                            }
-                            Text(alarm.id.uuidString)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                cancel(alarm)
-                            } label: {
-                                // ja: アラームを取り消す
-                                Text("Cancel alarm")
-                            }
-                        }
-                    }
-                } header: {
-                    // ja: 登録済みのアラーム
-                    Text("Scheduled alarms")
-                }
-
-                Section {
-                    if let deviceToken {
-                        Text(deviceToken)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    } else {
-                        // ja: 未登録 (実機でのみ取得できます)
-                        Text("Not registered (available on a physical device only)")
-                            .foregroundStyle(.secondary)
-                    }
-                } header: {
-                    // ja: APNs デバイストークン
-                    Text("APNs device token")
-                }
-
-                Section {
-                    if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
-                        Text(fcmRegistrationToken)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    } else {
-                        // ja: 未取得
-                        Text("Not available yet")
-                            .foregroundStyle(.secondary)
-                    }
-                } header: {
-                    // ja: FCM 登録トークン
-                    Text("FCM registration token")
+                    .accessibilityIdentifier("test_alarm")
                 }
 
                 Section {
@@ -295,6 +207,46 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    /// 登録済みアラームの確認と取消。ホームの次のアラームから開く
+    private var scheduledAlarmsList: some View {
+        List {
+            Section {
+                if alarms.isEmpty {
+                    // ja: 登録済みのアラームはありません
+                    Text("No alarms scheduled")
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(alarms, id: \.id) { alarm in
+                    VStack(alignment: .leading, spacing: 4) {
+                        if case .fixed(let fireDate)? = alarm.schedule {
+                            Text(fireDate, format: .dateTime.month().day().hour().minute())
+                        }
+                        if let title = AlarmTitleStore.shared.title(id: alarm.id) {
+                            Text(verbatim: title)
+                        }
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            cancel(alarm)
+                        } label: {
+                            // ja: アラームを取り消す
+                            Text("Cancel alarm")
+                        }
+                    }
+                }
+            } header: {
+                // ja: 登録済みのアラーム
+                Text("Scheduled alarms")
+            }
+            if let errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+            }
+        }
+        // ja: 登録済みのアラーム
+        .navigationTitle("Scheduled alarms")
     }
 
     /// 次に鳴るアラーム。この端末に登録済みの固定日時のアラームのうち、発火時刻が `now` より後の最も早いもの
@@ -412,22 +364,6 @@ struct ContentView: View {
         }
     }
 
-    private var deviceRegistrationText: Text {
-        switch session.deviceRegistration {
-        case .notRegistered:
-            // ja: 未登録
-            return Text("Not registered")
-        case .registering:
-            // ja: 登録中
-            return Text("Registering")
-        case .registered:
-            // ja: 登録済み
-            return Text("Registered")
-        case .failed(let message):
-            return Text(message)
-        }
-    }
-
     private var authorizationStateText: Text {
         switch authorizationState {
         case .authorized:
@@ -448,7 +384,6 @@ struct ContentView: View {
     private func refresh() {
         authorizationState = AlarmKitScheduler.authorizationState
         alarms = AlarmKitScheduler.alarms
-        deviceToken = DeviceTokenStore.load()
     }
 
     private func requestAuthorization() async {
