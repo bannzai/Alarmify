@@ -6,7 +6,7 @@
 
 Issue #63 のコード・設定点検と、指定の Claude Code `/security-review` を完了した。レビューで悪用可能性を高い確度 (8/10 以上) で確認した HIGH / MEDIUM の脆弱性は0件。これは脆弱性の不在や公開可否の全面保証ではない。下記の残課題・未検証範囲を含めて判断する。
 
-秘密鍵・実運用の API トークンの混入は今回の走査で確認しなかった。ただしスキャナーの生の結果は NG で、テスト用文字列・公開済み Firebase キー・環境設定の検出を含む。iOS キーの bundle ID 制限は実設定で確認済み。初回点検では権限の広さ、依存の警告、Privacy Manifest、CI の参照固定を指摘した。後者3点は別 PR で対応済み。IAM 縮小、App Check の強制適用判断、webhook の設定確認、実機確認は引き続き追跡する。
+秘密鍵・実運用の API トークンの混入は今回の走査で確認しなかった。ただしスキャナーの生の結果は NG で、テスト用文字列・公開済み Firebase キー・環境設定の検出を含む。iOS キーの bundle ID 制限は実設定で確認済み。初回点検では権限の広さ、依存の警告、Privacy Manifest、CI の参照固定を指摘した。Privacy と CI は別 PR で対応済み。依存は qs の解消後も上流の互換対応待ちが残る (#85)。IAM 縮小、App Check の強制適用判断、webhook の設定確認、実機確認は引き続き追跡する。
 
 初回点検後、別セッションで #58 の本番デプロイが完了した。再照会で6関数の更新日時が 2026-09-12 11:56 UTC、App Check が monitor と確認した。配布コミットは `a0dceb218165f75fc195faa4bf31087ecbec9bce` (PR #79)。以下のコード・依存・IAM の初回点検結果は冒頭の対象コミット時点の記録であり、最新 main 全体を再走査した結果ではない。負荷試験・侵入試験・実機操作・本番への書き込み・デプロイ・権限変更は実施していない。
 
@@ -71,6 +71,8 @@ Functions のファイル名は `firebase/functions/src/` を基点とする。
 | `npm --prefix firebase/functions audit --omit=dev --json` | exit 0。検出0 |
 | SwiftPM | Package.resolved の15リビジョンを OSV querybatch の commit 検索で照合し、全件空の結果。記録は `tmp/spm-osv.json`。登録済み advisory との一致が無いという意味で、SwiftPM 全体やバイナリ内依存の脆弱性不在を保証しない |
 
+初回後の PR #72 は qs を解消したが、全警告の解消ではない。同 PR の記録では開発依存 moderate 5パッケージが残り、理由は `documents/npm-audit.md` にある。最終 push 時の警告を受けて GitHub API を再照会し、csv-parse (alert 14 / GHSA-8cw4-87c7-c6xx) と stream-json (alert 13 / GHSA-528h-pc64-c93x) の2件が open / medium と確認した。OpenTelemetry Core を含む CLI の残件と再確認条件は #85 で追跡する。
+
 依存更新は今回行っていない。コード変更なしの監査文書であり、ビルド・ユニットテスト・シミュレータは実行していない。#58 の別セッションでのテスト結果を今回の実行成功として扱わない。
 
 ## 指摘の対応状況と追跡先
@@ -85,7 +87,7 @@ Functions のファイル名は `firebase/functions/src/` を基点とする。
 | 費用試算・上限評価は完了 (PR #75)。残る通知連携・保持期間掃除の容量は #73 / #74 | https://github.com/bannzai/Alarmify/issues/62 |
 | 対応済み: Manifest の不足・App Group の理由・ASC 回答 (PR #70)。提出 archive の集約確認は #14 | https://github.com/bannzai/Alarmify/issues/64 |
 | 実行・ビルド・デプロイ IAM の縮小 | https://github.com/bannzai/Alarmify/issues/66 |
-| 対応済み: 開発依存の脆弱性 (PR #72) | https://github.com/bannzai/Alarmify/issues/67 |
+| 一部対応: PR #72 で qs を解消。CLI の残件は上流の互換対応待ち | https://github.com/bannzai/Alarmify/issues/85 |
 | 対応済み: CI action の SHA 固定 (PR #69) | https://github.com/bannzai/Alarmify/issues/68 |
 | 配布ビルドの実機確認 | https://github.com/bannzai/Alarmify/issues/14 |
 
