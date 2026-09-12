@@ -171,6 +171,8 @@ struct ContentView: View {
                     Text("No upcoming alarm")
                         .font(.body)
                         .foregroundStyle(Color.paperTertiary)
+                        // 識別子はカードではなく文言に付ける (コンテナに付けると中のボタンの識別子を上書きしてしまう)
+                        .accessibilityIdentifier("home_next_alarm_empty")
                     Button {
                         Task { await scheduleTestAlarm() }
                     } label: {
@@ -183,7 +185,6 @@ struct ContentView: View {
                 .padding(18)
                 .frame(maxWidth: .infinity)
                 .card()
-                .accessibilityIdentifier("home_next_alarm_empty")
             }
         }
     }

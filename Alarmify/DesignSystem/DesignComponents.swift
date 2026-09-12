@@ -98,11 +98,68 @@ extension View {
         background(Color.night.ignoresSafeArea())
     }
 
-    /// 行の内側の余白。カードの中の 1 行に付ける
+    /// 行の内側の余白。カードの中の 1 行に付ける。
+    /// 行全体をタップ領域にする (`.buttonStyle(.plain)` の NavigationLink は Spacer の部分がタップに反応しないため)
     func rowPadding() -> some View {
         padding(.horizontal, DesignMetrics.rowHorizontalPadding)
             .padding(.vertical, DesignMetrics.rowVerticalPadding)
             .frame(maxWidth: .infinity, minHeight: DesignMetrics.rowMinHeight, alignment: .leading)
+            .contentShape(Rectangle())
+    }
+}
+
+/// 折り返す横並び。チップの列のように、幅に収まらない要素を次の行へ送る。行の中では上下中央に揃える
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    private struct Row {
+        var indices: [Int] = []
+        var y: CGFloat = 0
+        var height: CGFloat = 0
+        var width: CGFloat = 0
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = arrange(proposal: proposal, subviews: subviews)
+        return CGSize(
+            width: proposal.width ?? rows.map(\.width).max() ?? 0,
+            height: rows.last.map { $0.y + $0.height } ?? 0
+        )
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        for row in arrange(proposal: proposal, subviews: subviews) {
+            var x = bounds.minX
+            for index in row.indices {
+                let size = subviews[index].sizeThatFits(.unspecified)
+                subviews[index].place(
+                    at: CGPoint(x: x, y: bounds.minY + row.y + (row.height - size.height) / 2),
+                    anchor: .topLeading,
+                    proposal: .unspecified
+                )
+                x += size.width + spacing
+            }
+        }
+    }
+
+    private func arrange(proposal: ProposedViewSize, subviews: Subviews) -> [Row] {
+        let maxWidth = proposal.width ?? .infinity
+        var rows: [Row] = []
+        var current = Row()
+        for (index, subview) in subviews.enumerated() {
+            let size = subview.sizeThatFits(.unspecified)
+            if !current.indices.isEmpty, current.width + spacing + size.width > maxWidth {
+                rows.append(current)
+                current = Row(y: current.y + current.height + spacing)
+            }
+            current.width += (current.indices.isEmpty ? 0 : spacing) + size.width
+            current.height = max(current.height, size.height)
+            current.indices.append(index)
+        }
+        if !current.indices.isEmpty {
+            rows.append(current)
+        }
+        return rows
     }
 }
 
@@ -115,10 +172,11 @@ extension Text {
             .foregroundStyle(color)
     }
 
-    /// セクション見出し (13 semibold の大文字。tokens.md「Section header」)。letter-spacing 0.04em を 13pt に換算した 0.5pt を空ける
-    func sectionHeaderStyle() -> some View {
+    /// セクション見出し (13 semibold の大文字。tokens.md「Section header」)。letter-spacing 0.04em を 13pt に換算した 0.5pt を空ける。
+    /// ファイル名・設定項目名のように大文字小文字が意味を持つ見出しは `uppercase: false` にする
+    func sectionHeaderStyle(uppercase: Bool = true) -> some View {
         font(.footnote.weight(.semibold))
-            .textCase(.uppercase)
+            .textCase(uppercase ? .uppercase : nil)
             .tracking(0.5)
             .foregroundStyle(Color.paperTertiary)
     }
@@ -129,17 +187,19 @@ extension Text {
 struct SectionHeader<Trailing: View>: View {
     let title: Text
     var dense = false
+    var uppercase = true
     @ViewBuilder var trailing: Trailing
 
-    init(_ title: Text, dense: Bool = false, @ViewBuilder trailing: () -> Trailing) {
+    init(_ title: Text, dense: Bool = false, uppercase: Bool = true, @ViewBuilder trailing: () -> Trailing) {
         self.title = title
         self.dense = dense
+        self.uppercase = uppercase
         self.trailing = trailing()
     }
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
-            title.sectionHeaderStyle()
+            title.sectionHeaderStyle(uppercase: uppercase)
             Spacer(minLength: 8)
             trailing
         }
@@ -150,8 +210,8 @@ struct SectionHeader<Trailing: View>: View {
 }
 
 extension SectionHeader where Trailing == EmptyView {
-    init(_ title: Text, dense: Bool = false) {
-        self.init(title, dense: dense) { EmptyView() }
+    init(_ title: Text, dense: Bool = false, uppercase: Bool = true) {
+        self.init(title, dense: dense, uppercase: uppercase) { EmptyView() }
     }
 }
 

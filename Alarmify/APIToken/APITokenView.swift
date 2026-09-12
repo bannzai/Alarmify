@@ -161,6 +161,8 @@ struct APITokenView: View {
                     Text(verbatim: token.prefix)
                         .font(.body.monospaced())
                         .foregroundStyle(Color.paper)
+                        // 識別子はカードではなく prefix に付ける (コンテナに付けると中のボタンの識別子を上書きしてしまう)
+                        .accessibilityIdentifier("api_token_\(token.id)")
                     // ja: %@に発行
                     Text("Created \(token.createdAt, format: .dateTime.month(.abbreviated).day())")
                         .font(.footnote)
@@ -184,7 +186,8 @@ struct APITokenView: View {
                 code: APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: .now.addingTimeInterval(300)),
                 copyIdentifier: "api_token_curl_copy_\(token.id)"
             )
-            HStack(alignment: .center, spacing: 8) {
+            // チップは幅に収まらない分を次の行へ送る (名前を省略しない)
+            FlowLayout(spacing: 8) {
                 // ja: レシピ
                 Text("Recipes")
                     .font(.subheadline)
@@ -203,7 +206,6 @@ struct APITokenView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
-        .accessibilityIdentifier("api_token_\(token.id)")
     }
 }
 

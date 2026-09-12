@@ -60,92 +60,13 @@ struct PaywallPage: View {
             .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
             .frame(height: 44)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        // 製品名 + Pro。翻訳しない
-                        Text(verbatim: "Signalarm Pro").eyebrowStyle()
-                        // ja: もっと多くのサービスと すべてのアラームの記録を
-                        Text("More services and every alarm kept")
-                            .font(.title.bold())
-                            .foregroundStyle(Color.paper)
-                        lead
-                            .font(.subheadline)
-                            .foregroundStyle(Color.paperSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-
-                    VStack(alignment: .leading, spacing: 14) {
-                        // ja: サービスごとのトークン
-                        benefit(systemImage: "key.horizontal", text: Text("A token for every service"))
-                        // ja: 無制限のアラーム
-                        benefit(systemImage: "infinity", text: Text("Unlimited alarms"))
-                        // ja: すべてのアラーム履歴
-                        benefit(systemImage: "clock.arrow.circlepath", text: Text("Full alarm history"))
-                        // ja: すべての iPhone で鳴る
-                        benefit(systemImage: "iphone.gen3.radiowaves.left.and.right", text: Text("Rings on all your iPhones"))
-                    }
-                    .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-                    .padding(.top, 24)
-
-                    plans
-                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
-                        .padding(.top, 32)
-
-                    Button {
-                        if let selectedPackage {
-                            Task { await purchase(package: selectedPackage) }
-                        }
-                    } label: {
-                        continueLabel
-                            .opacity(isPurchasing ? 0 : 1)
-                            .overlay {
-                                if isPurchasing {
-                                    ProgressView()
-                                        .tint(Color.onSignal)
-                                }
-                            }
-                    }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .disabled(selectedPackage == nil || isPurchasing)
-                    .accessibilityIdentifier("paywall_continue_button")
-                    .padding(.horizontal, DesignMetrics.textHorizontalPadding)
-                    .padding(.top, 16)
-
-                    // ja: 設定で解約するまで自動更新されます。価格はお住まいの地域の通貨で表示されます。
-                    Text("Renews automatically until canceled in Settings. Prices shown in your local currency.")
-                        .font(.caption2)
-                        .foregroundStyle(Color.paperQuaternary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
-                        .padding(.top, 12)
-
-                    HStack(spacing: 18) {
-                        Button {
-                            Task { await restore() }
-                        } label: {
-                            // ja: 購入を復元
-                            Text("Restore")
-                        }
-                        .disabled(isPurchasing)
-                        .accessibilityIdentifier("paywall_restore")
-                        // ja: 利用規約
-                        Link(destination: LegalLinks.terms) { Text("Terms") }
-                        // ja: プライバシー
-                        Link(destination: LegalLinks.privacyPolicy) { Text("Privacy") }
-                        // ja: 特定商取引法に基づく表記
-                        Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal notice") }
-                            .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(Color.paperTertiary)
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 14)
+            // 特典とプランカードの間の余白は画面の高さに応じて伸ばし (プランカードと CTA を下に寄せる)、
+            // 収まらない高さ (日本語の長い見出し等) ではスクロールさせる
+            GeometryReader { proxy in
+                ScrollView {
+                    content
+                        .frame(minHeight: proxy.size.height)
                 }
-                .padding(.bottom, 24)
             }
         }
         .screenBackground()
@@ -156,6 +77,95 @@ struct PaywallPage: View {
         )) {
             Button(String(localized: "OK")) { purchaseError = nil }
         }
+    }
+
+    private var content: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
+                // 製品名 + Pro。翻訳しない
+                Text(verbatim: "Signalarm Pro").eyebrowStyle()
+                // ja: もっと多くのサービスと すべてのアラームの記録を
+                Text("More services and every alarm kept")
+                    .font(.title.bold())
+                    .foregroundStyle(Color.paper)
+                lead
+                    .font(.subheadline)
+                    .foregroundStyle(Color.paperSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+
+            VStack(alignment: .leading, spacing: 14) {
+                // ja: サービスごとのトークン
+                benefit(systemImage: "key.horizontal", text: Text("A token for every service"))
+                // ja: 無制限のアラーム
+                benefit(systemImage: "infinity", text: Text("Unlimited alarms"))
+                // ja: すべてのアラーム履歴
+                benefit(systemImage: "clock.arrow.circlepath", text: Text("Full alarm history"))
+                // ja: すべての iPhone で鳴る
+                benefit(systemImage: "iphone.gen3.radiowaves.left.and.right", text: Text("Rings on all your iPhones"))
+            }
+            .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+            .padding(.top, 24)
+
+            Spacer(minLength: 32)
+
+            plans
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+
+            Button {
+                if let selectedPackage {
+                    Task { await purchase(package: selectedPackage) }
+                }
+            } label: {
+                continueLabel
+                    .opacity(isPurchasing ? 0 : 1)
+                    .overlay {
+                        if isPurchasing {
+                            ProgressView()
+                                .tint(Color.onSignal)
+                        }
+                    }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(selectedPackage == nil || isPurchasing)
+            .accessibilityIdentifier("paywall_continue_button")
+            .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+            .padding(.top, 16)
+
+            // ja: 設定で解約するまで自動更新されます。価格はお住まいの地域の通貨で表示されます。
+            Text("Renews automatically until canceled in Settings. Prices shown in your local currency.")
+                .font(.caption2)
+                .foregroundStyle(Color.paperQuaternary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                .padding(.top, 12)
+
+            HStack(spacing: 18) {
+                Button {
+                    Task { await restore() }
+                } label: {
+                    // ja: 購入を復元
+                    Text("Restore")
+                }
+                .disabled(isPurchasing)
+                .accessibilityIdentifier("paywall_restore")
+                // ja: 利用規約
+                Link(destination: LegalLinks.terms) { Text("Terms") }
+                // ja: プライバシー
+                Link(destination: LegalLinks.privacyPolicy) { Text("Privacy") }
+                // ja: 特定商取引法に基づく表記
+                Link(destination: LegalLinks.specifiedCommercialTransactionAct) { Text("Legal notice") }
+                    .accessibilityIdentifier("paywall_specified_commercial_transaction_act_link")
+            }
+            .font(.footnote)
+            .foregroundStyle(Color.paperTertiary)
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 14)
+        }
+        .padding(.bottom, 24)
     }
 
     // MARK: - 本文

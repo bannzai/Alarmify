@@ -62,7 +62,6 @@ struct OnboardingView: View {
         }
         .screenBackground()
         .animation(.easeInOut(duration: 0.2), value: step)
-        .accessibilityIdentifier("onboarding_step_\(step.rawValue)")
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             // OS の設定アプリで権限を変えて戻ってきた時に、テストアラームの画面のボタンを切り替える
             alarmAuthorization = AlarmKitScheduler.authorizationState

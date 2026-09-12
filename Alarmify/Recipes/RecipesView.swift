@@ -122,8 +122,8 @@ struct RecipeDetailView: View {
                 .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
 
                 ForEach(Array(recipe.snippets(apiToken: apiToken, backend: backend).enumerated()), id: \.element.id) { index, snippet in
-                    // スニペットの見出しはファイル名・設定項目名 (翻訳しない)
-                    SectionHeader(Text(verbatim: snippet.label))
+                    // スニペットの見出しはファイル名・設定項目名 (翻訳しない。パスの大文字小文字を保つため大文字化もしない)
+                    SectionHeader(Text(verbatim: snippet.label), uppercase: false)
                     // YAML や JSON はインデントが意味を持つため折り返さず、横スクロールで見せる
                     CodeBlock(code: snippet.body, wraps: false, copyIdentifier: "recipe_copy_\(recipe.rawValue)_\(index)")
                         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
