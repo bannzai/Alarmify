@@ -165,7 +165,7 @@ struct OpenGraphImageView: View {
                         .font(.system(size: 96, weight: .heavy))
                         .foregroundStyle(Color.paper)
                     // LP の <title> と同じ一言 (docs/index.html)
-                    Text(verbatim: "Turn any webhook into\na real iPhone alarm")
+                    Text(verbatim: "Send a time via HTTP\nto set your iPhone alarm")
                         .font(.system(size: 36, weight: .medium))
                         .lineSpacing(6)
                         .foregroundStyle(Color.paper.opacity(0.7))
