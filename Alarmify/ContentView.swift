@@ -325,6 +325,13 @@ struct ContentView: View {
                     .foregroundStyle(Color.destructive)
                     .rowPadding()
                     .accessibilityIdentifier("home_history_error")
+            } else if session.uid == nil, let signInError = session.signInError {
+                // サインインに失敗したまま「サインイン中」を見せ続けない (前面復帰で再試行する)。App Store 版でも分かるようにここに出す
+                Text(signInError)
+                    .font(.footnote)
+                    .foregroundStyle(Color.destructive)
+                    .rowPadding()
+                    .accessibilityIdentifier("home_sign_in_error")
             } else if session.uid == nil {
                 // 履歴はサインイン後にしか取れない。サインイン中に「履歴なし」と見せない
                 // ja: サインイン中
