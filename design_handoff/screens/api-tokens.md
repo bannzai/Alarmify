@@ -10,7 +10,8 @@
    - 平文 (等幅 15/22、`word-break: break-all`、`textSelection`)
    - ボタン行: `Copy token` (40 高、`accent` の塗り、コピーのアイコン) が伸びる / `Done` (副、40 高)。`Done` で `APITokenModel.dismissIssued()`
 3. **Tokens** セクション: トークンごとに 1 カード
-   - 1 行目: prefix (等幅 17) + `Created Sep 12 · 3 alarms this month` (13 `fg3`。今月の件数は `AlarmHistoryEntry.tokenID` で数える。無料枠の残量を意識させる) / 右に `Revoke` (15 `fg3`。確認ダイアログの後 `revoke`)
+   - 1 行目: prefix (等幅 17) + `Created Sep 12 · 3 alarms this month` (13 `fg3`。無料枠の残量を意識させる) / 右に `Revoke` (15 `fg3`。確認ダイアログの後 `revoke`)
+   - 今月の件数はバックエンドがトークンごとに集計して返す前提 (`GET /v1/tokens` の各トークンに今月の登録数を足す変更が必要)。アプリが取得できる履歴 (`GET /v1/alarms`) は無料プランで直近数件に切り詰められ、次ページも無いため、`AlarmHistoryEntry.tokenID` を数えても月間の総数にならない。バックエンドの変更が入るまでは件数を出さず `Created Sep 12` だけにする
    - curl ブロック (`bg2`、等幅 12/18、折り返し) + `Copy`。平文は発行直後しか無いため、それ以外は `alm_9f2c…` のように prefix + 省略記号で埋める (コピー時も同じ。ユーザーが自分で置き換える)
    - `Recipes` + チップ (`GitHub Actions` / `Home Assistant` / `Shortcuts`)。タップで `RecipeDetailView` (このトークンの平文があれば埋め込む)
    - 空状態: `No tokens yet` (17 `fg3`) の 1 行カード
