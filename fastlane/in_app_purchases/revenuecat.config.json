@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/bannzai/castle/main/home/.claude/skills/revenuecat-product-setup/config.schema.json",
+  "comment": "RevenueCat の products / entitlement / offering 定義 (issue #61。2026-09-12 に適用済み)。~/.claude/skills/revenuecat-product-setup の rc_diff_config.sh <このファイル> で差分確認 → rc_apply_config.sh <同じパス> で冪等に適用する。app_id は Dashboard 作成済みの App Store App (Signalarm (iOS))。store_identifier は fastlane/in_app_purchases/appstore.config.json の productId と、entitlement の lookup_key と offering の lookup_key は Alarmify/Features/Purchase/ProEntitlement.swift の entitlementIdentifier / offeringIdentifier と揃える。ペイウォール (PaywallPage.swift) は offering `default` の $rc_annual / $rc_monthly パッケージを使う",
+  "project_id": "proj42e2b4ed",
+  "products": [
+    { "key": "monthly", "app_id": "app53541baf31", "store_identifier": "alarmify_pro_monthly_450yen", "type": "subscription", "display_name": "Pro (月額)" },
+    { "key": "annual", "app_id": "app53541baf31", "store_identifier": "alarmify_pro_annual_2300yen", "type": "subscription", "display_name": "Pro (年額)" }
+  ],
+  "entitlements": [
+    { "lookup_key": "pro", "display_name": "Pro", "products": ["monthly", "annual"] }
+  ],
+  "offerings": [
+    {
+      "lookup_key": "default",
+      "display_name": "標準プラン",
+      "packages": [
+        { "lookup_key": "$rc_annual", "display_name": "年額", "position": 0, "products": [{ "key": "annual", "eligibility_criteria": "all" }] },
+        { "lookup_key": "$rc_monthly", "display_name": "月額", "position": 1, "products": [{ "key": "monthly", "eligibility_criteria": "all" }] }
+      ]
+    }
+  ]
+}
