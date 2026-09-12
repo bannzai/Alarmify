@@ -1,36 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Signalarm - Turn any webhook into a real iPhone alarm</title>
-<meta name="description" content="Signalarm turns any HTTP request into a real AlarmKit alarm on your iPhone. It rings through Silent mode and Focus, shows on the lock screen, and works when the app is closed. Built for on-call engineers and home automation." />
-<link rel="canonical" href="https://bannzai.github.io/Alarmify/" />
+<title>Signalarm | Webhook を iPhone の本物のアラームに</title>
+<meta name="description" content="Webhook を iPhone の本物のアラームにする Signalarm。API トークンを発行して curl で呼ぶだけ。オンコール監視や Home Assistant のイベントを AlarmKit アラームで受け取れます。" />
+<link rel="canonical" href="https://signalarm.app/" />
 <meta name="theme-color" content="#0A0A0B" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Signalarm" />
-<meta property="og:title" content="Signalarm - Turn any webhook into a real iPhone alarm" />
-<meta property="og:description" content="Call one HTTPS endpoint from CI, a monitor, or your smart home, and a real alarm rings on your iPhone. Through Silent mode, through Focus, even when the app is closed." />
-<meta property="og:url" content="https://bannzai.github.io/Alarmify/" />
-<meta property="og:image" content="https://bannzai.github.io/Alarmify/og.png" />
+<meta property="og:title" content="Signalarm | Webhook を iPhone の本物のアラームに" />
+<meta property="og:description" content="監視や Home Assistant のイベントから iPhone のアラームを予約。API トークンと HTTP リクエストで連携できます。" />
+<meta property="og:url" content="https://signalarm.app/" />
+<meta property="og:image" content="https://signalarm.app/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content="ja_JP" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Signalarm - Turn any webhook into a real iPhone alarm" />
-<meta name="twitter:description" content="Call one HTTPS endpoint from anything, and a real alarm rings on your iPhone. Through Silent mode, through Focus, even when the app is closed." />
-<meta name="twitter:image" content="https://bannzai.github.io/Alarmify/og.png" />
+<meta name="twitter:title" content="Signalarm | Webhook を iPhone の本物のアラームに" />
+<meta name="twitter:description" content="Webhook から iPhone の本物のアラームへ。API トークンと HTTP リクエストで連携できます。" />
+<meta name="twitter:image" content="https://signalarm.app/og.png" />
 <link rel="icon" type="image/png" href="./icon.png" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Signalarm",
-  "description": "Turn any webhook or API call into a real alarm on your iPhone. Signalarm schedules an AlarmKit alarm that rings through Silent mode and Focus, shows on the lock screen, and works when the app is closed.",
+  "description": "Webhook や API の呼び出しから iPhone の AlarmKit アラームを予約できます。登録済みのアラームはサイレントモードや集中モードでも鳴ります。",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "iOS 26",
-  "url": "https://bannzai.github.io/Alarmify/",
-  "image": "https://bannzai.github.io/Alarmify/og.png",
+  "url": "https://signalarm.app/",
+  "image": "https://signalarm.app/og.png",
   "author": { "@type": "Person", "name": "bannzai" }
 }
 </script>
@@ -253,223 +253,56 @@
 </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <a class="brand" href="#top" aria-label="Signalarm">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span class="brand-name">Signalarm</span>
-      </a>
-      <nav class="top" aria-label="Sections">
-        <a href="#how">How it works</a>
-        <a href="#why">Why a real alarm</a>
-        <a href="#integrations">Integrations</a>
-        <a href="./api">API</a>
-        <a href="#plans">Plans</a>
-        <a href="#support">Support</a>
-      </nav>
-    </div>
-  </header>
-
+  <header><div class="container">
+    <a class="brand" href="#top" aria-label="Signalarm"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Signalarm</span></a>
+    <nav class="top" aria-label="ページ内の案内"><a href="#how">使い方</a><a href="#integrations">連携</a><a href="./api">API</a><a href="#plans">プラン</a><a href="#support">サポート</a></nav>
+  </div></header>
   <main id="top">
     <div class="container hero">
-      <p class="label">Webhook to real iPhone alarm</p>
-      <h1>Any HTTP request can <em>wake you up</em>.</h1>
-      <p class="lead">
-        Signalarm gives you an HTTPS endpoint and a personal token. Call it from CI, a monitor,
-        your smart home, or a shell script, and a real alarm is scheduled on your iPhone.
-        Not a push notification you can sleep through.
-      </p>
-
+      <p class="label">Webhook → iPhone → AlarmKit</p>
+      <h1>Webhook を<br>iPhone の<em>本物のアラーム</em>に</h1>
+      <p class="lead">深夜の障害も、家のセンサーも、サーバーの予定も。<br>Signalarm の API を呼ぶと、あなたの iPhone にアラームが登録されます。登録済みのアラームはサイレントモードや集中モードでも鳴ります。</p>
+      <div class="actions"><a class="btn" style="background:var(--accent);color:#0a0a0b" href="#how">使い方を見る</a><a class="btn" style="border-color:var(--hair-2)" href="./api">API リファレンス</a><span class="note">iOS 26 以降 · App Store 公開準備中</span></div>
       <div class="code">
-        <div class="code-head">
-          <span>Schedule an alarm</span>
-          <span class="badge">Planned API (予定)</span>
-        </div>
-<pre><code><span class="c-cmd">curl</span> -X POST https://api.alarmify.app/v1/alarms \
-  <span class="c-flag">-H</span> "Authorization: Bearer &lt;token&gt;" \
+        <div class="code-head"><span>curl で 1 分後のアラームを予約</span><span class="badge">HTTP POST</span></div>
+<pre><code><span class="c-cmd">curl</span> -X POST https://api.signalarm.app/v1/alarms \
+  <span class="c-flag">-H</span> "Authorization: Bearer &lt;API_TOKEN&gt;" \
   <span class="c-flag">-H</span> "Content-Type: application/json" \
-  <span class="c-flag">-d</span> '{"fire_at":"2026-09-03T07:00:00Z","title":"Deploy finished"}'</code></pre>
-        <p class="code-note">
-          The API is still under development. The endpoint, the request shape and the host name
-          above show the planned interface and may change before release.
-          Full request and response details: <a href="./api">API reference</a>.
-        </p>
-      </div>
-
-      <div class="actions">
-        <span id="store-cta" class="btn disabled" role="button" aria-disabled="true">Coming soon to the App Store</span>
-        <span class="note">iPhone, iOS 26 or later</span>
+  <span class="c-flag">-d</span> '{"fire_in":60,"title":"デプロイ完了"}'</code></pre>
+        <p class="code-note">アプリで発行した API トークンに置き換えて実行します。実行するとアラームの登録をリクエストします。</p>
       </div>
     </div>
-
-    <section id="how">
-      <div class="container">
-        <p class="label">How it works</p>
-        <h2>Three steps, then forget about it.</h2>
-        <div class="steps">
-          <div class="step">
-            <span class="no">01</span>
-            <h3>Get a token in the app</h3>
-            <p>Install Signalarm and issue a personal bearer token from the app. The token belongs to your account and to your iPhone.</p>
-          </div>
-          <div class="step">
-            <span class="no">02</span>
-            <h3>Call the API from anything</h3>
-            <p>Any system that can send an HTTPS request can schedule an alarm: a workflow step, a monitoring rule, a cron job, a shortcut.</p>
-          </div>
-          <div class="step">
-            <span class="no">03</span>
-            <h3>Your iPhone rings</h3>
-            <p>At the requested time a real alarm goes off on your device, with the title you sent, so you know what woke you before you open anything.</p>
-          </div>
-        </div>
+    <section id="how"><div class="container"><p class="label">使い方</p><h2>トークンを発行して<br>curl で呼ぶだけ</h2>
+      <div class="steps">
+        <div class="step"><span class="no">01</span><h3>アプリでトークンを発行</h3><p>Signalarm で通知とアラームを許可し、API トークンを作成します。発行したトークンは安全な場所に保存してください。</p></div>
+        <div class="step"><span class="no">02</span><h3>好きなサービスから呼ぶ</h3><p>トークンを Authorization ヘッダーに入れ、時刻とタイトルを送信。まずは上の curl で 1 分後のアラームを予約してみましょう。</p></div>
+        <div class="step"><span class="no">03</span><h3>iPhone でアラームが鳴る</h3><p>リクエストが iPhone に届くと AlarmKit に登録されます。指定時刻にはロック画面にタイトルとアラームが表示されます。</p></div>
       </div>
-    </section>
-
-    <section id="why">
-      <div class="container">
-        <p class="label">Why a real alarm</p>
-        <h2>A notification is a suggestion. An alarm is not.</h2>
-        <p class="lead">
-          Signalarm schedules a system alarm through AlarmKit, the same mechanism the built-in
-          Clock app uses. That is what makes it survive the settings that silence everything else.
-        </p>
-        <div class="facts">
-          <div class="fact">
-            <h3>Rings in Silent mode</h3>
-            <p>The ring switch does not mute it. Your phone can stay silent all evening and still wake you at 3am.</p>
-          </div>
-          <div class="fact">
-            <h3>Breaks through Focus</h3>
-            <p>Sleep Focus and Do Not Disturb hold back notifications. An alarm still sounds.</p>
-          </div>
-          <div class="fact">
-            <h3>Shows on the lock screen</h3>
-            <p>The alarm appears with its title, so an incident has a name before you unlock anything.</p>
-          </div>
-          <div class="fact">
-            <h3>Works when the app is closed</h3>
-            <p>Once scheduled, the alarm lives in the system. Signalarm does not have to be running.</p>
-          </div>
-          <div class="fact">
-            <h3>Built on AlarmKit</h3>
-            <p>Uses Apple's alarm framework rather than a background push, so it behaves like a real alarm and not like a message.</p>
-          </div>
-          <div class="fact">
-            <h3>iOS 26 and later</h3>
-            <p>AlarmKit requires iOS 26, so Signalarm targets iOS 26 and later on iPhone.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="integrations">
-      <div class="container">
-        <p class="label">Integrations</p>
-        <h2>Works with anything that can send an HTTP request.</h2>
-        <p class="lead">
-          There is nothing to install on the other side. If it can make a POST request with a
-          header, it can wake you up.
-        </p>
-        <div class="chips">
-          <a class="chip" href="./recipes/github-actions">GitHub Actions</a>
-          <a class="chip" href="./recipes/home-assistant">Home Assistant</a>
-          <a class="chip" href="./recipes/grafana">Grafana</a>
-          <a class="chip" href="./recipes/uptime-kuma">Uptime Kuma</a>
-          <a class="chip" href="./recipes/cron">cron</a>
-          <span class="chip">Zapier</span>
-          <a class="chip" href="./recipes/shortcuts">Shortcuts</a>
-        </div>
-        <p class="chips-note">
-          A long build that finishes at night, a probe that goes red, a washing machine that
-          finished its cycle, a rehearsal alarm your automation sets an hour before a flight.
-        </p>
-        <p class="chips-note">
-          Copy-and-paste setups for the six linked integrations are in the
-          <a href="./recipes/">integration recipes</a>, and the request and response shapes are in the
-          <a href="./api">API reference</a>. The same recipes are available inside the app with your
-          token filled in.
-        </p>
-      </div>
-    </section>
-
-    <section id="plans">
-      <div class="container">
-        <p class="label">Plans</p>
-        <h2>Start free. Upgrade when it becomes infrastructure.</h2>
-        <div class="plans">
-          <div class="plan">
-            <h3>Free</h3>
-            <p class="tag">No cost</p>
-            <ul>
-              <li>Schedule alarms from the API</li>
-              <li>One personal token</li>
-              <li>Real AlarmKit alarms on your iPhone</li>
-              <li>All integrations, since they are just HTTP</li>
-            </ul>
-            <p class="price-note">Available to everyone with the app.</p>
-          </div>
-          <div class="plan pro">
-            <h3>Pro</h3>
-            <p class="tag">Subscription</p>
-            <ul>
-              <li>Higher request and alarm limits</li>
-              <li>Multiple tokens to separate your systems</li>
-              <li>Longer alarm history</li>
-              <li>Priority support by email</li>
-            </ul>
-            <p class="price-note">Pricing and the exact limits will be listed on the App Store when Signalarm is released.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="support" class="support">
-      <div class="container">
-        <p class="label">Support</p>
-        <h2>Support / Contact</h2>
-        <p class="lead">
-          Questions, bug reports and feature requests are all welcome. We read every message.
-        </p>
-        <div class="contact">
-          <div class="card">
-            <h3>Email</h3>
-            <p>
-              Write to <a href="mailto:bannzai.app@gmail.com">bannzai.app@gmail.com</a>
-              and we will get back to you.
-            </p>
-          </div>
-          <div class="card">
-            <h3>From inside the app</h3>
-            <p>You can also reach support from the in-app settings screen, which sends us your message together with the diagnostic details we need.</p>
-          </div>
-          <div class="card">
-            <h3>Your account</h3>
-            <p><a href="./AccountDeletion-en">How to delete your account and data</a></p>
-          </div>
-        </div>
-      </div>
-    </section>
+      <p class="chips-note">アラームの登録には iPhone の通信接続と権限が必要です。API の成功応答はサーバーの受付を示し、端末での登録・発火を保証するものではありません。<a href="./api">配送と時刻について</a></p>
+    </div></section>
+    <section id="integrations"><div class="container"><p class="label">連携</p><h2>起きたい理由は<br>あなたのシステムが知っている</h2>
+      <div class="steps">
+        <div class="step"><h3>オンコールのエンジニアに</h3><p>監視アラートや CI の完了を、iPhone のアラームへ。対応が必要なイベントを HTTP でつなげます。</p><p><a href="./recipes/grafana">Grafana</a> · <a href="./recipes/uptime-kuma">Uptime Kuma</a> · <a href="./recipes/github-actions">GitHub Actions</a></p></div>
+        <div class="step"><h3>家のイベントを受け取りたい人に</h3><p>Home Assistant のオートメーションから、センサーの変化や家電の動作完了に合わせて呼び出せます。</p><p><a href="./recipes/home-assistant">Home Assistant の連携レシピ</a></p></div>
+        <div class="step"><h3>サーバーの予定で起きたい人に</h3><p>cron やスクリプトで決まる予定をアラームへ。API から予約の更新や取り消しもできます。</p><p><a href="./recipes/cron">cron・シェル</a> · <a href="./recipes/shortcuts">ショートカット</a></p></div>
+      </div><p class="chips-note"><a href="./recipes/">連携レシピをすべて見る</a> · <a href="./api">リクエストとレスポンスを確認する</a></p>
+    </div></section>
+    <section id="why"><div class="container"><p class="label">AlarmKit</p><h2>登録したアラームは iPhone に任せる</h2><div class="facts">
+      <div class="fact"><h3>サイレントモードでも鳴る</h3><p>通知音を消していても、登録した AlarmKit アラームは鳴ります。</p></div>
+      <div class="fact"><h3>集中モードでも鳴る</h3><p>睡眠中の集中モードでも、登録したアラームを受け取れます。</p></div>
+      <div class="fact"><h3>ロック画面にタイトルを表示</h3><p>何が起きたかを、送信したタイトルで確認できます。</p></div>
+      <div class="fact"><h3>登録後はアプリを閉じていても動作</h3><p>一度登録されたアラームはシステムが管理します。</p></div>
+    </div></div></section>
+    <section id="plans"><div class="container"><p class="label">プラン</p><h2>まずは無料でアラームを試す</h2><div class="plans">
+      <div class="plan"><h3>無料</h3><ul><li>月 20 回のアラーム登録</li><li>API トークン 1 つ</li><li>各サービスの連携レシピ</li><li>直近 3 件の履歴</li></ul></div>
+      <div class="plan pro"><h3>Pro</h3><ul><li>アラーム登録回数の制限を解除</li><li>サービスごとに複数トークンを発行</li><li>30 日間のアラーム履歴</li></ul><p class="price-note">サブスクリプションの価格・期間はアプリ内の購入画面で確認できます。API のレート制限は両プランに適用されます。</p></div>
+    </div></div></section>
+    <section id="support" class="support"><div class="container"><p class="label">サポート</p><h2>サポート・お問い合わせ</h2><p class="lead">使い方の質問、不具合、ご要望はこちらからお送りください。</p><div class="contact">
+      <div class="card"><h3>メールで問い合わせ</h3><p><a href="mailto:bannzai.app@gmail.com">bannzai.app@gmail.com</a></p></div>
+      <div class="card"><h3>アプリ内から問い合わせ</h3><p>アプリの設定画面にあるお問い合わせからもご連絡いただけます。</p></div>
+      <div class="card"><h3>アカウントとデータの削除</h3><p><a href="./AccountDeletion-ja">アカウント削除の手順</a></p></div>
+    </div></div></section>
   </main>
-
-  <footer>
-    <div class="container">
-      <div class="links">
-        <a href="./api">API Reference</a>
-        <a href="./recipes/">Integration Recipes</a>
-        <a href="./Terms-en">Terms of Service</a>
-        <a href="./PrivacyPolicy-en">Privacy Policy</a>
-        <a href="./AccountDeletion-en">Account Deletion</a>
-        <a href="./Terms-ja" lang="ja" hreflang="ja">利用規約</a>
-        <a href="./PrivacyPolicy-ja" lang="ja" hreflang="ja">プライバシーポリシー</a>
-        <a href="./SpecifiedCommercialTransactionAct-ja" lang="ja" hreflang="ja">特定商取引法に基づく表示</a>
-      </div>
-      <p class="lang-note">
-        This page is in English. The last three links are the Japanese legal documents, required
-        for distribution in Japan.
-      </p>
-      <p class="copyright">© 2026 bannzai</p>
-    </div>
-  </footer>
+  <footer><div class="container"><div class="links"><a href="./api">API リファレンス</a><a href="./recipes/">連携レシピ</a><a href="./Terms-ja">利用規約</a><a href="./PrivacyPolicy-ja">プライバシーポリシー</a><a href="./SpecifiedCommercialTransactionAct-ja">特定商取引法に基づく表示</a><a href="./Terms-en" lang="en">Terms</a><a href="./PrivacyPolicy-en" lang="en">Privacy</a><a href="./AccountDeletion-en" lang="en">Account Deletion</a></div><p class="copyright">© 2026 bannzai</p></div></footer>
 </body>
 </html>

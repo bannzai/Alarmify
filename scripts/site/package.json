@@ -1,0 +1,12 @@
+{
+  "name": "signalarm-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test build.test.mjs"
+  },
+  "dependencies": {
+    "marked": "18.0.12"
+  }
+}

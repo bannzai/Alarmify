@@ -42,7 +42,7 @@ final class IntegrationRecipeTests: XCTestCase {
     }
 
     func testDocumentationURLPointsToRecipesSite() {
-        XCTAssertEqual(IntegrationRecipe.githubActions.documentationURL.absoluteString, "https://bannzai.github.io/Alarmify/recipes/github-actions")
-        XCTAssertEqual(IntegrationRecipe.shell.documentationURL.absoluteString, "https://bannzai.github.io/Alarmify/recipes/cron")
+        XCTAssertEqual(IntegrationRecipe.githubActions.documentationURL.absoluteString, "https://signalarm.app/recipes/github-actions")
+        XCTAssertEqual(IntegrationRecipe.shell.documentationURL.absoluteString, "https://signalarm.app/recipes/cron")
     }
 }

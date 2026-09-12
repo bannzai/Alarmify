@@ -22,7 +22,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
     static let apiTokenPlaceholder = "<API_TOKEN>"
     /// スニペットのテンプレート内でトークンを差し込む位置
     private static let apiTokenMarker = "{{API_TOKEN}}"
-    private static let documentationBaseURL = "https://bannzai.github.io/Alarmify/recipes/"
+    private static let documentationBaseURL = "https://signalarm.app/recipes/"
 
     var id: String { rawValue }
 
@@ -40,7 +40,7 @@ enum IntegrationRecipe: String, CaseIterable, Identifiable {
         return URL(string: Self.documentationBaseURL + slug)!
     }
 
-    /// アラーム登録 API のエンドポイント。アプリが接続しているバックエンドの外部サービス向け API 配下 (docs/ は公開予定のホスト名で書いている)
+    /// アラーム登録 API のエンドポイント。アプリが接続しているバックエンドの外部サービス向け API 配下 (production は docs/ と同じ api.signalarm.app)
     static func endpoint(for backend: AlarmifyBackend) -> String {
         backend.alarmsAPIBaseURL.absoluteString + "/v1/alarms"
     }

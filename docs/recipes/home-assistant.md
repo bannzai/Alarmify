@@ -16,7 +16,7 @@ alarmify_authorization: "Bearer <API_TOKEN>"
 # configuration.yaml
 rest_command:
   alarmify_alarm:
-    url: "https://api.alarmify.app/v1/alarms"
+    url: "https://api.signalarm.app/v1/alarms"
     method: post
     headers:
       authorization: !secret alarmify_authorization
@@ -66,7 +66,7 @@ If you would rather send an absolute time, add a second command that takes `fire
 ```yaml
 rest_command:
   alarmify_alarm_at:
-    url: "https://api.alarmify.app/v1/alarms"
+    url: "https://api.signalarm.app/v1/alarms"
     method: post
     headers:
       authorization: !secret alarmify_authorization
