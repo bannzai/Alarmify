@@ -45,6 +45,8 @@ struct DeveloperMenuView: View {
                     // ja: 外観
                     Text("Appearance")
                 }
+                // 選択肢をその場に並べ、mobile-mcp / WDA からラベルで直接タップできるようにする (メニュー形式は開く操作が 1 段増える)
+                .pickerStyle(.segmented)
                 .accessibilityIdentifier("debug_appearance")
                 Picker(selection: $languageOverride) {
                     // ja: システム
@@ -56,6 +58,7 @@ struct DeveloperMenuView: View {
                     // ja: 表示言語
                     Text("Language")
                 }
+                .pickerStyle(.segmented)
                 .accessibilityIdentifier("debug_language")
                 .onChange(of: languageOverride) { _, newValue in
                     DeveloperMenu.languageOverride = newValue

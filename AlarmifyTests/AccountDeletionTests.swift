@@ -102,4 +102,15 @@ final class AccountDeletionTests: XCTestCase {
         XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ar").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-en")
         XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "zh-Hans").absoluteString, "https://bannzai.github.io/Alarmify/AccountDeletion-en")
     }
+
+    /// サポート宛のメールは、問い合わせの特定に使うアカウント ID を本文に載せる (未サインインなら空のまま)
+    func testSupportMailCarriesTheAccountID() throws {
+        let url = LegalLinks.supportMail(accountID: "uid-123")
+        XCTAssertEqual(url.scheme, "mailto")
+        let components = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.path, LegalLinks.supportEmail)
+        XCTAssertEqual(components.queryItems?.first { $0.name == "body" }?.value, "Account ID: uid-123")
+        XCTAssertNotNil(components.queryItems?.first { $0.name == "subject" }?.value)
+        XCTAssertEqual(URLComponents(url: LegalLinks.supportMail(accountID: nil), resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "body" }?.value, "Account ID: ")
+    }
 }

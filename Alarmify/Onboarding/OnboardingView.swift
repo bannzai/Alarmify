@@ -23,7 +23,6 @@ struct OnboardingView: View {
 
     @AppStorage(.onboardingCompleted) private var onboardingCompleted = false
     @State private var step: Step = .concept
-    @State private var session = AccountSession.shared
     @State private var tokenModel = APITokenModel()
     @State private var alarmAuthorization = AlarmKitScheduler.authorizationState
     /// 登録したテストアラームの発火日時。登録後はカードの数字をカウントダウンに切り替える
