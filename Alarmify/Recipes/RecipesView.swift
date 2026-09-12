@@ -1,44 +1,91 @@
 import SwiftUI
 
 /// 連携レシピ画面。docs/recipes/ と同じ手順とスニペットを表示し、API トークンを埋め込んだ状態でコピーできる。
-/// apiToken が nil (未発行) の間はプレースホルダを埋め込んで表示する
+/// apiToken が nil (未発行) の間はプレースホルダを埋め込んで表示する。構成と文言は design_handoff/screens/recipes.md
 struct RecipesView: View {
     let apiToken: String?
     /// スニペットのエンドポイントに使う接続先
     let backend: AlarmifyBackend
 
     var body: some View {
-        List {
-            Section {
-                ForEach(IntegrationRecipe.allCases) { recipe in
-                    NavigationLink {
-                        RecipeDetailView(recipe: recipe, apiToken: apiToken, backend: backend)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(verbatim: recipe.displayName)
-                            recipe.summary
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .accessibilityIdentifier("recipe_\(recipe.rawValue)")
-                }
-            } footer: {
-                if apiToken == nil {
-                    // ja: API トークンを発行すると、スニペットにトークンが埋め込まれた状態で表示されます
-                    Text("Issue an API token to see these snippets with your token filled in.")
-                }
-            }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                lead
+                    .font(.subheadline)
+                    .foregroundStyle(Color.paperSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+                    .padding(.top, 8)
+                    .padding(.bottom, 16)
 
-            Section {
-                Link(destination: URL(string: "https://signalarm.app/api")!) {
-                    // ja: API リファレンス
-                    Label("API reference", systemImage: "book")
+                VStack(spacing: 0) {
+                    ForEach(Array(IntegrationRecipe.allCases.enumerated()), id: \.element.id) { index, recipe in
+                        if index > 0 {
+                            HairlineDivider()
+                        }
+                        NavigationLink {
+                            RecipeDetailView(recipe: recipe, apiToken: apiToken, backend: backend)
+                        } label: {
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(verbatim: recipe.displayName)
+                                        .font(.headline)
+                                        .foregroundStyle(Color.paper)
+                                    recipe.summary
+                                        .font(.footnote)
+                                        .foregroundStyle(Color.paperTertiary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                Spacer(minLength: 8)
+                                RowChevron()
+                            }
+                            .rowPadding()
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("recipe_\(recipe.rawValue)")
+                    }
                 }
+                .card()
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+
+                // ja: リファレンス
+                SectionHeader(Text("Reference"))
+                Link(destination: URL(string: "https://signalarm.app/api")!) {
+                    HStack(spacing: 14) {
+                        Image(systemName: "book")
+                            .font(.body)
+                            .foregroundStyle(Color.paperTertiary)
+                            .frame(width: 24)
+                        // ja: API リファレンス
+                        Text("API reference")
+                            .font(.body)
+                            .foregroundStyle(Color.paper)
+                        Spacer()
+                        RowChevron()
+                    }
+                    .rowPadding()
+                }
+                .card()
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+                .accessibilityIdentifier("recipes_api_reference")
             }
+            .padding(.bottom, 24)
         }
+        .screenBackground()
         // ja: 連携レシピ
         .navigationTitle("Integration recipes")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// リード文。2 文目はトークンの有無で変える (未発行ならスニペットにプレースホルダが入っていることを伝える)
+    private var lead: Text {
+        let endpoint = Text(verbatim: "POST /v1/alarms").font(.footnote.monospaced())
+        if apiToken == nil {
+            // ja: どのレシピも最後は %@ への 1 リクエストです。API トークンを発行すると、スニペットにトークンが埋め込まれた状態で表示されます。
+            return Text("Every recipe ends with one request to \(endpoint). Issue an API token to see these snippets with your token filled in.")
+        }
+        // ja: どのレシピも最後は %@ への 1 リクエストです。スニペットにはトークンが埋め込まれています。
+        return Text("Every recipe ends with one request to \(endpoint). Snippets already carry your token.")
     }
 }
 
@@ -49,50 +96,53 @@ struct RecipeDetailView: View {
     let backend: AlarmifyBackend
 
     var body: some View {
-        List {
-            Section {
-                ForEach(Array(recipe.steps.enumerated()), id: \.offset) { index, step in
-                    HStack(alignment: .top, spacing: 12) {
-                        Text(verbatim: "\(index + 1)")
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                            .frame(width: 16, alignment: .trailing)
-                        step
-                    }
-                }
-            } header: {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
                 // ja: 手順
-                Text("Steps")
-            }
+                SectionHeader(Text("Steps"))
+                VStack(spacing: 0) {
+                    ForEach(Array(recipe.steps.enumerated()), id: \.offset) { index, step in
+                        if index > 0 {
+                            HairlineDivider()
+                        }
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            Text(verbatim: "\(index + 1)")
+                                .font(.footnote.monospacedDigit())
+                                .foregroundStyle(Color.signalText)
+                                .frame(width: 16, alignment: .trailing)
+                            step
+                                .font(.subheadline)
+                                .foregroundStyle(Color.paperSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .rowPadding()
+                    }
+                }
+                .card()
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
 
-            ForEach(Array(recipe.snippets(apiToken: apiToken, backend: backend).enumerated()), id: \.element.id) { index, snippet in
-                Section {
-                    ScrollView(.horizontal) {
-                        Text(verbatim: snippet.body)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    }
-                    Button {
-                        UIPasteboard.general.string = snippet.body
-                    } label: {
-                        // ja: コピー
-                        Label("Copy", systemImage: "doc.on.doc")
-                    }
-                    .accessibilityIdentifier("recipe_copy_\(recipe.rawValue)_\(index)")
-                } header: {
-                    Text(verbatim: snippet.label)
+                ForEach(Array(recipe.snippets(apiToken: apiToken, backend: backend).enumerated()), id: \.element.id) { index, snippet in
+                    // スニペットの見出しはファイル名・設定項目名 (翻訳しない。パスの大文字小文字を保つため大文字化もしない)
+                    SectionHeader(Text(verbatim: snippet.label), uppercase: false)
+                    // YAML や JSON はインデントが意味を持つため折り返さず、横スクロールで見せる
+                    CodeBlock(code: snippet.body, wraps: false, copyIdentifier: "recipe_copy_\(recipe.rawValue)_\(index)")
+                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
                 }
             }
-
-            Section {
-                Link(destination: recipe.documentationURL) {
-                    // ja: Web でこのレシピを見る
-                    Label("Open this recipe on the web", systemImage: "safari")
-                }
-            }
+            .padding(.bottom, 24)
         }
+        .screenBackground()
         .navigationTitle(Text(verbatim: recipe.displayName))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Link(destination: recipe.documentationURL) {
+                    // ja: Web でこのレシピを見る
+                    Label("Open this recipe on the web", systemImage: "arrow.up.right.square")
+                }
+                .accessibilityIdentifier("recipe_open_web")
+            }
+        }
     }
 }
 

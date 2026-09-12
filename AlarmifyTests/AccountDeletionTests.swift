@@ -102,4 +102,19 @@ final class AccountDeletionTests: XCTestCase {
         XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ar").absoluteString, "https://signalarm.app/AccountDeletion-en")
         XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "zh-Hans").absoluteString, "https://signalarm.app/AccountDeletion-en")
     }
+
+    /// サポート宛のメールは、問い合わせの特定に使うアカウント ID を本文に載せる (未サインインなら ID の部分が空のまま)。
+    /// 本文のラベルはテストホストの表示言語で変わるため、ID の有無だけを見る
+    func testSupportMailCarriesTheAccountID() throws {
+        let url = LegalLinks.supportMail(accountID: "uid-123")
+        XCTAssertEqual(url.scheme, "mailto")
+        let components = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        XCTAssertEqual(components.path, LegalLinks.supportEmail)
+        let body = try XCTUnwrap(components.queryItems?.first { $0.name == "body" }?.value)
+        XCTAssertTrue(body.hasSuffix("uid-123"), body)
+        XCTAssertNotNil(components.queryItems?.first { $0.name == "subject" }?.value)
+        let bodyWithoutAccount = try XCTUnwrap(URLComponents(url: LegalLinks.supportMail(accountID: nil), resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "body" }?.value)
+        XCTAssertFalse(bodyWithoutAccount.contains("uid-123"))
+        XCTAssertTrue(bodyWithoutAccount.hasSuffix(": "), bodyWithoutAccount)
+    }
 }

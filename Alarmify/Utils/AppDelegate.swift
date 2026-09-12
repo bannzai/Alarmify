@@ -35,12 +35,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         Messaging.messaging().delegate = self
 
         UNUserNotificationCenter.current().delegate = self
-        // visible push (検証方式 1) の表示許可。許可の有無に関わらずデバイストークンは取得できる
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, error in
-            if let error {
-                Logger.push.error("Notification authorization failed: \(error.localizedDescription)")
-            }
-        }
+        // visible push (検証方式 1) の表示許可はオンボーディング (OnboardingView) と設定 > Permissions で理由を示してから要求する。
+        // 許可の有無に関わらずデバイストークンは取得できるため、APNs への登録は起動時に行う
         application.registerForRemoteNotifications()
         return true
     }

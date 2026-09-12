@@ -5,8 +5,13 @@ import WidgetKit
 
 /// AlarmKit のアラーム (カウントダウン・鳴動) のロック画面 / Dynamic Island 表示。
 /// アラーム鳴動時はシステムが AlarmPresentation.Alert を優先描画するため、カスタム View は最小限にする。
-/// 配色はストア素材・アプリアイコンと同じシグナル橙 (`Color.signal`) に揃え、受領デザイン (#6) の反映時に見直す
+/// 配色は design_handoff/screens/lock-screen.md に従い、地は常に暗い (`activityBackgroundTint`) ため文字色も端末の外観に追従させず固定する
 struct AlarmLiveActivityWidget: Widget {
+    /// 暗い地の上の一次テキスト (`paper` のダーク値)。ライト外観でも黒地に黒文字にならないよう固定する
+    private static let foreground = Color(red: 0xF2 / 255, green: 0xF2 / 255, blue: 0xF0 / 255)
+    /// 暗い地の上の補助テキスト (`paperTertiary` のダーク値)
+    private static let secondaryForeground = foreground.opacity(0.56)
+
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: AlarmAttributes<AlarmifyAlarmMetadata>.self) { context in
             HStack(alignment: .center, spacing: 12) {
@@ -18,11 +23,12 @@ struct AlarmLiveActivityWidget: Widget {
                     Text(verbatim: "SIGNALARM")
                         .font(.caption2.weight(.semibold))
                         .tracking(2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Self.secondaryForeground)
                     if let title = context.attributes.metadata?.title {
                         // 外部サービスから送られたタイトルはそのまま表示する
                         Text(verbatim: title)
                             .font(.headline)
+                            .foregroundStyle(Self.foreground)
                             .lineLimit(2)
                     }
                 }
