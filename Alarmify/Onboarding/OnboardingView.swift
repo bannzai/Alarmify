@@ -28,6 +28,8 @@ struct OnboardingView: View {
     @State private var alarmAuthorization = AlarmKitScheduler.authorizationState
     /// 登録したテストアラームの発火日時。登録後はカードの数字をカウントダウンに切り替える
     @State private var testAlarmFireDate: Date?
+    /// テストアラームの登録が進行中かどうか (連打による重複登録を防ぐ)
+    @State private var testAlarmScheduling = false
     /// 権限の要求・テストアラームの登録に失敗した時のエラー。文言はそのまま表示する
     @State private var errorMessage: String?
     /// トークンの発行が進行中かどうか。`APITokenModel.loading` は一覧の再取得も含むため、この画面の発行手順全体を 1 つの状態で持つ
@@ -448,6 +450,7 @@ struct OnboardingView: View {
                         Label("Ring a test alarm in 1 minute", systemImage: "bell.and.waves.left.and.right")
                     }
                     .buttonStyle(PrimaryButtonStyle())
+                    .disabled(testAlarmScheduling)
                     .accessibilityIdentifier("onboarding_ring_test")
                 } else {
                     Button {
@@ -552,7 +555,11 @@ struct OnboardingView: View {
         await tokenModel.issue()
     }
 
+    /// テストアラームを登録する。await の間に連打されると別 UUID のアラームが重複登録されるため、登録中はボタンを無効にして再入を防ぐ
     private func scheduleTestAlarm() async {
+        guard !testAlarmScheduling else { return }
+        testAlarmScheduling = true
+        defer { testAlarmScheduling = false }
         do {
             testAlarmFireDate = try await TestAlarm.schedule()
             errorMessage = nil
