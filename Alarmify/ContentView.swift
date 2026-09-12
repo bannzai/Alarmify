@@ -240,6 +240,10 @@ struct ContentView: View {
                 // ja: 登録済みのアラーム
                 Text("Scheduled alarms")
             }
+            if let errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+            }
         }
         // ja: 登録済みのアラーム
         .navigationTitle("Scheduled alarms")
