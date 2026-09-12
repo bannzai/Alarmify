@@ -22,6 +22,7 @@ struct OnboardingView: View {
     }
 
     @AppStorage(.onboardingCompleted) private var onboardingCompleted = false
+    @Environment(\.openURL) private var openURL
     @State private var step: Step = .concept
     @State private var tokenModel = APITokenModel()
     @State private var alarmAuthorization = AlarmKitScheduler.authorizationState
@@ -420,7 +421,17 @@ struct OnboardingView: View {
                     Color.clear.frame(height: DesignMetrics.textButtonHeight)
                 }
             case .test:
-                if alarmAuthorization != .authorized {
+                if alarmAuthorization == .denied {
+                    // 拒否済みだと requestAuthorization はダイアログを出さないため、設定アプリへ誘導する (戻ってきた時に willEnterForeground で状態を読み直す)
+                    Button {
+                        openSystemSettings()
+                    } label: {
+                        // ja: 設定でアラームを許可
+                        Text("Allow alarms in Settings")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .accessibilityIdentifier("onboarding_open_settings")
+                } else if alarmAuthorization != .authorized {
                     Button {
                         Task { await requestAlarmAuthorization(then: nil) }
                     } label: {
@@ -487,6 +498,11 @@ struct OnboardingView: View {
 
     private func complete() {
         onboardingCompleted = true
+    }
+
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        openURL(url)
     }
 
     /// AlarmKit の権限を要求する。結果にかかわらず `next` へ進む (拒否時の再要求は設定 > Permissions から)。

@@ -3498,6 +3498,16 @@
         }
       }
     },
+    "Allow alarms in Settings" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定でアラームを許可"
+          }
+        }
+      }
+    },
     "Allow notifications" : {
       "localizations" : {
         "ja" : {
