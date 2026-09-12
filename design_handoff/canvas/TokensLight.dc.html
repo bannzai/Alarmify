@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #F5F5F3; color: #111113; font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif; -webkit-font-smoothing: antialiased; color-scheme: light; }
+    a { color: #C2410C; text-decoration: none; } a:hover { color: #F97316; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 844px; background: #F5F5F3; color: #111113; overflow: hidden; display: flex; flex-direction: column; position: relative; font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif">
+
+  
+  <div style="height: 59px; flex-shrink: 0"></div>
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px; flex-shrink: 0">
+    <div style="display: flex; align-items: center; gap: 4px; min-width: 60px; color: #C2410C"><span style="display: inline-flex; align-items: center; gap: 2px; font-size: 17px; color: #C2410C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Signalarm</span></span></div>
+    <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em">API tokens</div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 60px; color: #C2410C"></div>
+  </div>
+  
+
+  <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; padding-top: 8px">
+    
+  <div style="margin: 0 16px; background: #FFFFFF; border: 1px solid rgba(17,17,19,0.10); border-radius: 14px; overflow: hidden; flex-shrink: 0; border-color: rgba(249,115,22,0.45)"><div style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+         <div style="display: flex; justify-content: space-between; align-items: center">
+  <div style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #C2410C">New token</div><span style="font-size: 13px; color: rgba(17,17,19,0.52)">Shown only once</span></div>
+         <div style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 15px; line-height: 22px; word-break: break-all">alm_9f2c4e1b7a03d8f6c2b19e5a4d7f0c3e8b6a2d</div>
+         <div style="display: flex; gap: 8px">
+           <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-grow: 1; height: 40px; border-radius: 10px; background: #F97316; color: #FFFFFF; font-size: 15px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy token</span></div>
+           <div style="display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(17,17,19,0.16); color: rgba(17,17,19,0.72); font-size: 15px; font-weight: 500">Done</div>
+         </div>
+       </div></div>
+    
+  <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 20px 20px 8px; flex-shrink: 0">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(17,17,19,0.52)">Tokens</div>
+    
+  </div>
+    
+  <div style="margin: 0 16px; background: #FFFFFF; border: 1px solid rgba(17,17,19,0.10); border-radius: 14px; overflow: hidden; flex-shrink: 0"><div style="padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 10px">
+         <div style="display: flex; align-items: center; justify-content: space-between">
+           <div style="display: flex; flex-direction: column; gap: 3px">
+             <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 17px">alm_9f2c…</span>
+             <span style="font-size: 13px; color: rgba(17,17,19,0.52)">Created Sep 12 · 3 alarms this month</span>
+           </div>
+           <span style="font-size: 15px; color: rgba(17,17,19,0.52)">Revoke</span>
+         </div>
+         
+  <div style="background: #ECECE9; border: 1px solid rgba(17,17,19,0.10); border-radius: 10px; overflow: hidden">
+    <div style="padding: 12px 14px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; line-height: 18px; color: rgba(17,17,19,0.72); white-space: pre-wrap; word-break: break-all">curl -X POST https://api.alarmify.app/v1/alarms -H 'Authorization: Bearer alm_9f2c…' -H 'Content-Type: application/json' -d '{"fire_in":60,"title":"Deploy finished"}'</div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 8px 12px; border-top: 1px solid rgba(17,17,19,0.10); font-size: 13px; font-weight: 600; color: #C2410C"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy</span></div>
+  </div>
+         <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+           <span style="font-size: 13px; color: rgba(17,17,19,0.52)">Recipes</span>
+  <span style="display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 13px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 0.02em; color: rgba(17,17,19,0.52); background: transparent; border: 1px solid rgba(17,17,19,0.16)">GitHub Actions</span>
+  <span style="display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 13px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 0.02em; color: rgba(17,17,19,0.52); background: transparent; border: 1px solid rgba(17,17,19,0.16)">Home Assistant</span>
+  <span style="display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 13px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 0.02em; color: rgba(17,17,19,0.52); background: transparent; border: 1px solid rgba(17,17,19,0.16)">Shortcuts</span>
+         </div>
+       </div></div>
+    <div style="padding: 16px 16px 0">
+      
+  <div style="display: flex; align-items: center; justify-content: center; height: 48px; border-radius: 12px; border: 1px solid rgba(17,17,19,0.16); color: rgba(17,17,19,0.72); font-size: 17px; font-weight: 500">Issue a token</div>
+      <div style="margin-top: 10px; font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52); text-align: center">The free plan includes one token and 20 alarms a month</div>
+    </div>
+  </div>
+  
+  <div style="height: 34px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px">
+    <div style="width: 134px; height: 5px; border-radius: 3px; background: rgba(17,17,19,0.36)"></div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

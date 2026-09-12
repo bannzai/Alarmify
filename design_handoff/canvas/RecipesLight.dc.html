@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #F5F5F3; color: #111113; font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif; -webkit-font-smoothing: antialiased; color-scheme: light; }
+    a { color: #C2410C; text-decoration: none; } a:hover { color: #F97316; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 844px; background: #F5F5F3; color: #111113; overflow: hidden; display: flex; flex-direction: column; position: relative; font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif">
+
+  
+  <div style="height: 59px; flex-shrink: 0"></div>
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px; flex-shrink: 0">
+    <div style="display: flex; align-items: center; gap: 4px; min-width: 60px; color: #C2410C"><span style="display: inline-flex; align-items: center; gap: 2px; font-size: 17px; color: #C2410C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Signalarm</span></span></div>
+    <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em">Integration recipes</div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 60px; color: #C2410C"></div>
+  </div>
+  
+
+  <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; padding-top: 8px">
+    <div style="padding: 8px 20px 16px; font-size: 15px; line-height: 21px; color: rgba(17,17,19,0.72)">Every recipe ends with one request to <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px">POST /v1/alarms</span>. Snippets already carry your token.</div>
+    
+  <div style="margin: 0 16px; background: #FFFFFF; border: 1px solid rgba(17,17,19,0.10); border-radius: 14px; overflow: hidden; flex-shrink: 0">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid rgba(17,17,19,0.10); min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">cron / shell</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">One curl line for scripts, crontab and CI jobs</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid rgba(17,17,19,0.10); min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">GitHub Actions</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">Ring when a workflow finishes or fails</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid rgba(17,17,19,0.10); min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">Home Assistant</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">A rest_command you can call from any automation</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid rgba(17,17,19,0.10); min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">Shortcuts</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">The Get Contents of URL action for automations</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid rgba(17,17,19,0.10); min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">Grafana</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">A webhook contact point that rings when an alert fires</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; min-height: 48px"><div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1">
+                 <div style="font-size: 17px; font-weight: 600">Uptime Kuma</div>
+                 <div style="font-size: 13px; line-height: 18px; color: rgba(17,17,19,0.52)">A webhook notification that rings when a monitor goes down</div>
+               </div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div></div>
+    
+  <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 20px 20px 8px; flex-shrink: 0">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(17,17,19,0.52)">Reference</div>
+    
+  </div>
+    
+  <div style="margin: 0 16px; background: #FFFFFF; border: 1px solid rgba(17,17,19,0.10); border-radius: 14px; overflow: hidden; flex-shrink: 0">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; min-height: 48px"><span style="color: rgba(17,17,19,0.52); display: flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.52)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4V4Z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7V4Z"/></svg></span>
+     <span style="flex-grow: 1; font-size: 17px; color: #111113">API reference</span>
+     
+     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(17,17,19,0.36)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div></div>
+  </div>
+  
+  <div style="height: 34px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px">
+    <div style="width: 134px; height: 5px; border-radius: 3px; background: rgba(17,17,19,0.36)"></div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
