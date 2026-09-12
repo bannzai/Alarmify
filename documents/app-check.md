@@ -24,17 +24,18 @@
 
 `deleteAccount` (Callable) は firebase-functions の実装に従い、`monitor` では検証失敗を `Failed to validate AppCheck token.` の warn ログに残して通し、`enforce` では 401 を返す。
 
-値の置き場所は `firebase/functions/.env.alarmify-prod` (firebase-tools が `functions/.env.<project id>` をデプロイ時に読み込む: https://firebase.google.com/docs/functions/config-env )。現在は `ALARMIFY_APP_CHECK_ENFORCEMENT=monitor` を置いている (ファイルが無い時もコードの既定値は `monitor`)。ローカルのエミュレータ (`demo-alarmify`) はこのファイルを読まないため常に既定値で動き、強制の挙動を手で確かめる時は起動時に環境変数を渡す (下記「ローカルでの確認」)。
+値の置き場所は `firebase/functions/.env.alarmify-prod` (firebase-tools が `functions/.env.<project id>` をデプロイ時に読み込む: https://firebase.google.com/docs/functions/config-env )。現在は `ALARMIFY_APP_CHECK_ENFORCEMENT=enforce` を置いている (ファイルが無い時のコードの既定値は `monitor`)。ローカルのエミュレータ (`demo-alarmify`) はこのファイルを読まないため常に既定値で動き、強制の挙動を手で確かめる時は起動時に環境変数を渡す (下記「ローカルでの確認」)。
 
-agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny しているため、このファイルの作成・編集は bannzai が行う。
+このファイルには非秘密の適用段階だけを置く。編集は、そのセッションの権限とユーザーの承認範囲に従う。
 
 ## 現在の適用段階
 
 | 日付 | 段階 | 内容 |
 | --- | --- | --- |
 | 2026-09-04 | 監視のみ (`monitor`) | クライアント実装と Functions の検証を追加。Apple の App Attest capability を有効化。Firebase 側の登録 (App Check API の有効化・Team ID・App Attest プロバイダ・デバッグトークン `simtunnel alarmify`) を `setup-ios --apply` で実施。provisioning profile の再生成は未実施 (bannzai がやる作業の一覧 https://github.com/bannzai/Alarmify/issues/25 ) |
+| 2026-09-12 | 強制 (`enforce`) へ変更 | #58 の再配布で監視を開始した後、未リリースのため1週間の監視待ちは省略して有効にする、とユーザーが決定。本番反映・検証結果は #58 に記録する。 |
 
-強制 (`enforce`) への切り替えは公開前チェックリスト ( https://github.com/bannzai/Alarmify/issues/14 ) の項目として扱う。
+実機で正規の App Attest 通信が通る確認は、公開前チェックリスト ( https://github.com/bannzai/Alarmify/issues/14 ) に残す。外部サービス向け `alarmsApi` と RevenueCat の `revenueCatWebhook` は強制適用の対象外で、それぞれ API トークンと専用の Authorization 値で認証する。
 
 ## 監視のみ → 強制への切り替え手順
 
@@ -51,7 +52,7 @@ agent (Claude Code / Codex) の permissions は `.env*` の読み書きを deny 
      --project alarmify-prod --freshness=7d --limit 50
    ```
 
-3. **`firebase/functions/.env.alarmify-prod` の値を `enforce` に書き換えて PR を作り、main へマージする** (agent は `.env*` を書けないため bannzai が編集する。値をコミットするのは、以降のどの経路のデプロイでも段階が保たれるようにするため)
+3. **`firebase/functions/.env.alarmify-prod` の値を `enforce` に書き換えて PR を作り、main へマージする** (値をコミットするのは、以降のどの経路のデプロイでも段階が保たれるようにするため)
 
    ```sh
    cat > firebase/functions/.env.alarmify-prod <<'EOF'
