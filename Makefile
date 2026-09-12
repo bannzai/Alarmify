@@ -11,7 +11,7 @@ BUNDLE_ID := com.bannzai.Alarmify
 # Firebase Functions のデプロイ先。firebase/.firebaserc の alias で指定する (取り違え防止のため常に明示する)
 FIREBASE_ALIAS ?= prod
 # firebase-tools は .github/workflows/functions-deploy.yml と同じバージョンに固定する (CLI 更新で挙動が変わらないように)
-FIREBASE_TOOLS_VERSION := 15.28.2
+FIREBASE_TOOLS_VERSION := 15.30.0
 # デプロイ対象を絞る場合の関数名 (カンマ区切り。例: FUNCTIONS=appApi,alarmsApi)。空なら functions 全体。
 # firebase の部分デプロイは対象ごとに functions: の接頭辞が要るため、recipe 側で付け直す
 FUNCTIONS ?=
