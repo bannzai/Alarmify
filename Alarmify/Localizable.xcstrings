@@ -439,6 +439,16 @@
         }
       }
     },
+    "%@ a month billed yearly" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月あたり %@ (年払い)"
+          }
+        }
+      }
+    },
     "A rest_command you can call from any automation" : {
       "localizations" : {
         "ar" : {
@@ -649,6 +659,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可從任何自動化呼叫的 rest_command"
+          }
+        }
+      }
+    },
+    "A token for every service" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスごとのトークン"
           }
         }
       }
@@ -1077,6 +1097,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "監控器停止運行時響起鬧鐘的 Webhook 通知"
+          }
+        }
+      }
+    },
+    "Account ID: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント ID: %@"
           }
         }
       }
@@ -2592,6 +2622,26 @@
     "AlarmKit" : {
       "shouldTranslate" : false
     },
+    "AlarmKit alarm on the Lock Screen" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面に AlarmKit のアラーム"
+          }
+        }
+      }
+    },
+    "Alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラーム"
+          }
+        }
+      }
+    },
     "Alarms already scheduled on this iPhone remain. Cancel them from the alarm list if you no longer need them." : {
       "localizations" : {
         "ar" : {
@@ -3444,6 +3494,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "允許鬧鐘"
+          }
+        }
+      }
+    },
+    "Allow notifications" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知を許可"
+          }
+        }
+      }
+    },
+    "Allowed" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許可済み"
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外観"
           }
         }
       }
@@ -4518,6 +4598,16 @@
         }
       }
     },
+    "Best value" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "おすすめ"
+          }
+        }
+      }
+    },
     "Call 'rest_command.alarmify_alarm' from an automation's actions with 'fire_in' and 'title'." : {
       "localizations" : {
         "ar" : {
@@ -5160,6 +5250,16 @@
         }
       }
     },
+    "Cancel anytime" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いつでも解約できます"
+          }
+        }
+      }
+    },
     "Cancel push may not have reached this iPhone" : {
       "localizations" : {
         "ja" : {
@@ -5614,6 +5714,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉"
+          }
+        }
+      }
+    },
+    "Connect" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連携"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次へ"
+          }
+        }
+      }
+    },
+    "Continue with Monthly" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月額で続ける"
+          }
+        }
+      }
+    },
+    "Continue with Yearly" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額で続ける"
           }
         }
       }
@@ -6470,6 +6610,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法將購買項目連結至你的帳號。請檢查連線，然後再試一次。"
+          }
+        }
+      }
+    },
+    "Created %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@に発行"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダーク"
           }
         }
       }
@@ -7758,6 +7918,16 @@
         }
       }
     },
+    "Deliver alarm requests from your services" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスからのアラーム依頼を届ける"
+          }
+        }
+      }
+    },
     "Denied" : {
       "localizations" : {
         "ar" : {
@@ -8400,6 +8570,26 @@
         }
       }
     },
+    "Done" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
+          }
+        }
+      }
+    },
+    "Email" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メール"
+          }
+        }
+      }
+    },
     "Enable the notification on the monitors that should wake you, then press Test. UP events ring too, with an 'is up' title." : {
       "localizations" : {
         "ar" : {
@@ -8824,6 +9014,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "錯誤"
+          }
+        }
+      }
+    },
+    "Every recipe ends with one request to %@. Issue an API token to see these snippets with your token filled in." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのレシピも最後は %@ への 1 リクエストです。API トークンを発行すると、スニペットにトークンが埋め込まれた状態で表示されます。"
+          }
+        }
+      }
+    },
+    "Every recipe ends with one request to %@. Snippets already carry your token." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのレシピも最後は %@ への 1 リクエストです。スニペットにはトークンが埋め込まれています。"
           }
         }
       }
@@ -9272,6 +9482,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "免費"
+          }
+        }
+      }
+    },
+    "Full alarm history" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのアラーム履歴"
+          }
+        }
+      }
+    },
+    "Get started" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "はじめる"
+          }
+        }
+      }
+    },
+    "Go to home" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホームへ"
+          }
+        }
+      }
+    },
+    "Hear it ring" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鳴らしてみる"
           }
         }
       }
@@ -10132,6 +10382,16 @@
         }
       }
     },
+    "Issue a token later" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あとで発行する"
+          }
+        }
+      }
+    },
     "Issue an API token to see these snippets with your token filled in." : {
       "localizations" : {
         "ar" : {
@@ -10560,6 +10820,16 @@
         }
       }
     },
+    "Keep ringing until you stop them" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "止めるまで鳴り続ける"
+          }
+        }
+      }
+    },
     "Keep the token in the 'ALARMIFY_TOKEN' environment variable rather than in a file you commit." : {
       "localizations" : {
         "ar" : {
@@ -10770,6 +11040,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將 token 放在環境變數 'ALARMIFY_TOKEN' 中，不要放在你提交的檔案裡。"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示言語"
           }
         }
       }
@@ -11202,6 +11482,16 @@
         }
       }
     },
+    "Legal notice" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "特定商取引法に基づく表記"
+          }
+        }
+      }
+    },
     "Lets you exercise issuing and revoking tokens without a running backend." : {
       "localizations" : {
         "ar" : {
@@ -11412,6 +11702,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "讓你在未執行後端的情況下測試簽發與撤銷權杖。"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライト"
+          }
+        }
+      }
+    },
+    "Monthly" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月額"
+          }
+        }
+      }
+    },
+    "More services and every alarm kept" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もっと多くのサービスと すべてのアラームの記録を"
+          }
+        }
+      }
+    },
+    "New token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいトークン"
           }
         }
       }
@@ -11646,6 +11976,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴はまだありません"
+          }
+        }
+      }
+    },
+    "No marketing and no unrelated banners" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "宣伝や無関係なバナーは送らない"
           }
         }
       }
@@ -12516,6 +12856,16 @@
         }
       }
     },
+    "Not now" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あとで"
+          }
+        }
+      }
+    },
     "Not registered" : {
       "localizations" : {
         "ar" : {
@@ -13158,8 +13508,28 @@
         }
       }
     },
+    "Notifications" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知"
+          }
+        }
+      }
+    },
     "OK" : {
       "shouldTranslate" : false
+    },
+    "Older alarms are kept in Pro" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "それより前の履歴は Pro で見られます"
+          }
+        }
+      }
     },
     "One curl line for scripts, crontab and CI jobs" : {
       "localizations" : {
@@ -13589,6 +13959,16 @@
         }
       }
     },
+    "Paste it into the service that should wake you. It is shown only once." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鳴らしたいサービスに貼り付けてください。表示されるのは今だけです。"
+          }
+        }
+      }
+    },
     "Permission" : {
       "localizations" : {
         "ar" : {
@@ -13799,6 +14179,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "權限"
+          }
+        }
+      }
+    },
+    "Permissions" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限"
           }
         }
       }
@@ -14445,6 +14835,16 @@
         }
       }
     },
+    "Privacy" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシー"
+          }
+        }
+      }
+    },
     "Privacy Policy" : {
       "localizations" : {
         "ar" : {
@@ -14661,6 +15061,26 @@
     },
     "Pro" : {
       "shouldTranslate" : false
+    },
+    "Pro removes both limits." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ではどちらの上限もなくなります。"
+          }
+        }
+      }
+    },
+    "Pro until %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro (%@ まで)"
+          }
+        }
+      }
     },
     "Purchases and restores are unavailable while connected to the emulator. Switch the backend back to production in the developer menu." : {
       "localizations" : {
@@ -15976,6 +16396,26 @@
         }
       }
     },
+    "Recipes" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レシピ"
+          }
+        }
+      }
+    },
+    "Reference" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リファレンス"
+          }
+        }
+      }
+    },
     "Register this device again" : {
       "localizations" : {
         "ar" : {
@@ -16618,6 +17058,16 @@
         }
       }
     },
+    "Relaunch the app to apply the language." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示言語はアプリを再起動すると反映されます。"
+          }
+        }
+      }
+    },
     "Reload prices" : {
       "localizations" : {
         "ar" : {
@@ -16832,6 +17282,26 @@
         }
       }
     },
+    "Renews automatically until canceled in Settings. Prices shown in your local currency." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定で解約するまで自動更新されます。価格はお住まいの地域の通貨で表示されます。"
+          }
+        }
+      }
+    },
+    "Requests from services using this token will stop arriving. This cannot be undone." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このトークンを使っているサービスからの登録は届かなくなります。取り消せません。"
+          }
+        }
+      }
+    },
     "Restart the app to switch the backend." : {
       "localizations" : {
         "ar" : {
@@ -17042,6 +17512,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新啟動 App 以切換後端。"
+          }
+        }
+      }
+    },
+    "Restore" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を復元"
           }
         }
       }
@@ -17474,6 +17954,46 @@
         }
       }
     },
+    "Revoke this token?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このトークンを失効させますか?"
+          }
+        }
+      }
+    },
+    "Ring a test" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テストを鳴らす"
+          }
+        }
+      }
+    },
+    "Ring a test alarm in 1 minute" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分後にテストアラームを鳴らす"
+          }
+        }
+      }
+    },
+    "Ring in Silent mode and every Focus" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サイレントモードと集中モードでも鳴る"
+          }
+        }
+      }
+    },
     "Ring when a workflow finishes or fails" : {
       "localizations" : {
         "ar" : {
@@ -17684,6 +18204,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工作流程完成或失敗時響鈴"
+          }
+        }
+      }
+    },
+    "Rings in %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@後に鳴ります"
+          }
+        }
+      }
+    },
+    "Rings on all your iPhones" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての iPhone で鳴る"
           }
         }
       }
@@ -18112,6 +18652,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 分鐘後安排測試鬧鐘"
+          }
+        }
+      }
+    },
+    "Schedule a test alarm one minute from now. Lock the iPhone and wait. Real requests from your services work the same way." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分後にテストアラームを登録します。iPhone をロックして待ってください。サービスからの本番の依頼も同じように鳴ります。"
+          }
+        }
+      }
+    },
+    "Schedule the alarm in the background" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドでアラームを登録する"
           }
         }
       }
@@ -18554,12 +19114,42 @@
         }
       }
     },
+    "Screen verification" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画面の確認"
+          }
+        }
+      }
+    },
     "See more history with Pro" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pro でもっと履歴を見る"
+          }
+        }
+      }
+    },
+    "See what gets deleted" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除の手順と削除されるデータを見る"
+          }
+        }
+      }
+    },
+    "Send one HTTP request from your service and this iPhone rings. Not a notification but an alarm that cuts through Silent mode and Focus even when the app is closed." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスから HTTP リクエストを 1 つ送るだけで、この iPhone が鳴ります。通知ではなくアラームなので、サイレントモードや集中モードでも、アプリを閉じていても鳴ります。"
           }
         }
       }
@@ -19848,6 +20438,26 @@
         }
       }
     },
+    "Show full screen on the Lock Screen" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面に全画面で表示"
+          }
+        }
+      }
+    },
+    "Show onboarding again" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オンボーディングをもう一度表示する"
+          }
+        }
+      }
+    },
     "Show the free quota paywall" : {
       "localizations" : {
         "ar" : {
@@ -20062,8 +20672,38 @@
         }
       }
     },
+    "Shown only once" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示は今だけ"
+          }
+        }
+      }
+    },
     "Signalarm" : {
       "shouldTranslate" : false
+    },
+    "Signalarm rings through AlarmKit, the same system as the built-in Clock. Nothing can ring without this permission." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signalarm は標準の時計と同じ AlarmKit で鳴ります。この許可が無いと何も鳴りません。"
+          }
+        }
+      }
+    },
+    "Signalarm support" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signalarm のお問い合わせ"
+          }
+        }
+      }
     },
     "Signing in" : {
       "localizations" : {
@@ -20275,6 +20915,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在登入"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキップ"
+          }
+        }
+      }
+    },
+    "Step %lld of %lld" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ステップ %lld / %lld"
           }
         }
       }
@@ -21135,6 +21795,36 @@
         }
       }
     },
+    "Support" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
+        }
+      }
+    },
+    "System" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システム"
+          }
+        }
+      }
+    },
+    "Terms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約"
+          }
+        }
+      }
+    },
     "Terms of Use" : {
       "localizations" : {
         "ar" : {
@@ -21777,6 +22467,26 @@
         }
       }
     },
+    "The free plan includes one token and 20 alarms a month" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランはトークン 1 つと月 20 回のアラームまで"
+          }
+        }
+      }
+    },
+    "The free plan includes one token and 20 alarms a month. %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランではトークン 1 つ・月 20 回までアラームを登録できます。%@"
+          }
+        }
+      }
+    },
     "The free plan includes one token and up to 20 alarms a month" : {
       "localizations" : {
         "ar" : {
@@ -21987,6 +22697,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "免費方案包括 1 個 token，每月最多可設定 20 個鬧鐘"
+          }
+        }
+      }
+    },
+    "The free plan shows the 3 most recent alarms. %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランで見られる履歴は直近 3 件です。%@"
           }
         }
       }
@@ -22429,6 +23149,16 @@
         }
       }
     },
+    "This iPhone rings" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone が鳴る"
+          }
+        }
+      }
+    },
     "This value is shown only once. Save it into your service before closing." : {
       "localizations" : {
         "ar" : {
@@ -22857,6 +23587,26 @@
         }
       }
     },
+    "Today" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日"
+          }
+        }
+      }
+    },
+    "Token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークン"
+          }
+        }
+      }
+    },
     "Tokens" : {
       "localizations" : {
         "ar" : {
@@ -23067,6 +23817,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "權杖"
+          }
+        }
+      }
+    },
+    "Tomorrow" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明日"
+          }
+        }
+      }
+    },
+    "Try issuing again" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう一度発行する"
+          }
+        }
+      }
+    },
+    "Turn any webhook into a real alarm" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どんな Webhook も本物のアラームに"
           }
         }
       }
@@ -23709,6 +24489,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
+          }
+        }
+      }
+    },
+    "Unlimited alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無制限のアラーム"
           }
         }
       }
@@ -24589,6 +25379,36 @@
         }
       }
     },
+    "What alarms can do" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームにできること"
+          }
+        }
+      }
+    },
+    "What push is used for" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "push の用途"
+          }
+        }
+      }
+    },
+    "Yearly" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額"
+          }
+        }
+      }
+    },
     "You've reached the limit of the free plan" : {
       "localizations" : {
         "ar" : {
@@ -24803,6 +25623,26 @@
         }
       }
     },
+    "You've reached the limit of the free plan. %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料プランの上限に達しました。%@"
+          }
+        }
+      }
+    },
+    "Your API tokens, device information, and alarm history are permanently removed from the server. This cannot be undone. Alarms already scheduled on this iPhone are not cancelled." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー上の API トークン・端末情報・アラーム履歴がすべて消え、取り消せません。この iPhone に登録済みのアラームは解除されません。"
+          }
+        }
+      }
+    },
     "Your account has been deleted" : {
       "localizations" : {
         "ar" : {
@@ -25013,6 +25853,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的帳號已刪除"
+          }
+        }
+      }
+    },
+    "Your first API token" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最初の API トークン"
+          }
+        }
+      }
+    },
+    "Your service" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたのサービス"
+          }
+        }
+      }
+    },
+    "Your services reach this iPhone through push. That is how an alarm request arrives while the app is closed." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスからの依頼は push でこの iPhone に届きます。アプリを閉じている間もアラームの依頼を受け取れます。"
+          }
+        }
+      }
+    },
+    "per month" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月"
+          }
+        }
+      }
+    },
+    "per year" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年"
+          }
+        }
+      }
+    },
+    "rings after you lock the iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone をロックすると鳴ります"
           }
         }
       }
