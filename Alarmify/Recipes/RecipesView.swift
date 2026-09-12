@@ -50,7 +50,7 @@ struct RecipesView: View {
 
                 // ja: リファレンス
                 SectionHeader(Text("Reference"))
-                Link(destination: URL(string: "https://bannzai.github.io/Alarmify/api")!) {
+                Link(destination: URL(string: "https://signalarm.app/api")!) {
                     HStack(spacing: 14) {
                         Image(systemName: "book")
                             .font(.body)

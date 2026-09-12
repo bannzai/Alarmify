@@ -9,7 +9,7 @@ Settings, Notifications, Setup Notification. Choose **Webhook** as the notificat
 | Setting | Value |
 | --- | --- |
 | Friendly Name | `Signalarm` |
-| Post URL | `https://api.alarmify.app/v1/alarms` |
+| Post URL | `https://api.signalarm.app/v1/alarms` |
 | Request Body | **Custom Body** |
 
 Custom Body (a Liquid template; Uptime Kuma 1.23 or later):

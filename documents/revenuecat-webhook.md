@@ -18,10 +18,10 @@ mkdir -p ./tmp
 # 値はファイルにだけ置き、シェル履歴・ログに残さない。登録後に消す
 openssl rand -base64 48 | tr -d '\n' > ./tmp/revenuecat-webhook-authorization.txt
 [ -s ./tmp/revenuecat-webhook-authorization.txt ] || { echo "Error: 値が空です" >&2; exit 1; }
-npx --yes firebase-tools@15.28.2 functions:secrets:set REVENUECAT_WEBHOOK_AUTHORIZATION --project prod --data-file ./tmp/revenuecat-webhook-authorization.txt
+npx --yes firebase-tools@15.30.0 functions:secrets:set REVENUECAT_WEBHOOK_AUTHORIZATION --project prod --data-file ./tmp/revenuecat-webhook-authorization.txt
 ```
 
-`firebase functions:secrets:set` は同名の Secret があれば新しいバージョンを追加する (冪等ではなく、実行のたびに値が変わる。値を変えたら手順 2 の Dashboard 側も更新する)。登録済みかは `npx --yes firebase-tools@15.28.2 functions:secrets:access REVENUECAT_WEBHOOK_AUTHORIZATION --project prod` で確認できる (値が表示されるので画面共有中は実行しない)。
+`firebase functions:secrets:set` は同名の Secret があれば新しいバージョンを追加する (冪等ではなく、実行のたびに値が変わる。値を変えたら手順 2 の Dashboard 側も更新する)。登録済みかは `npx --yes firebase-tools@15.30.0 functions:secrets:access REVENUECAT_WEBHOOK_AUTHORIZATION --project prod` で確認できる (値が表示されるので画面共有中は実行しない)。
 
 ## 2. RevenueCat Dashboard で webhook を追加する (bannzai。Web UI のみ)
 

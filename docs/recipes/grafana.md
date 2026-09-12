@@ -8,7 +8,7 @@ Alerting, Contact points, Add contact point. Choose the **Webhook** integration 
 
 | Setting | Value |
 | --- | --- |
-| URL | `https://api.alarmify.app/v1/alarms` |
+| URL | `https://api.signalarm.app/v1/alarms` |
 | HTTP Method | `POST` |
 | Authentication Header Scheme | `Bearer` |
 | Authentication Header Credentials | `<API_TOKEN>` |

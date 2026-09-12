@@ -196,6 +196,7 @@ struct DeveloperMenuView: View {
                     // ja: 配送先を登録し直す
                     Text("Register this device again")
                 }
+                .accessibilityIdentifier("debug_register_device")
                 if let signInError = session.signInError {
                     Text(signInError)
                         .foregroundStyle(.red)
@@ -275,6 +276,7 @@ struct DeveloperMenuView: View {
                 // ja: APNs デバイストークン
                 Text("APNs device token")
             }
+            .accessibilityIdentifier("debug_apns_device_token")
 
             Section {
                 if let fcmRegistrationToken = session.fcmRegistrationToken ?? DeviceTokenStore.loadFCMRegistrationToken() {
@@ -290,6 +292,7 @@ struct DeveloperMenuView: View {
                 // ja: FCM 登録トークン
                 Text("FCM registration token")
             }
+            .accessibilityIdentifier("debug_fcm_registration_token")
         }
         // ja: 開発者メニュー
         .navigationTitle(Text("Developer menu"))

@@ -9,6 +9,19 @@
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
 		<dict>
+			<!-- アラーム反映結果とエラーを端末・ユーザーに紐付けて履歴へ報告する -->
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherDiagnosticData</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<dict>
 			<!-- Firebase Auth の uid と API トークン。アカウントと API の認証に使う -->
 			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeUserID</string>
@@ -51,13 +64,13 @@
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<dict>
-			<!-- 自アプリの UserDefaults 使用 (App Group 経由のデバイストークン保存)。
-			     CA92.1: アプリ自身がアクセスする情報の読み書き -->
+			<!-- CA92.1: アプリ専用の課金キャッシュ。1C8F.1: 通知 Extension と共有する App Group の保存領域 -->
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
 				<string>CA92.1</string>
+				<string>1C8F.1</string>
 			</array>
 		</dict>
 	</array>

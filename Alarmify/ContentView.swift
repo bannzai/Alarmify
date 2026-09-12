@@ -28,6 +28,9 @@ struct ContentView: View {
                     nextAlarmCard
                         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
                         .padding(.top, 4)
+                    scheduledAlarmsRow
+                        .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+                        .padding(.top, 12)
 
                     // ja: 直近のアラーム
                     SectionHeader(Text("Recent alarms")) {
@@ -188,6 +191,103 @@ struct ContentView: View {
                 .card()
             }
         }
+    }
+
+    /// 登録済みアラームの一覧 (`scheduledAlarmsList`) を開く行。件数を添える。
+    /// アプリ内から登録済みアラームを取り消せる導線として App Store 版にも残す (アカウント削除後の案内文が指す「アラーム一覧」)
+    private var scheduledAlarmsRow: some View {
+        NavigationLink {
+            scheduledAlarmsList
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "alarm")
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+                    .frame(width: 24)
+                // ja: 登録済みのアラーム
+                Text("Scheduled alarms")
+                    .font(.body)
+                    .foregroundStyle(Color.paper)
+                Spacer()
+                Text(alarms.count, format: .number)
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+                RowChevron()
+            }
+            .rowPadding()
+        }
+        .buttonStyle(.plain)
+        .card()
+        .accessibilityIdentifier("home_scheduled_alarms")
+    }
+
+    /// 登録済みアラームの確認と取り消し。行ごとの発火日時・タイトルと「取り消す」ボタン (取り消し失敗のエラーは一覧の下に出す)
+    private var scheduledAlarmsList: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                VStack(spacing: 0) {
+                    if alarms.isEmpty {
+                        // ja: 登録済みのアラームはありません
+                        Text("No alarms scheduled")
+                            .font(.body)
+                            .foregroundStyle(Color.paperTertiary)
+                            .rowPadding()
+                            .accessibilityIdentifier("scheduled_alarms_empty")
+                    }
+                    ForEach(Array(alarms.enumerated()), id: \.element.id) { index, alarm in
+                        if index > 0 {
+                            HairlineDivider()
+                        }
+                        HStack(alignment: .top, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                if let fireDate = alarm.fixedFireDate {
+                                    Text(fireDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                                        .font(.headline)
+                                        .foregroundStyle(Color.paper)
+                                }
+                                if let title = AlarmTitleStore.shared.title(id: alarm.id) {
+                                    // 外部サービスから送られたタイトルはそのまま表示する
+                                    Text(verbatim: title)
+                                        .font(.footnote)
+                                        .foregroundStyle(Color.paperTertiary)
+                                        .lineLimit(2)
+                                }
+                            }
+                            .accessibilityIdentifier("scheduled_alarm_\(alarm.id.uuidString)")
+                            Spacer(minLength: 8)
+                            Button {
+                                cancel(alarm)
+                            } label: {
+                                // ja: アラームを取り消す
+                                Text("Cancel alarm")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.paperTertiary)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("scheduled_alarm_cancel_\(alarm.id.uuidString)")
+                        }
+                        .rowPadding()
+                    }
+                }
+                .card()
+                .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+                .padding(.top, 8)
+
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(Color.destructive)
+                        .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+                        .padding(.top, 16)
+                        .accessibilityIdentifier("scheduled_alarms_error")
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .screenBackground()
+        // ja: 登録済みのアラーム
+        .navigationTitle(Text("Scheduled alarms"))
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     /// 次に鳴るアラーム。この端末に登録済みの固定日時のアラームのうち、発火時刻が `now` より後の最も早いもの
@@ -467,6 +567,17 @@ struct ContentView: View {
 
     private func refresh() {
         alarms = AlarmKitScheduler.alarms
+    }
+
+    /// 登録済みアラームを取り消す。取り消し失敗のエラーは `scheduledAlarmsList` と ホームの両方に出す
+    private func cancel(_ alarm: Alarm) {
+        do {
+            try AlarmKitScheduler.cancel(id: alarm.id)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        refresh()
     }
 
     private func scheduleTestAlarm() async {
