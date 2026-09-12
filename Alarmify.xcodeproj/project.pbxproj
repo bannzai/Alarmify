@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		640000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 640000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		AE41A5A1041B4C8082092701 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = AE41A5A1041B4C8082092702 /* LicenseList */; };
 		0FB8E33250E80EC144D8B196 /* AlarmifyNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA907426ECE71BFA58E38616 /* AlarmifyNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		172885D547342920AEA2AE2C /* AlarmRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BDDCF04CD4743A1A64470C /* AlarmRequest.swift */; };
@@ -158,6 +159,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		640000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmifyWidgetBundle.swift; sourceTree = "<group>"; };
 		1E2C8D95A6ACA4EEF8B816C4 /* DeviceTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTokenStore.swift; sourceTree = "<group>"; };
 		7C0E4B9D51A2F38C6D0B1E42 /* DeviceIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentifier.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 		4F913C6C48213E5F27C23669 /* AlarmifyNotificationService */ = {
 			isa = PBXGroup;
 			children = (
+				640000000000000000000002 /* PrivacyInfo.xcprivacy */,
 				5BE9FC39A39F916DDE0394A8 /* AlarmifyNotificationService.entitlements */,
 				633A352AB48A5C3DAE7BCA24 /* Info.plist */,
 				77F0EDE7A7D5B739462304A9 /* NotificationService.swift */,
@@ -652,6 +655,7 @@
 			buildConfigurationList = F7C3B576B72CA2FE4F1D3CAA /* Build configuration list for PBXNativeTarget "AlarmifyNotificationService" */;
 			buildPhases = (
 				397FD34ECBC994CC58DB5052 /* Sources */,
+				640000000000000000000003 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -806,6 +810,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		640000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				640000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CB5D0521BF03DA354F13FCF5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
