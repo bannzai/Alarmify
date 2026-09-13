@@ -94,7 +94,7 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します",
+              "description" : "サービスごとのトークン・月1000件のアラーム登録・アラーム履歴・複数端末への配送を解放します",
               "displayName" : "Pro (月額)",
               "locale" : "ja_JP"
             }
@@ -122,7 +122,7 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "サービスごとのトークン・無制限のアラーム登録・アラーム履歴・複数端末への配送を解放します",
+              "description" : "サービスごとのトークン・月1000件のアラーム登録・アラーム履歴・複数端末への配送を解放します",
               "displayName" : "Pro (年額)",
               "locale" : "ja_JP"
             }
