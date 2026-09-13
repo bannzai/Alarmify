@@ -50,8 +50,8 @@ struct APITokenView: View {
                 .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
                 .padding(.top, 20)
                 if !ProEntitlement.isPro {
-                    // ja: 無料プランはトークン 1 つと月 20 回のアラームまで
-                    Text("The free plan includes one token and 20 alarms a month")
+                    // ja: 無料プランはトークン 1 つと月 50 回のアラームまで
+                    Text("The free plan includes one token and 50 alarms a month")
                         .font(.footnote)
                         .foregroundStyle(Color.paperTertiary)
                         .multilineTextAlignment(.center)

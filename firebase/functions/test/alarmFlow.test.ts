@@ -393,11 +393,11 @@ describe("外部サービス向け API", () => {
     expect(response.body.error.code).toBe("no_device_registered");
   });
 
-  it("無料プランの月 20 件を超えると 403", async () => {
+  it("無料プランの月 50 件を超えると 403", async () => {
     await registerDevice();
     const issued = await issueApiToken();
     await userRef(context.deps.firestore, context.uid).update({
-      monthlyUsage: { month: "2026-09", scheduledAlarmCount: 20 },
+      monthlyUsage: { month: "2026-09", scheduledAlarmCount: 50 },
     });
     const response = await request(externalApi)
       .post("/v1/alarms")
@@ -407,11 +407,41 @@ describe("外部サービス向け API", () => {
     expect(response.body.error.code).toBe("plan_limit_exceeded");
   });
 
+  it.each([
+    ["free", 50],
+    ["pro", 1000],
+  ] as const)("%s は月 %i 件目まで登録でき再送は加算せず次の登録を拒否する", async (plan, limit) => {
+    await registerDevice();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({
+      plan,
+      monthlyUsage: { month: "2026-09", scheduledAlarmCount: limit - 1 },
+    });
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ id: created.body.id, fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(200);
+    const rejected = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(403);
+    expect(rejected.body.error.code).toBe("plan_limit_exceeded");
+    expect((await userRef(context.deps.firestore, context.uid).get()).get("monthlyUsage.scheduledAlarmCount"))
+      .toBe(limit);
+  });
+
   it("月が変わると月間の登録数を数え直す", async () => {
     await registerDevice();
     const issued = await issueApiToken();
     await userRef(context.deps.firestore, context.uid).update({
-      monthlyUsage: { month: "2026-08", scheduledAlarmCount: 20 },
+      monthlyUsage: { month: "2026-08", scheduledAlarmCount: 50 },
     });
     await request(externalApi)
       .post("/v1/alarms")

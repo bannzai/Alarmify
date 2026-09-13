@@ -98,8 +98,8 @@ struct PaywallPage: View {
             VStack(alignment: .leading, spacing: 14) {
                 // ja: サービスごとのトークン
                 benefit(systemImage: "key.horizontal", text: Text("A token for every service"))
-                // ja: 無制限のアラーム
-                benefit(systemImage: "infinity", text: Text("Unlimited alarms"))
+                // ja: 月 1000 件のアラーム
+                benefit(systemImage: "alarm", text: Text("1000 alarms a month"))
                 // ja: すべてのアラーム履歴
                 benefit(systemImage: "clock.arrow.circlepath", text: Text("Full alarm history"))
                 // ja: すべての iPhone で鳴る
@@ -176,8 +176,8 @@ struct PaywallPage: View {
         let common = Text("Pro removes both limits.")
         switch trigger {
         case .settings:
-            // ja: 無料プランではトークン 1 つ・月 20 回までアラームを登録できます。%@
-            return Text("The free plan includes one token and 20 alarms a month. \(common)")
+            // ja: 無料プランではトークン 1 つ・月 50 回までアラームを登録できます。%@
+            return Text("The free plan includes one token and 50 alarms a month. \(common)")
         case .freeQuotaExceeded:
             // トークン数と月間のアラーム数のどちらの上限でも開くため、上限の種類を特定しない文言にする
             // ja: 無料プランの上限に達しました。%@

@@ -14,10 +14,12 @@ export interface PlanLimits {
 export const planLimits: Record<Plan, PlanLimits> = {
   // alarmHistory の 3 件は「直近の Webhook が届いたか」を確かめられる最小の件数。
   // 履歴は Pro の機能 (documents/PROJECT.md「コア体験」4) のため、無料では機能の存在が分かる程度に留める
-  free: { apiTokens: 1, alarmsPerMonth: 20, alarmHistory: 3 },
+  // 月間上限は Issue #90 の商品設計。Pro を月 1000 件・3 台で使い切る原価の試算は約 $0.10。
+  // https://github.com/bannzai/Alarmify/issues/90#issuecomment-5651147821
+  free: { apiTokens: 1, alarmsPerMonth: 50, alarmHistory: 3 },
   pro: {
     apiTokens: Number.POSITIVE_INFINITY,
-    alarmsPerMonth: Number.POSITIVE_INFINITY,
+    alarmsPerMonth: 1000,
     alarmHistory: Number.POSITIVE_INFINITY,
   },
 };

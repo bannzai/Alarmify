@@ -73,7 +73,7 @@ curl -X POST https://api.signalarm.app/v1/alarms \
 | --- | --- | --- |
 | 400 | `invalid_argument` | Body is not JSON, both or neither of `fire_at` / `fire_in` are present, `fire_at` is not ISO 8601, less than 30 seconds ahead or more than 365 days ahead, `fire_in` is negative or more than 365 days, `title` is empty or longer than 200 characters, `id` is not a UUID |
 | 401 | `unauthenticated` | Missing, malformed or revoked token |
-| 403 | `plan_limit_exceeded` | The Free plan allows 20 alarms per calendar month. Upgrade to Pro for unlimited alarms |
+| 403 | `plan_limit_exceeded` | The monthly alarm limit has been reached (Free: 50 / Pro: 1000) |
 | 409 | `no_device_registered` | The account has no iPhone registered (open the app once to register the device) |
 | 413 | `payload_too_large` | The request body is too large |
 | 429 | `rate_limited` | More than 60 requests per minute from one token |
@@ -121,7 +121,7 @@ Unexpected server failures use `500` with `"code": "internal"`.
 
 | | Free | Pro |
 | --- | --- | --- |
-| Alarms per calendar month | 20 | Unlimited |
+| Alarms per calendar month (UTC) | 50 | 1000 |
 | API tokens | 1 | Multiple (one per system) |
 | Devices per account | 20 | 20 |
 | Alarm history in the app | Last 3 alarms | 30 days |
