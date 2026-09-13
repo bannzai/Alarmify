@@ -18,8 +18,8 @@ Not a notification. Signalarm uses AlarmKit on iOS 26, so the alarm rings throug
 - Give each alarm a title so you know which service fired it
 
 ■ Plans
-- Free: one API token and a monthly allowance of alarms
-- Pro: multiple tokens, unlimited alarms, alarm history
+- Free: one API token and up to 50 alarms a month
+- Pro: multiple tokens, up to 1000 alarms a month and alarm history
 
 ■ Privacy
 - The server stores only what delivery needs: an account identifier, device tokens, and alarm requests. Alarm requests are deleted automatically after 30 days
