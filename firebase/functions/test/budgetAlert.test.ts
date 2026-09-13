@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   BUDGET_SLACK_CHANNEL,
@@ -175,6 +176,33 @@ describe("予算通知の転送", () => {
     expect(
       await notifyBudgetThreshold(deps, { data: budgetMessage({ alertThresholdExceeded: 0.5 }), attributes: {} }),
     ).toBe("invalid");
+    expect(
+      await notifyBudgetThreshold(deps, {
+        data: budgetMessage({ alertThresholdExceeded: 0.5 }),
+        attributes: { ...ATTRIBUTES, budgetId: "a/b/c" },
+      }),
+    ).toBe("invalid");
     expect(posted).toEqual([]);
+  });
+
+  it("投稿と記録の間に別の通知が高い閾値を記録していても、低い閾値で上書きしない", async () => {
+    const exceeded50 = { data: budgetMessage({ alertThresholdExceeded: 0.5 }), attributes: ATTRIBUTES };
+    const exceeded90 = { data: budgetMessage({ alertThresholdExceeded: 0.9 }), attributes: ATTRIBUTES };
+    // 50% の通知の Slack 投稿中に 90% の通知が先に記録まで終わった状況を、投稿関数の中で再現する
+    deps.postSlackMessage = async (channel, text) => {
+      posted.push({ channel, text });
+      if (text.includes("50%")) {
+        await budgetNotificationRef(deps.firestore, ATTRIBUTES.budgetId).set({
+          [budgetNotificationFields.costIntervalStart]: "2026-09-01T00:00:00Z",
+          [budgetNotificationFields.notifiedThresholdPercent]: 0.9,
+          [budgetNotificationFields.updatedAt]: Timestamp.fromDate(TEST_NOW),
+        });
+      }
+    };
+
+    expect(await notifyBudgetThreshold(deps, exceeded50)).toBe("posted");
+    expect(await storedRecord()).toMatchObject({ [budgetNotificationFields.notifiedThresholdPercent]: 0.9 });
+    expect(await notifyBudgetThreshold(deps, exceeded90)).toBe("already_notified");
+    expect(posted).toHaveLength(1);
   });
 });

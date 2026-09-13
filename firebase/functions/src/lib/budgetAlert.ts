@@ -1,4 +1,4 @@
-import type { DocumentData, DocumentReference, Firestore } from "firebase-admin/firestore";
+import type { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { z } from "zod";
@@ -39,7 +39,8 @@ export type BudgetMessage = z.infer<typeof budgetMessageSchema>;
 
 /** 予算通知のメッセージ属性のうち使う部分 */
 export const budgetMessageAttributesSchema = z.object({
-  budgetId: z.string().min(1),
+  /** 予算の ID (UUID)。Firestore のドキュメント ID に使うため、パス区切りになる `/` を含む値は受け付けない */
+  budgetId: z.string().min(1).regex(/^[^/]+$/),
   billingAccountId: z.string().min(1).optional(),
 });
 export type BudgetMessageAttributes = z.infer<typeof budgetMessageAttributesSchema>;
@@ -111,8 +112,9 @@ export function formatBudgetSlackText(
  * Pub/Sub の予算通知を 1 件処理する。
  * 予算通知は閾値の超過に関係なく 1 日に複数回届き、超過後はどのメッセージにも同じ閾値が載るため、
  * 集計期間ごとに投稿済みの最大閾値を budgetNotifications/{budgetId} に覚え、閾値が上がった時だけ投稿する。
- * 記録は Slack への投稿が成功した後に書く (投稿に失敗した通知は記録が残らず、次の通知で投稿し直せる)。
- * 同じ予算の通知が同時に 2 件届くと二重投稿になり得るが、通知の間隔は数時間あるので競合の制御は持たない。
+ * 記録は Slack への投稿が成功した後に、前へ進める方向にだけ書く (投稿に失敗した通知は記録が残らず、次の通知で投稿し直せる)。
+ * 同じ予算の通知が同時に 2 件届くと二重投稿になり得るが、通知の間隔は数時間あり、投稿前に記録を確保する設計は
+ * Slack が失敗した通知を取りこぼすため、投稿の競合の制御は持たない (記録の巻き戻りだけをトランザクションで防ぐ)。
  * 同じ通知を何度受けても同じ状態に収束する (冪等)
  */
 export async function notifyBudgetThreshold(
@@ -133,34 +135,71 @@ export async function notifyBudgetThreshold(
     return "no_threshold";
   }
 
-  const ref = budgetNotificationRef(deps.firestore, attributes.data.budgetId);
-  const snapshot = await ref.get();
-  const stored = snapshot.exists ? budgetNotificationSchema.safeParse(snapshot.data()) : null;
-  if (stored?.success) {
-    // Pub/Sub の配送順序に依存しない。前月の通知が月替わり後に遅れて届いても、今月の記録を前月で上書きしない
-    if (isEarlierInterval(stored.data.costIntervalStart, message.data.costIntervalStart)) {
-      return "stale_period";
-    }
-    if (
-      stored.data.costIntervalStart === message.data.costIntervalStart &&
-      stored.data.notifiedThresholdPercent >= thresholdPercent
-    ) {
-      return "already_notified";
-    }
-  }
-
-  await deps.postSlackMessage(
-    BUDGET_SLACK_CHANNEL,
-    formatBudgetSlackText(message.data, thresholdPercent, attributes.data),
-  );
-  const record: BudgetNotification = {
+  const context = {
+    budgetId: attributes.data.budgetId,
     costIntervalStart: message.data.costIntervalStart,
-    notifiedThresholdPercent: thresholdPercent,
-    updatedAt: Timestamp.fromDate(deps.now()),
+    thresholdPercent,
   };
-  await ref.set(record);
-  return "posted";
+  const ref = budgetNotificationRef(deps.firestore, attributes.data.budgetId);
+  try {
+    const stored = readRecord(await ref.get());
+    if (stored && !advancesRecord(stored, message.data.costIntervalStart, thresholdPercent)) {
+      return isEarlierInterval(stored.costIntervalStart, message.data.costIntervalStart)
+        ? "stale_period"
+        : "already_notified";
+    }
+
+    await deps.postSlackMessage(
+      BUDGET_SLACK_CHANNEL,
+      formatBudgetSlackText(message.data, thresholdPercent, attributes.data),
+    );
+
+    // 記録は前へ進める方向にだけ書く。投稿と記録の間に別の通知が先に記録していても、高い閾値・新しい期間を低い方で上書きしない
+    await deps.firestore.runTransaction(async (transaction) => {
+      const current = readRecord(await transaction.get(ref));
+      if (current && !advancesRecord(current, message.data.costIntervalStart, thresholdPercent)) {
+        return;
+      }
+      const record: BudgetNotification = {
+        costIntervalStart: message.data.costIntervalStart,
+        notifiedThresholdPercent: thresholdPercent,
+        updatedAt: Timestamp.fromDate(deps.now()),
+      };
+      transaction.set(ref, record);
+    });
+    return "posted";
+  } catch (error) {
+    // 失敗した通知は記録が残らず次の通知で投稿し直す。原因を追えるよう、どの予算・期間・閾値で失敗したかを残す
+    logger.error("budget notification failed", { ...context, error: String(error) });
+    throw error;
+  }
 }
+
+/** 保存済みの記録。形式が合わない (手で書き換えた等) 記録は無い扱いにして、通常の判定へ進める */
+function readRecord(snapshot: DocumentSnapshot): BudgetNotification | null {
+  if (!snapshot.exists) {
+    return null;
+  }
+  const parsed = budgetNotificationSchema.safeParse(snapshot.data());
+  return parsed.success ? parsed.data : null;
+}
+
+/**
+ * 通知が記録を前へ進めるか。
+ * 同じ期間なら閾値が上がった時、記録より新しい期間ならその時だけ true。記録より古い期間・同じ期間の同じ以下の閾値は false
+ */
+function advancesRecord(stored: BudgetNotification, costIntervalStart: string, thresholdPercent: number): boolean {
+  if (isEarlierInterval(stored.costIntervalStart, costIntervalStart)) {
+    return false;
+  }
+  if (stored.costIntervalStart === costIntervalStart) {
+    return thresholdPercent > stored.notifiedThresholdPercent;
+  }
+  return true;
+}
+
+/** Slack API の応答は通常 1 秒以内のため、停滞の検知には 10 秒あれば足りる */
+const SLACK_REQUEST_TIMEOUT_MS = 10_000;
 
 /**
  * Slack Web API の chat.postMessage で投稿する。
@@ -175,6 +214,8 @@ export function createSlackPoster(token: () => string): BudgetAlertDeps["postSla
         "content-type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({ channel, text }),
+      // 関数の実行時間の上限 (既定 60 秒) より十分に短くし、Slack が応答しない時も上限で強制終了されずに失敗として記録できるようにする
+      signal: AbortSignal.timeout(SLACK_REQUEST_TIMEOUT_MS),
     });
     const body = (await response.json()) as { ok?: boolean; error?: string };
     if (!response.ok || body.ok !== true) {
