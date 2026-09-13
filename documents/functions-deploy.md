@@ -35,10 +35,10 @@ curl -i -X POST https://asia-northeast1-alarmify-prod.cloudfunctions.net/alarmsA
   -H 'Content-Type: application/json' -d '{"fire_at":"2030-01-01T00:00:00Z","title":"test"}'
 ```
 
-GitHub Actions からのデプロイ (`functions-deploy.yml`) も稼働済み。前提の次の 2 つは 2026-09-04 に適用した。
+GitHub Actions からのデプロイ (`functions-deploy.yml`) も稼働済み。前提の次の 2 つを適用した。
 
-- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「サービスアカウントと IAM」)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `roles/cloudscheduler.admin` を含める
-- environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` の登録 (下記「Secret を登録する」)
+- デプロイ専用サービスアカウントの作成と IAM 付与 (下記「サービスアカウントと IAM」。2026-09-04)。`cleanupExpiredAlarms` と `sweepDeletedAccountsHourly` が `onSchedule` のため `roles/cloudscheduler.admin` を含める
+- Workload Identity Federation の Pool / Provider の作成と deployer SA への impersonation 許可 (下記「GitHub Actions の認証 (Workload Identity Federation)」。2026-09-14)
 
 初回 run: https://github.com/bannzai/Alarmify/actions/runs/33799188366 (main と本番が同じコードだったため、5 関数すべて `Skipped (No changes detected)` → `Deploy complete!`)
 
@@ -54,7 +54,7 @@ target は実行前に alias から GCP プロジェクト ID を解決してロ
 
 ## GitHub Actions からデプロイする
 
-`.github/workflows/functions-deploy.yml` を `workflow_dispatch` で起動する。認証はデプロイ専用サービスアカウントの鍵で行い、鍵は environment `firebase-prod` の environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` に置く。
+`.github/workflows/functions-deploy.yml` を `workflow_dispatch` で起動する。認証は Workload Identity Federation で、GitHub の OIDC トークンをデプロイ専用サービスアカウントの短命な access token に交換する (Secret は持たない)。
 
 ```sh
 gh workflow run functions-deploy.yml --ref main -f environment=prod
@@ -110,27 +110,47 @@ gcloud iam service-accounts add-iam-policy-binding functions-runtime@alarmify-pr
 
 `320409781062@cloudservices.gserviceaccount.com` (Google APIs Service Agent) の Editor は GCP が内部利用する既定のため変更しない。
 
-## Secret を登録する
+## GitHub Actions の認証 (Workload Identity Federation)
 
-鍵は非冪等 (実行のたびに新しい鍵ができる) なので、既存の鍵があるかを確認してから発行する。environment `firebase-prod` の作成と `main` だけへのデプロイブランチ制限は適用済み (下の setup-environment.sh は再実行しても同じ状態に収束する)。
+デプロイ用 SA の長期鍵を GitHub Secret に置く方式をやめ、Workload Identity Federation (WIF) で GitHub の OIDC トークンを SA の短命な access token に交換する (方式の選定: [ADR 0009](adr/0009-github-actions-auth-with-workload-identity-federation.md))。Cloud Run functions は SA を介さない直接の WIF に対応しないため、SA impersonation の形をとる。
+
+| 構成要素 | 値 |
+| --- | --- |
+| Workload Identity Pool | `projects/320409781062/locations/global/workloadIdentityPools/github` |
+| Provider | `.../providers/alarmify` (issuer `https://token.actions.githubusercontent.com`) |
+| Provider の attribute 条件 | `assertion.repository_owner_id == '10897361' && assertion.repository_id == '1354444647' && assertion.environment == 'firebase-prod'` (リポジトリ名の変更で壊れないよう ID で絞る。`environment` claim は environment `firebase-prod` を使う job にだけ付く) |
+| deployer SA への binding | `roles/iam.workloadIdentityUser` を `principalSet://iam.googleapis.com/projects/320409781062/locations/global/workloadIdentityPools/github/attribute.repository_id/1354444647` に付与 |
+| workflow 側 | `permissions: id-token: write` と `google-github-actions/auth` (SHA 固定) の `create_credentials_file` / `export_environment_variables`。firebase-tools は `GOOGLE_APPLICATION_CREDENTIALS` の `external_account` 資格情報を ADC として読む (15.22.2 で壊れた回帰は 15.22.3 で修正済み。workflow は 15.30.0 を固定) |
+
+environment `firebase-prod` の作成と `main` だけへのデプロイブランチ制限は適用済み (下の setup-environment.sh は再実行しても同じ状態に収束する)。Pool / Provider / binding の作成 (冪等。`describe` で存在確認してから作る):
 
 ```sh
 bash ~/.agents/skills/ios-deploy-actions/scripts/setup-environment.sh \
   --repo bannzai/Alarmify --environment firebase-prod --branch main
 
-mkdir -p ./tmp   # tmp/ は .gitignore 済みで、fresh checkout には存在しない
-# 途中で失敗しても本番の鍵をディスクに残さないよう、生成前に削除を予約しておく
-trap 'rm -f ./tmp/deployer.json' EXIT
-gcloud iam service-accounts keys create ./tmp/deployer.json \
-  --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod
-B64=$(base64 < ./tmp/deployer.json)
-[ -n "$B64" ] || { echo "Error: 鍵が空です" >&2; exit 1; }
-printf '%s' "$B64" | gh secret set FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Alarmify --env firebase-prod
+gcloud services enable sts.googleapis.com --project=alarmify-prod
+gcloud iam workload-identity-pools create github --project=alarmify-prod --location=global --display-name="GitHub Actions"
+gcloud iam workload-identity-pools providers create-oidc alarmify --project=alarmify-prod --location=global --workload-identity-pool=github \
+  --display-name="bannzai/Alarmify" \
+  --issuer-uri="https://token.actions.githubusercontent.com" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository_id=assertion.repository_id,attribute.repository_owner_id=assertion.repository_owner_id,attribute.environment=assertion.environment" \
+  --attribute-condition="assertion.repository_owner_id == '10897361' && assertion.repository_id == '1354444647' && assertion.environment == 'firebase-prod'"
+gcloud iam service-accounts add-iam-policy-binding github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod \
+  --role=roles/iam.workloadIdentityUser \
+  --member="principalSet://iam.googleapis.com/projects/320409781062/locations/global/workloadIdentityPools/github/attribute.repository_id/1354444647"
 ```
 
-`trap` は対話シェルでそのまま貼ると、そのシェルを閉じるまで発火しない。上のブロックはスクリプトファイル (`bash issue-key.sh`) か `bash -c` で実行し、実行後に `ls ./tmp/deployer.json` で鍵が残っていないことを確かめる。
+### 旧方式の鍵と Secret の削除 (WIF でのデプロイが成功してから)
 
-登録した secret の所在は env-secret-registry skill の `secret-locations.tsv` に記録する (値は記録しない)。
+2026-09-03 に発行した鍵 (`3fe666772127d30490beb33699a660faf6b56039`) と environment secret `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` は、WIF の workflow で `firebase deploy` が 1 回成功するまで残し、成功後に消す (どちらも復旧は鍵の再発行と Secret の再登録になり、非冪等)。削除後は env-secret-registry skill の `secret-locations.tsv` から該当行を消す。
+
+```sh
+gcloud iam service-accounts keys list --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod --managed-by=user
+gcloud iam service-accounts keys delete 3fe666772127d30490beb33699a660faf6b56039 --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod
+gh secret delete FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Alarmify --env firebase-prod
+```
+
+復旧 (WIF が使えない時に鍵方式へ戻す): workflow の認証 step を鍵の復元に戻し (git 履歴の 2026-09-14 以前の `functions-deploy.yml`)、`gcloud iam service-accounts keys create` で鍵を発行して同名の environment secret に登録する。
 
 ## よくある失敗
 
@@ -140,7 +160,9 @@ printf '%s' "$B64" | gh secret set FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo b
 | `secretmanager.secrets.setIamPolicy` の PERMISSION_DENIED | 新しい Secret に実行 SA の accessor が無く、deployer (viewer) が付与できない | オーナーが `gcloud secrets add-iam-policy-binding` で `functions-runtime` に accessor を付けてから再デプロイする |
 | `Access to bucket gcf-v2-sources-... denied` / `artifactregistry.repositories.downloadArtifacts` denied | ビルド SA (compute) の `roles/cloudbuild.builds.builder` が外れた | compute SA に `roles/cloudbuild.builds.builder` を付け直す |
 | 関数の実行時に Firestore / FCM / Auth の PERMISSION_DENIED | 実行 SA に必要なロールが無い (Editor の暗黙の権限に頼っていた) | `functions-runtime` へ該当ロールを付ける |
-| `iam.serviceAccounts.ActAs ...` が付与後も消えない | Secret に入れた鍵の SA と、権限を付けた SA が違う | 鍵の `client_email` を確認する (workflow の Restore service account key step がログに出す) |
+| `iam.serviceAccounts.ActAs ...` が付与後も消えない | workflow の `service_account` と、権限を付けた SA が違う | `functions-deploy.yml` の `service_account` を確認する |
+| auth step が `Unable to acquire impersonated credentials` / `PERMISSION_DENIED` | Provider の attribute 条件に合わない (environment 未使用の job・別リポジトリ) か、`roles/iam.workloadIdentityUser` の binding が無い | 上記「GitHub Actions の認証」の条件と binding を確認する。`gh run view --log` の auth step にトークンの claim が出る |
+| `Failed to authenticate, have you run firebase login?` | firebase-tools が ADC を読めない (`GOOGLE_APPLICATION_CREDENTIALS` 未設定、または Node 22.23.0 / 24.17.0 の keep-alive の不具合 + firebase-tools 15.22.2 以前) | auth step の `export_environment_variables: true` と firebase-tools のバージョン固定 (15.22.3 以降) を確認する |
 | `In non-interactive mode but have no value for ... <VAR>` | `defineString()` 等の params の値が CI に無い (IAM とは無関係) | 値を GitHub Variable 等で渡し、deploy 直前に `.env.<project>` を生成する step を足す |
 
 `PERMISSION_DENIED` は IAM 不足、`SERVICE_DISABLED` は API 未有効で切り分ける。
