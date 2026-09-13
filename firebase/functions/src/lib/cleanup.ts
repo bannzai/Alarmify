@@ -9,8 +9,13 @@ import { collections } from "../schema/index.js";
 
 /** 1 回の削除クエリで扱う件数 (.claude/rules/firestore-db-rules.md) */
 export const CLEANUP_BATCH_SIZE = 500;
-/** 1 回の実行で回すバッチ数の上限。1 日の期限切れ件数を追い越せるだけ回し、無限に走らせない */
+/** 1 回の実行で回すバッチ数の上限。TTL の消し残しを追い越せるだけ回し、無限に走らせない */
 export const CLEANUP_MAX_BATCHES = 20;
+/**
+ * TTL ポリシーの削除を待つ猶予。これより古い期限切れは TTL が消し残したものとして扱う。
+ * Firestore の TTL は「通常は期限から 24 時間以内に削除」(https://docs.cloud.google.com/firestore/native/docs/ttl) のため、その 2 倍を取る
+ */
+export const CLEANUP_TTL_GRACE_HOURS = 48;
 
 /**
  * 問い合わせた時点から変わっていないドキュメントだけを削除する。
@@ -42,7 +47,10 @@ export interface CleanupOptions {
 }
 
 /**
- * 保持期間を過ぎたアラーム要求を削除する。
+ * TTL ポリシー (firebase/firestore.indexes.json の alarms / expiresAt) が消し残した期限切れのアラーム要求を削除する。
+ * 保持期間を過ぎた文書の削除は TTL が担い、この関数は猶予を過ぎても残っている文書だけを消す予備の経路
+ * (documents/adr/0007-delete-expired-alarms-with-firestore-ttl.md)。
+ * 戻り値が 0 より大きいことが TTL の不調の目印になる。
  * 上限に達した場合は残りを次回の実行で処理する (再実行しても結果が変わらない)
  */
 export async function deleteExpiredAlarms(
@@ -56,11 +64,14 @@ export async function deleteExpiredAlarms(
   if (!Number.isInteger(maxBatches) || maxBatches < 1 || maxBatches > CLEANUP_MAX_BATCHES) {
     throw new RangeError(`maxBatches は 1〜${CLEANUP_MAX_BATCHES} の整数で指定してください`);
   }
+  const staleBefore = Timestamp.fromMillis(
+    deps.now().getTime() - CLEANUP_TTL_GRACE_HOURS * 60 * 60 * 1000,
+  );
   let deleted = 0;
   for (let batch = 0; batch < maxBatches; batch += 1) {
     const snapshot = await deps.firestore
       .collectionGroup(collections.alarms)
-      .where("expiresAt", "<=", Timestamp.fromDate(deps.now()))
+      .where("expiresAt", "<=", staleBefore)
       .limit(batchSize)
       .get();
     if (snapshot.empty) {

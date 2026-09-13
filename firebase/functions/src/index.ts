@@ -59,10 +59,19 @@ export const revenueCatWebhook = onRequest(
   createRevenueCatWebhook(createDeps(), { authorization: () => revenueCatWebhookAuthorization.value() }),
 );
 
-/** 保持期間を過ぎたアラーム要求の削除。期限切れの発生量を追い越せるよう、1 回の実行で複数バッチを処理する */
-export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
+/**
+ * TTL ポリシーが消し残した期限切れのアラーム要求の削除 (予備の経路。ADR 0007)。
+ * TTL の猶予 (CLEANUP_TTL_GRACE_HOURS) より細かく回しても消し残しは増えないため 1 日 1 回にする。
+ * 消し残しがあった時の error ログのメッセージは Monitoring のアラートポリシー
+ * (firebase/monitoring/expired-alarms-outlived-ttl.policy.json) のフィルタ条件なので変えない
+ */
+export const cleanupExpiredAlarms = onSchedule("every 24 hours", async () => {
   const deleted = await deleteExpiredAlarms(createDeps());
-  logger.info("deleted expired alarms", { deleted });
+  if (deleted > 0) {
+    logger.error("expired alarms outlived the TTL policy", { deleted });
+    return;
+  }
+  logger.info("no expired alarms outlived the TTL policy", { deleted });
 });
 
 /**
