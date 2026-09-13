@@ -175,7 +175,7 @@ describe("RevenueCat の webhook", () => {
     expect((user.get("planEventAt") as Timestamp).toMillis()).toBe(TEST_NOW.getTime());
   });
 
-  it("pro の間は月間の登録数と API トークンの数の上限を外す", async () => {
+  it("pro の間は無料の月間上限を超えて登録でき API トークンの数の上限を外す", async () => {
     await registerDevice();
     const issued = await issueApiToken("first");
     await postWebhook(

@@ -2,6 +2,8 @@
 
 Signalarm (Alarmify) の運用にかかる費用を、固定費・ユーザー数に比例する変動費・費用が跳ねる経路の上限に分けて試算する。起票元: https://github.com/bannzai/Alarmify/issues/62
 
+この文書の数値は Issue #62 の旧プラン（無料月20件・Proの強制上限なし、試算では月300件）を前提とする記録。Issue #90 で決定した新しい月間上限は `firebase/functions/src/lib/plan.ts` が正で、新プランの原価試算は https://github.com/bannzai/Alarmify/issues/90#issuecomment-5651147821 に記録している。以下の表を新プランの最大費用として使わない。
+
 ## ざっくり月額
 
 当面は GCP が月 ¥30〜100 程度で、固定費 (Apple Developer Program + ドメイン) の月割り約 ¥1,410 がほぼすべて。ユーザーが数千人になるまで変動費は誤差の範囲。Cloud Run の課金時間 1.0 秒/リクエスト (上限側) で計算し、暖機 0.2 秒なら GCP 分は約 1/3 になる。根拠となる単価・操作回数・式は以降の節にある。

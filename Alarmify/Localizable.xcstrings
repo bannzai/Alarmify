@@ -15514,12 +15514,12 @@
     "Pro" : {
       "shouldTranslate" : false
     },
-    "Pro removes both limits." : {
+    "Pro includes 1000 alarms a month with unlimited tokens and history." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pro ではどちらの上限もなくなります。"
+            "value" : "Pro では月 1000 件のアラームを登録でき トークン数と履歴件数の上限がなくなります。"
           }
         }
       }
@@ -22919,22 +22919,22 @@
         }
       }
     },
-    "The free plan includes one token and 20 alarms a month" : {
+    "The free plan includes one token and 50 alarms a month" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無料プランはトークン 1 つと月 20 回のアラームまで"
+            "value" : "無料プランはトークン 1 つと月 50 回のアラームまで"
           }
         }
       }
     },
-    "The free plan includes one token and 20 alarms a month. %@" : {
+    "The free plan includes one token and 50 alarms a month. %@" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無料プランではトークン 1 つ・月 20 回までアラームを登録できます。%@"
+            "value" : "無料プランではトークン 1 つ・月 50 回までアラームを登録できます。%@"
           }
         }
       }
@@ -24945,12 +24945,12 @@
         }
       }
     },
-    "Unlimited alarms" : {
+    "1000 alarms a month" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無制限のアラーム"
+            "value" : "月 1000 件のアラーム"
           }
         }
       }
