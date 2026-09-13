@@ -7,11 +7,13 @@ import { setGlobalOptions } from "firebase-functions";
 import { onCall, onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
+import { onMessagePublished } from "firebase-functions/pubsub";
 import { onSchedule } from "firebase-functions/scheduler";
 import { authUserExists, handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
+import { BUDGET_PUBSUB_TOPIC, createSlackPoster, notifyBudgetThreshold } from "./lib/budgetAlert.js";
 import { deleteExpiredAlarms } from "./lib/cleanup.js";
 import { parseAppCheckEnforcementMode } from "./lib/appCheck.js";
 import type { Deps } from "./lib/deps.js";
@@ -88,3 +90,35 @@ export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async (
     throw new Error(`${result.failed} deleted account(s) could not be swept`);
   }
 });
+
+/**
+ * 通知 bot (slack-notification-setup skill) の Slack bot token (Secret Manager)。
+ * 登録手順は documents/budget-alert-slack.md。未登録だと deploy が止まる (defineSecret の仕様)
+ */
+const slackBotToken = defineSecret("SLACK_BOT_TOKEN");
+
+/**
+ * Cloud Billing の予算通知 (Pub/Sub) を Slack #alarmify-notification へ転送する。
+ * 予算が受け付ける Monitoring の通知チャンネルは email 型だけのため、Pub/Sub 経由で流す (ADR 0007)
+ */
+export const budgetAlertToSlack = onMessagePublished(
+  { topic: BUDGET_PUBSUB_TOPIC, secrets: [slackBotToken] },
+  async (event) => {
+    // data が JSON でない時は json の getter が例外を投げる。形式の判定は notifyBudgetThreshold に寄せる
+    let data: unknown;
+    try {
+      data = event.data.message.json;
+    } catch (_error) {
+      data = undefined;
+    }
+    const outcome = await notifyBudgetThreshold(
+      {
+        firestore: getFirestore(),
+        postSlackMessage: createSlackPoster(() => slackBotToken.value()),
+        now: () => new Date(),
+      },
+      { data, attributes: event.data.message.attributes },
+    );
+    logger.info("budget notification", { outcome, messageId: event.data.message.messageId });
+  },
+);
