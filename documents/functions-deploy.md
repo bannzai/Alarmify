@@ -17,6 +17,8 @@ Cloud Functions (gen2) を `firebase/.firebaserc` の alias で指定した Fire
 
 Secret `REVENUECAT_WEBHOOK_AUTHORIZATION` は登録済み。RevenueCat Dashboard 側の webhook 設定と値の受け渡しは #25 に記録している。関数の配布だけでは RevenueCat からのプラン同期は有効にならない (設定手順は `documents/revenuecat-webhook.md`)。
 
+`budgetAlertToSlack` (#73) は Secret `SLACK_BOT_TOKEN` を束ねているため、登録が済むまで `firebase deploy --only functions` は Functions 全体で止まる。Pub/Sub トリガーの関数の初回作成は CI のデプロイ用サービスアカウントの権限では行えず、オーナーのアカウントでローカルから行う (登録・初回デプロイの手順は `documents/budget-alert-slack.md`)。
+
 `firebase/firebase.json` の `firestore` (全パス deny の `firebase/firestore.rules` と、複合インデックスの `firebase/firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase/` で `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も検出しない)。
 
 デプロイ状態の確認 (read-only):

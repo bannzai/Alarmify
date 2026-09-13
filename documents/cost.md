@@ -78,7 +78,7 @@ Signalarm (Alarmify) の運用にかかる費用を、固定費・ユーザー�
 | Cloud Scheduler 2 ジョブ (`cleanupExpiredAlarms` 6 時間毎、`sweepDeletedAccountsHourly` 1 時間毎) | $2.40 (¥360) |
 | 定期実行そのものの Cloud Run 時間 (実測: cleanup 約 3.0 秒 × 120 回/月、sweep 約 2.8 秒 × 720 回/月 ≈ 2,376 vCPU 秒/月) | 約 $0.70 (¥105) |
 | 定期削除の空クエリ (対象 0 件でも 1 read × 4 回/日) | $0.0005 (¥0.07) |
-| Secret Manager (`REVENUECAT_WEBHOOK_AUTHORIZATION` 1 バージョン) | 無料枠 6 バージョン内なら $0。他プロジェクトが枠を使い切っていれば $0.72 |
+| Secret Manager (`REVENUECAT_WEBHOOK_AUTHORIZATION`・`SLACK_BOT_TOKEN` の 2 バージョン) | 無料枠 6 バージョン内なら $0。他プロジェクトが枠を使い切っていれば $1.44 |
 | Cloud Monitoring `error-log-spike` ポリシー (メトリック参照 1 件) | 2027-09-01 から $4.20 (¥630)。それまで $0 |
 | Cloud Logging・FCM・App Check・Auth・Cloudflare Pages・GitHub Actions | $0 |
 | 合計 | 約 $116 (約 ¥17,400)。2027-09 以降は約 ¥18,000 |
@@ -183,7 +183,7 @@ t = 0.2 秒 (暖機済み):
 | Cloud Run 最大インスタンス 10 (revision) / 20 (service) | `setGlobalOptions({ maxInstances: 10 })` | 同時実行 80 × 10 を超える処理が滞留し、インスタンス時間が青天井に増えない | 公式ドキュメントのとおり、トラフィックの急増時は短時間だけ設定を超えることがある。滞留したリクエストの課金は発生する |
 | fire_at の範囲 (30 秒〜365 日先) | `MIN_FIRE_AT_LEAD_SECONDS` / `MAX_FIRE_AT_AHEAD_DAYS` | 発火が遠い文書が保存され続けること (保存は最長 365 + 30 日) | |
 | 定期削除 1 回 10,000 件 (500 件 × 20 バッチ) | `CLEANUP_BATCH_SIZE` × `CLEANUP_MAX_BATCHES`、6 時間毎 | 1 回の実行時間の青天井 | 1 日 40,000 件 = 月 120 万件を超える期限切れは処理しきれず滞留する (Pro 300 件/月 × 4,000 人相当)。滞留は保存料 ($0.115 / GiB・月) を増やすだけで、他の課金は増えない |
-| 予算アラート 月 ¥10,000 | 50 / 90 / 100% でメール通知 | 何も止めない (Cloud Billing の予算は通知のみで支出の上限ではない) | |
+| 予算アラート 月 ¥10,000 | 50 / 90 / 100% でメール通知と Slack `#alarmify-notification` への投稿 (`budgetAlertToSlack`。`documents/budget-alert-slack.md`) | 何も止めない (Cloud Billing の予算は通知のみで支出の上限ではない) | |
 
 漏洩トークン・暴走した外部サービスの 1 日あたりの費用 (D = 1、最大 10 インスタンスにスケールした場合の理論値)。下表の回数は**レート制限を通過して Firestore へ進む呼び出しの上限**であり、受信回数や総費用の上限ではない。レート制限は Cloud Run 内の Express ミドルウェアで動くため、429 で拒否する呼び出しにもリクエスト課金 ($0.40 / 100 万件) と処理時間 (数十 ms) が発生し、その件数は制限されない:
 
@@ -211,7 +211,7 @@ t = 0.2 秒 (暖機済み):
 
 不足と扱い:
 
-- 予算アラートの通知先が email チャンネルだけで、Slack `#alarmify-notification` には届かない。Cloud Billing の予算が Monitoring の通知チャンネルとして受け付けるのは email 型のみで、Slack へ流すには Pub/Sub トピック + 転送する仕組み (Cloud Functions 等) が要る (https://docs.cloud.google.com/billing/docs/how-to/budgets-programmatic-notifications )。新しい構成要素の追加になるため別 issue に切り出した ( https://github.com/bannzai/Alarmify/issues/73 )
+- 予算アラートの通知先が email チャンネルだけで、Slack `#alarmify-notification` には届かない。Cloud Billing の予算が Monitoring の通知チャンネルとして受け付けるのは email 型のみで、Slack へ流すには Pub/Sub トピック + 転送する仕組みが要る (https://docs.cloud.google.com/billing/docs/how-to/budgets-programmatic-notifications )。#73 で Pub/Sub トピック `budget-alarmify-prod` を購読する Functions `budgetAlertToSlack` を追加した (方式: [ADR 0007](adr/0007-budget-alert-to-slack-via-pubsub-function.md)、設定手順と確認方法: `documents/budget-alert-slack.md`)。トピックの作成・予算への紐づけ・Secret `SLACK_BOT_TOKEN` の登録・初回デプロイはオーナー権限の作業で、完了状況は https://github.com/bannzai/Alarmify/issues/73 を参照する。関数の呼び出しは 1 日数回 (Cloud Run 数秒 / 日) で費用は誤差
 - 定期削除の処理能力 (月 120 万件) が Pro 4,000 人相当で頭打ちになる。今の規模では問題にならず、増強の方法 (バッチ数・実行間隔・TTL ポリシーへの切り替え) の判断が要るため別 issue に切り出した ( https://github.com/bannzai/Alarmify/issues/74 )
 - 予算 ¥10,000 / 月は試算に対して「少なすぎて誤報する」側ではなく、平常時の支出 (月 ¥100 未満) に対して大きい側。50% の通知 (¥5,000) が届く時点で平常時の 50 か月分を使っており、漏洩の検知としては遅い。予算額の見直し (例: ¥3,000 に下げる、または 5% の閾値を足す) は判断事項として issue #62 のコメントに書き、変更はしていない
 - Artifact Registry の cleanup policy が未設定。今は 0 MB で費用 0 のため対応せず、上記「固定費」に対処を書いた
