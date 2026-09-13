@@ -24,7 +24,7 @@
           "reviewNote": "設定画面から Pro の購入画面を開けます。無料トライアルはありません。",
           "locales": [
             { "locale": "ja", "name": "Pro (月額)", "description": "サービスごとのトークン・月1000件のアラーム登録・アラーム履歴・複数端末への配送を解放します" },
-            { "locale": "en-US", "name": "Pro (Monthly)", "description": "1000 alarms/month with history, tokens and multiple devices" }
+            { "locale": "en-US", "name": "Pro (Monthly)", "description": "1000 alarms/month, history, tokens and multiple devices" }
           ]
         },
         {
@@ -37,7 +37,7 @@
           "reviewNote": "設定画面から Pro の購入画面を開けます。無料トライアルはありません。",
           "locales": [
             { "locale": "ja", "name": "Pro (年額)", "description": "サービスごとのトークン・月1000件のアラーム登録・アラーム履歴・複数端末への配送を解放します" },
-            { "locale": "en-US", "name": "Pro (Annual)", "description": "1000 alarms/month with history, tokens and multiple devices" }
+            { "locale": "en-US", "name": "Pro (Annual)", "description": "1000 alarms/month, history, tokens and multiple devices" }
           ]
         }
       ]

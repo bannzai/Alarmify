@@ -172,8 +172,8 @@ struct PaywallPage: View {
 
     /// リード。1 文目はペイウォールを開いた文脈で変え、2 文目は共通
     private var lead: Text {
-        // ja: Pro ではどちらの上限もなくなります。
-        let common = Text("Pro removes both limits.")
+        // ja: Pro では月 1000 件のアラームを登録でき トークン数と履歴件数の上限がなくなります。
+        let common = Text("Pro includes 1000 alarms a month with unlimited tokens and history.")
         switch trigger {
         case .settings:
             // ja: 無料プランではトークン 1 つ・月 50 回までアラームを登録できます。%@
