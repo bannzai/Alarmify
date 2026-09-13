@@ -144,6 +144,21 @@ describe("予算通知の転送", () => {
     });
   });
 
+  it("月替わり後に遅れて届いた前月の通知は投稿せず、今月の記録を巻き戻さない", async () => {
+    const october = { data: budgetMessage({ alertThresholdExceeded: 0.5, costIntervalStart: "2026-10-01T00:00:00Z" }), attributes: ATTRIBUTES };
+    const september = { data: budgetMessage({ alertThresholdExceeded: 0.9 }), attributes: ATTRIBUTES };
+
+    expect(await notifyBudgetThreshold(deps, october)).toBe("posted");
+    expect(await notifyBudgetThreshold(deps, september)).toBe("stale_period");
+    expect(await notifyBudgetThreshold(deps, october)).toBe("already_notified");
+
+    expect(posted).toHaveLength(1);
+    expect(await storedRecord()).toMatchObject({
+      [budgetNotificationFields.costIntervalStart]: "2026-10-01T00:00:00Z",
+      [budgetNotificationFields.notifiedThresholdPercent]: 0.5,
+    });
+  });
+
   it("Slack への投稿に失敗した通知は記録を残さず、次の通知で投稿し直す", async () => {
     const exceeded50 = { data: budgetMessage({ alertThresholdExceeded: 0.5 }), attributes: ATTRIBUTES };
     failNextPost = true;

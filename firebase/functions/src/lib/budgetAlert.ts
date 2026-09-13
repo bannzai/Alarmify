@@ -60,6 +60,8 @@ export type BudgetAlertOutcome =
   | "no_threshold"
   /** 同じ集計期間で同じ (またはより高い) 閾値を投稿済み */
   | "already_notified"
+  /** 記録済みより古い集計期間の通知 (月替わり後に遅れて届いた前月分)。記録を巻き戻さない */
+  | "stale_period"
   /** 予算通知の形式に合わない */
   | "invalid";
 
@@ -77,6 +79,16 @@ function formatAmount(amount: number, currencyCode: string): string {
   } catch (_error) {
     return `${amount} ${currencyCode}`;
   }
+}
+
+/**
+ * 通知の集計期間が記録済みの集計期間より前か。
+ * どちらも RFC 3339 として解釈できる時だけ時刻で比べる (解釈できない値は「前ではない」として扱い、通常の判定に進める)
+ */
+function isEarlierInterval(storedIntervalStart: string, messageIntervalStart: string): boolean {
+  const stored = Date.parse(storedIntervalStart);
+  const incoming = Date.parse(messageIntervalStart);
+  return !Number.isNaN(stored) && !Number.isNaN(incoming) && incoming < stored;
 }
 
 /** Slack へ投稿する本文。閾値・支出・予算・集計期間と、予算画面へのリンクを 1 通にまとめる */
@@ -124,12 +136,17 @@ export async function notifyBudgetThreshold(
   const ref = budgetNotificationRef(deps.firestore, attributes.data.budgetId);
   const snapshot = await ref.get();
   const stored = snapshot.exists ? budgetNotificationSchema.safeParse(snapshot.data()) : null;
-  if (
-    stored?.success &&
-    stored.data.costIntervalStart === message.data.costIntervalStart &&
-    stored.data.notifiedThresholdPercent >= thresholdPercent
-  ) {
-    return "already_notified";
+  if (stored?.success) {
+    // Pub/Sub の配送順序に依存しない。前月の通知が月替わり後に遅れて届いても、今月の記録を前月で上書きしない
+    if (isEarlierInterval(stored.data.costIntervalStart, message.data.costIntervalStart)) {
+      return "stale_period";
+    }
+    if (
+      stored.data.costIntervalStart === message.data.costIntervalStart &&
+      stored.data.notifiedThresholdPercent >= thresholdPercent
+    ) {
+      return "already_notified";
+    }
   }
 
   await deps.postSlackMessage(
