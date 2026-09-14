@@ -1,20 +1,17 @@
 #!/bin/bash
 # Cloud Monitoring のアラートポリシーを JSON 定義から適用する (冪等)。
 # 同じ displayName のポリシーが無ければ作成し、あれば同じ name を保って update する。
+# 対象プロジェクトは定義ファイルの notificationChannels (projects/<PROJECT_ID>/notificationChannels/...)
+# から決める。通知チャンネルはポリシーと同じプロジェクトのものしか使えないため、別のプロジェクトを指定する引数は持たない。
 #
-# 使い方: bash firebase/monitoring/apply-policy.sh <policy.json> [--project <PROJECT_ID>]
-#   --project の既定は alarmify-prod (定義ファイルの通知チャンネルがこのプロジェクトのものであるため)
+# 使い方: bash firebase/monitoring/apply-policy.sh <policy.json>
 set -euo pipefail
 
 POLICY_FILE=""
-PROJECT="alarmify-prod"
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --project)
-      [[ $# -ge 2 && -n "$2" ]] || { echo "ERROR: --project に値が必要です" >&2; exit 2; }
-      PROJECT="$2"; shift 2 ;;
     -h|--help)
-      sed -n '2,6p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+      sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *)
       [[ -z "$POLICY_FILE" ]] || { echo "ERROR: 不明な引数: $1" >&2; exit 2; }
       POLICY_FILE="$1"; shift ;;
@@ -25,6 +22,19 @@ done
 
 DISPLAY_NAME="$(jq -r '.displayName // empty' "$POLICY_FILE")"
 [[ -n "$DISPLAY_NAME" ]] || { echo "ERROR: $POLICY_FILE に displayName がありません" >&2; exit 2; }
+
+# 通知チャンネルの projects/<id>/ からプロジェクトを決める。複数のプロジェクトが混ざる定義は Monitoring API が拒否するため先に止める
+PROJECTS="$(jq -r '[.notificationChannels[]? | capture("^projects/(?<p>[^/]+)/notificationChannels/") | .p] | unique | .[]' "$POLICY_FILE")"
+if [[ -z "$PROJECTS" ]]; then
+  echo "ERROR: $POLICY_FILE の notificationChannels が空か、projects/<PROJECT_ID>/notificationChannels/... の形式ではありません" >&2
+  exit 2
+fi
+if [[ "$(wc -l <<<"$PROJECTS")" -ne 1 ]]; then
+  echo "ERROR: $POLICY_FILE の notificationChannels が複数のプロジェクトを参照しています (1 つのプロジェクトに揃えてください):" >&2
+  echo "$PROJECTS" >&2
+  exit 2
+fi
+PROJECT="$PROJECTS"
 
 EXISTING="$(gcloud alpha monitoring policies list --project="$PROJECT" \
   --filter="displayName=\"$DISPLAY_NAME\"" --format='value(name)')"
