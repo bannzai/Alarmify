@@ -4,7 +4,7 @@ import { hashApiToken, hashEquals } from "./apiToken.js";
 import { monthKey } from "./plan.js";
 import { collections, type User } from "../schema/index.js";
 
-/** アラーム要求の保持期間。expiresAt を過ぎたものは Scheduled Function が削除する */
+/** アラーム要求の保持期間。expiresAt を過ぎたものは Firestore の TTL ポリシーが削除する (ADR 0008) */
 export const ALARM_RETENTION_DAYS = 30;
 
 /** 1 ユーザーが登録できる端末数の上限。配送はここまでの全端末に行う */

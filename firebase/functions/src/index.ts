@@ -14,7 +14,7 @@ import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
 import { BUDGET_PUBSUB_TOPIC, createSlackPoster, notifyBudgetThreshold } from "./lib/budgetAlert.js";
-import { deleteExpiredAlarms } from "./lib/cleanup.js";
+import { deleteExpiredAlarms, EXPIRED_ALARMS_OUTLIVED_TTL_EVENT } from "./lib/cleanup.js";
 import { parseAppCheckEnforcementMode } from "./lib/appCheck.js";
 import type { Deps } from "./lib/deps.js";
 import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
@@ -61,10 +61,24 @@ export const revenueCatWebhook = onRequest(
   createRevenueCatWebhook(createDeps(), { authorization: () => revenueCatWebhookAuthorization.value() }),
 );
 
-/** 保持期間を過ぎたアラーム要求の削除。期限切れの発生量を追い越せるよう、1 回の実行で複数バッチを処理する */
-export const cleanupExpiredAlarms = onSchedule("every 6 hours", async () => {
+/**
+ * TTL ポリシーが消し残した期限切れのアラーム要求の削除 (予備の経路。ADR 0008)。
+ * TTL の猶予 (CLEANUP_TTL_GRACE_HOURS) より細かく回しても消し残しは増えないため 1 日 1 回にする。
+ * 消し残しがあった時の error ログの `event` フィールドは Monitoring のアラートポリシー
+ * (firebase/monitoring/expired-alarms-outlived-ttl.policy.json) のフィルタ条件なので変えない。
+ * メッセージ文字列を条件にしないのは、firebase-functions の logger.error が severity ERROR の
+ * message にスタックトレースを付ける (`Error: <message>\n    at ...`) ため、完全一致で拾えないから
+ */
+export const cleanupExpiredAlarms = onSchedule("every 24 hours", async () => {
   const deleted = await deleteExpiredAlarms(createDeps());
-  logger.info("deleted expired alarms", { deleted });
+  if (deleted > 0) {
+    logger.error("expired alarms outlived the TTL policy", {
+      event: EXPIRED_ALARMS_OUTLIVED_TTL_EVENT,
+      deleted,
+    });
+    return;
+  }
+  logger.info("no expired alarms outlived the TTL policy", { deleted });
 });
 
 /**

@@ -1,0 +1,27 @@
+{
+  "displayName": "expired-alarms-outlived-ttl (alarmify-prod)",
+  "documentation": {
+    "mimeType": "text/markdown",
+    "content": "cleanupExpiredAlarms が、TTL ポリシー (alarms / expiresAt) の猶予 48 時間を過ぎても残っていた期限切れのアラーム要求を削除した。TTL ポリシーが無効になっていないか (gcloud firestore fields ttls list --project=alarmify-prod) と、直近のログの deleted の件数を確認する。方式: documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "cleanupExpiredAlarms が TTL の消し残しを削除した",
+      "conditionMatchedLog": {
+        "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"cleanupexpiredalarms\" AND severity=\"ERROR\" AND jsonPayload.event=\"expired-alarms-outlived-ttl\""
+      }
+    }
+  ],
+  "alertStrategy": {
+    "notificationRateLimit": {
+      "period": "3600s"
+    },
+    "autoClose": "86400s"
+  },
+  "notificationChannels": [
+    "projects/alarmify-prod/notificationChannels/15496496213272407257",
+    "projects/alarmify-prod/notificationChannels/686602969314596292"
+  ],
+  "enabled": true
+}

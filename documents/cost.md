@@ -25,7 +25,7 @@ Signalarm (Alarmify) の運用にかかる費用を、固定費・ユーザー�
 | 端末数 D | 1 台 | 20 台 (上限) | 1 アラームの費用が約 10 倍 |
 | 為替 | 150 JPY/USD | 140〜160 | ±7% |
 | 無料枠 | 適用前で試算 | Firestore の日次枠と Cloud Run の課金アカウント枠が使えれば | 1,000 人規模なら GCP 分がほぼ ¥30 (Scheduler のみ) |
-| Monitoring のアラート課金 | 2027-09-01 から $0.35 / 月 | | +¥50 / 月 |
+| Monitoring のアラート課金 | 2027-09-01 から $0.35 / ポリシー・月 (2 件) | | +¥105 / 月 |
 | 異常時 (トークン漏洩・外部サービスの暴走) | 上限計算 | 1 日 ¥1,000〜7,800 | 予算 ¥10,000 の 50% 通知に 1〜5 日で到達 |
 
 収入側は Pro 1 人あたり年 ¥1,464〜1,777 (App Store 手数料 30% / 15%) で、Pro が 10〜13 人いれば固定費込みで黒字になる (「損益分岐」の節)。
@@ -75,13 +75,13 @@ Signalarm (Alarmify) の運用にかかる費用を、固定費・ユーザー�
 | --- | --- |
 | Apple Developer Program | $99 (¥14,850) |
 | ドメイン signalarm.app | 約 $14 (¥2,100) |
-| Cloud Scheduler 2 ジョブ (`cleanupExpiredAlarms` 6 時間毎、`sweepDeletedAccountsHourly` 1 時間毎) | $2.40 (¥360) |
-| 定期実行そのものの Cloud Run 時間 (実測: cleanup 約 3.0 秒 × 120 回/月、sweep 約 2.8 秒 × 720 回/月 ≈ 2,376 vCPU 秒/月) | 約 $0.70 (¥105) |
-| 定期削除の空クエリ (対象 0 件でも 1 read × 4 回/日) | $0.0005 (¥0.07) |
+| Cloud Scheduler 2 ジョブ (`cleanupExpiredAlarms` 1 日 1 回、`sweepDeletedAccountsHourly` 1 時間毎) | $2.40 (¥360) |
+| 定期実行そのものの Cloud Run 時間 (実測: cleanup 約 3.0 秒 × 30 回/月、sweep 約 2.8 秒 × 720 回/月 ≈ 2,106 vCPU 秒/月。#74 で cleanup を 6 時間毎から 1 日 1 回に減らした) | 約 $0.62 (¥93) |
+| TTL の消し残しを探す空クエリ (対象 0 件でも 1 read × 1 回/日) | $0.0001 (¥0.02) |
 | Secret Manager (`REVENUECAT_WEBHOOK_AUTHORIZATION`・`SLACK_BOT_TOKEN` の 2 バージョン) | 無料枠 6 バージョン内なら $0。他プロジェクトが枠を使い切っていれば $1.44 |
-| Cloud Monitoring `error-log-spike` ポリシー (メトリック参照 1 件) | 2027-09-01 から $4.20 (¥630)。それまで $0 |
+| Cloud Monitoring `error-log-spike` と `expired-alarms-outlived-ttl` ポリシー (メトリック参照 各 1 件。後者は #74 で追加) | 2027-09-01 から $8.40 (¥1,260)。それまで $0 |
 | Cloud Logging・FCM・App Check・Auth・Cloudflare Pages・GitHub Actions | $0 |
-| 合計 | 約 $116 (約 ¥17,400)。2027-09 以降は約 ¥18,000 |
+| 合計 | 約 $116 (約 ¥17,400)。2027-09 以降は約 ¥18,700 |
 
 Functions のデプロイごとの Cloud Build (数分) と Artifact Registry のイメージ保存 (`gcf-artifacts` リポジトリ。2026-09-12 時点 0 MB、cleanup policy 未設定) は無料枠内で $0 とみなす。デプロイを繰り返してイメージが溜まると Artifact Registry の保存料が乗るため、`firebase functions:artifacts:setpolicy` (Firebase CLI 14 以降の既定: 1 日より古いイメージを削除) の設定を検討する。
 
@@ -93,10 +93,12 @@ Functions のデプロイごとの Cloud Build (数分) と Artifact Registry �
 | --- | --- | --- | --- | --- | --- |
 | `POST /v1/alarms` (新規登録): トークン検索 1、`lastUsedAt` 更新、端末一覧 D、トランザクション (user + alarm) 2 read / 2 write、配送前後の状態読み直し 2、配送結果の記録 1 | D + 5 | 4 | 0 | 1 | D 件 (FCM、無料) |
 | `POST /v1/alarms/{id}/device-reports` (端末 1 台につき 1 回): 削除目印・アラーム・端末の 3 read、報告の 1 write | 3D | D | 0 | D | |
-| `cleanupExpiredAlarms` (期限切れ 1 件につき): クエリ結果 1 read、`BulkWriter.delete` 1 | 1 | 0 | 1 | 0 | |
-| 合計 | 4D + 6 | 4 + D | 1 | 1 + D | D |
-| D = 1 | 10 | 5 | 1 | 2 | 1 |
-| D = 20 (上限) | 86 | 24 | 1 | 21 | 20 |
+| 期限切れの削除 (1 件につき): TTL ポリシーの削除 1 (無料枠の対象外。#74 までは `cleanupExpiredAlarms` のクエリ結果 1 read + `BulkWriter.delete` 1 だった) | 0 | 0 | 1 | 0 | |
+| 合計 | 4D + 5 | 4 + D | 1 | 1 + D | D |
+| D = 1 | 9 | 5 | 1 | 2 | 1 |
+| D = 20 (上限) | 85 | 24 | 1 | 21 | 20 |
+
+以下の 1 アラームあたりの費用とユーザー数別の試算は、#74 より前の read 数 (4D + 6) で計算した値のまま (「試算の再計算」の式は現行コードの 4D + 5 に更新済み)。TTL への切り替えで 1 アラームあたり read が 1 件減り ($0.00000038)、削除の無料枠 (20,000 件/日) が使えなくなる。差はどの行でも 1% 未満のため再計算していない。
 
 このほか、アラーム文書 (deviceReports 込み) の保存を 1 件 2 KiB × 約 1 か月と置く (発火から 30 日、または取り消しから 30 日で削除)。
 
@@ -152,7 +154,7 @@ t = 0.2 秒 (暖機済み):
 
 - t = 1.0 秒では Cloud Run の CPU 時間が支配的で、Firestore は 1/5 以下 (t = 0.2 秒では両者が同程度)。CPU 時間の仮定 (1.0 秒か 0.2 秒か) で合計が約 3〜5 倍変わる。実利用が増えたら `billable_instance_time / request_count` を測り直して t を更新する
 - 無料ユーザーだけなら 10,000 人でも月 ¥2,000 以下、Pro 5% の混合でも月 ¥3,100 以下 (t = 1.0 秒)。月 ¥10,000 の予算 (下記) を超えるのは 10,000 人が全員 Pro 300 件/月の場合だけ
-- 月間 300 万アラーム (10,000 人 × Pro) では定期削除の処理能力 (下記「費用の上限」の定期削除) を超えるため、その規模の前に `cleanupExpiredAlarms` の増強が要る
+- 月間 300 万アラーム (10,000 人 × Pro) でも期限切れの削除は Firestore の TTL ポリシーが件数の上限なしに行う (下記「費用の上限」の期限切れの削除。#74 で Scheduled Function の 6 時間毎 10,000 件から切り替えた)
 
 ## 損益分岐 (Pro 年 ¥2,300)
 
@@ -182,7 +184,7 @@ t = 0.2 秒 (暖機済み):
 | 端末数 20 台 | `device_limit_exceeded` で 403 (`MAX_DEVICES_PER_USER`) | 1 アラームあたりの push・端末報告・読み取りが 20 台分を超えて増えること | 20 台までは 1 アラームあたり 86 read / 24 write / 21 リクエストになる (D = 1 の約 10 倍) |
 | Cloud Run 最大インスタンス 10 (revision) / 20 (service) | `setGlobalOptions({ maxInstances: 10 })` | 同時実行 80 × 10 を超える処理が滞留し、インスタンス時間が青天井に増えない | 公式ドキュメントのとおり、トラフィックの急増時は短時間だけ設定を超えることがある。滞留したリクエストの課金は発生する |
 | fire_at の範囲 (30 秒〜365 日先) | `MIN_FIRE_AT_LEAD_SECONDS` / `MAX_FIRE_AT_AHEAD_DAYS` | 発火が遠い文書が保存され続けること (保存は最長 365 + 30 日) | |
-| 定期削除 1 回 10,000 件 (500 件 × 20 バッチ) | `CLEANUP_BATCH_SIZE` × `CLEANUP_MAX_BATCHES`、6 時間毎 | 1 回の実行時間の青天井 | 1 日 40,000 件 = 月 120 万件を超える期限切れは処理しきれず滞留する (Pro 300 件/月 × 4,000 人相当)。滞留は保存料 ($0.115 / GiB・月) を増やすだけで、他の課金は増えない |
+| 期限切れの削除 (Firestore の TTL ポリシー `alarms` / `expiresAt`。[ADR 0008](adr/0008-delete-expired-alarms-with-firestore-ttl.md)) | `firebase/firestore.indexes.json` の `ttl: true`。件数の上限なし、削除は期限から通常 24 時間以内 | 期限切れの滞留。月 300 万件 (Pro 300 件/月 × 10,000 人。新プランの Pro 1000 件/月なら 3,000 人相当) でも 1 日 10 万件を Firestore 側が消し、費用は $0.013 / 100,000 件 × 30 = 約 $0.39 / 月 (TTL の削除は無料枠の対象外。単価は東京の Document Deletes と同額の仮定。根拠は ADR 0008)。旧方式 (Scheduled Function が 6 時間毎に最大 10,000 件 = 月 120 万件) の同規模の費用 (read 約 $1.14 + Cloud Run 約 $0.2 + 削除 約 $0.31) より安い | 削除されるまで (通常 24 時間以内。上限の保証なし) は履歴に期限切れが残る。TTL が消し残した分 (期限から 48 時間超) は `cleanupExpiredAlarms` (1 日 1 回、最大 10,000 件) が削除し、1 件でもあれば error ログ → アラートポリシー `expired-alarms-outlived-ttl` (`firebase/monitoring/`) が Slack + メールへ通知する |
 | 予算アラート 月 ¥10,000 | 50 / 90 / 100% でメール通知と Slack `#alarmify-notification` への投稿 (`budgetAlertToSlack`。`documents/budget-alert-slack.md`) | 何も止めない (Cloud Billing の予算は通知のみで支出の上限ではない) | |
 
 漏洩トークン・暴走した外部サービスの 1 日あたりの費用 (D = 1、最大 10 インスタンスにスケールした場合の理論値)。下表の回数は**レート制限を通過して Firestore へ進む呼び出しの上限**であり、受信回数や総費用の上限ではない。レート制限は Cloud Run 内の Express ミドルウェアで動くため、429 で拒否する呼び出しにもリクエスト課金 ($0.40 / 100 万件) と処理時間 (数十 ms) が発生し、その件数は制限されない:
@@ -204,7 +206,7 @@ t = 0.2 秒 (暖機済み):
 | Cloud Run 最大インスタンス | 同上。revision `autoscaling.knative.dev/maxScale: '10'`、service `run.googleapis.com/maxScale: '20'` | 5 サービスとも 10 / 20。`setGlobalOptions({ maxInstances: 10 })` と一致 |
 | 課金方式 | 同上。`run.googleapis.com/cpu-throttling` の指定が無い | request-based (既定) |
 | `cleanupExpiredAlarms` の定期実行 | `gcloud scheduler jobs list --project=alarmify-prod --location=asia-northeast1` | `firebase-schedule-cleanupExpiredAlarms-asia-northeast1` every 6 hours ENABLED、`firebase-schedule-sweepDeletedAccountsHourly-asia-northeast1` every 60 minutes ENABLED |
-| `cleanupExpiredAlarms` の実行ログ | `gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="cleanupexpiredalarms" AND jsonPayload.message="deleted expired alarms"' --project=alarmify-prod --freshness=7d` | 6 時間毎に `deleted expired alarms` (deleted: 0) が記録されている。期限切れがまだ無いため削除件数は 0 |
+| `cleanupExpiredAlarms` の実行ログ | `gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="cleanupexpiredalarms" AND jsonPayload.message="deleted expired alarms"' --project=alarmify-prod --freshness=7d` | 6 時間毎に `deleted expired alarms` (deleted: 0) が記録されている。期限切れがまだ無いため削除件数は 0 (#74 の切り替え後は 1 日 1 回で、メッセージは `no expired alarms outlived the TTL policy` / 消し残しがあれば error の `expired alarms outlived the TTL policy`) |
 | Cloud Logging の保持期間 | `gcloud logging buckets list --project=alarmify-prod` | `_Default` 30 日 (無料の既定)、`_Required` 400 日 (監査ログ。変更不可・無料) |
 | Cloud Logging の除外フィルタ | `gcloud logging sinks describe _Default --project=alarmify-prod` | 標準の監査ログ除外のみ。リクエストログの除外は無い |
 | Cloud Logging の取り込み量 | Monitoring API `logging.googleapis.com/billing/bytes_ingested` (直近 7 日) | 約 0.9 MB / 7 日 ≈ 4 MB / 月。無料枠 50 GiB の 0.01% で、除外フィルタは不要 |
@@ -212,7 +214,7 @@ t = 0.2 秒 (暖機済み):
 不足と扱い:
 
 - 予算アラートの通知先が email チャンネルだけで、Slack `#alarmify-notification` には届かない。Cloud Billing の予算が Monitoring の通知チャンネルとして受け付けるのは email 型のみで、Slack へ流すには Pub/Sub トピック + 転送する仕組みが要る (https://docs.cloud.google.com/billing/docs/how-to/budgets-programmatic-notifications )。#73 で Pub/Sub トピック `budget-alarmify-prod` を購読する Functions `budgetAlertToSlack` を追加した (方式: [ADR 0007](adr/0007-budget-alert-to-slack-via-pubsub-function.md)、設定手順と確認方法: `documents/budget-alert-slack.md`)。トピックの作成・予算への紐づけ・Secret `SLACK_BOT_TOKEN` の登録・初回デプロイはオーナー権限の作業で、完了状況は https://github.com/bannzai/Alarmify/issues/73 を参照する。関数の呼び出しは 1 日数回 (Cloud Run 数秒 / 日) で費用は誤差
-- 定期削除の処理能力 (月 120 万件) が Pro 4,000 人相当で頭打ちになる。今の規模では問題にならず、増強の方法 (バッチ数・実行間隔・TTL ポリシーへの切り替え) の判断が要るため別 issue に切り出した ( https://github.com/bannzai/Alarmify/issues/74 )
+- 定期削除の処理能力 (月 120 万件) が Pro 4,000 人相当で頭打ちになる。別 issue ( https://github.com/bannzai/Alarmify/issues/74 ) で Firestore の TTL ポリシーへ切り替え、上限を無くした ([ADR 0008](adr/0008-delete-expired-alarms-with-firestore-ttl.md)。上表の `cleanupExpiredAlarms` の行は切り替え前の確認結果)
 - 予算 ¥10,000 / 月は試算に対して「少なすぎて誤報する」側ではなく、平常時の支出 (月 ¥100 未満) に対して大きい側。50% の通知 (¥5,000) が届く時点で平常時の 50 か月分を使っており、漏洩の検知としては遅い。予算額の見直し (例: ¥3,000 に下げる、または 5% の閾値を足す) は判断事項として issue #62 のコメントに書き、変更はしていない
 - Artifact Registry の cleanup policy が未設定。今は 0 MB で費用 0 のため対応せず、上記「固定費」に対処を書いた
 
@@ -220,6 +222,6 @@ t = 0.2 秒 (暖機済み):
 
 単価・仮定 (為替、t、D、Pro 比率) を変えて再計算する時は、上の表の式をそのまま使う:
 
-- 1 アラーム = Firestore ((4D + 6) × read + (4 + D) × write + 1 × delete) + Cloud Run ((1 + D) × t × (1 vCPU 単価 + 0.25 GiB × メモリ単価) + (1 + D) × リクエスト単価) + 保存 (2 KiB × 1 か月)
-- 月額 = Σ ユーザー × 月間アラーム数 × 1 アラーム + 定期実行分 (Scheduler $0.20 + 2,376 vCPU 秒 + 120 read)
+- 1 アラーム = Firestore ((4D + 5) × read + (4 + D) × write + 1 × TTL delete) + Cloud Run ((1 + D) × t × (1 vCPU 単価 + 0.25 GiB × メモリ単価) + (1 + D) × リクエスト単価) + 保存 (2 KiB × 1 か月)
+- 月額 = Σ ユーザー × 月間アラーム数 × 1 アラーム + 定期実行分 (Scheduler $0.20 + 2,106 vCPU 秒 + 30 read)
 - 損益分岐 (Pro 人数) = 固定費 年額 ÷ (Pro 1 人の手取り − Pro 1 人の変動費 − 混合比率に応じた無料ユーザーの変動費)
