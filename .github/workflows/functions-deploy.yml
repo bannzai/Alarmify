@@ -2,13 +2,15 @@ name: functions-deploy
 
 # workflow_dispatch で手動起動する Firebase Functions (gen2) の配布ワークフロー。
 # 対象環境は `firebase/.firebaserc` の alias で明示する (~/.claude/rules/firebase-environment-check.md)。
-# 認証はデプロイ専用サービスアカウント github-firebase-deployer@<プロジェクト>.iam.gserviceaccount.com の
-# 鍵 (Secret FIREBASE_SERVICE_ACCOUNT_JSON_BASE64) で行う。必要な IAM は
-# firebase-functions-deploy-iam-setup skill (bannzai/castle) の grant-deploy-iam.sh が付与する。
+# 認証は Workload Identity Federation で行い、GitHub の OIDC トークンをデプロイ専用サービスアカウント
+# github-firebase-deployer@<プロジェクト>.iam.gserviceaccount.com の短命な access token に交換する
+# (長期の SA 鍵は持たない。方式: documents/adr/0009-github-actions-auth-with-workload-identity-federation.md)。
+# Workload Identity Provider の条件はリポジトリ ID と environment 名 (firebase-prod) で絞る。
+# 必要な IAM は documents/functions-deploy.md「サービスアカウントと IAM」を正とする。
 #
-# 本番の資格情報は environment secrets に置き、environment のデプロイブランチ制限で main からの起動だけに絞る
+# 本番へのデプロイは environment firebase-prod のデプロイブランチ制限で main からの起動だけに絞る
 # (workflow_dispatch は --ref に任意の branch を指定できるため、feature branch 上で改変した workflow から
-#  本番へデプロイできる経路をここで塞ぐ)。
+#  本番へデプロイできる経路をここで塞ぐ。OIDC トークンの environment claim も firebase-prod の job にしか付かない)。
 on:
   workflow_dispatch:
     inputs:
@@ -25,10 +27,11 @@ on:
         type: string
         default: ""
 
-# 多重 dispatch の検出に run 一覧の取得が要る
+# 多重 dispatch の検出に run 一覧の取得が要る。id-token は Workload Identity Federation の OIDC トークン発行に要る
 permissions:
   contents: read
   actions: read
+  id-token: write
 
 env:
   # firebase-tools は明示的にバージョンを固定する (latest だと CLI の更新で挙動が変わり、デプロイが再現しなくなるため)
@@ -110,18 +113,18 @@ jobs:
         run: npm install --global "firebase-tools@${FIREBASE_TOOLS_VERSION}"
 
       # 依存のインストールより後に置く。npm ci は依存の lifecycle script を実行するため、
-      # 先に鍵を配置すると本番を変更できる資格情報を依存のスクリプトから読めてしまう
-      - name: Restore service account key
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 }}
-        run: |
-          [ -n "$FIREBASE_SERVICE_ACCOUNT_JSON_BASE64" ] || { echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 が空です"; exit 1; }
-          mkdir -p "$RUNNER_TEMP/firebase"
-          key_path="$RUNNER_TEMP/firebase/deployer.json"
-          echo -n "$FIREBASE_SERVICE_ACCOUNT_JSON_BASE64" | base64 --decode > "$key_path"
-          # 鍵の SA と付与先の SA が食い違うと IAM を付けても ActAs エラーが出続けるため、client_email をログに残す
-          jq -r '"鍵のサービスアカウント: " + .client_email' "$key_path"
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${key_path}" >> "$GITHUB_ENV"
+      # 先に資格情報を配置すると本番を変更できる資格情報を依存のスクリプトから読めてしまう。
+      # external_account 形式の資格情報ファイルを作り GOOGLE_APPLICATION_CREDENTIALS に出すと、
+      # firebase-tools は Application Default Credentials として読む (google-auth-library)。
+      # ファイルは action の post step が削除する
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          project_id: ${{ env.FIREBASE_PROJECT_ID }}
+          workload_identity_provider: projects/320409781062/locations/global/workloadIdentityPools/github/providers/alarmify
+          service_account: github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
 
       - name: Deploy functions
         env:
@@ -140,7 +143,3 @@ jobs:
           fi
           echo "firebase deploy --only ${target} --project ${FIREBASE_ALIAS} (${FIREBASE_PROJECT_ID})"
           firebase deploy --only "$target" --project "$FIREBASE_ALIAS" --non-interactive
-
-      - name: Cleanup
-        if: always()
-        run: rm -f "$RUNNER_TEMP/firebase/deployer.json" || true
