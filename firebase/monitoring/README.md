@@ -4,7 +4,7 @@
 
 | ファイル | 発火条件 | 見るもの |
 | --- | --- | --- |
-| `expired-alarms-outlived-ttl.policy.json` | `cleanupExpiredAlarms` が「TTL の猶予 48 時間を過ぎた期限切れ」を 1 件でも削除した (error ログ `expired alarms outlived the TTL policy`) | TTL ポリシーの状態と消し残しの件数 ([ADR 0008](../../documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md)) |
+| `expired-alarms-outlived-ttl.policy.json` | `cleanupExpiredAlarms` が「TTL の猶予 48 時間を過ぎた期限切れ」を 1 件でも削除した (error ログ `expired alarms outlived the TTL policy`。条件は `jsonPayload.event="expired-alarms-outlived-ttl"`。message は firebase-functions の logger.error がスタックトレースを付けるため完全一致に使わない) | TTL ポリシーの状態と消し残しの件数 ([ADR 0008](../../documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md)) |
 
 `error-log-spike` (severity ERROR 以上が 5 分間に 10 件超) は gcp-alert-setup skill の管理で、ここには置かない。1 日 1 回の error ログ 1 行ではその閾値に届かないため、上のポリシーを別に持つ。
 

@@ -9,7 +9,7 @@
     {
       "displayName": "cleanupExpiredAlarms が TTL の消し残しを削除した",
       "conditionMatchedLog": {
-        "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"cleanupexpiredalarms\" AND severity=\"ERROR\" AND jsonPayload.message=\"expired alarms outlived the TTL policy\""
+        "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"cleanupexpiredalarms\" AND severity=\"ERROR\" AND jsonPayload.event=\"expired-alarms-outlived-ttl\""
       }
     }
   ],

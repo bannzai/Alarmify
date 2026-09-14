@@ -16,6 +16,11 @@ export const CLEANUP_MAX_BATCHES = 20;
  * Firestore の TTL は「通常は期限から 24 時間以内に削除」(https://docs.cloud.google.com/firestore/native/docs/ttl) のため、その 2 倍を取る
  */
 export const CLEANUP_TTL_GRACE_HOURS = 48;
+/**
+ * TTL の消し残しを削除した時の error ログに付ける識別子 (jsonPayload.event)。
+ * firebase/monitoring/expired-alarms-outlived-ttl.policy.json のログ条件がこの値で一致させるため、変えるなら両方を変える
+ */
+export const EXPIRED_ALARMS_OUTLIVED_TTL_EVENT = "expired-alarms-outlived-ttl";
 
 /**
  * 問い合わせた時点から変わっていないドキュメントだけを削除する。
