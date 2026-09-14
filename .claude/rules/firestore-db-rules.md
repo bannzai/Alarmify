@@ -26,7 +26,7 @@ DB は Firestore (`alarmify-prod`、asia-northeast1)。構成の決定は [ADR 0
 
 - 複合インデックスは `firebase/firestore.indexes.json` で管理し、Console で手作業で追加しない
 - 一覧取得のクエリには必ず `limit` を付ける (履歴は 30 日で削除するが、上限なしの取得を書かない)
-- 定期削除 (30 日経過したアラーム要求) は Scheduled Function で行い、1 回の実行で処理する件数に上限を設ける
+- 保持期間 (30 日) を過ぎたアラーム要求の削除は Firestore の TTL ポリシー (`firebase/firestore.indexes.json` の `fieldOverrides` の `ttl: true`) で行う。Scheduled Function (`cleanupExpiredAlarms`) は TTL の猶予を過ぎても残った文書を消す予備の経路で、1 回の実行で処理する件数に上限を設け、消し残しがあれば error ログでアラートを出す (経緯と引き受けるリスク: [ADR 0008](../../documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md))。TTL ポリシーの変更は同ファイルで行い、Console や `gcloud firestore fields ttls` で手作業で変えない
 
 ## ローカル開発
 

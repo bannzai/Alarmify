@@ -37,6 +37,7 @@
     {
       "collectionGroup": "alarms",
       "fieldPath": "expiresAt",
+      "ttl": true,
       "indexes": [
         {
           "order": "ASCENDING",
