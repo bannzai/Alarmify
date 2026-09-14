@@ -9,6 +9,8 @@ export const collections = {
   alarms: "alarms",
   /** 削除処理中のアカウントの目印 (`deletedAccounts/{uid}`) */
   deletedAccounts: "deletedAccounts",
+  /** 予算通知を Slack へ転送した記録 (`budgetNotifications/{budgetId}`) */
+  budgetNotifications: "budgetNotifications",
 } as const;
 
 export const timestampSchema = z.custom<Timestamp>(

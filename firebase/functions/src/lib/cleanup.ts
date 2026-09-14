@@ -49,7 +49,7 @@ export interface CleanupOptions {
 /**
  * TTL ポリシー (firebase/firestore.indexes.json の alarms / expiresAt) が消し残した期限切れのアラーム要求を削除する。
  * 保持期間を過ぎた文書の削除は TTL が担い、この関数は猶予を過ぎても残っている文書だけを消す予備の経路
- * (documents/adr/0007-delete-expired-alarms-with-firestore-ttl.md)。
+ * (documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md)。
  * 戻り値が 0 より大きいことが TTL の不調の目印になる。
  * 上限に達した場合は残りを次回の実行で処理する (再実行しても結果が変わらない)
  */

@@ -1,4 +1,4 @@
-# 0007. 期限切れのアラーム要求は Firestore の TTL ポリシーで削除する
+# 0008. 期限切れのアラーム要求は Firestore の TTL ポリシーで削除する
 
 ## Status
 Accepted (2026-09-14)

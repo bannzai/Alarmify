@@ -2,7 +2,7 @@
   "displayName": "expired-alarms-outlived-ttl (alarmify-prod)",
   "documentation": {
     "mimeType": "text/markdown",
-    "content": "cleanupExpiredAlarms が、TTL ポリシー (alarms / expiresAt) の猶予 48 時間を過ぎても残っていた期限切れのアラーム要求を削除した。TTL ポリシーが無効になっていないか (gcloud firestore fields ttls list --project=alarmify-prod) と、直近のログの deleted の件数を確認する。方式: documents/adr/0007-delete-expired-alarms-with-firestore-ttl.md"
+    "content": "cleanupExpiredAlarms が、TTL ポリシー (alarms / expiresAt) の猶予 48 時間を過ぎても残っていた期限切れのアラーム要求を削除した。TTL ポリシーが無効になっていないか (gcloud firestore fields ttls list --project=alarmify-prod) と、直近のログの deleted の件数を確認する。方式: documents/adr/0008-delete-expired-alarms-with-firestore-ttl.md"
   },
   "combiner": "OR",
   "conditions": [

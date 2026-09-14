@@ -17,7 +17,9 @@ Cloud Functions (gen2) を `firebase/.firebaserc` の alias で指定した Fire
 
 Secret `REVENUECAT_WEBHOOK_AUTHORIZATION` は登録済み。RevenueCat Dashboard 側の webhook 設定と値の受け渡しは #25 に記録している。関数の配布だけでは RevenueCat からのプラン同期は有効にならない (設定手順は `documents/revenuecat-webhook.md`)。
 
-`firebase/firebase.json` の `firestore` (全パス deny の `firebase/firestore.rules` と、複合インデックス・TTL ポリシーの `firebase/firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase/` で `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も TTL ポリシーの有無も検出しない)。`alarms` / `expiresAt` の TTL ポリシー ([ADR 0007](adr/0007-delete-expired-alarms-with-firestore-ttl.md)) は有効化に 10 分以上かかる。TTL 化の初回は次の順で適用する。`cleanupExpiredAlarms` は期限から 48 時間を過ぎた文書しか消さなくなるため、TTL が有効になる前に Functions を配布すると 48 時間は誰も期限切れを消さず、その後の定期実行が消し残しとして削除して誤ったアラートを出す。
+`budgetAlertToSlack` (#73) は Secret `SLACK_BOT_TOKEN` を束ねているため、登録が済むまで `firebase deploy --only functions` は Functions 全体で止まる。Pub/Sub トリガーの関数の初回作成は CI のデプロイ用サービスアカウントの権限では行えず、オーナーのアカウントでローカルから行う (登録・初回デプロイの手順は `documents/budget-alert-slack.md`)。
+
+`firebase/firebase.json` の `firestore` (全パス deny の `firebase/firestore.rules` と、複合インデックス・TTL ポリシーの `firebase/firestore.indexes.json`) は Functions のデプロイ経路に含まれないため、初回とそれらを変更した時は `firebase/` で `firebase deploy --only firestore --project prod` を別途実行する (rules を配布しないと以前の rules が残り、エミュレータはインデックスの不足も TTL ポリシーの有無も検出しない)。`alarms` / `expiresAt` の TTL ポリシー ([ADR 0008](adr/0008-delete-expired-alarms-with-firestore-ttl.md)) は有効化に 10 分以上かかる。TTL 化の初回は次の順で適用する (2026-09-14 に 1・2 を本番へ適用済み。#74 のコメントを参照)。`cleanupExpiredAlarms` は期限から 48 時間を過ぎた文書しか消さなくなるため、TTL が有効になる前に Functions を配布すると 48 時間は誰も期限切れを消さず、その後の定期実行が消し残しとして削除して誤ったアラートを出す。
 
 1. `firebase/` で `firebase deploy --only firestore --project prod` を実行し、`gcloud firestore fields ttls list --project=alarmify-prod` で `ttlConfig.state: ACTIVE` になるまで待つ。切り替え前の `cleanupExpiredAlarms` (6 時間毎) と TTL は共存できる (TTL が先に消した文書は `lastUpdateTime` 条件の削除が失敗して数えないだけ) ため、この手順は Functions の変更をマージする前に実行してよい
 2. `bash firebase/monitoring/apply-policy.sh firebase/monitoring/expired-alarms-outlived-ttl.policy.json` で消し残しのアラートポリシーを適用する (`firebase/monitoring/README.md`)
