@@ -50,7 +50,7 @@
     STATUS: ${{ job.status }}
   run: |
     curl -sS --fail-with-body -X POST \
-      https://api.alarmify.app/v1/alarms \
+      https://api.signalarm.app/v1/alarms \
       -H "Authorization: Bearer $ALARMIFY_TOKEN" \
       -H "Content-Type: application/json" \
       -d "$(jq -cn --arg title \
