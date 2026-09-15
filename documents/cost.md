@@ -64,7 +64,7 @@ Signalarm (Alarmify) の運用にかかる費用を、固定費・ユーザー�
 | App Store 手数料 | 売上の 15% (Small Business Program 加入時。未加入は 30%) | | https://developer.apple.com/app-store/small-business-program/ |
 | RevenueCat | 月間トラッキング収益 (MTR) $2,500 まで無料。超えた月は MTR 全体の 1% (超過分だけではない) | | https://www.revenuecat.com/pricing |
 | ドメイン signalarm.app | 約 $14 / 年 (issue #62 の見積。Cloudflare Registrar は原価販売で固定単価は未公開) | | https://www.cloudflare.com/application-services/products/registrar/buy-app-domains/ |
-| Cloudflare Pages (LP。#56 で GitHub Pages から移行予定) | 無料 (Free プラン: 500 ビルド/月、20,000 ファイル/サイト) | | https://developers.cloudflare.com/pages/platform/limits/ |
+| Cloudflare Pages (LP。#56 で GitHub Pages から移行済み) | 無料 (Free プラン: 500 ビルド/月、20,000 ファイル/サイト) | | https://developers.cloudflare.com/pages/platform/limits/ |
 | GitHub Actions | 無料 (public リポジトリの標準 GitHub-hosted runner。macOS を含む。larger runner は有料) | | https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions |
 
 課金アカウント単位の無料枠 (Cloud Run・Scheduler・Secret Manager・Cloud Build・Artifact Registry) は、同じ課金アカウントの他の 22 プロジェクトと共有する。Scheduler の無料 3 ジョブは別プロジェクトが既に消費している (例: `aisiteru-prod` に 15 ジョブ) ため、Alarmify の 2 ジョブは有料として数える。Cloud Run の無料枠も同様に「使えれば」の扱いにし、下記の試算は無料枠の適用前 (gross) を主とする。

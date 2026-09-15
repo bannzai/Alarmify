@@ -193,7 +193,7 @@ const progress = (t, step, total = 5) => `
   </div>`;
 
 const tokenPreview = (t) => `alm_9f2c4e1b7a03d8f6c2b19e5a4d7f0c3e8b6a2d`;
-const curlLine = (t) => `curl -X POST https://api.alarmify.app/v1/alarms -H 'Authorization: Bearer alm_9f2c…' -H 'Content-Type: application/json' -d '{"fire_in":60,"title":"Deploy finished"}'`;
+const curlLine = (t) => `curl -X POST https://api.signalarm.app/v1/alarms -H 'Authorization: Bearer alm_9f2c…' -H 'Content-Type: application/json' -d '{"fire_in":60,"title":"Deploy finished"}'`;
 
 // ---- オンボーディング (5 画面) ----
 const onboardingShell = (t, step, { eyebrowText, title, lead, visual, primary, secondary }) => `
@@ -469,7 +469,7 @@ const recipeDetail = (t) => `
     STATUS: \${{ job.status }}
   run: |
     curl -sS --fail-with-body -X POST \\
-      https://api.alarmify.app/v1/alarms \\
+      https://api.signalarm.app/v1/alarms \\
       -H "Authorization: Bearer $ALARMIFY_TOKEN" \\
       -H "Content-Type: application/json" \\
       -d "$(jq -cn --arg title \\

@@ -7,7 +7,7 @@
 1. ナビ: `< Signalarm` / `Integration recipes`
 2. リード (15/21 `fg2`、左右 20): `Every recipe ends with one request to POST /v1/alarms. Snippets already carry your token.` (`POST /v1/alarms` は等幅 13)。トークン未発行なら 2 文目を `Issue an API token to see these snippets with your token filled in.` (既存文言) にする
 3. レシピの行 (13×16): 名前 17 semibold (固有名詞。翻訳しない) / 概要 13/18 `fg3` (既存の `summary`) / シェブロン。順序は `IntegrationRecipe.allCases`
-4. **Reference** セクション: `API reference` (本のアイコン) → `https://bannzai.github.io/Alarmify/api`
+4. **Reference** セクション: `API reference` (本のアイコン) → `https://signalarm.app/api`
 
 ## 詳細 (GitHub Actions を代表に)
 
