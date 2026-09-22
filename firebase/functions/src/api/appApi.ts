@@ -14,7 +14,13 @@ import type { Deps } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { effectivePlan, planLimits } from "../lib/plan.js";
 import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
-import { deletionMarkerRef, MAX_DEVICES_PER_USER, newUserDocument, userRef } from "../lib/store.js";
+import {
+  currentPlan,
+  deletionMarkerRef,
+  MAX_DEVICES_PER_USER,
+  newUserDocument,
+  userRef,
+} from "../lib/store.js";
 import {
   alarmHistoryLimitSchema,
   canonicalUuidSchema,
@@ -25,7 +31,6 @@ import {
   reportDeviceResultRequestSchema,
   userSchema,
   type DeviceReport,
-  type Plan,
 } from "../schema/index.js";
 
 /**
@@ -92,12 +97,6 @@ function nextCursor(snapshot: QuerySnapshot<DocumentData>, limit: number): strin
   }
   const last = snapshot.docs[snapshot.size - 1];
   return encodeCursor({ createdAt: last.get("createdAt") as Timestamp, id: last.id });
-}
-
-/** ユーザードキュメントが無ければ free (端末登録や課金前に履歴を見に来た場合) */
-async function currentPlan(deps: Deps, uid: string, now: Date): Promise<Plan> {
-  const snapshot = await userRef(deps.firestore, uid).get();
-  return snapshot.exists ? effectivePlan(userSchema.parse(snapshot.data()), now) : "free";
 }
 
 function alarmHistoryItem(doc: QueryDocumentSnapshot<DocumentData>): Record<string, unknown> {
@@ -171,7 +170,8 @@ export function createAppApi(deps: Deps): Express {
       await rejectIfAccountDeleted(transaction, deps, uid);
       const userSnapshot = await transaction.get(userDocRef);
       const deviceSnapshot = await transaction.get(deviceRef);
-      // 配送は登録済みの全端末に行う。取りこぼしが出ないよう、配送で見る上限と同じ数で登録を止める
+      // 無料プランでも 2 台目以降の登録は受け付ける (アプリが起動時に自動登録するため、拒否すると 2 台目で使えなく見える)。
+      // Pro の配送は登録済みの全端末に行うため、取りこぼしが出ないよう配送で見る上限と同じ数で登録を止める
       if (!deviceSnapshot.exists) {
         const registered = await transaction.get(devicesRef.limit(MAX_DEVICES_PER_USER));
         if (registered.size >= MAX_DEVICES_PER_USER) {
@@ -316,7 +316,7 @@ export function createAppApi(deps: Deps): Express {
   app.get("/v1/alarms", async (req, res) => {
     const page = parsePage(req);
     const uid = currentUid(res);
-    const plan = await currentPlan(deps, uid, deps.now());
+    const plan = await currentPlan(deps.firestore, uid, deps.now());
     const limit = Math.min(page.limit, planLimits[plan].alarmHistory);
     // free は直近 N 件だけを見せる機能のため、cursor を受け取っても先頭ページに固定し、次のページも案内しない
     const resolvedPage: Page = plan === "free" ? { limit, cursor: null } : { limit, cursor: page.cursor };
