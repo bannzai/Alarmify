@@ -93,6 +93,8 @@ curl -X DELETE https://api.signalarm.app/v1/alarms/3b0e0c6e-9f1b-4c0a-9e7d-1f2a3
 
 `200 OK` with the same body as `POST /v1/alarms`, with `"status": "canceled"`. Cancelling an alarm that was already cancelled returns the same response, so retries are safe.
 
+The cancellation only reaches the devices that are registered when you send the request. If a device was unregistered after the alarm was scheduled, the alarm already on that device is not cancelled and still rings; cancel it from the alarm list in the app.
+
 ### Errors
 
 | Status | `error.code` | When |
