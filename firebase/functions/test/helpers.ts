@@ -3,7 +3,7 @@ import { once } from "node:events";
 import type { Express } from "express";
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import type { Message } from "firebase-admin/messaging";
+import type { Message, TokenMessage } from "firebase-admin/messaging";
 import type { AppCheckEnforcementMode } from "../src/lib/appCheck.js";
 import type { Deps } from "../src/lib/deps.js";
 
@@ -45,6 +45,8 @@ export interface TestContext {
   setNow(date: Date): void;
   setAppCheckEnforcementMode(mode: AppCheckEnforcementMode): void;
   failNextPush(): void;
+  /** 次の 1 回の送信で、指定した FCM トークン宛てのメッセージだけを失敗させる (端末別の配送結果の確認用) */
+  failNextPushForToken(fcmToken: string): void;
   throwNextPush(): void;
   /** Firebase Auth にユーザーが存在するかの応答を差し替える (既定は存在する) */
   setAuthUserExists(exists: boolean): void;
@@ -58,6 +60,7 @@ export function createTestContext(uid = "test-uid"): TestContext {
   let now = TEST_NOW;
   let appCheckEnforcementMode: AppCheckEnforcementMode = "enforce";
   let failNext = false;
+  let failNextToken: string | null = null;
   let throwNext = false;
   let authUserExists = true;
   const sentBatches: Message[][] = [];
@@ -72,6 +75,16 @@ export function createTestContext(uid = "test-uid"): TestContext {
       if (failNext) {
         failNext = false;
         return { successCount: 0, failureCount: messages.length, errors: ["messaging/invalid-registration-token"] };
+      }
+      // 本番の sendEach はメッセージごとに成否を返すため、宛先を絞った失敗も同じ形で再現する
+      if (failNextToken !== null) {
+        const failed = messages.filter((message) => (message as TokenMessage).token === failNextToken);
+        failNextToken = null;
+        return {
+          successCount: messages.length - failed.length,
+          failureCount: failed.length,
+          errors: failed.map(() => "messaging/invalid-registration-token"),
+        };
       }
       return { successCount: messages.length, failureCount: 0, errors: [] };
     },
@@ -104,6 +117,9 @@ export function createTestContext(uid = "test-uid"): TestContext {
     },
     failNextPush: () => {
       failNext = true;
+    },
+    failNextPushForToken: (fcmToken) => {
+      failNextToken = fcmToken;
     },
     throwNextPush: () => {
       throwNext = true;
