@@ -4,6 +4,10 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 	<!-- App Check は App Attest の sandbox 環境が発行したトークンを受け付けないため production にする。
 	     TestFlight / App Store 配布ではこの値に関わらず production が使われる -->
 	<key>com.apple.developer.devicecheck.appattest-environment</key>

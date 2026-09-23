@@ -1,8 +1,11 @@
+import AuthenticationServices
+import CryptoKit
 import FirebaseAppCheck
 import FirebaseAuth
 import Foundation
 import Observation
 import os
+import UIKit
 
 /// この端末の配送先 (FCM 登録トークン) をバックエンドへ登録した状態
 enum DeviceRegistrationState: Equatable, Sendable {
@@ -24,15 +27,37 @@ enum PurchaseLinkState: Equatable, Sendable {
     case emulatorBackend
 }
 
-/// 匿名認証で自動作成したアカウントと、この端末の配送先登録をまとめて持つ。
+/// Sign in with Apple の結果から Firebase Auth へ渡す値を取り出せなかった理由
+enum AppleSignInError: LocalizedError {
+    /// Apple の認証情報に identity token が含まれていない
+    case missingIdentityToken
+    /// Apple の認証情報に authorization code が含まれていない (トークンの失効に使う)
+    case missingAuthorizationCode
+    /// ボタンの結果が届いた時に、リクエストへ設定した nonce が残っていない
+    case missingNonce
+
+    var errorDescription: String? {
+        // ja: Apple でのサインインを完了できませんでした
+        String(localized: "Couldn't complete Sign in with Apple")
+    }
+}
+
+/// 匿名認証で自動作成したアカウント (Sign in with Apple でリンク・統合したものを含む) と、この端末の配送先登録をまとめて持つ。
 /// FCM トークンの受信は `AppDelegate`、表示は SwiftUI と入口が分かれるため 1 インスタンス (`shared`) に集約する
 @MainActor
 @Observable
 final class AccountSession {
     static let shared = AccountSession()
 
-    /// 匿名認証で作られたアカウントの uid。未サインインなら nil
+    /// サインイン中のアカウントの uid (匿名、または Sign in with Apple のアカウント)。未サインインなら nil
     private(set) var uid: String?
+    /// サインイン中のアカウントに Apple の認証情報がリンクされているか。
+    /// リンク済みなら別の iPhone から同じ Apple アカウントでサインインして、同じ uid (API トークン・登録端末) を使える
+    private(set) var appleIDLinked = false
+    /// Sign in with Apple の処理中か。ボタンの二重タップを防ぎ、進行中の表示に使う
+    private(set) var appleSignInInProgress = false
+    /// Sign in with Apple (匿名アカウントの統合を含む) に失敗したエラーの説明。成功したら nil に戻す
+    private(set) var appleSignInError: String?
     /// FCM の登録トークン。simulator でも取得できるが、実際の配送には APNs キーの登録が要る
     private(set) var fcmRegistrationToken: String?
     private(set) var deviceRegistration: DeviceRegistrationState = .notRegistered
@@ -49,6 +74,11 @@ final class AccountSession {
     private var apiClient: AlarmifyAPIClient
     /// 実行中・実行待ちの端末登録。登録は同じ device_id を書き換えるため直列に行う
     private var registration: Task<Void, Never>?
+    /// 表示中の Sign in with Apple のリクエストに設定した nonce の原文。Apple へはハッシュを渡し、Firebase Auth へは原文を渡して照合させる
+    private var appleIDRequestNonce: String?
+    /// 既存の Apple アカウントへ切り替えた後、まだバックエンドで統合できていない匿名アカウントの ID トークン。
+    /// 切り替えた後は匿名アカウントの ID トークンを取り直せないため保持し、失敗したら次の signIn (起動・前面復帰) で送り直す
+    private var pendingAnonymousMergeIDToken: String?
 
     /// 既定は保存済みの開発者設定から作る。テストは設定を直接渡して UserDefaults に触れずに組み立てる
     init(settings: DeveloperSettings = DeveloperMenu.settings) {
@@ -65,7 +95,9 @@ final class AccountSession {
                 DeveloperMenu.authenticatedBackend = settings.backend
             }
             uid = user.uid
+            appleIDLinked = Self.hasAppleID(user: user)
             signInError = nil
+            await mergePendingAnonymousAccount()
             await registerDeviceAndLinkPurchases(uid: user.uid)
             return
         }
@@ -75,6 +107,7 @@ final class AccountSession {
             DeveloperMenu.authenticatedBackend = settings.backend
             signedInUid = result.user.uid
             uid = signedInUid
+            appleIDLinked = false
             signInError = nil
         } catch {
             signInError = error.localizedDescription
@@ -82,6 +115,144 @@ final class AccountSession {
             return
         }
         await registerDeviceAndLinkPurchases(uid: signedInUid)
+    }
+
+    // MARK: - Sign in with Apple
+
+    /// Sign in with Apple のボタンが作るリクエストに nonce を設定する。
+    /// nonce は identity token の使い回しを防ぐため Firebase Auth が照合する値で、リクエストのたびに作り直す
+    func prepare(appleIDRequest: ASAuthorizationAppleIDRequest) {
+        let nonce = Self.makeNonce()
+        appleIDRequestNonce = nonce
+        // メールアドレスと氏名は使わないため要求しない (Firebase Auth に保持させず、App Privacy の回答を増やさない。documents/app-privacy.md)
+        appleIDRequest.requestedScopes = []
+        appleIDRequest.nonce = Self.sha256(nonce: nonce)
+    }
+
+    /// Sign in with Apple のボタンの結果でサインインする。
+    /// 匿名アカウントに Apple の認証情報をリンクして uid を維持し、その Apple アカウントが既に別の uid で使われていれば
+    /// Apple 側の uid へ切り替えて、匿名側の端末をバックエンドで移す (API トークンと当月の利用数は Apple 側のものを使う)。
+    /// ユーザーがシートを閉じた時は何もしない
+    func completeSignInWithApple(result: Result<ASAuthorization, Error>) async {
+        let nonce = appleIDRequestNonce
+        appleIDRequestNonce = nil
+        switch result {
+        case .failure(let error):
+            if (error as? ASAuthorizationError)?.code != .canceled {
+                appleSignInError = error.localizedDescription
+                Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
+            }
+        case .success(let authorization):
+            appleSignInInProgress = true
+            defer { appleSignInInProgress = false }
+            do {
+                guard let nonce else { throw AppleSignInError.missingNonce }
+                try await signInWithApple(authorization: authorization, rawNonce: nonce)
+                // 統合の送信に失敗した時は mergePendingAnonymousAccount が設定したエラーを残す
+                if pendingAnonymousMergeIDToken == nil {
+                    appleSignInError = nil
+                }
+            } catch {
+                appleSignInError = error.localizedDescription
+                Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    /// Apple の認証情報を Firebase Auth の認証情報にして、リンク・既存アカウントへの切り替え・そのままのサインインのどれかを行う
+    private func signInWithApple(authorization: ASAuthorization, rawNonce: String) async throws {
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let identityToken = appleIDCredential.identityToken.flatMap({ String(data: $0, encoding: .utf8) })
+        else { throw AppleSignInError.missingIdentityToken }
+        let credential = OAuthProvider.appleCredential(withIDToken: identityToken, rawNonce: rawNonce, fullName: nil)
+        guard let currentUser = Auth.auth().currentUser else {
+            // 匿名認証に失敗したまま (オフラインで起動した等) の状態。統合する匿名アカウントが無いため Apple のアカウントでそのままサインインする
+            let result = try await Auth.auth().signIn(with: credential)
+            DeveloperMenu.authenticatedBackend = settings.backend
+            await switchAccount(uid: result.user.uid)
+            return
+        }
+        do {
+            _ = try await currentUser.link(with: credential)
+            appleIDLinked = true
+        } catch let error as NSError
+            where currentUser.isAnonymous
+            && error.domain == AuthErrorDomain
+            && error.code == AuthErrorCode.credentialAlreadyInUse.rawValue
+        {
+            // この Apple アカウントは別の uid で使われている。identity token は 1 度しか使えないため、Firebase Auth がエラーに添える認証情報でサインインする
+            guard let existingAccountCredential = error.userInfo[AuthErrors.userInfoUpdatedCredentialKey] as? AuthCredential else { throw error }
+            // サインインを切り替えると匿名アカウントの ID トークンを取り直せないため、先に取っておく
+            pendingAnonymousMergeIDToken = try await currentUser.getIDToken()
+            let result = try await Auth.auth().signIn(with: existingAccountCredential)
+            await switchAccount(uid: result.user.uid)
+        }
+    }
+
+    /// Apple のアカウントへ切り替えた後に、統合・端末登録・購入の結び付けをやり直す。
+    /// 購入は RevenueCat の logIn だけでは元の App User ID (匿名アカウントの uid) に残るため、StoreKit の購入を送り直して
+    /// プロジェクトの restore behavior (既定の Transfer to new App User ID) で Apple 側の uid へ移す
+    /// ( https://www.revenuecat.com/docs/projects/restore-behavior )。移った購入は webhook の TRANSFER が users/{uid}.plan に反映する
+    private func switchAccount(uid newUid: String) async {
+        uid = newUid
+        appleIDLinked = true
+        signInError = nil
+        deviceRegistration = .notRegistered
+        await mergePendingAnonymousAccount()
+        await registerDeviceAndLinkPurchases(uid: newUid)
+        if settings.backend == .production {
+            await ProEntitlement.syncPurchases()
+        }
+    }
+
+    /// 切り替える前の匿名アカウントの端末を Apple 側へ移し、匿名アカウントをバックエンドで削除する。
+    /// 送れたか、送り直しても受け付けられない (ID トークンの期限切れ等) ならトークンを捨て、通信エラー等は次の signIn で送り直す。
+    /// サーバー側が冪等なため、何度呼んでも同じ状態になる
+    private func mergePendingAnonymousAccount() async {
+        guard let pendingAnonymousMergeIDToken else { return }
+        do {
+            try await apiClient.mergeAnonymousAccount(anonymousIDToken: pendingAnonymousMergeIDToken)
+            self.pendingAnonymousMergeIDToken = nil
+            appleSignInError = nil
+        } catch let error as AlarmifyAPIError where error.rejectsAnonymousAccountMerge {
+            self.pendingAnonymousMergeIDToken = nil
+            Logger.account.error("Merging the anonymous account was rejected: \(error.localizedDescription)")
+        } catch {
+            // ja: この iPhone の端末情報の移行が完了していません。アプリを開き直すと再試行します
+            appleSignInError = String(localized: "Moving this iPhone to your Apple account isn't finished yet. It retries when you reopen the app.")
+            Logger.account.error("Merging the anonymous account failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// Apple のトークンを失効させる (App Store Review Guideline 5.1.1 (v) の Sign in with Apple を使うアカウントの削除)。
+    /// 失効に使う authorization code は発行から 5 分しか使えないため、削除のたびに Sign in with Apple をやり直して受け取る。
+    /// 交換と失効は Firebase Auth の Apple プロバイダに設定した Team ID / Key ID / 秘密鍵で Firebase が行う
+    private func revokeAppleToken() async throws {
+        // Firebase の revokeToken はサインイン中のユーザーが居ないと完了を呼ばずに終わる (async 版が戻らない) ため、先に確かめる
+        guard Auth.auth().currentUser != nil else { throw AlarmifyAPIError.notSignedIn }
+        let appleIDCredential = try await AppleIDAuthorization().perform()
+        guard let authorizationCode = appleIDCredential.authorizationCode.flatMap({ String(data: $0, encoding: .utf8) }) else {
+            throw AppleSignInError.missingAuthorizationCode
+        }
+        try await Auth.auth().revokeToken(withAuthorizationCode: authorizationCode)
+    }
+
+    /// Firebase Auth のユーザーに Apple の認証情報がリンクされているか
+    private static func hasAppleID(user: User) -> Bool {
+        user.providerData.contains { $0.providerID == AuthProviderID.apple.rawValue }
+    }
+
+    /// Apple が推奨する nonce の作り方 (暗号論的な乱数を 32 バイト)。Firebase のドキュメントの Sign in with Apple の例と同じ長さにする
+    private static func makeNonce() -> String {
+        var bytes = [UInt8](repeating: 0, count: 32)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        precondition(status == errSecSuccess, "SecRandomCopyBytes failed: \(status)")
+        return bytes.map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// リクエストに設定する nonce のハッシュ (SHA-256 の 16 進文字列)。Apple は受け取った値を identity token の nonce にそのまま入れる
+    private static func sha256(nonce: String) -> String {
+        SHA256.hash(data: Data(nonce.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 
     /// 配送先の登録と RevenueCat の identity 連携を並行して行う。
@@ -175,8 +346,18 @@ final class AccountSession {
 
     /// アカウントとサーバー上のデータを削除し、アプリを初回起動と同じ状態 (新しい匿名アカウント) に戻す。
     /// 端末内の AlarmKit のアラームには触れない (公開している削除手順の記載と揃える)。
-    /// サーバーの削除に失敗した場合はサインイン状態を変えずにエラーを投げる (削除できていないアカウントを画面から消さない)
+    /// サーバーの削除に失敗した場合はサインイン状態を変えずにエラーを投げる (削除できていないアカウントを画面から消さない)。
+    /// Apple の認証情報がリンクされていれば、先に Apple のトークンを失効させる。失効できなければ削除に進まずエラーを投げる
+    /// (失効させないまま Firebase のユーザーを消すと、失効させる手段が残らない)。ユーザーが Apple のシートを閉じた時も同じく中断する
     func deleteAccount() async throws {
+        // スタブは Firebase Auth の実アカウントに触れないため、Apple のトークンも失効させない
+        if appleIDLinked, !settings.stubAPIClient {
+            do {
+                try await revokeAppleToken()
+            } catch where Self.isAccountAlreadyGone(error) {
+                // 前回の削除がサーバーで成功して応答だけ失われた後の再試行。失効は削除より先に済ませているため、端末側の状態を揃える処理へ進む
+            }
+        }
         do {
             try await apiClient.deleteAccount()
         } catch where Self.isAccountAlreadyGone(error) {
@@ -189,6 +370,7 @@ final class AccountSession {
         try Auth.auth().signOut()
         DeveloperMenu.authenticatedBackend = nil
         uid = nil
+        appleIDLinked = false
         deviceRegistration = .notRegistered
         await signIn()
     }
@@ -249,5 +431,63 @@ final class AccountSession {
                 }
             }
         )
+    }
+}
+
+/// ボタンを介さずに Sign in with Apple のシートを出し、Apple の認証情報を async で受け取る 1 回分のリクエスト。
+/// ASAuthorizationController は結果を delegate で返すため class にする。呼び出し側の `perform()` の await が
+/// このインスタンスを保持し、インスタンスがコントローラーを保持するため、結果が届くまで解放されない
+@MainActor
+private final class AppleIDAuthorization: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    /// 表示中のコントローラー。delegate の呼び出しが終わるまで保持する
+    private var controller: ASAuthorizationController?
+    /// `perform()` の呼び出し元へ結果を返す continuation
+    private var continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
+
+    /// Sign in with Apple のシートを出し、ユーザーが認証するかシートを閉じるまで待つ
+    func perform() async throws -> ASAuthorizationAppleIDCredential {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        // トークンの失効に使う authorization code だけが要るため、メールアドレスと氏名は要求しない
+        request.requestedScopes = []
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        self.controller = controller
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            controller.performRequests()
+        }
+    }
+
+    /// Apple ID 以外の認証情報 (パスワード等) は要求していないため届かないが、届いた時も continuation を再開して呼び出し元を待たせない
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            finish(result: .success(appleIDCredential))
+        } else {
+            finish(result: .failure(AppleSignInError.missingAuthorizationCode))
+        }
+    }
+
+    /// シートを閉じた時は ASAuthorizationError.canceled が届き、呼び出し元が削除の中断として扱う
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        finish(result: .failure(error))
+    }
+
+    /// シートを出す先。前面のウィンドウを使う
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        if let keyWindow = windowScenes.flatMap(\.windows).first(where: \.isKeyWindow) {
+            return keyWindow
+        }
+        // 設定画面の操作から呼ぶため、画面を持つシーンは必ずある
+        guard let windowScene = windowScenes.first else { preconditionFailure("No window scene to present Sign in with Apple") }
+        return ASPresentationAnchor(windowScene: windowScene)
+    }
+
+    /// continuation は 1 度しか再開できないため、取り出してから再開する
+    private func finish(result: Result<ASAuthorizationAppleIDCredential, Error>) {
+        continuation?.resume(with: result)
+        continuation = nil
+        controller = nil
     }
 }

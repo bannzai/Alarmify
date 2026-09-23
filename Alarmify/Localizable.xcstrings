@@ -3980,6 +3980,16 @@
         }
       }
     },
+    "Apple Account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple アカウント"
+          }
+        }
+      }
+    },
     "Apply" : {
       "localizations" : {
         "ar" : {
@@ -6848,6 +6858,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "複製 Token"
+          }
+        }
+      }
+    },
+    "Couldn't complete Sign in with Apple" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple でのサインインを完了できませんでした"
           }
         }
       }
@@ -12184,6 +12204,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "もっと多くのサービスと すべてのアラームの記録を"
+          }
+        }
+      }
+    },
+    "Moving this iPhone to your Apple account isn't finished yet. It retries when you reopen the app." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この iPhone の端末情報の移行が完了していません。アプリを開き直すと再試行します"
           }
         }
       }
@@ -21134,6 +21164,16 @@
         }
       }
     },
+    "Sign in to use the same API token on multiple iPhones or to move to a new iPhone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複数の iPhone で同じ API トークンを使う時や機種変更で引き継ぐ時にサインインします"
+          }
+        }
+      }
+    },
     "Signalarm" : {
       "shouldTranslate" : false
     },
@@ -21153,6 +21193,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Signalarm のお問い合わせ"
+          }
+        }
+      }
+    },
+    "Signed in" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインイン済み"
           }
         }
       }

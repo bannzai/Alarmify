@@ -120,6 +120,30 @@ final class AlarmifyAPIClientTests: XCTestCase {
         try await makeClient().registerDevice(fcmRegistrationToken: "fcm-token")
     }
 
+    /// 統合先は Authorization の ID トークン (Apple 側)、統合元は本文の匿名アカウントの ID トークンで伝える
+    func testMergeAnonymousAccountSendsTheAnonymousIDTokenInTheBody() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/account/merge")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer id-token")
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            XCTAssertEqual(body, ["anonymous_id_token": "anonymous-id-token"])
+            return (200, Data(#"{"moved_devices":1}"#.utf8))
+        }
+
+        try await makeClient().mergeAnonymousAccount(anonymousIDToken: "anonymous-id-token")
+    }
+
+    /// 送り直しても通らない統合の拒否だけを止め、通信エラー等は次の起動で送り直せるよう区別する
+    func testRejectedAnonymousAccountMergeIsRecognizedFromTheErrorCode() {
+        for code in ["invalid_anonymous_id_token", "merge_target_anonymous", "account_deleted", "invalid_argument"] {
+            XCTAssertTrue(AlarmifyAPIError.server(statusCode: 400, code: code, message: "").rejectsAnonymousAccountMerge, code)
+        }
+        XCTAssertFalse(AlarmifyAPIError.server(statusCode: 404, code: "not_found", message: "").rejectsAnonymousAccountMerge)
+        XCTAssertFalse(AlarmifyAPIError.server(statusCode: 503, code: nil, message: "").rejectsAnonymousAccountMerge)
+        XCTAssertFalse(AlarmifyAPIError.notSignedIn.rejectsAnonymousAccountMerge)
+    }
+
     func testRevokeUsesTheTokenIdInThePath() async throws {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "DELETE")

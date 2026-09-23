@@ -36,6 +36,19 @@ enum AlarmifyAPIError: Error, Equatable, LocalizedError {
         return false
     }
 
+    /// 匿名アカウントの統合 (`POST /v1/account/merge`) をサーバーが受け付けない応答のコード。
+    /// 統合元の ID トークンが期限切れ・匿名でない (`invalid_anonymous_id_token`)、統合先が匿名 (`merge_target_anonymous`)、
+    /// 統合先が削除処理中 (`account_deleted`)、内容がスキーマに合わない (`invalid_argument`)
+    static let anonymousAccountMergeRejectedCodes: Set<String> = ["invalid_anonymous_id_token", "merge_target_anonymous", "account_deleted", "invalid_argument"]
+
+    /// 匿名アカウントの統合を送り直しても受け付けられない応答かどうか。送り直しを止めてよい判定に使う
+    var rejectsAnonymousAccountMerge: Bool {
+        if case .server(_, let code?, _) = self {
+            return Self.anonymousAccountMergeRejectedCodes.contains(code)
+        }
+        return false
+    }
+
     var errorDescription: String? {
         switch self {
         case .notSignedIn:
