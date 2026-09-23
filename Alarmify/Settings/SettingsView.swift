@@ -350,6 +350,8 @@ struct SettingsView: View {
                     Task { await session.completeSignInWithApple(result: result) }
                 }
                 .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+                // SignInWithAppleButton は表示した後にスタイルが変わっても描き直さない (simtunnel で外観を切り替えて確認) ため、外観ごとに作り直す
+                .id(colorScheme)
                 .frame(height: 44)
                 .disabled(session.uid == nil || session.appleSignInInProgress || session.accountDeletionInProgress)
                 .accessibilityIdentifier("settings_sign_in_with_apple")
