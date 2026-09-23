@@ -875,6 +875,121 @@ describe("外部サービス向け API", () => {
   });
 });
 
+describe("プラン別の配送先端末", () => {
+  /**
+   * 2 台を登録順が分かる形で用意する。
+   * createdAt は deps.now() で決まるため、時刻を進めて同着にせず、
+   * device_id の辞書順と登録順が逆になる名前にして「登録順で選んでいるか」を確かめられるようにする
+   */
+  async function registerTwoDevices(): Promise<void> {
+    await registerDevice("device-b", "fcm-token-first");
+    context.setNow(new Date(TEST_NOW.getTime() + 1000));
+    await registerDevice("device-a", "fcm-token-second");
+    context.setNow(TEST_NOW);
+  }
+
+  /** batchIndex 回目の送信が、どの端末の FCM トークンへ宛てられたかを送った順に返す */
+  function sentTokens(batchIndex: number): string[] {
+    return context.sentBatches[batchIndex].map((message) => (message as TokenMessage).token);
+  }
+
+  it("無料プランは 2 台登録していても最初に登録した 1 台だけへ配送する", async () => {
+    await registerTwoDevices();
+    const issued = await issueApiToken();
+
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
+    expect(response.body.delivery).toEqual({ success_count: 1, failure_count: 0 });
+    expect(sentTokens(0)).toEqual(["fcm-token-first"]);
+
+    // 2 台目以降の端末登録自体は受け付けたまま (登録は拒否せず配送先だけを絞る)
+    const devices = await request(appApi)
+      .get("/v1/devices")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .expect(200);
+    expect(devices.body.devices.map((device: { device_id: string }) => device.device_id)).toEqual([
+      "device-b",
+      "device-a",
+    ]);
+  });
+
+  it("pro プランは登録済みの全端末へ配送する", async () => {
+    await registerTwoDevices();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
+
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
+    expect(response.body.delivery).toEqual({ success_count: 2, failure_count: 0 });
+    expect(sentTokens(0)).toEqual(["fcm-token-first", "fcm-token-second"]);
+  });
+
+  it("pro の失効日時を過ぎていれば、plan が pro のままでも最初の 1 台だけへ配送する", async () => {
+    await registerTwoDevices();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({
+      plan: "pro",
+      proExpiresAt: Timestamp.fromMillis(TEST_NOW.getTime() - 1),
+    });
+
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    expect(response.body.delivery).toEqual({ success_count: 1, failure_count: 0 });
+    expect(sentTokens(0)).toEqual(["fcm-token-first"]);
+  });
+
+  it("2 台のうち 1 台だけ失敗した配送を、全台成功として報告しない", async () => {
+    await registerTwoDevices();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
+    context.failNextPushForToken("fcm-token-second");
+
+    const response = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT) })
+      .expect(201);
+    expect(response.body.delivery).toEqual({ success_count: 1, failure_count: 1 });
+
+    const stored = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.alarms)
+      .doc(response.body.id)
+      .get();
+    expect(stored.get("delivery").failureCount).toBe(1);
+    expect(stored.get("delivery").errors).toEqual(["messaging/invalid-registration-token"]);
+  });
+
+  it("取り消しは取り消し時点の配送先へ届ける (pro で登録した後に失効すると 1 台だけになる)", async () => {
+    await registerTwoDevices();
+    const issued = await issueApiToken();
+    await userRef(context.deps.firestore, context.uid).update({ plan: "pro", proExpiresAt: null });
+    const created = await request(externalApi)
+      .post("/v1/alarms")
+      .set("authorization", `Bearer ${issued.token}`)
+      .send({ fire_at: toIso8601Seconds(FIRE_AT), title: "Deploy finished" })
+      .expect(201);
+    expect(sentTokens(0)).toEqual(["fcm-token-first", "fcm-token-second"]);
+
+    await userRef(context.deps.firestore, context.uid).update({ plan: "free" });
+    const canceled = await request(externalApi)
+      .delete(`/v1/alarms/${created.body.id}`)
+      .set("authorization", `Bearer ${issued.token}`)
+      .expect(200);
+    expect(canceled.body.delivery).toEqual({ success_count: 1, failure_count: 0 });
+    expect(sentTokens(1)).toEqual(["fcm-token-first"]);
+  });
+});
+
 describe("アラーム履歴", () => {
   it("アプリ向け API から新しい順に取得できる", async () => {
     await registerDevice();

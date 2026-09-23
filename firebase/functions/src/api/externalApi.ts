@@ -8,6 +8,7 @@ import { effectivePlan, monthKey, planLimits } from "../lib/plan.js";
 import { alarmActionOf, buildAlarmMessage, type PushResult } from "../lib/push.js";
 import { createRateLimiter, createRecentKeys, type RateLimit } from "../lib/rateLimit.js";
 import {
+  currentPlan,
   expiresAfter,
   expiresAtOf,
   findUserByApiToken,
@@ -22,6 +23,7 @@ import {
   userSchema,
   type Alarm,
   type AlarmStatus,
+  type Plan,
 } from "../schema/index.js";
 
 /**
@@ -117,6 +119,15 @@ function authenticate(deps: Deps, options: Required<ExternalApiOptions>) {
       .update({ lastUsedAt: Timestamp.fromDate(deps.now()) });
     next();
   };
+}
+
+/**
+ * そのプランで配送先にする端末。
+ * listDevices は登録順 (createdAt の昇順) で返すため、無料プランでは最初に登録された 1 台だけが残る。
+ * 配送先を選ぶ設定は設けず、登録の古い順で決める (Issue #90 の商品設計)
+ */
+function deliveryTargets(devices: RegisteredDevice[], plan: Plan): RegisteredDevice[] {
+  return devices.slice(0, planLimits[plan].deliveryDevices);
 }
 
 /**
@@ -306,13 +317,17 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
     const alarmRef = userDocRef.collection(collections.alarms).doc(alarmId);
 
     // 月間上限の判定と書き込みを同じトランザクションで行う。
-    // 上限を消費しないのは「同じ内容の再送」だけで、内容が変わる再スケジュールと取り消しからの再登録は消費する
-    const created = await deps.firestore.runTransaction(async (transaction) => {
+    // 上限を消費しないのは「同じ内容の再送」だけで、内容が変わる再スケジュールと取り消しからの再登録は消費する。
+    // 配送先の判定に使うプランも、月間上限と同じスナップショットから決めて読み直さない
+    const { created, plan } = await deps.firestore.runTransaction(async (transaction) => {
       const userSnapshot = await transaction.get(userDocRef);
       if (!userSnapshot.exists) {
         throw new ApiError(404, "not_found", "ユーザーが見つかりません");
       }
       const alarmSnapshot = await transaction.get(alarmRef);
+      const user = userSchema.parse(userSnapshot.data());
+      // pro は失効日時を過ぎていない間だけ (失効の webhook が遅れても上限を解除したままにしない)
+      const plan = effectivePlan(user, now);
       // 別のトークンからの同じ内容は、そのトークンによる新しい登録として扱う (出どころと上限の付け替え)
       const isSameRequest =
         alarmSnapshot.exists &&
@@ -321,15 +336,12 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         (alarmSnapshot.get("fireAt") as Timestamp).toMillis() === fireAt.getTime() &&
         (((alarmSnapshot.get("title") as string | null) ?? null) === title);
       if (isSameRequest) {
-        return false;
+        return { created: false, plan };
       }
 
-      const user = userSchema.parse(userSnapshot.data());
       const currentMonth = monthKey(now);
       const used =
         user.monthlyUsage.month === currentMonth ? user.monthlyUsage.scheduledAlarmCount : 0;
-      // pro は失効日時を過ぎていない間だけ (失効の webhook が遅れても上限を解除したままにしない)
-      const plan = effectivePlan(user, now);
       const limit = planLimits[plan].alarmsPerMonth;
       if (used >= limit) {
         throw new ApiError(
@@ -358,7 +370,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
           // 直後の recordDelivery が失敗した時に、前の push の成否で新しい登録が説明されるのを防ぐ
           delivery: { sentAt: null, successCount: 0, failureCount: 0, errors: [] },
         });
-        return false;
+        return { created: false, plan };
       }
       const alarm: Alarm = {
         title,
@@ -372,7 +384,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
         deviceReports: {},
       };
       transaction.set(alarmRef, alarm);
-      return true;
+      return { created: true, plan };
     });
 
     const state = await currentAlarmState(deps, uid, alarmId, {
@@ -384,7 +396,7 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       deps,
       uid,
       alarmId,
-      devices,
+      deliveryTargets(devices, plan),
       state,
     );
     await recordDelivery(deps, uid, alarmId, delivery);
@@ -420,11 +432,16 @@ export function createExternalApi(deps: Deps, options: ExternalApiOptions = {}):
       fireAt: (snapshot.get("fireAt") as Timestamp).toDate(),
       title: (snapshot.get("title") as string | null) ?? null,
     });
+    // 取り消しは取り消し時点の配送先へ届ける。登録時の配送先は記録しておらず、
+    // 登録から取り消しまでの間にプランが変わっていれば、変わった後のプランで決まる
     const { state: deliveredState, delivery } = await deliverCurrentState(
       deps,
       uid,
       alarmId,
-      await listDevices(deps.firestore, uid),
+      deliveryTargets(
+        await listDevices(deps.firestore, uid),
+        await currentPlan(deps.firestore, uid, now),
+      ),
       state,
     );
     await recordDelivery(deps, uid, alarmId, delivery);

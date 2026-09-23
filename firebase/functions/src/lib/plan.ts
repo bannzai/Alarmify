@@ -8,6 +8,8 @@ export interface PlanLimits {
   alarmsPerMonth: number;
   /** GET /v1/alarms で返す履歴の件数の上限 */
   alarmHistory: number;
+  /** 1 回のアラームを配送する端末の数。登録済みの端末を登録順に数えて、この数までへ送る */
+  deliveryDevices: number;
 }
 
 /** プランごとの上限。plan の更新は RevenueCat の webhook (api/revenueCatWebhook.ts) が行う */
@@ -15,12 +17,15 @@ export const planLimits: Record<Plan, PlanLimits> = {
   // alarmHistory の 3 件は「直近の Webhook が届いたか」を確かめられる最小の件数。
   // 履歴は Pro の機能 (documents/PROJECT.md「コア体験」4) のため、無料では機能の存在が分かる程度に留める
   // 月間上限は Issue #90 の商品設計。Pro を月 1000 件・3 台で使い切る原価の試算は約 $0.10。
+  // 複数端末への配送は同じ商品設計で Pro の特典としたため、無料は受信端末 1 台に絞る。
+  // Pro の上限は登録できる端末数 (MAX_DEVICES_PER_USER) で頭打ちになるため、プラン側では設けない。
   // https://github.com/bannzai/Alarmify/issues/90#issuecomment-5651147821
-  free: { apiTokens: 1, alarmsPerMonth: 50, alarmHistory: 3 },
+  free: { apiTokens: 1, alarmsPerMonth: 50, alarmHistory: 3, deliveryDevices: 1 },
   pro: {
     apiTokens: Number.POSITIVE_INFINITY,
     alarmsPerMonth: 1000,
     alarmHistory: Number.POSITIVE_INFINITY,
+    deliveryDevices: Number.POSITIVE_INFINITY,
   },
 };
 

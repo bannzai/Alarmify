@@ -1,13 +1,13 @@
 import type { DocumentData, DocumentReference, Firestore } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { hashApiToken, hashEquals } from "./apiToken.js";
-import { monthKey } from "./plan.js";
-import { collections, type User } from "../schema/index.js";
+import { effectivePlan, monthKey } from "./plan.js";
+import { collections, userSchema, type Plan, type User } from "../schema/index.js";
 
 /** アラーム要求の保持期間。expiresAt を過ぎたものは Firestore の TTL ポリシーが削除する (ADR 0008) */
 export const ALARM_RETENTION_DAYS = 30;
 
-/** 1 ユーザーが登録できる端末数の上限。配送はここまでの全端末に行う */
+/** 1 ユーザーが登録できる端末数の上限。Pro の配送はここまでの全端末に行う (無料は planLimits.deliveryDevices で 1 台に絞る) */
 export const MAX_DEVICES_PER_USER = 20;
 
 export function userRef(firestore: Firestore, uid: string): DocumentReference<DocumentData> {
@@ -27,6 +27,12 @@ export function newUserDocument(now: Date): User {
     createdAt: timestamp,
     updatedAt: timestamp,
   };
+}
+
+/** 今この瞬間に適用するプラン。ユーザードキュメントが無ければ free (端末登録や課金より前に呼ばれた場合) */
+export async function currentPlan(firestore: Firestore, uid: string, now: Date): Promise<Plan> {
+  const snapshot = await userRef(firestore, uid).get();
+  return snapshot.exists ? effectivePlan(userSchema.parse(snapshot.data()), now) : "free";
 }
 
 /** 基準時刻から保持期間が経過した時刻 */
