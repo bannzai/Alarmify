@@ -77,8 +77,12 @@ final class AccountSession {
     /// 表示中の Sign in with Apple のリクエストに設定した nonce の原文。Apple へはハッシュを渡し、Firebase Auth へは原文を渡して照合させる
     private var appleIDRequestNonce: String?
     /// 既存の Apple アカウントへ切り替えた後、まだバックエンドで統合できていない匿名アカウントの ID トークン。
-    /// 切り替えた後は匿名アカウントの ID トークンを取り直せないため保持し、失敗したら次の signIn (起動・前面復帰) で送り直す
-    private var pendingAnonymousMergeIDToken: String?
+    /// 切り替えた後は匿名アカウントの ID トークンを取り直せないため保持し、失敗したら次の signIn (起動・前面復帰) で送り直す。
+    /// アプリが終了しても送り直せるよう keychain に保存する
+    private var pendingAnonymousMergeIDToken: String? {
+        get { PendingAnonymousMergeIDTokenStore.load() }
+        set { PendingAnonymousMergeIDTokenStore.save(newValue) }
+    }
 
     /// 既定は保存済みの開発者設定から作る。テストは設定を直接渡して UserDefaults に触れずに組み立てる
     init(settings: DeveloperSettings = DeveloperMenu.settings) {
@@ -99,6 +103,7 @@ final class AccountSession {
             signInError = nil
             await mergePendingAnonymousAccount()
             await registerDeviceAndLinkPurchases(uid: user.uid)
+            await syncPendingPurchases(uid: user.uid)
             return
         }
         let signedInUid: String
@@ -198,11 +203,24 @@ final class AccountSession {
         appleIDLinked = true
         signInError = nil
         deviceRegistration = .notRegistered
+        UserDefaults.standard.set(newUid, forKey: .pendingPurchaseSyncAppUserID)
         await mergePendingAnonymousAccount()
         await registerDeviceAndLinkPurchases(uid: newUid)
-        if settings.backend == .production {
-            await ProEntitlement.syncPurchases()
+        await syncPendingPurchases(uid: newUid)
+    }
+
+    /// アカウントを切り替えた後の購入の送り直しが済んでいなければ行う。送り直せたら記録を消し、失敗したら次の signIn (起動・前面復帰) でやり直す。
+    /// RevenueCat の logIn は失敗を内部で握りつぶすため、今の App User ID がこの uid になったことを確かめてから送る
+    /// (前の uid のまま送ると、購入が切り替え先へ移らない)。何度呼んでも、送り直しが済んだ状態に収束する
+    private func syncPendingPurchases(uid: String) async {
+        guard UserDefaults.standard.string(forKey: .pendingPurchaseSyncAppUserID) == uid else { return }
+        // エミュレータ向けのアカウントは RevenueCat に結び付けない (linkPurchases) ため、送り直す先が無い
+        guard settings.backend == .production else {
+            UserDefaults.standard.removeObject(forKey: .pendingPurchaseSyncAppUserID)
+            return
         }
+        guard ProEntitlement.isLoggedIn(as: uid), await ProEntitlement.syncPurchases() else { return }
+        UserDefaults.standard.removeObject(forKey: .pendingPurchaseSyncAppUserID)
     }
 
     /// 切り替える前の匿名アカウントの端末を Apple 側へ移し、匿名アカウントをバックエンドで削除する。
@@ -371,6 +389,9 @@ final class AccountSession {
         DeveloperMenu.authenticatedBackend = nil
         uid = nil
         appleIDLinked = false
+        // 削除したアカウントへの切り替えの後処理は、送っても意味が無いため残さない
+        pendingAnonymousMergeIDToken = nil
+        UserDefaults.standard.removeObject(forKey: .pendingPurchaseSyncAppUserID)
         deviceRegistration = .notRegistered
         await signIn()
     }
@@ -489,5 +510,43 @@ private final class AppleIDAuthorization: NSObject, ASAuthorizationControllerDel
         continuation?.resume(with: result)
         continuation = nil
         controller = nil
+    }
+}
+
+/// 未完了の匿名アカウントの統合に使う ID トークンの保存先 (keychain)。
+/// ID トークンは有効期間 (1 時間) の間は匿名アカウントへのアクセス権になるため、UserDefaults ではなく keychain に置き、この端末からだけ読めるようにする
+enum PendingAnonymousMergeIDTokenStore {
+    /// keychain の項目を識別する kSecAttrService。bundle id を接頭辞にして他の項目と衝突させない
+    static let service = "com.bannzai.Alarmify.pendingAnonymousMergeIDToken"
+
+    /// 保存済みの ID トークン。無い・読めない時は nil
+    static func load() -> String? {
+        var item: CFTypeRef?
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let data = item as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    /// ID トークンを保存する。nil なら消す。既存の項目を消してから追加するため、何度呼んでも最後の値だけが残る
+    static func save(_ idToken: String?) {
+        let baseQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+        ]
+        SecItemDelete(baseQuery as CFDictionary)
+        guard let idToken else { return }
+        var attributes = baseQuery
+        attributes[kSecValueData as String] = Data(idToken.utf8)
+        // 起動直後の前面復帰 (ロック解除後) で読めればよく、バックアップや他の端末へ移す必要は無い
+        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let status = SecItemAdd(attributes as CFDictionary, nil)
+        if status != errSecSuccess {
+            Logger.account.error("Saving the pending anonymous merge token failed: \(status)")
+        }
     }
 }

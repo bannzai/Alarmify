@@ -94,6 +94,19 @@ final class AccountDeletionTests: XCTestCase {
         XCTAssertTrue(tokens.isEmpty)
     }
 
+    /// 未完了の匿名アカウントの統合は、アプリが終了しても次の起動で送り直せるよう keychain に残り、nil で消える
+    func testPendingAnonymousMergeIDTokenSurvivesUntilCleared() {
+        PendingAnonymousMergeIDTokenStore.save(nil)
+        XCTAssertNil(PendingAnonymousMergeIDTokenStore.load())
+
+        PendingAnonymousMergeIDTokenStore.save("anonymous-id-token-1")
+        PendingAnonymousMergeIDTokenStore.save("anonymous-id-token-2")
+        XCTAssertEqual(PendingAnonymousMergeIDTokenStore.load(), "anonymous-id-token-2")
+
+        PendingAnonymousMergeIDTokenStore.save(nil)
+        XCTAssertNil(PendingAnonymousMergeIDTokenStore.load())
+    }
+
     /// 削除手順のページは ja 版と en 版しか公開していないため、日本語以外の表示言語では英語版へ寄せる
     /// (Localizable.xcstrings で言語別に URL を持つと、翻訳した言語ぶんの存在しないページへのリンクになる。PR #43 の Codex 指摘)
     func testAccountDeletionGuideFallsBackToEnglishForUnsupportedLanguages() {
