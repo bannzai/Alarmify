@@ -15,13 +15,13 @@ App Store Connect の「App のプライバシー」への回答内容と、そ�
 
 | category | purposes | data_protections | 実体 | 根拠 |
 |---|---|---|---|---|
-| USER_ID (ユーザー ID) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | Firebase Auth の匿名 uid、API トークン (ハッシュ) | アカウントと API トークンの認証に必須。uid に紐づくため「ユーザーに紐付く」 |
+| USER_ID (ユーザー ID) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | Firebase Auth の uid (匿名、または Sign in with Apple)、Sign in with Apple のユーザー識別子、API トークン (ハッシュ) | アカウントと API トークンの認証に必須。uid に紐づくため「ユーザーに紐付く」 |
 | DEVICE_ID (デバイス ID) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | APNs デバイストークン (FCM 登録トークン)、端末種別・OS・アプリのバージョン、App Check トークン (App Attest) | push の配送先。`users/{uid}/devices` に保存するため「ユーザーに紐付く」 |
 | OTHER_USER_CONTENT (その他のユーザーコンテンツ) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | 外部サービスから送られたアラームのタイトル・日時・送信元。30 日で削除 | 配送と履歴表示 (Pro) のためサーバーに保存する |
 | PURCHASE_HISTORY (購入履歴) | ANALYTICS, APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | RevenueCat SDK が購入・購読情報を RevenueCat サーバーへ送信する。`Purchases.logIn` で Firebase Auth の uid を App User ID にしている (`Alarmify/Features/Purchase/ProEntitlement.swift`) | RevenueCat 公式は匿名 App User ID で個人を識別できない場合に DATA_NOT_LINKED_TO_YOU を選べると説明する ( https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy ) だが、uid で識別できるアカウントに購入履歴が紐づくため「ユーザーに紐付く」。RevenueCat の webhook がこの uid で `users/{uid}.plan` を更新する (#19) |
 | OTHER_DIAGNOSTIC_DATA (その他の診断データ) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | アラーム登録・取消の反映結果、失敗時のエラー、反映日時 | `AlarmApplyReportQueue` に保存した結果を `AlarmifyAPIClient.reportAlarmApply` が送信し、サーバーはユーザーのアラームに端末別の結果を保存する。履歴に登録の成否を表示するために用いる |
 
-Sign in with Apple を実装した時点で、Apple から受け取るメールアドレス (中継アドレスを含む) を Firebase Auth が保持するため EMAIL_ADDRESS (APP_FUNCTIONALITY / DATA_LINKED_TO_YOU) を追加する。
+Sign in with Apple はメールアドレスと氏名のスコープを要求しない (`AccountSession.prepare(appleIDRequest:)` の `requestedScopes = []`)。Apple の identity token にメールアドレスが載らず Firebase Auth も保持しないため、EMAIL_ADDRESS と NAME は収集しない。Firebase Auth が保持する Apple のユーザー識別子は USER_ID に含める。スコープを要求するよう変えた時は EMAIL_ADDRESS (APP_FUNCTIONALITY / DATA_LINKED_TO_YOU) を追加する。
 
 ## 収集しないデータ
 
