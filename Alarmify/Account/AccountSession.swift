@@ -37,10 +37,12 @@ enum AppleSignInError: LocalizedError {
     case missingNonce
     /// Sign in with Apple かアカウント削除の処理中で、もう片方を始められない
     case accountOperationInProgress
+    /// Apple のシートがキャンセル以外のエラーで終わった (端末が Apple アカウントにサインインしていない等)
+    case authorizationFailed
 
     var errorDescription: String? {
         switch self {
-        case .missingIdentityToken, .missingAuthorizationCode, .missingNonce:
+        case .missingIdentityToken, .missingAuthorizationCode, .missingNonce, .authorizationFailed:
             // ja: Apple でのサインインを完了できませんでした
             String(localized: "Couldn't complete Sign in with Apple")
         case .accountOperationInProgress:
@@ -154,7 +156,9 @@ final class AccountSession {
         switch result {
         case .failure(let error):
             if (error as? ASAuthorizationError)?.code != .canceled {
-                appleSignInError = error.localizedDescription
+                // AuthenticationServices のエラーの説明は「com.apple.AuthenticationServices.AuthorizationError error 1000」のような
+                // 内部表現になる (端末が Apple アカウントにサインインしていないまま閉じた時等) ため、画面には一般的な文言を出して原文はログに残す
+                appleSignInError = AppleSignInError.authorizationFailed.localizedDescription
                 Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
             }
         case .success(let authorization):
