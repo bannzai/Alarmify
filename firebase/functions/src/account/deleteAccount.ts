@@ -203,6 +203,22 @@ export async function authUserExists(auth: AccountDeletionDeps["auth"], uid: str
   }
 }
 
+/**
+ * Firebase Auth のユーザーに今リンクされているプロバイダの ID (匿名ユーザーは空配列)。ユーザーが存在しなければ null。
+ * ID トークンの sign_in_provider は発行時点の値で、その後に同じ uid へ Apple をリンクしても有効期限までは変わらないため、
+ * 匿名アカウントの統合が統合元の現在の状態を確かめるのに使う
+ */
+export async function authUserProviderIds(auth: Pick<Auth, "getUser">, uid: string): Promise<string[] | null> {
+  try {
+    return (await auth.getUser(uid)).providerData.map((provider) => provider.providerId);
+  } catch (error) {
+    if (isUserNotFound(error)) {
+      return null;
+    }
+    throw error;
+  }
+}
+
 function isUserNotFound(error: unknown): boolean {
   return typeof error === "object" && error !== null && (error as { code?: string }).code === "auth/user-not-found";
 }

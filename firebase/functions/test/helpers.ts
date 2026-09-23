@@ -59,6 +59,8 @@ export interface TestContext {
   setSignInProvider(signInProvider: string): void;
   /** deleteUserAccount が Firebase Auth から削除した uid (呼び出し順) */
   deletedAuthUids: string[];
+  /** ANONYMOUS_UID のユーザーに今リンクされているプロバイダを差し替える (既定は匿名のまま = 空配列) */
+  setAnonymousUserProviderIds(providerIds: string[]): void;
 }
 
 /**
@@ -76,6 +78,7 @@ export function createTestContext(uid = "test-uid"): TestContext {
   let signInProvider = "anonymous";
   const sentBatches: Message[][] = [];
   const deletedAuthUids: string[] = [];
+  let anonymousUserProviderIds: string[] = [];
   const firestore = testFirestore();
   const deps: Deps = {
     firestore,
@@ -118,6 +121,8 @@ export function createTestContext(uid = "test-uid"): TestContext {
     },
     appCheckEnforcementMode: () => appCheckEnforcementMode,
     authUserExists: async () => authUserExists,
+    // ANONYMOUS_UID 以外は、統合元として渡すテストが無いため Apple をリンク済みとして返す
+    authUserProviderIds: async (targetUid) => (targetUid === ANONYMOUS_UID ? anonymousUserProviderIds : ["apple.com"]),
     // Firestore 側の削除は本物を通し、Auth のユーザーの削除だけを記録に置き換える (Auth エミュレータのユーザーを用意しなくて済むようにする)
     deleteUserAccount: (targetUid) =>
       deleteUserAccount(
@@ -163,6 +168,9 @@ export function createTestContext(uid = "test-uid"): TestContext {
       signInProvider = provider;
     },
     deletedAuthUids,
+    setAnonymousUserProviderIds: (providerIds) => {
+      anonymousUserProviderIds = providerIds;
+    },
   };
 }
 

@@ -2,6 +2,7 @@ import { getAuth, type Auth } from "firebase-admin/auth";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  authUserProviderIds,
   DELETION_MARKER_MINIMUM_AGE_MS,
   deleteUserAccount,
   handleDeleteAccount,
@@ -118,6 +119,17 @@ describe("アカウント削除", () => {
     expect(await remainingDocumentCount(uid)).toBe(0);
     expect(await authUserExists(uid)).toBe(false);
     expect((await marker(uid).get()).exists).toBe(true);
+  });
+
+  it("リンク中のプロバイダは匿名なら空、Apple をリンクした後はその ID、ユーザーが無ければ null を返す", async () => {
+    const uid = await signUpAnonymously();
+    expect(await authUserProviderIds(auth, uid)).toEqual([]);
+
+    await auth.updateUser(uid, { providerToLink: { providerId: "apple.com", uid: "apple-user-identifier" } });
+    expect(await authUserProviderIds(auth, uid)).toEqual(["apple.com"]);
+
+    await auth.deleteUser(uid);
+    expect(await authUserProviderIds(auth, uid)).toBeNull();
   });
 
   it("削除済みの uid で再実行しても成功する (冪等)", async () => {

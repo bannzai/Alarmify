@@ -252,6 +252,13 @@ export function createAppApi(deps: Deps): Express {
     if (anonymous.uid === uid) {
       throw new ApiError(400, "invalid_anonymous_id_token", "統合元と統合先が同じアカウントです");
     }
+    // ID トークンの sign_in_provider は発行時点の値のため、発行後に Apple をリンクした uid のトークンも anonymous のまま通る。
+    // 今もプロバイダがリンクされていないことを確かめ、識別済みのアカウントを統合元にさせない。
+    // ユーザーが既に無い (前回の統合で削除済み) 時は、移す端末が無いだけなので続ける
+    const anonymousProviderIds = await deps.authUserProviderIds(anonymous.uid);
+    if (anonymousProviderIds !== null && anonymousProviderIds.length > 0) {
+      throw new ApiError(400, "invalid_anonymous_id_token", "統合元は匿名アカウントに限ります");
+    }
     const now = deps.now();
     const userDocRef = userRef(deps.firestore, uid);
     const devicesRef = userDocRef.collection(collections.devices);

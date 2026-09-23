@@ -35,10 +35,18 @@ enum AppleSignInError: LocalizedError {
     case missingAuthorizationCode
     /// ボタンの結果が届いた時に、リクエストへ設定した nonce が残っていない
     case missingNonce
+    /// Sign in with Apple かアカウント削除の処理中で、もう片方を始められない
+    case accountOperationInProgress
 
     var errorDescription: String? {
-        // ja: Apple でのサインインを完了できませんでした
-        String(localized: "Couldn't complete Sign in with Apple")
+        switch self {
+        case .missingIdentityToken, .missingAuthorizationCode, .missingNonce:
+            // ja: Apple でのサインインを完了できませんでした
+            String(localized: "Couldn't complete Sign in with Apple")
+        case .accountOperationInProgress:
+            // ja: 処理中の操作が終わってからやり直してください
+            String(localized: "Try again after the current operation finishes")
+        }
     }
 }
 
@@ -56,6 +64,8 @@ final class AccountSession {
     private(set) var appleIDLinked = false
     /// Sign in with Apple の処理中か。ボタンの二重タップを防ぎ、進行中の表示に使う
     private(set) var appleSignInInProgress = false
+    /// アカウント削除の処理中か。削除と Sign in with Apple はどちらもサインイン中のユーザーを変えるため、片方の処理中はもう片方を始めない
+    private(set) var accountDeletionInProgress = false
     /// Sign in with Apple (匿名アカウントの統合を含む) に失敗したエラーの説明。成功したら nil に戻す
     private(set) var appleSignInError: String?
     /// FCM の登録トークン。simulator でも取得できるが、実際の配送には APNs キーの登録が要る
@@ -148,6 +158,8 @@ final class AccountSession {
                 Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
             }
         case .success(let authorization):
+            // 削除の途中でサインインを切り替えると、削除後の signOut が切り替え先をサインアウトしてしまう
+            guard !accountDeletionInProgress, !appleSignInInProgress else { return }
             appleSignInInProgress = true
             defer { appleSignInInProgress = false }
             do {
@@ -371,6 +383,10 @@ final class AccountSession {
     /// Apple の認証情報がリンクされていれば、先に Apple のトークンを失効させる。失効できなければ削除に進まずエラーを投げる
     /// (失効させないまま Firebase のユーザーを消すと、失効させる手段が残らない)。ユーザーが Apple のシートを閉じた時も同じく中断する
     func deleteAccount() async throws {
+        // Sign in with Apple の途中で削除すると、確認した時とは別のアカウントを消し得る
+        guard !appleSignInInProgress, !accountDeletionInProgress else { throw AppleSignInError.accountOperationInProgress }
+        accountDeletionInProgress = true
+        defer { accountDeletionInProgress = false }
         // スタブは Firebase Auth の実アカウントに触れないため、Apple のトークンも失効させない
         if appleIDLinked, !settings.stubAPIClient {
             do {

@@ -28,6 +28,8 @@ export interface Deps {
   appCheckEnforcementMode: () => AppCheckEnforcementMode;
   /** Firebase Auth にユーザーが存在するか。RevenueCat の webhook が users/{uid} を作る前の確認に使う */
   authUserExists: (uid: string) => Promise<boolean>;
+  /** Firebase Auth のユーザーに今リンクされているプロバイダの ID (`authUserProviderIds`)。匿名なら空配列、存在しなければ null */
+  authUserProviderIds: (uid: string) => Promise<string[] | null>;
   /** アカウントのサーバー上のデータと Firebase Auth のユーザーを削除する (`deleteUserAccount`)。匿名アカウントの統合が使う */
   deleteUserAccount: (uid: string) => Promise<DeleteUserAccountResult>;
   pushDeliveryMode: () => PushDeliveryMode;

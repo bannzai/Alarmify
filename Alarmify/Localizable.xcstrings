@@ -24333,6 +24333,16 @@
         }
       }
     },
+    "Try again after the current operation finishes" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理中の操作が終わってからやり直してください"
+          }
+        }
+      }
+    },
     "Try issuing again" : {
       "localizations" : {
         "ja" : {

@@ -1741,6 +1741,17 @@ describe("匿名アカウントの統合", () => {
     expect(context.deletedAuthUids).toEqual([]);
   });
 
+  it("統合元の ID トークンが匿名のままでも、発行後に Apple をリンクしたアカウントなら 400 で何も変えない", async () => {
+    await seedAnonymousAccount();
+    context.setAnonymousUserProviderIds(["apple.com"]);
+
+    const response = await merge().expect(400);
+
+    expect(response.body.error.code).toBe("invalid_anonymous_id_token");
+    expect(await deviceIds(ANONYMOUS_UID)).toEqual(["device-anonymous"]);
+    expect(context.deletedAuthUids).toEqual([]);
+  });
+
   it("統合先のアカウントが削除処理中なら 410 で匿名アカウントに触れない", async () => {
     await seedAnonymousAccount();
     await context.deps.firestore.collection(collections.deletedAccounts).doc(context.uid).set({

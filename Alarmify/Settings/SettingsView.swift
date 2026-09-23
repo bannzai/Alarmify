@@ -95,7 +95,7 @@ struct SettingsView: View {
                 .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
                 .padding(.top, 14)
                 .accessibilityIdentifier("settings_delete_account")
-                .disabled(session.uid == nil || deletionState == .deleting)
+                .disabled(session.uid == nil || deletionState == .deleting || session.appleSignInInProgress)
 
                 if case .failed(let message) = deletionState {
                     Text(message)
@@ -351,7 +351,7 @@ struct SettingsView: View {
                 }
                 .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
                 .frame(height: 44)
-                .disabled(session.uid == nil || session.appleSignInInProgress)
+                .disabled(session.uid == nil || session.appleSignInInProgress || session.accountDeletionInProgress)
                 .accessibilityIdentifier("settings_sign_in_with_apple")
                 // ja: 複数の iPhone で同じ API トークンを使う時や機種変更で引き継ぐ時にサインインします
                 Text("Sign in to use the same API token on multiple iPhones or to move to a new iPhone")
