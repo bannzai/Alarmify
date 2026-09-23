@@ -228,6 +228,9 @@ final class AccountSession {
     /// サーバー側が冪等なため、何度呼んでも同じ状態になる
     private func mergePendingAnonymousAccount() async {
         guard let pendingAnonymousMergeIDToken else { return }
+        // Apple 側へのサインインの切り替えを待っている間 (前面復帰の signIn が割り込んだ時) はまだ匿名のため送らない。
+        // 送るとサーバーが統合先の匿名を拒否し、トークンを捨てて統合をやり直せなくなる。切り替えが終わった後の switchAccount が送る
+        guard let currentUser = Auth.auth().currentUser, !currentUser.isAnonymous else { return }
         do {
             try await apiClient.mergeAnonymousAccount(anonymousIDToken: pendingAnonymousMergeIDToken)
             self.pendingAnonymousMergeIDToken = nil
