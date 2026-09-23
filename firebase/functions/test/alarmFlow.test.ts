@@ -10,8 +10,10 @@ import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
 import { MAX_FIRE_AT_AHEAD_DAYS, MIN_FIRE_AT_LEAD_SECONDS } from "../src/api/externalApi.js";
 import { userRef } from "../src/lib/store.js";
-import { collections } from "../src/schema/index.js";
+import { collections, deletedAccountFields } from "../src/schema/index.js";
 import {
+  ANONYMOUS_ID_TOKEN,
+  ANONYMOUS_UID,
   clearFirestore,
   createTestContext,
   startTestServer,
@@ -1586,5 +1588,169 @@ describe("端末からの反映結果の報告", () => {
         occurred_at: "2026-09-02T00:00:20.000Z",
       },
     ]);
+  });
+});
+
+describe("匿名アカウントの統合", () => {
+  /**
+   * 匿名アカウント側に端末・API トークン・アラーム・利用数を書き込む (アプリの匿名認証で使っていた状態)。
+   * 端末の既定の updatedAt は TEST_NOW で、Apple 側で同じ端末を登録し直した値との新旧を比べるテストだけが古い日時を渡す
+   */
+  async function seedAnonymousAccount(deviceId = "device-anonymous", updatedAt = TEST_NOW): Promise<void> {
+    const anonymousUser = userRef(context.deps.firestore, ANONYMOUS_UID);
+    const batch = context.deps.firestore.batch();
+    batch.set(anonymousUser, {
+      plan: "free",
+      monthlyUsage: { month: "2026-09", scheduledAlarmCount: 7 },
+      createdAt: Timestamp.fromDate(TEST_NOW),
+      updatedAt: Timestamp.fromDate(TEST_NOW),
+    });
+    batch.set(anonymousUser.collection(collections.devices).doc(deviceId), {
+      fcmToken: "fcm-token-anonymous",
+      platform: "ios",
+      createdAt: Timestamp.fromDate(new Date("2026-08-01T00:00:00Z")),
+      updatedAt: Timestamp.fromDate(updatedAt),
+    });
+    batch.set(anonymousUser.collection(collections.apiTokens).doc("token-anonymous"), { hash: "dummy-hash", revokedAt: null });
+    batch.set(anonymousUser.collection(collections.alarms).doc("alarm-anonymous"), { title: "Deploy finished" });
+    await batch.commit();
+  }
+
+  /**
+   * 統合先 (VALID_ID_TOKEN) として統合を呼ぶ。統合元の既定は正しい匿名アカウントのトークンで、
+   * 拒否の確認をするテストだけが別のトークンを渡す
+   */
+  function merge(anonymousIdToken: string = ANONYMOUS_ID_TOKEN) {
+    return request(appApi)
+      .post("/v1/account/merge")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .send({ anonymous_id_token: anonymousIdToken });
+  }
+
+  /** ユーザーに登録されている端末の device_id (昇順) */
+  async function deviceIds(uid: string): Promise<string[]> {
+    const snapshot = await userRef(context.deps.firestore, uid).collection(collections.devices).get();
+    return snapshot.docs.map((doc) => doc.id).sort();
+  }
+
+  beforeEach(() => {
+    context.setSignInProvider("apple.com");
+  });
+
+  it("匿名側の端末を Apple 側へ移し、API トークンと利用数は Apple 側のまま残して匿名アカウントを消す", async () => {
+    await registerDevice("device-apple", "fcm-token-apple");
+    const issued = await issueApiToken("apple-token");
+    await seedAnonymousAccount();
+    const mergedAt = new Date("2026-09-02T01:00:00Z");
+    context.setNow(mergedAt);
+
+    const response = await merge().expect(200);
+
+    expect(response.body.moved_devices).toBe(1);
+    expect(await deviceIds(context.uid)).toEqual(["device-anonymous", "device-apple"]);
+    const moved = await userRef(context.deps.firestore, context.uid)
+      .collection(collections.devices)
+      .doc("device-anonymous")
+      .get();
+    expect(moved.get("fcmToken")).toBe("fcm-token-anonymous");
+    // 無料プランの配送先 (最初に登録した 1 台) を Apple 側の端末から奪わないよう、移した時刻で登録したことにする
+    expect((moved.get("createdAt") as Timestamp).toMillis()).toBe(mergedAt.getTime());
+    const tokens = await userRef(context.deps.firestore, context.uid).collection(collections.apiTokens).get();
+    expect(tokens.docs.map((doc) => doc.id)).toEqual([issued.id]);
+    const appleUser = await userRef(context.deps.firestore, context.uid).get();
+    expect(appleUser.get("monthlyUsage.scheduledAlarmCount")).toBe(0);
+
+    expect(context.deletedAuthUids).toEqual([ANONYMOUS_UID]);
+    expect((await userRef(context.deps.firestore, ANONYMOUS_UID).get()).exists).toBe(false);
+    expect(await deviceIds(ANONYMOUS_UID)).toEqual([]);
+    const anonymousTokens = await userRef(context.deps.firestore, ANONYMOUS_UID).collection(collections.apiTokens).get();
+    expect(anonymousTokens.size).toBe(0);
+  });
+
+  it("Apple 側にドキュメントが無くても、端末を移してユーザードキュメントを作る", async () => {
+    await seedAnonymousAccount();
+
+    await merge().expect(200);
+
+    expect(await deviceIds(context.uid)).toEqual(["device-anonymous"]);
+    expect((await userRef(context.deps.firestore, context.uid).get()).get("plan")).toBe("free");
+  });
+
+  it("再送しても成功し、移した端末は変わらない (冪等)", async () => {
+    await seedAnonymousAccount();
+    await merge().expect(200);
+
+    const response = await merge().expect(200);
+
+    expect(response.body.moved_devices).toBe(0);
+    expect(await deviceIds(context.uid)).toEqual(["device-anonymous"]);
+  });
+
+  it("同じ端末を Apple 側で登録し直した値の方が新しければ上書きしない", async () => {
+    await seedAnonymousAccount("device-1", new Date("2026-09-01T00:00:00Z"));
+    await registerDevice("device-1", "fcm-token-rotated");
+
+    const response = await merge().expect(200);
+
+    expect(response.body.moved_devices).toBe(0);
+    const device = await userRef(context.deps.firestore, context.uid).collection(collections.devices).doc("device-1").get();
+    expect(device.get("fcmToken")).toBe("fcm-token-rotated");
+  });
+
+  it("Apple 側の端末が上限に達していれば移さずに匿名アカウントを消す", async () => {
+    for (let index = 0; index < MAX_DEVICES_PER_USER; index += 1) {
+      await registerDevice(`device-${index}`, `fcm-token-${index}`);
+    }
+    await seedAnonymousAccount();
+
+    const response = await merge().expect(200);
+
+    expect(response.body.moved_devices).toBe(0);
+    expect(await deviceIds(context.uid)).toHaveLength(MAX_DEVICES_PER_USER);
+    expect(context.deletedAuthUids).toEqual([ANONYMOUS_UID]);
+  });
+
+  it("統合先が匿名アカウントなら 403 で何も変えない", async () => {
+    context.setSignInProvider("anonymous");
+    await seedAnonymousAccount();
+
+    const response = await merge().expect(403);
+
+    expect(response.body.error.code).toBe("merge_target_anonymous");
+    expect(await deviceIds(ANONYMOUS_UID)).toEqual(["device-anonymous"]);
+    expect(context.deletedAuthUids).toEqual([]);
+  });
+
+  it("統合元の ID トークンが検証できない・匿名でない・統合先と同じなら 400", async () => {
+    await seedAnonymousAccount();
+
+    const invalid = await merge("invalid").expect(400);
+    expect(invalid.body.error.code).toBe("invalid_anonymous_id_token");
+    // VALID_ID_TOKEN は統合先 (apple.com) 自身のトークン
+    const identified = await merge(VALID_ID_TOKEN).expect(400);
+    expect(identified.body.error.code).toBe("invalid_anonymous_id_token");
+    await request(appApi)
+      .post("/v1/account/merge")
+      .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+      .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+      .send({})
+      .expect(400);
+
+    expect(await deviceIds(ANONYMOUS_UID)).toEqual(["device-anonymous"]);
+    expect(context.deletedAuthUids).toEqual([]);
+  });
+
+  it("統合先のアカウントが削除処理中なら 410 で匿名アカウントに触れない", async () => {
+    await seedAnonymousAccount();
+    await context.deps.firestore.collection(collections.deletedAccounts).doc(context.uid).set({
+      [deletedAccountFields.requestedAt]: Timestamp.fromDate(TEST_NOW),
+    });
+
+    const response = await merge().expect(410);
+
+    expect(response.body.error.code).toBe("account_deleted");
+    expect(await deviceIds(ANONYMOUS_UID)).toEqual(["device-anonymous"]);
+    expect(context.deletedAuthUids).toEqual([]);
   });
 });

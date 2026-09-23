@@ -9,7 +9,12 @@ import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { onMessagePublished } from "firebase-functions/pubsub";
 import { onSchedule } from "firebase-functions/scheduler";
-import { authUserExists, handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
+import {
+  authUserExists,
+  deleteUserAccount,
+  handleDeleteAccount,
+  sweepDeletedAccounts,
+} from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
@@ -39,7 +44,7 @@ function createDeps(): Deps {
     sendPush: createFcmPushSender(getMessaging()),
     verifyIdToken: async (idToken) => {
       const decoded = await getAuth().verifyIdToken(idToken);
-      return { uid: decoded.uid };
+      return { uid: decoded.uid, signInProvider: decoded.firebase.sign_in_provider };
     },
     verifyAppCheckToken: async (appCheckToken) => {
       const verified = await getAppCheck().verifyToken(appCheckToken);
@@ -48,6 +53,7 @@ function createDeps(): Deps {
     // 監視のみ (monitor) から強制 (enforce) へ段階的に切り替える。値は firebase/functions/.env.<プロジェクト ID>
     appCheckEnforcementMode: () => parseAppCheckEnforcementMode(process.env.ALARMIFY_APP_CHECK_ENFORCEMENT),
     authUserExists: (uid) => authUserExists(getAuth(), uid),
+    deleteUserAccount: (uid) => deleteUserAccount({ firestore: getFirestore(), auth: getAuth() }, uid),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
     now: () => new Date(),

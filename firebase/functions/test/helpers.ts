@@ -4,6 +4,7 @@ import type { Express } from "express";
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import type { Message, TokenMessage } from "firebase-admin/messaging";
+import { deleteUserAccount } from "../src/account/deleteAccount.js";
 import type { AppCheckEnforcementMode } from "../src/lib/appCheck.js";
 import type { Deps } from "../src/lib/deps.js";
 
@@ -12,6 +13,10 @@ export const PROJECT_ID = "demo-alarmify";
 export const TEST_NOW = new Date("2026-09-02T00:00:00Z");
 export const VALID_ID_TOKEN = "valid-id-token";
 export const VALID_APP_CHECK_TOKEN = "valid-app-check-token";
+/** 匿名アカウントの統合で、統合元として渡す匿名ユーザーの ID トークン */
+export const ANONYMOUS_ID_TOKEN = "anonymous-id-token";
+/** ANONYMOUS_ID_TOKEN を検証した時の uid */
+export const ANONYMOUS_UID = "anonymous-uid";
 
 export function emulatorHost(): string {
   const host = process.env.FIRESTORE_EMULATOR_HOST;
@@ -50,6 +55,10 @@ export interface TestContext {
   throwNextPush(): void;
   /** Firebase Auth にユーザーが存在するかの応答を差し替える (既定は存在する) */
   setAuthUserExists(exists: boolean): void;
+  /** VALID_ID_TOKEN のサインイン方法を差し替える (既定はアプリの初回起動と同じ匿名認証) */
+  setSignInProvider(signInProvider: string): void;
+  /** deleteUserAccount が Firebase Auth から削除した uid (呼び出し順) */
+  deletedAuthUids: string[];
 }
 
 /**
@@ -63,9 +72,13 @@ export function createTestContext(uid = "test-uid"): TestContext {
   let failNextToken: string | null = null;
   let throwNext = false;
   let authUserExists = true;
+  // アプリは初回起動で匿名認証するため、既存のテストが前提にしてきた状態 (匿名アカウント) を既定にする
+  let signInProvider = "anonymous";
   const sentBatches: Message[][] = [];
+  const deletedAuthUids: string[] = [];
+  const firestore = testFirestore();
   const deps: Deps = {
-    firestore: testFirestore(),
+    firestore,
     sendPush: async (messages) => {
       sentBatches.push(messages);
       if (throwNext) {
@@ -89,10 +102,13 @@ export function createTestContext(uid = "test-uid"): TestContext {
       return { successCount: messages.length, failureCount: 0, errors: [] };
     },
     verifyIdToken: async (idToken) => {
+      if (idToken === ANONYMOUS_ID_TOKEN) {
+        return { uid: ANONYMOUS_UID, signInProvider: "anonymous" };
+      }
       if (idToken !== VALID_ID_TOKEN) {
         throw new Error("invalid id token");
       }
-      return { uid };
+      return { uid, signInProvider };
     },
     verifyAppCheckToken: async (appCheckToken) => {
       if (appCheckToken !== VALID_APP_CHECK_TOKEN) {
@@ -102,6 +118,22 @@ export function createTestContext(uid = "test-uid"): TestContext {
     },
     appCheckEnforcementMode: () => appCheckEnforcementMode,
     authUserExists: async () => authUserExists,
+    // Firestore 側の削除は本物を通し、Auth のユーザーの削除だけを記録に置き換える (Auth エミュレータのユーザーを用意しなくて済むようにする)
+    deleteUserAccount: (targetUid) =>
+      deleteUserAccount(
+        {
+          firestore,
+          auth: {
+            deleteUser: async (deletedUid) => {
+              deletedAuthUids.push(deletedUid);
+            },
+            getUser: async () => {
+              throw Object.assign(new Error("user not found"), { code: "auth/user-not-found" });
+            },
+          },
+        },
+        targetUid,
+      ),
     pushDeliveryMode: () => "notification-service",
     now: () => now,
   };
@@ -127,6 +159,10 @@ export function createTestContext(uid = "test-uid"): TestContext {
     setAuthUserExists: (exists) => {
       authUserExists = exists;
     },
+    setSignInProvider: (provider) => {
+      signInProvider = provider;
+    },
+    deletedAuthUids,
   };
 }
 

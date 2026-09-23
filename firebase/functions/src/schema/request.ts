@@ -122,6 +122,16 @@ export const createApiTokenRequestSchema = z.object({
 });
 export type CreateApiTokenRequest = z.infer<typeof createApiTokenRequestSchema>;
 
+/**
+ * アプリ向け: POST /v1/account/merge
+ * anonymous_id_token は統合元 (匿名アカウント) の Firebase ID トークン。Firebase の ID トークンは 1 KB 前後の JWT で、
+ * 上限は express.json の 32kb より十分小さく、署名の検証に渡す前に異常な長さを弾ける 4096 文字にする
+ */
+export const mergeAnonymousAccountRequestSchema = z.object({
+  anonymous_id_token: z.string().min(1).max(4096),
+});
+export type MergeAnonymousAccountRequest = z.infer<typeof mergeAnonymousAccountRequestSchema>;
+
 /** アプリ向け: GET /v1/alarms の limit。上限なしの取得を書かない (.claude/rules/firestore-db-rules.md) */
 export const alarmHistoryLimitSchema = z.coerce.number().int().min(1).max(100).default(50);
 

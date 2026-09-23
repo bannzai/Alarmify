@@ -10,7 +10,7 @@ import {
 } from "firebase-admin/firestore";
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import { requireAppCheck } from "../lib/appCheck.js";
-import type { Deps } from "../lib/deps.js";
+import type { Deps, VerifiedIdToken } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { effectivePlan, planLimits } from "../lib/plan.js";
 import { decodeCursor, encodeCursor, type ListCursor } from "../lib/cursor.js";
@@ -27,11 +27,15 @@ import {
   collections,
   listCursorSchema,
   createApiTokenRequestSchema,
+  mergeAnonymousAccountRequestSchema,
   registerDeviceRequestSchema,
   reportDeviceResultRequestSchema,
   userSchema,
   type DeviceReport,
 } from "../schema/index.js";
+
+/** 匿名認証で発行された ID トークンの `firebase.sign_in_provider` (Firebase Auth の仕様値) */
+const ANONYMOUS_SIGN_IN_PROVIDER = "anonymous";
 
 /**
  * 削除処理中 (目印がある) アカウントのデータを作り直さない。
@@ -131,14 +135,15 @@ function authenticate(deps: Deps) {
       next(new ApiError(401, "unauthenticated", "Authorization: Bearer <Firebase ID トークン> が必要です"));
       return;
     }
-    let uid: string;
+    let verified: VerifiedIdToken;
     try {
-      uid = (await deps.verifyIdToken(idToken)).uid;
+      verified = await deps.verifyIdToken(idToken);
     } catch {
       next(new ApiError(401, "unauthenticated", "ID トークンを検証できませんでした"));
       return;
     }
-    res.locals.uid = uid;
+    res.locals.uid = verified.uid;
+    res.locals.signInProvider = verified.signInProvider;
     next();
   };
 }
@@ -220,6 +225,80 @@ export function createAppApi(deps: Deps): Express {
       .doc(req.params.deviceId)
       .delete();
     res.status(204).send();
+  });
+
+  // 匿名ユーザーが既存の Apple アカウントでサインインした時に、匿名側の端末を呼び出し元 (Apple 側) へ移して匿名アカウントを消す。
+  // Apple 側を正とし、API トークン・当月の利用数・プランは Apple 側のものを残す (無料枠をリセットしない)。
+  // 統合元は ID トークンで本人であることを確かめ、匿名アカウントに限る (識別済みのアカウント同士を統合させない)。
+  // 統合元が既に削除済みでも、移す端末が無いだけで同じ結果になる (冪等。応答が失われた後の再送を成功で終わらせる)
+  app.post("/v1/account/merge", async (req, res) => {
+    const parsed = mergeAnonymousAccountRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw badRequestFromZod(parsed.error);
+    }
+    const uid = currentUid(res);
+    if (res.locals.signInProvider === ANONYMOUS_SIGN_IN_PROVIDER) {
+      throw new ApiError(403, "merge_target_anonymous", "統合先は匿名ではないアカウントに限ります");
+    }
+    let anonymous: VerifiedIdToken;
+    try {
+      anonymous = await deps.verifyIdToken(parsed.data.anonymous_id_token);
+    } catch {
+      throw new ApiError(400, "invalid_anonymous_id_token", "統合元の ID トークンを検証できませんでした");
+    }
+    if (anonymous.signInProvider !== ANONYMOUS_SIGN_IN_PROVIDER) {
+      throw new ApiError(400, "invalid_anonymous_id_token", "統合元は匿名アカウントに限ります");
+    }
+    if (anonymous.uid === uid) {
+      throw new ApiError(400, "invalid_anonymous_id_token", "統合元と統合先が同じアカウントです");
+    }
+    const now = deps.now();
+    const userDocRef = userRef(deps.firestore, uid);
+    const devicesRef = userDocRef.collection(collections.devices);
+    const anonymousDevicesRef = userRef(deps.firestore, anonymous.uid).collection(collections.devices);
+
+    const movedDevices = await deps.firestore.runTransaction(async (transaction) => {
+      await rejectIfAccountDeleted(transaction, deps, uid);
+      const userSnapshot = await transaction.get(userDocRef);
+      const anonymousDevices = await transaction.get(
+        anonymousDevicesRef.orderBy("createdAt", "asc").limit(MAX_DEVICES_PER_USER),
+      );
+      const registered = await transaction.get(devicesRef.limit(MAX_DEVICES_PER_USER));
+      const registeredById = new Map(registered.docs.map((doc) => [doc.id, doc]));
+      // 端末登録と同じ上限を超えて移さない。超えた分は移さずに匿名アカウントと一緒に消える
+      // (匿名アカウントは端末ごとに作られるため、実際に移るのはサインインした端末の 1 台だけになる)
+      let remaining = MAX_DEVICES_PER_USER - registered.size;
+      let moved = 0;
+      for (const device of anonymousDevices.docs) {
+        const existing = registeredById.get(device.id);
+        if (!existing) {
+          if (remaining <= 0) {
+            continue;
+          }
+          remaining -= 1;
+        } else if (
+          (existing.get("updatedAt") as Timestamp).toMillis() >= (device.get("updatedAt") as Timestamp).toMillis()
+        ) {
+          // 同じ端末が Apple 側で登録し直した値の方が新しい (FCM トークンのローテーション後) なら上書きしない
+          continue;
+        }
+        transaction.set(devicesRef.doc(device.id), {
+          fcmToken: device.get("fcmToken"),
+          platform: device.get("platform"),
+          // 無料プランの配送先は最初に登録した 1 台 (createdAt の昇順) のため、移した端末は今 Apple 側に登録した端末として扱い、
+          // Apple 側で先に使っていた端末から配送先を奪わない
+          createdAt: existing ? existing.get("createdAt") : Timestamp.fromDate(now),
+          updatedAt: Timestamp.fromDate(now),
+        });
+        moved += 1;
+      }
+      if (!userSnapshot.exists && moved > 0) {
+        transaction.set(userDocRef, newUserDocument(now));
+      }
+      return moved;
+    });
+    await deps.deleteUserAccount(anonymous.uid);
+    res.status(200).json({ moved_devices: movedDevices });
   });
 
   // API トークンを発行する。平文はここでしか返さない
