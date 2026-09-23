@@ -56,7 +56,7 @@ Widget Extension は ActivityKit から受け取った属性を表示するだ�
 
 ## 回答の確認根拠
 
-2026-09-12 にソースと以下の公式資料を照合した。認証は `signInAnonymously` のみで、メールアドレスの収集はない。App Attest の attestation / assertion と App Check トークン、FCM の登録先識別子は既存の DEVICE_ID の説明に含める。Analytics SDK が無くても RevenueCat の購入履歴には ANALYTICS の回答が必要。
+2026-09-12 にソースと以下の公式資料を照合した。この時点の認証は `signInAnonymously` のみで、メールアドレスの収集はない。2026-09-23 (#106) に Sign in with Apple を加えた時に照合し直し、`AccountSession.prepare(appleIDRequest:)` がスコープを要求しない (`requestedScopes = []`) ため、Firebase Auth が保持するのは Apple のユーザー識別子だけで、メールアドレスと氏名は収集しないことを確かめた。App Attest の attestation / assertion と App Check トークン、FCM の登録先識別子は既存の DEVICE_ID の説明に含める。Analytics SDK が無くても RevenueCat の購入履歴には ANALYTICS の回答が必要。
 
 - Apple の収集データ・利用目的の定義: https://developer.apple.com/app-store/app-privacy-details/
 - Apple の UserDefaults 利用理由: https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype

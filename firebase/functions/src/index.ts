@@ -12,6 +12,7 @@ import { onSchedule } from "firebase-functions/scheduler";
 import {
   authUserExists,
   authUserProviderIds,
+  completePendingAccountMerges,
   deleteUserAccount,
   handleDeleteAccount,
   sweepDeletedAccounts,
@@ -114,13 +115,18 @@ export const deleteAccount = onCall(
 );
 
 /**
- * アカウント削除の掃除が途中で失敗した分を完了させる定期実行。
- * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す
+ * アカウント削除の掃除と、統合した匿名アカウントの削除が途中で失敗した分を完了させる定期実行。
+ * 呼び出し元は Auth のユーザーが無くなる・匿名の ID トークンが期限切れになると再試行できないため、サーバー側の信頼できる経路で残りを消す
  */
 export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async () => {
-  const result = await sweepDeletedAccounts({ firestore: getFirestore(), auth: getAuth() }, new Date());
-  if (result.failed > 0) {
-    throw new Error(`${result.failed} deleted account(s) could not be swept`);
+  const deps = { firestore: getFirestore(), auth: getAuth() };
+  // 統合した匿名アカウントの削除を先に完了させる。ここで置いた削除の目印は、Auth のユーザーが消えていれば次回以降の sweep が掃除を終える
+  const merges = await completePendingAccountMerges(deps, new Date());
+  const result = await sweepDeletedAccounts(deps, new Date());
+  if (merges.failed > 0 || result.failed > 0) {
+    throw new Error(
+      `${result.failed} deleted account(s) could not be swept and ${merges.failed} account merge(s) could not be completed`,
+    );
   }
 });
 

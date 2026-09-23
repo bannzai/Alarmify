@@ -204,7 +204,8 @@ final class AccountSession {
             // この Apple アカウントは別の uid で使われている。identity token は 1 度しか使えないため、Firebase Auth がエラーに添える認証情報でサインインする
             guard let existingAccountCredential = error.userInfo[AuthErrors.userInfoUpdatedCredentialKey] as? AuthCredential else { throw error }
             // サインインを切り替えると匿名アカウントの ID トークンを取り直せないため、先に取っておく
-            pendingAnonymousMergeIDToken = try await currentUser.getIDToken()
+            // キャッシュ済みのトークンは期限が近いことがあるため発行し直し、送り直しに使える期間 (1 時間) を最大にする
+            pendingAnonymousMergeIDToken = try await currentUser.idTokenForcingRefresh(true)
             let result = try await Auth.auth().signIn(with: existingAccountCredential)
             await switchAccount(uid: result.user.uid)
         }

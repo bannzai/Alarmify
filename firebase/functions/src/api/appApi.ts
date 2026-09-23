@@ -22,6 +22,7 @@ import {
   userRef,
 } from "../lib/store.js";
 import {
+  accountMergeFields,
   alarmHistoryLimitSchema,
   canonicalUuidSchema,
   collections,
@@ -263,6 +264,7 @@ export function createAppApi(deps: Deps): Express {
     const userDocRef = userRef(deps.firestore, uid);
     const devicesRef = userDocRef.collection(collections.devices);
     const anonymousDevicesRef = userRef(deps.firestore, anonymous.uid).collection(collections.devices);
+    const accountMergeRef = deps.firestore.collection(collections.accountMerges).doc(anonymous.uid);
 
     const movedDevices = await deps.firestore.runTransaction(async (transaction) => {
       await rejectIfAccountDeleted(transaction, deps, uid);
@@ -302,9 +304,16 @@ export function createAppApi(deps: Deps): Express {
       if (!userSnapshot.exists && moved > 0) {
         transaction.set(userDocRef, newUserDocument(now));
       }
+      // 端末の移動と同じトランザクションで記録を置く。この後の匿名アカウントの削除が失敗し、アプリの送り直しに使う
+      // 匿名の ID トークンが期限切れになっても、定期実行 (completePendingAccountMerges) が削除を完了させる
+      transaction.set(accountMergeRef, {
+        [accountMergeFields.targetUid]: uid,
+        [accountMergeFields.mergedAt]: Timestamp.fromDate(now),
+      });
       return moved;
     });
     await deps.deleteUserAccount(anonymous.uid);
+    await accountMergeRef.delete();
     res.status(200).json({ moved_devices: movedDevices });
   });
 

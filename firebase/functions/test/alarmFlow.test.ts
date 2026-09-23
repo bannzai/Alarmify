@@ -10,7 +10,7 @@ import { toIso8601Seconds } from "../src/lib/push.js";
 import { MAX_DEVICES_PER_USER } from "../src/lib/store.js";
 import { MAX_FIRE_AT_AHEAD_DAYS, MIN_FIRE_AT_LEAD_SECONDS } from "../src/api/externalApi.js";
 import { userRef } from "../src/lib/store.js";
-import { collections, deletedAccountFields } from "../src/schema/index.js";
+import { accountMergeFields, collections, deletedAccountFields } from "../src/schema/index.js";
 import {
   ANONYMOUS_ID_TOKEN,
   ANONYMOUS_UID,
@@ -1666,6 +1666,40 @@ describe("匿名アカウントの統合", () => {
     expect(await deviceIds(ANONYMOUS_UID)).toEqual([]);
     const anonymousTokens = await userRef(context.deps.firestore, ANONYMOUS_UID).collection(collections.apiTokens).get();
     expect(anonymousTokens.size).toBe(0);
+  });
+
+  it("匿名アカウントを消せたら統合の記録を残さない", async () => {
+    await seedAnonymousAccount();
+
+    await merge().expect(200);
+
+    expect((await context.deps.firestore.collection(collections.accountMerges).doc(ANONYMOUS_UID).get()).exists).toBe(false);
+  });
+
+  it("匿名アカウントの削除に失敗したら、定期実行が削除を完了できるよう統合の記録を残す", async () => {
+    await seedAnonymousAccount();
+    const failingApi = await startTestServer(
+      createAppApi({
+        ...context.deps,
+        deleteUserAccount: async () => {
+          throw new Error("auth unavailable");
+        },
+      }),
+    );
+    try {
+      await request(failingApi)
+        .post("/v1/account/merge")
+        .set("authorization", `Bearer ${VALID_ID_TOKEN}`)
+        .set(APP_CHECK_HEADER, VALID_APP_CHECK_TOKEN)
+        .send({ anonymous_id_token: ANONYMOUS_ID_TOKEN })
+        .expect(500);
+    } finally {
+      await stopTestServer(failingApi);
+    }
+
+    const record = await context.deps.firestore.collection(collections.accountMerges).doc(ANONYMOUS_UID).get();
+    expect(record.get(accountMergeFields.targetUid)).toBe(context.uid);
+    expect(await deviceIds(context.uid)).toEqual(["device-anonymous"]);
   });
 
   it("Apple 側にドキュメントが無くても、端末を移してユーザードキュメントを作る", async () => {
