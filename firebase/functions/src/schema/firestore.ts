@@ -9,6 +9,8 @@ export const collections = {
   alarms: "alarms",
   /** 削除処理中のアカウントの目印 (`deletedAccounts/{uid}`) */
   deletedAccounts: "deletedAccounts",
+  /** 統合した匿名アカウントの削除が済むまでの記録 (`accountMerges/{匿名アカウントの uid}`) */
+  accountMerges: "accountMerges",
   /** 予算通知を Slack へ転送した記録 (`budgetNotifications/{budgetId}`) */
   budgetNotifications: "budgetNotifications",
 } as const;

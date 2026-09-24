@@ -17,6 +17,9 @@ protocol AlarmifyAPIClient: Sendable {
     func reportAlarmApply(_ report: AlarmApplyReport) async throws
     /// 呼び出し元自身のアカウントとサーバー上のデータ (API トークン・配送先・アラーム履歴) を削除する
     func deleteAccount() async throws
+    /// 匿名アカウントの端末を呼び出し元 (Sign in with Apple のアカウント) へ移し、匿名アカウントを削除する。
+    /// `anonymousIDToken` は統合元の匿名アカウントの Firebase ID トークン
+    func mergeAnonymousAccount(anonymousIDToken: String) async throws
 }
 
 /// URLSession で Cloud Functions のアプリ向け API (`appApi`) を叩く実装。
@@ -117,6 +120,11 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     func deleteAccount() async throws {
         let data = try await send(method: "POST", url: backend.deleteAccountURL, body: ["data": [String: String]()])
         _ = try decode(CallableResponse<DeleteAccountResult>.self, from: data).result
+    }
+
+    /// 応答の本文 (移した端末の数) は画面に出さないため読まない
+    func mergeAnonymousAccount(anonymousIDToken: String) async throws {
+        _ = try await send(method: "POST", path: "/v1/account/merge", body: ["anonymous_id_token": anonymousIDToken])
     }
 
     /// Callable 関数の成功応答

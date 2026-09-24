@@ -1,3 +1,4 @@
+export * from "./accountMerge.js";
 export * from "./alarm.js";
 export * from "./apiToken.js";
 export * from "./budgetNotification.js";

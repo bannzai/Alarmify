@@ -9,7 +9,14 @@ import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { onMessagePublished } from "firebase-functions/pubsub";
 import { onSchedule } from "firebase-functions/scheduler";
-import { authUserExists, handleDeleteAccount, sweepDeletedAccounts } from "./account/deleteAccount.js";
+import {
+  authUserExists,
+  authUserProviderIds,
+  completePendingAccountMerges,
+  deleteUserAccount,
+  handleDeleteAccount,
+  sweepDeletedAccounts,
+} from "./account/deleteAccount.js";
 import { createAppApi } from "./api/appApi.js";
 import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
@@ -39,7 +46,7 @@ function createDeps(): Deps {
     sendPush: createFcmPushSender(getMessaging()),
     verifyIdToken: async (idToken) => {
       const decoded = await getAuth().verifyIdToken(idToken);
-      return { uid: decoded.uid };
+      return { uid: decoded.uid, signInProvider: decoded.firebase.sign_in_provider };
     },
     verifyAppCheckToken: async (appCheckToken) => {
       const verified = await getAppCheck().verifyToken(appCheckToken);
@@ -48,6 +55,8 @@ function createDeps(): Deps {
     // 監視のみ (monitor) から強制 (enforce) へ段階的に切り替える。値は firebase/functions/.env.<プロジェクト ID>
     appCheckEnforcementMode: () => parseAppCheckEnforcementMode(process.env.ALARMIFY_APP_CHECK_ENFORCEMENT),
     authUserExists: (uid) => authUserExists(getAuth(), uid),
+    authUserProviderIds: (uid) => authUserProviderIds(getAuth(), uid),
+    deleteUserAccount: (uid) => deleteUserAccount({ firestore: getFirestore(), auth: getAuth() }, uid),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
     now: () => new Date(),
@@ -106,13 +115,18 @@ export const deleteAccount = onCall(
 );
 
 /**
- * アカウント削除の掃除が途中で失敗した分を完了させる定期実行。
- * 呼び出し元は Auth のユーザーが無くなると再試行できないため、サーバー側の信頼できる経路で残りを消す
+ * アカウント削除の掃除と、統合した匿名アカウントの削除が途中で失敗した分を完了させる定期実行。
+ * 呼び出し元は Auth のユーザーが無くなる・匿名の ID トークンが期限切れになると再試行できないため、サーバー側の信頼できる経路で残りを消す
  */
 export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async () => {
-  const result = await sweepDeletedAccounts({ firestore: getFirestore(), auth: getAuth() }, new Date());
-  if (result.failed > 0) {
-    throw new Error(`${result.failed} deleted account(s) could not be swept`);
+  const deps = { firestore: getFirestore(), auth: getAuth() };
+  // 統合した匿名アカウントの削除を先に完了させる。ここで置いた削除の目印は、Auth のユーザーが消えていれば次回以降の sweep が掃除を終える
+  const merges = await completePendingAccountMerges(deps, new Date());
+  const result = await sweepDeletedAccounts(deps, new Date());
+  if (merges.failed > 0 || result.failed > 0) {
+    throw new Error(
+      `${result.failed} deleted account(s) could not be swept and ${merges.failed} account merge(s) could not be completed`,
+    );
   }
 });
 

@@ -2,7 +2,7 @@ import type { Auth } from "firebase-admin/auth";
 import { FieldValue, type DocumentReference, type Firestore, type Timestamp } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
-import { collections, deletedAccountFields } from "../schema/index.js";
+import { accountMergeFields, collections, deletedAccountFields } from "../schema/index.js";
 
 /** アカウント削除が依存する外部リソース。テストはエミュレータの Firestore / Auth を差し込む */
 export interface AccountDeletionDeps {
@@ -119,6 +119,58 @@ export async function sweepDeletedAccounts(
 }
 
 /**
+ * 統合の記録を置いてからこの時間が経つまでは定期実行が触れない。
+ * 統合のリクエストは記録を置いた直後に同じ削除を行うため、その完了を待たずに並べて削除しないよう、
+ * Cloud Functions の HTTP 関数の既定のタイムアウト (60 秒) より十分長くする
+ */
+export const ACCOUNT_MERGE_MINIMUM_AGE_MS = 10 * 60 * 1000;
+
+/** completePendingAccountMerges の処理結果 */
+export interface CompletePendingAccountMergesResult {
+  /** 匿名アカウントを削除して記録を消した件数 */
+  completed: number;
+  /** 失敗して次回に持ち越した件数 */
+  failed: number;
+}
+
+/**
+ * 匿名アカウントの統合で端末を移した後、匿名アカウントの削除が済んでいない記録 (`accountMerges/{uid}`) の削除を完了させる。
+ * アプリが送り直しに使う匿名の ID トークンは期限切れになり得るため、サーバー側で完了させる。
+ * 削除は deleteUserAccount と同じで冪等。1 件の失敗で残りを止めない (失敗した記録は次回の実行でまた対象になる)
+ */
+export async function completePendingAccountMerges(
+  deps: AccountDeletionDeps,
+  now: Date,
+  limit: number = SWEEP_BATCH_SIZE,
+): Promise<CompletePendingAccountMergesResult> {
+  const merges = await deps.firestore
+    .collection(collections.accountMerges)
+    .where(accountMergeFields.mergedAt, "<=", new Date(now.getTime() - ACCOUNT_MERGE_MINIMUM_AGE_MS))
+    .limit(limit)
+    .get();
+  const result: CompletePendingAccountMergesResult = { completed: 0, failed: 0 };
+  for (const merge of merges.docs) {
+    try {
+      await deleteUserAccount(deps, merge.id);
+      // 記録はこの実行が読んだ版に限って消す。読んだ後に統合の再送が記録を置き直していたら、その再送の削除に任せる
+      await merge.ref.delete({ lastUpdateTime: merge.updateTime }).catch((deleteError: unknown) => {
+        if (!isFailedPrecondition(deleteError)) {
+          throw deleteError;
+        }
+      });
+      result.completed += 1;
+    } catch (error) {
+      result.failed += 1;
+      logger.error("completing an account merge failed", { error: String(error) });
+    }
+  }
+  if (merges.size > 0) {
+    logger.info("completed pending account merges", result);
+  }
+  return result;
+}
+
+/**
  * Callable `deleteAccount` の本体。呼び出し元自身のアカウントを削除する。
  * 削除対象は必ず ID トークンの uid にする (他人の uid を指定できないよう、リクエストのパラメータからは uid を受け取らない)
  */
@@ -198,6 +250,22 @@ export async function authUserExists(auth: AccountDeletionDeps["auth"], uid: str
   } catch (error) {
     if (isUserNotFound(error)) {
       return false;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Firebase Auth のユーザーに今リンクされているプロバイダの ID (匿名ユーザーは空配列)。ユーザーが存在しなければ null。
+ * ID トークンの sign_in_provider は発行時点の値で、その後に同じ uid へ Apple をリンクしても有効期限までは変わらないため、
+ * 匿名アカウントの統合が統合元の現在の状態を確かめるのに使う
+ */
+export async function authUserProviderIds(auth: Pick<Auth, "getUser">, uid: string): Promise<string[] | null> {
+  try {
+    return (await auth.getUser(uid)).providerData.map((provider) => provider.providerId);
+  } catch (error) {
+    if (isUserNotFound(error)) {
+      return null;
     }
     throw error;
   }

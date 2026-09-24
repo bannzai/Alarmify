@@ -2,13 +2,16 @@ import { getAuth, type Auth } from "firebase-admin/auth";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  ACCOUNT_MERGE_MINIMUM_AGE_MS,
+  authUserProviderIds,
+  completePendingAccountMerges,
   DELETION_MARKER_MINIMUM_AGE_MS,
   deleteUserAccount,
   handleDeleteAccount,
   sweepDeletedAccounts,
   type AccountDeletionDeps,
 } from "../src/account/deleteAccount.js";
-import { collections, deletedAccountFields } from "../src/schema/index.js";
+import { accountMergeFields, collections, deletedAccountFields } from "../src/schema/index.js";
 import request from "supertest";
 import { createAppApi } from "../src/api/appApi.js";
 import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
@@ -118,6 +121,17 @@ describe("アカウント削除", () => {
     expect(await remainingDocumentCount(uid)).toBe(0);
     expect(await authUserExists(uid)).toBe(false);
     expect((await marker(uid).get()).exists).toBe(true);
+  });
+
+  it("リンク中のプロバイダは匿名なら空、Apple をリンクした後はその ID、ユーザーが無ければ null を返す", async () => {
+    const uid = await signUpAnonymously();
+    expect(await authUserProviderIds(auth, uid)).toEqual([]);
+
+    await auth.updateUser(uid, { providerToLink: { providerId: "apple.com", uid: "apple-user-identifier" } });
+    expect(await authUserProviderIds(auth, uid)).toEqual(["apple.com"]);
+
+    await auth.deleteUser(uid);
+    expect(await authUserProviderIds(auth, uid)).toBeNull();
   });
 
   it("削除済みの uid で再実行しても成功する (冪等)", async () => {
@@ -243,6 +257,51 @@ describe("アカウント削除", () => {
       await stopTestServer(appApi);
     }
     expect(await remainingDocumentCount(uid)).toBe(0);
+  });
+});
+
+describe("統合した匿名アカウントの削除の完了", () => {
+  function mergeRecord(uid: string) {
+    return deps.firestore.collection(collections.accountMerges).doc(uid);
+  }
+
+  it("十分に古い統合の記録の匿名アカウントを削除して記録を消し、新しい記録には触れない", async () => {
+    const staleUid = await signUpAnonymously();
+    const freshUid = await signUpAnonymously();
+    await seedUserData(staleUid);
+    await seedUserData(freshUid);
+    await mergeRecord(staleUid).set({
+      [accountMergeFields.targetUid]: "apple-uid",
+      [accountMergeFields.mergedAt]: Timestamp.fromMillis(TEST_NOW.getTime() - ACCOUNT_MERGE_MINIMUM_AGE_MS - 60_000),
+    });
+    await mergeRecord(freshUid).set({
+      [accountMergeFields.targetUid]: "apple-uid",
+      [accountMergeFields.mergedAt]: Timestamp.fromDate(TEST_NOW),
+    });
+
+    const result = await completePendingAccountMerges(deps, TEST_NOW);
+
+    expect(result).toEqual({ completed: 1, failed: 0 });
+    expect(await authUserExists(staleUid)).toBe(false);
+    expect(await remainingDocumentCount(staleUid)).toBe(0);
+    expect((await mergeRecord(staleUid).get()).exists).toBe(false);
+    expect(await authUserExists(freshUid)).toBe(true);
+    expect(await remainingDocumentCount(freshUid)).toBe(4);
+    expect((await mergeRecord(freshUid).get()).exists).toBe(true);
+  });
+
+  it("匿名アカウントが既に削除済みでも記録を消して終わる (冪等)", async () => {
+    const uid = await signUpAnonymously();
+    await deleteUserAccount(deps, uid);
+    await mergeRecord(uid).set({
+      [accountMergeFields.targetUid]: "apple-uid",
+      [accountMergeFields.mergedAt]: Timestamp.fromMillis(TEST_NOW.getTime() - ACCOUNT_MERGE_MINIMUM_AGE_MS - 60_000),
+    });
+
+    const result = await completePendingAccountMerges(deps, TEST_NOW);
+
+    expect(result).toEqual({ completed: 1, failed: 0 });
+    expect((await mergeRecord(uid).get()).exists).toBe(false);
   });
 });
 

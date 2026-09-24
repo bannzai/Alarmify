@@ -83,4 +83,7 @@ actor StubAlarmifyAPIClient: AlarmifyAPIClient {
         registeredFCMRegistrationToken = nil
         reports.removeAll()
     }
+
+    /// スタブは Firebase Auth の実アカウントを切り替えないため、統合するデータも無い
+    func mergeAnonymousAccount(anonymousIDToken: String) async throws {}
 }

@@ -1,4 +1,5 @@
 import AlarmKit
+import AuthenticationServices
 import LicenseList
 import SwiftUI
 import UserNotifications
@@ -31,6 +32,8 @@ struct SettingsView: View {
     /// バックグラウンドから戻った時に now と権限の状態を取り直すための scene の状態
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
+    /// Sign in with Apple のボタンの配色を背景と逆にするために読む (Apple の Human Interface Guidelines の推奨)
+    @Environment(\.colorScheme) private var colorScheme
     /// 削除の確認ダイアログの表示状態
     @State private var deletionConfirmation = false
     @State private var alarmAuthorization = AlarmKitScheduler.authorizationState
@@ -92,7 +95,7 @@ struct SettingsView: View {
                 .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
                 .padding(.top, 14)
                 .accessibilityIdentifier("settings_delete_account")
-                .disabled(session.uid == nil || deletionState == .deleting)
+                .disabled(session.uid == nil || deletionState == .deleting || session.appleSignInInProgress)
 
                 if case .failed(let message) = deletionState {
                     Text(message)
@@ -299,6 +302,8 @@ struct SettingsView: View {
             .rowPadding()
             .accessibilityIdentifier("settings_account_id")
             HairlineDivider()
+            appleAccountRow
+            HairlineDivider()
             Link(destination: LegalLinks.supportMail(accountID: session.uid)) {
                 HStack {
                     // ja: サポート
@@ -318,6 +323,59 @@ struct SettingsView: View {
         }
         .card()
         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
+    }
+
+    /// Sign in with Apple の導線。サインインしなくても従来どおり使え、複数の iPhone で同じアカウントを使う時・機種変更で引き継ぐ時にだけサインインする
+    @ViewBuilder
+    private var appleAccountRow: some View {
+        if session.appleIDLinked {
+            HStack {
+                // ja: Apple アカウント
+                Text("Apple Account")
+                    .font(.body)
+                    .foregroundStyle(Color.paper)
+                Spacer()
+                // ja: サインイン済み
+                Text("Signed in")
+                    .font(.body)
+                    .foregroundStyle(Color.paperTertiary)
+            }
+            .rowPadding()
+            .accessibilityIdentifier("settings_apple_account")
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                SignInWithAppleButton(.signIn) { request in
+                    session.prepare(appleIDRequest: request)
+                } onCompletion: { result in
+                    Task { await session.completeSignInWithApple(result: result) }
+                }
+                .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+                // SignInWithAppleButton は表示した後にスタイルが変わっても描き直さない (simtunnel で外観を切り替えて確認) ため、外観ごとに作り直す
+                .id(colorScheme)
+                .frame(height: 44)
+                .disabled(session.uid == nil || session.appleSignInInProgress || session.accountDeletionInProgress)
+                .accessibilityIdentifier("settings_sign_in_with_apple")
+                // ja: 複数の iPhone で同じ API トークンを使う時や機種変更で引き継ぐ時にサインインします
+                Text("Sign in to use the same API token on multiple iPhones or to move to a new iPhone")
+                    .font(.footnote)
+                    .foregroundStyle(Color.paperTertiary)
+            }
+            .rowPadding()
+        }
+        if session.appleSignInInProgress {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 12)
+        }
+        if let appleSignInError = session.appleSignInError {
+            Text(appleSignInError)
+                .font(.footnote)
+                .foregroundStyle(Color.destructive)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, DesignMetrics.textHorizontalPadding)
+                .padding(.bottom, 12)
+                .accessibilityIdentifier("settings_apple_sign_in_error")
+        }
     }
 
     private var legalCard: some View {
@@ -473,6 +531,9 @@ struct SettingsView: View {
         do {
             try await session.deleteAccount()
             deletionState = .deleted
+        } catch let error as ASAuthorizationError where error.code == .canceled {
+            // Apple のトークンの失効に必要なサインインのシートを閉じた。削除をやめたものとして扱う
+            deletionState = .idle
         } catch {
             deletionState = .failed(message: error.localizedDescription)
         }

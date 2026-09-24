@@ -10,6 +10,9 @@ extension String {
     /// 購読はアプリ停止中に失効し得るため、proEntitlementActive と対で保存して参照時に同期判定する。
     /// 請求猶予期間中はその終了日時 (RevenueCat の SubscriptionInfo.gracePeriodExpiresDate) を保存する
     static let proEntitlementExpiration = "proEntitlementExpiration"
+    /// 既存の Apple アカウントへ切り替えた後、購入を RevenueCat へ送り直す必要がある App User ID (切り替え先の uid)。
+    /// 送り直せるまで残し、アプリが終了しても次の起動でやり直せるよう UserDefaults に保存する (`AccountSession.syncPendingPurchases`)
+    static let pendingPurchaseSyncAppUserID = "pendingPurchaseSyncAppUserID"
 }
 
 /// キャッシュへ保存する実効的な失効日時。
@@ -107,6 +110,22 @@ enum ProEntitlement {
     /// RevenueCat の App User ID がこの uid になっているか。未 configure では購入自体ができないため false
     static func isLoggedIn(as appUserID: String) -> Bool {
         Purchases.isConfigured && Purchases.shared.appUserID == appUserID
+    }
+
+    /// この端末の StoreKit の購入を、今の App User ID で RevenueCat へ送り直す。
+    /// 別の App User ID に結び付いている購入は、プロジェクトの restore behavior に従って今の App User ID へ移る
+    /// (既定の Transfer to new App User ID の場合。 https://www.revenuecat.com/docs/projects/restore-behavior )。
+    /// OS のサインインを求めない (restorePurchases と違い Apple ID の入力を促さない)。何度呼んでも同じ状態になる。
+    /// 送り直せたかを返す (未 configure では送れないため false)
+    static func syncPurchases() async -> Bool {
+        guard Purchases.isConfigured else { return false }
+        do {
+            cacheEntitlement(customerInfo: try await Purchases.shared.syncPurchases())
+            return true
+        } catch {
+            Logger.purchase.error("RevenueCat syncPurchases failed: \(error.localizedDescription)")
+            return false
+        }
     }
 
     /// RevenueCat の identity を匿名 ID に戻す。既に匿名なら何もしない (冪等。匿名の logOut は SDK がエラーにする)
