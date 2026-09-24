@@ -93,7 +93,7 @@ curl -X DELETE https://api.signalarm.app/v1/alarms/3b0e0c6e-9f1b-4c0a-9e7d-1f2a3
 
 `200 OK` with the same body as `POST /v1/alarms`, with `"status": "canceled"`. Cancelling an alarm that was already cancelled returns the same response, so retries are safe.
 
-The cancellation only reaches the devices that are registered when you send the request. If a device was unregistered after the alarm was scheduled, the alarm already on that device is not cancelled and still rings; cancel it from the alarm list in the app.
+The cancellation only reaches the devices that receive alarms when you send the request (see Limits below). If a device was unregistered, or stopped receiving alarms because a Pro subscription ended, after the alarm was scheduled, the alarm already on that device is not cancelled and still rings; cancel it from the alarm list in the app.
 
 ### Errors
 
@@ -125,10 +125,10 @@ Unexpected server failures use `500` with `"code": "internal"`.
 | --- | --- | --- |
 | Alarms per calendar month (UTC) | 50 | 1000 |
 | API tokens | 1 | Multiple (one per system) |
-| Devices per account | 20 | 20 |
+| Devices that receive alarms | 1 (the first device registered) | All registered devices (up to 20) |
 | Alarm history in the app | Last 3 alarms | 30 days |
 
-A plan-specific device limit is not enforced yet; both plans share the same cap of 20 registered devices. Requests are rate limited to 60 per minute per token on both plans. Alarm records (for history and cancellation) are kept for 30 days after the alarm fires or is cancelled.
+On the Free plan, alarms go only to the first iPhone registered to the account; iPhones registered after it stay on the account but do not receive alarms. When a Pro subscription ends, delivery goes back to the first registered iPhone. Requests are rate limited to 60 per minute per token on both plans. Alarm records (for history and cancellation) are kept for 30 days after the alarm fires or is cancelled.
 
 ## Delivery and timing
 
