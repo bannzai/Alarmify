@@ -8,14 +8,16 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 ### 提供者が収集する情報
 本サービスは、外部のサービスから送信されたリクエストをユーザーの端末に配送してアラームを登録するため、以下の情報を提供者のサーバー（Google LLC が提供する Firebase / Google Cloud。データの保存先は日本のリージョンです。）で収集・保管します。
 
-- **アカウント識別子**: アプリの初回起動時に自動で発行される匿名のユーザー ID
+- **アカウント識別子**: アプリの初回起動時に自動で発行される匿名のユーザー ID、または Sign in with Apple を連携した場合のユーザー ID。Sign in with Apple の連携時に Apple Inc. から受け取るのは Apple のユーザー識別子のみで、メールアドレスおよび氏名は要求も保存もしません<!-- source: Alarmify/Account/AccountSession.swift: prepare(appleIDRequest:) が requestedScopes = [] にしているため identity token にメールアドレス・氏名が含まれず、Firebase Auth が保持するのは Apple のユーザー識別子だけ (documents/app-privacy.md) -->
 - **API トークン**: 外部サービスから本サービスを呼び出すためにユーザーが発行するトークン。提供者のサーバーにはハッシュ化した値のみを保存します
 - **端末情報**: プッシュ通知の配送に必要なデバイストークン、端末の種別、OS のバージョン、アプリのバージョン、および本アプリからのリクエストであることを検証するための Firebase App Check のトークン
 - **アラーム要求**: 外部サービスから送信されたアラームの日時・タイトル・送信元の識別子、および配送・登録の結果。アラームのタイトルには、ユーザーまたはユーザーが連携した外部サービスが設定した文言が含まれます。これらの情報は送信から 30 日で自動的に削除されます
 - **お問い合わせ情報**: ユーザーがメールまたはアプリ内からお問い合わせを行った場合の連絡先と問い合わせ内容
 
 ### 外部サービスが収集する情報
-本サービスでは、有料サービスの購入状況の管理および決済処理のため、RevenueCat, Inc. が提供する RevenueCat を利用しています。RevenueCat は購入情報（購入した商品、購入日時、匿名の端末識別子等）を収集します。収集された情報は RevenueCat, Inc. のプライバシーポリシー（https://www.revenuecat.com/privacy ）に基づき管理されます。
+本サービスでは、有料サービスの購入状況の管理および決済処理のため、RevenueCat, Inc. が提供する RevenueCat を利用しています。RevenueCat は購入情報（購入した商品、購入日時、本サービスのアカウント識別子等）を収集します。<!-- source: Alarmify/Features/Purchase/ProEntitlement.swift: Purchases.logIn に Firebase Auth の uid (アカウント識別子) を渡し、RevenueCat の App User ID にしている -->収集された情報は RevenueCat, Inc. のプライバシーポリシー（https://www.revenuecat.com/privacy ）に基づき管理されます。
+
+複数の iPhone を 1 つのアカウントにまとめるための任意の認証には、Apple Inc. が提供する Sign in with Apple を利用します。連携時に Apple Inc. から受け取る情報は、上記のとおり Apple のユーザー識別子のみです。Apple Inc. による情報の取扱いは Apple のプライバシーポリシー（https://www.apple.com/legal/privacy/ ）に基づきます。
 
 プッシュ通知の配送には Apple Inc. の Apple Push Notification service および Google LLC の Firebase Cloud Messaging を利用します。アプリ内購入の決済は Apple Inc. が処理します。提供者はクレジットカード情報等の決済情報を取得しません。
 
@@ -27,6 +29,7 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 
 - 外部サービスからのリクエストをユーザーの端末に配送し、アラームを登録・更新・取消するため
 - API トークンの認証、不正利用の防止、利用回数の制限（無料プランの上限等）の判定のため
+- ユーザーのアカウントの識別および認証（Sign in with Apple による複数の iPhone の 1 つのアカウントへの統合を含みます。）のため
 - 有料サービスの購入状況の確認・復元等、本サービスの提供、維持、保護および改善のため
 - 本サービスに関するご案内、お問い合わせ等への対応のため
 - 本サービスに関する提供者の規約、ポリシー等に違反する行為に対する対応のため
@@ -43,7 +46,7 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 ## 個人情報の開示・訂正・利用停止・消去
 提供者は、ユーザーから、個人情報保護法の定めに基づき個人情報の開示・訂正・利用停止・消去を求められたときは、ユーザーご本人からのご請求であることを確認の上で、遅滞なく対応します（当該個人情報が存在しないときにはその旨を通知いたします。）。ただし、個人情報保護法その他の法令により提供者が義務を負わない場合は、この限りではありません。
 
-ユーザーは、アプリ内の設定画面からアカウントを削除できます。アカウントを削除すると、アカウント識別子、API トークン、端末情報、アラーム要求の履歴は提供者のサーバーから削除されます。手順の詳細は「[アカウントとデータの削除方法](./AccountDeletion-ja)」をご覧ください。
+ユーザーは、アプリ内の設定画面からアカウントを削除できます。アカウントを削除すると、アカウント識別子、API トークン、端末情報、アラーム要求の履歴は提供者のサーバーから削除されます。Sign in with Apple を連携している場合は、削除の前に Sign in with Apple の認証を求め、認証後に Apple のトークンを失効させてから削除します。<!-- source: Alarmify/Account/AccountSession.swift: deleteAccount() は appleIDLinked なら revokeAppleToken() (Sign in with Apple をやり直して authorization code を受け取り Auth.auth().revokeToken(withAuthorizationCode:)) を済ませてから apiClient.deleteAccount() を呼ぶ -->手順の詳細は「[アカウントとデータの削除方法](./AccountDeletion-ja)」をご覧ください。
 
 ## お問い合わせ窓口
 ご意見、ご質問、苦情のお申出その他利用者情報の取扱いに関するお問い合わせは、以下の窓口までお願いいたします。
