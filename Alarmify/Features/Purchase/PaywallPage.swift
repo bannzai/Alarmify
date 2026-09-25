@@ -66,6 +66,9 @@ struct PaywallPage: View {
     @State private var purchaseError: String?
     /// 購入前の Sign in with Apple で統合した先が既に Pro だったか。true でアラートを出し、閉じたらペイウォールも閉じる
     @State private var proAlreadyActive = false
+    /// この画面で購入の前に Sign in with Apple を済ませたか。
+    /// RevenueCat との結び付けの失敗で中断した購入をやり直す時は既にリンク済みになっているため、統合先が既に Pro かの確認を続けるのに使う
+    @State private var appleSignInCompletedForPurchase = false
     @State private var session = AccountSession.shared
 
     @Environment(\.dismiss) private var dismiss
@@ -460,7 +463,15 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
-        let signInOutcome = session.appleIDLinked ? nil : await session.signInWithAppleWithoutButton()
+        let signInOutcome: AppleSignInOutcome?
+        if appleSignInCompletedForPurchase {
+            signInOutcome = .linked
+        } else if session.appleIDLinked {
+            signInOutcome = nil
+        } else {
+            signInOutcome = await session.signInWithAppleWithoutButton()
+            appleSignInCompletedForPurchase = signInOutcome == .linked
+        }
         // サインインで uid が変わり得るため、RevenueCat との結び付けの確認はサインインの後に行う。
         // 切り替え時の RevenueCat の logIn は失敗しても伝わらず、キャッシュの Pro 判定が匿名アカウントのまま残り得るため、
         // 結び付けを確かめてから (ProEntitlement.logIn がその uid の購入をキャッシュした後に) Pro を判定する。
