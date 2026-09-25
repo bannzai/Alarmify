@@ -49,6 +49,25 @@ final class APITokenTests: XCTestCase {
         XCTAssertNil(model.issued)
     }
 
+    /// 発行直後の平文は、読み直した一覧に無くなった時 (アカウントの切り替えで削除された等) に表示から消える
+    @MainActor
+    func testLoadDropsIssuedTokenMissingFromTheAccount() async throws {
+        let session = AccountSession(settings: DeveloperSettings(backend: .emulator, stubAPIClient: true))
+        let model = APITokenModel(session: session)
+
+        await model.issue()
+        XCTAssertNotNil(model.issued)
+        await model.load()
+        XCTAssertNotNil(model.issued)
+
+        // スタブの削除は発行済みのトークンを消す。統合で切り替え前のアカウントのトークンが消えた状態の代わりに使う
+        try await session.client.deleteAccount()
+        await model.load()
+
+        XCTAssertTrue(model.tokens.isEmpty)
+        XCTAssertNil(model.issued)
+    }
+
     /// 無料プランの上限 (トークン 1 つ) を超える発行は拒否され、ペイウォールが開く。上限の判定はサーバー (スタブ) が正
     @MainActor
     func testIssuingBeyondTheFreeLimitOpensThePaywall() async {

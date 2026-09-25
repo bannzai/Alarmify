@@ -463,6 +463,12 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
+        // キャッシュの Pro 判定は RevenueCat の logIn の失敗で前のアカウント (削除したアカウント等) の値のまま残り得るため、
+        // 今の uid に結び付けてから (ProEntitlement.logIn がその uid の購入をキャッシュした後に) Pro を判定する
+        if let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
+            return
+        }
         // 匿名のまま Pro を購入済みのアカウントには Sign in with Apple を求めない (二重購入にもなるため購入もしない)
         if !session.appleIDLinked, ProEntitlement.isPro {
             proAlreadyActive = true
@@ -476,14 +482,12 @@ struct PaywallPage: View {
         } else {
             signInOutcome = await session.signInWithAppleWithoutButton()
             appleSignInCompletedForPurchase = signInOutcome == .linked
-        }
-        // サインインで uid が変わり得るため、RevenueCat との結び付けの確認はサインインの後に行う。
-        // 切り替え時の RevenueCat の logIn は失敗しても伝わらず、キャッシュの Pro 判定が匿名アカウントのまま残り得るため、
-        // 結び付けを確かめてから (ProEntitlement.logIn がその uid の購入をキャッシュした後に) Pro を判定する。
-        // シートを閉じた・サインインに失敗した時は購入しないため確かめない
-        if signInOutcome == nil || signInOutcome == .linked, let blocked = await purchaseBlockedMessage() {
-            purchaseError = blocked
-            return
+            // サインインで既存の Apple アカウントへ切り替わると uid が変わるため、切り替え先の uid に結び付け直してから Pro を判定する
+            // (切り替え時の RevenueCat の logIn は失敗しても switchAccount から伝わらない)
+            if signInOutcome == .linked, let blocked = await purchaseBlockedMessage() {
+                purchaseError = blocked
+                return
+            }
         }
         switch purchaseSignInGate(signInOutcome: signInOutcome, isPro: ProEntitlement.isPro) {
         case .purchase:

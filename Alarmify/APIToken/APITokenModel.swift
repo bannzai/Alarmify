@@ -34,11 +34,16 @@ final class APITokenModel {
         )
     }
 
+    /// トークンの一覧を読み直す。サインイン中のアカウントが変わった時 (Sign in with Apple で既存の Apple アカウントへ切り替えた等) にも画面から呼ぶ
     func load() async {
         loading = true
         defer { loading = false }
         do {
             tokens = try await session.client.apiTokens()
+            // 切り替え前のアカウントで発行したトークンは統合で削除されるため、今のアカウントの一覧に無い平文を表示に残さない
+            if let issued, !tokens.contains(where: { $0.id == issued.token.id }) {
+                self.issued = nil
+            }
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
