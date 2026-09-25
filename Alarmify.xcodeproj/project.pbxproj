@@ -103,6 +103,7 @@
 		68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */; };
 		1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA252266FED4387C94D006A /* LegalLinks.swift */; };
 		E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */; };
+		B7E4C2A19D3F4E6A8C1B2D31 /* PurchaseSignInGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E4C2A19D3F4E6A8C1B2D30 /* PurchaseSignInGateTests.swift */; };
 		3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */; };
 		51D30E9B87C487D8AC02486A /* Alarmify.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 1F394EF477D8ABAB7349808A /* Alarmify.storekit */; };
 		FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */; };
@@ -258,6 +259,7 @@
 		68BA01602C6A5A937B0AD9F5 /* PaywallPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPage.swift; sourceTree = "<group>"; };
 		6FA252266FED4387C94D006A /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlementTests.swift; sourceTree = "<group>"; };
+		B7E4C2A19D3F4E6A8C1B2D30 /* PurchaseSignInGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseSignInGateTests.swift; sourceTree = "<group>"; };
 		DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitConfigurationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -420,6 +422,7 @@
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
 				FA085358AAEA03A5EF70727B /* APITokenTests.swift */,
 				A4727CF414B84CB2B73ED636 /* ProEntitlementTests.swift */,
+				B7E4C2A19D3F4E6A8C1B2D30 /* PurchaseSignInGateTests.swift */,
 				2952B684BE6866DCF45EE2D7 /* StoreKitTest.framework */,
 				DFE6D68C4E09843E898C1421 /* StoreKitConfigurationTests.swift */,
 			);
@@ -915,6 +918,7 @@
 				C2252D2B1E8E559D2C8D3B34 /* HomeNextAlarmTests.swift in Sources */,
 				E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */,
 				E4599BEF3F7E471EB1A2D035 /* ProEntitlementTests.swift in Sources */,
+				B7E4C2A19D3F4E6A8C1B2D31 /* PurchaseSignInGateTests.swift in Sources */,
 				3128294A0AE941836D9E53FD /* StoreKitConfigurationTests.swift in Sources */,
 				DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */,
 				9A39FEEA7DB51F2AFA56F016 /* AlarmKitSchedulerTests.swift in Sources */,

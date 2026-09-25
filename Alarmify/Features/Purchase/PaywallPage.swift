@@ -15,6 +15,37 @@ enum PaywallTrigger: Identifiable {
     var id: Self { self }
 }
 
+/// 購入ボタンを押した後、購入を始める前の Sign in with Apple の確認で決まる次の動作 (`purchaseSignInGate`)。
+/// 表示する文言は使用側 (PaywallPage) が switch で決める
+enum PurchaseSignInGate: Equatable {
+    /// 購入に進む
+    case purchase
+    /// ユーザーが Apple のシートを閉じた。購入せず、何も表示しない
+    case cancelled
+    /// サインインできなかった。購入せず、説明を表示する
+    case failed(String)
+    /// サインインで統合した先のアカウントが既に Pro。二重購入を防ぐため購入せず、Pro が有効であることを表示して閉じる
+    case alreadyPro
+}
+
+/// Pro の購入を始める前に、Sign in with Apple の結果から次の動作を決める。
+/// Pro はアカウント単位の機能 (サーバーのプラン・複数端末への配送・API トークン) のため、購入はアカウントに Apple の認証情報がリンクされている時だけ始める
+/// (課金設計: https://github.com/bannzai/Alarmify/issues/90#issuecomment-5651147821 )。
+/// `signInOutcome` は購入ボタンを押した時点で既にリンク済みで、サインインを求めなかった時に nil。
+/// `isPro` はサインインを終えた後の `ProEntitlement.isPro` (切り替えた先のアカウントの購入を反映した値)。純粋関数であり冪等
+func purchaseSignInGate(signInOutcome: AppleSignInOutcome?, isPro: Bool) -> PurchaseSignInGate {
+    switch signInOutcome {
+    case nil:
+        return .purchase
+    case .cancelled:
+        return .cancelled
+    case .failed(let message):
+        return .failed(message)
+    case .linked:
+        return isPro ? .alreadyPro : .purchase
+    }
+}
+
 /// ペイウォール画面。年額を主・月額を副として提示する (課金設計は documents/PROJECT.md、構成と文言は design_handoff/screens/paywall.md と paywall-review.md)。
 /// 価格・購読期間・月額換算はストアが正のため RevenueCat の offering から取得できた package だけを描画し、
 /// 取得できない間は購入導線を出さずに再読み込みへ倒す
@@ -33,6 +64,9 @@ struct PaywallPage: View {
     @State private var offeringUnavailable = false
     /// 購入・復元の失敗をユーザーへ伝えるメッセージ。nil 以外でアラート表示する
     @State private var purchaseError: String?
+    /// 購入前の Sign in with Apple で統合した先が既に Pro だったか。true でアラートを出し、閉じたらペイウォールも閉じる
+    @State private var proAlreadyActive = false
+    @State private var session = AccountSession.shared
 
     @Environment(\.dismiss) private var dismiss
 
@@ -76,6 +110,10 @@ struct PaywallPage: View {
             set: { if !$0 { purchaseError = nil } }
         )) {
             Button(String(localized: "OK")) { purchaseError = nil }
+        }
+        // ja: このアカウントでは Pro が有効になっています
+        .alert(Text("Pro is already active on this account"), isPresented: $proAlreadyActive) {
+            Button(String(localized: "OK")) { dismiss() }
         }
     }
 
@@ -132,6 +170,19 @@ struct PaywallPage: View {
             .accessibilityIdentifier("paywall_continue_button")
             .padding(.horizontal, DesignMetrics.textHorizontalPadding)
             .padding(.top, 16)
+
+            // 購入ボタンを押した時に Sign in with Apple のシートが出る理由を先に伝える。リンク済みなら求めないため出さない
+            if !session.appleIDLinked {
+                // ja: Pro の購入には Sign in with Apple が必要です。メールアドレスと氏名は求めません。
+                Text("Pro requires Sign in with Apple. Your email and name aren't requested.")
+                    .font(.caption)
+                    .foregroundStyle(Color.paperSecondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, DesignMetrics.heroHorizontalPadding)
+                    .padding(.top, 12)
+                    .accessibilityIdentifier("paywall_sign_in_with_apple_required")
+            }
 
             // ja: 設定で解約するまで自動更新されます。価格はお住まいの地域の通貨で表示されます。
             Text("Renews automatically until canceled in Settings. Prices shown in your local currency.")
@@ -402,11 +453,28 @@ struct PaywallPage: View {
         }
     }
 
-    /// package を購入し、entitlement pro が有効になったら閉じる
+    /// package を購入し、entitlement pro が有効になったら閉じる。
+    /// アカウントに Apple の認証情報がリンクされていなければ、購入を始める前に Sign in with Apple を求める (purchaseSignInGate)。
+    /// 購入の復元 (restore) には求めない。匿名のまま復元した購入は、後で Sign in with Apple した時に AccountSession が Apple 側の uid へ移すため
     private func purchase(package: Package) async {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
+        // Pro の判定は切り替えた先のアカウントの購入を反映した値で行うため、サインインを終えてから読む
+        let signInOutcome = session.appleIDLinked ? nil : await session.signInWithAppleWithoutButton()
+        switch purchaseSignInGate(signInOutcome: signInOutcome, isPro: ProEntitlement.isPro) {
+        case .purchase:
+            break
+        case .cancelled:
+            return
+        case .failed(let message):
+            purchaseError = message
+            return
+        case .alreadyPro:
+            proAlreadyActive = true
+            return
+        }
+        // サインインで uid が変わり得るため、RevenueCat との結び付けの確認はサインインの後に行う
         if let blocked = await purchaseBlockedMessage() {
             purchaseError = blocked
             return
