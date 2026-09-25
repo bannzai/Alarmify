@@ -463,6 +463,11 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
+        // 匿名のまま Pro を購入済みのアカウントには Sign in with Apple を求めない (二重購入にもなるため購入もしない)
+        if !session.appleIDLinked, ProEntitlement.isPro {
+            proAlreadyActive = true
+            return
+        }
         let signInOutcome: AppleSignInOutcome?
         if appleSignInCompletedForPurchase {
             signInOutcome = .linked
