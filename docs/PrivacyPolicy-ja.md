@@ -17,7 +17,7 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 ### 外部サービスが収集する情報
 本サービスでは、有料サービスの購入状況の管理および決済処理のため、RevenueCat, Inc. が提供する RevenueCat を利用しています。RevenueCat は購入情報（購入した商品、購入日時、本サービスのアカウント識別子等）を収集します。<!-- source: Alarmify/Features/Purchase/ProEntitlement.swift: Purchases.logIn に Firebase Auth の uid (アカウント識別子) を渡し、RevenueCat の App User ID にしている -->収集された情報は RevenueCat, Inc. のプライバシーポリシー（https://www.revenuecat.com/privacy ）に基づき管理されます。
 
-複数の iPhone を 1 つのアカウントにまとめるための任意の認証には、Apple Inc. が提供する Sign in with Apple を利用します。連携時に Apple Inc. から受け取る情報は、上記のとおり Apple のユーザー識別子のみです。Apple Inc. による情報の取扱いは Apple のプライバシーポリシー（https://www.apple.com/legal/privacy/ ）に基づきます。
+複数の iPhone を 1 つのアカウントにまとめるための認証（有料サービスの購入時には必須、それ以外は任意）には、Apple Inc. が提供する Sign in with Apple を利用します。連携時に Apple Inc. から受け取る情報は、上記のとおり Apple のユーザー識別子のみです。Apple Inc. による情報の取扱いは Apple のプライバシーポリシー（https://www.apple.com/legal/privacy/ ）に基づきます。
 
 プッシュ通知の配送には Apple Inc. の Apple Push Notification service および Google LLC の Firebase Cloud Messaging を利用します。アプリ内購入の決済は Apple Inc. が処理します。提供者はクレジットカード情報等の決済情報を取得しません。
 

@@ -27,6 +27,17 @@ enum PurchaseLinkState: Equatable, Sendable {
     case emulatorBackend
 }
 
+/// Sign in with Apple の 1 回分の結果 (`AccountSession.completeSignInWithApple` の戻り値)。
+/// 購入の前に求めたサインインの後に、購入へ進むかを呼び出し側 (PaywallPage) が決めるために使う
+enum AppleSignInOutcome: Equatable, Sendable {
+    /// Apple の認証情報がリンクされたアカウントでサインインしている (匿名アカウントへのリンク・既存の Apple アカウントへの切り替えのどちらも含む)
+    case linked
+    /// ユーザーが Apple のシートを閉じた
+    case cancelled
+    /// サインインできなかった。画面に出す説明を持つ
+    case failed(String)
+}
+
 /// Sign in with Apple の結果から Firebase Auth へ渡す値を取り出せなかった理由
 enum AppleSignInError: LocalizedError {
     /// Apple の認証情報に identity token が含まれていない
@@ -150,20 +161,23 @@ final class AccountSession {
     /// 匿名アカウントに Apple の認証情報をリンクして uid を維持し、その Apple アカウントが既に別の uid で使われていれば
     /// Apple 側の uid へ切り替えて、匿名側の端末をバックエンドで移す (API トークンと当月の利用数は Apple 側のものを使う)。
     /// ユーザーがシートを閉じた時は何もしない
-    func completeSignInWithApple(result: Result<ASAuthorization, Error>) async {
+    @discardableResult
+    func completeSignInWithApple(result: Result<ASAuthorization, Error>) async -> AppleSignInOutcome {
         let nonce = appleIDRequestNonce
         appleIDRequestNonce = nil
         switch result {
         case .failure(let error):
-            if (error as? ASAuthorizationError)?.code != .canceled {
-                // AuthenticationServices のエラーの説明は「com.apple.AuthenticationServices.AuthorizationError error 1000」のような
-                // 内部表現になる (端末が Apple アカウントにサインインしていないまま閉じた時等) ため、画面には一般的な文言を出して原文はログに残す
-                appleSignInError = AppleSignInError.authorizationFailed.localizedDescription
-                Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
-            }
+            guard (error as? ASAuthorizationError)?.code != .canceled else { return .cancelled }
+            // AuthenticationServices のエラーの説明は「com.apple.AuthenticationServices.AuthorizationError error 1000」のような
+            // 内部表現になる (端末が Apple アカウントにサインインしていないまま閉じた時等) ため、画面には一般的な文言を出して原文はログに残す
+            appleSignInError = AppleSignInError.authorizationFailed.localizedDescription
+            Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
+            return .failed(AppleSignInError.authorizationFailed.localizedDescription)
         case .success(let authorization):
             // 削除の途中でサインインを切り替えると、削除後の signOut が切り替え先をサインアウトしてしまう
-            guard !accountDeletionInProgress, !appleSignInInProgress else { return }
+            guard !accountDeletionInProgress, !appleSignInInProgress else {
+                return .failed(AppleSignInError.accountOperationInProgress.localizedDescription)
+            }
             appleSignInInProgress = true
             defer { appleSignInInProgress = false }
             do {
@@ -173,10 +187,26 @@ final class AccountSession {
                 if pendingAnonymousMergeIDToken == nil {
                     appleSignInError = nil
                 }
+                return .linked
             } catch {
                 appleSignInError = error.localizedDescription
                 Logger.account.error("Sign in with Apple failed: \(error.localizedDescription)")
+                return .failed(error.localizedDescription)
             }
+        }
+    }
+
+    /// ボタンを介さずに Sign in with Apple のシートを出してサインインする。
+    /// ペイウォールの購入ボタンのように、Sign in with Apple のボタンではない操作から求める時に使う。
+    /// nonce の設定とサインイン後の処理はボタンと同じ `prepare(appleIDRequest:)`・`completeSignInWithApple(result:)` を通す
+    func signInWithAppleWithoutButton() async -> AppleSignInOutcome {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        prepare(appleIDRequest: request)
+        // completeSignInWithApple は throw しないため、catch に来るのはシートの結果 (キャンセルを含む) だけ
+        do {
+            return await completeSignInWithApple(result: .success(try await AppleIDAuthorization().perform(request: request)))
+        } catch {
+            return await completeSignInWithApple(result: .failure(error))
         }
     }
 
@@ -268,8 +298,12 @@ final class AccountSession {
     private func revokeAppleToken() async throws {
         // Firebase の revokeToken はサインイン中のユーザーが居ないと完了を呼ばずに終わる (async 版が戻らない) ため、先に確かめる
         guard Auth.auth().currentUser != nil else { throw AlarmifyAPIError.notSignedIn }
-        let appleIDCredential = try await AppleIDAuthorization().perform()
-        guard let authorizationCode = appleIDCredential.authorizationCode.flatMap({ String(data: $0, encoding: .utf8) }) else {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        // トークンの失効に使う authorization code だけが要るため、メールアドレスと氏名は要求しない
+        request.requestedScopes = []
+        guard let appleIDCredential = try await AppleIDAuthorization().perform(request: request).credential as? ASAuthorizationAppleIDCredential,
+              let authorizationCode = appleIDCredential.authorizationCode.flatMap({ String(data: $0, encoding: .utf8) })
+        else {
             throw AppleSignInError.missingAuthorizationCode
         }
         try await Auth.auth().revokeToken(withAuthorizationCode: authorizationCode)
@@ -479,21 +513,19 @@ final class AccountSession {
     }
 }
 
-/// ボタンを介さずに Sign in with Apple のシートを出し、Apple の認証情報を async で受け取る 1 回分のリクエスト。
-/// ASAuthorizationController は結果を delegate で返すため class にする。呼び出し側の `perform()` の await が
+/// ボタンを介さずに Sign in with Apple のシートを出し、Apple の認可を async で受け取る 1 回分のリクエスト。
+/// ASAuthorizationController は結果を delegate で返すため class にする。呼び出し側の `perform(request:)` の await が
 /// このインスタンスを保持し、インスタンスがコントローラーを保持するため、結果が届くまで解放されない
 @MainActor
 private final class AppleIDAuthorization: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     /// 表示中のコントローラー。delegate の呼び出しが終わるまで保持する
     private var controller: ASAuthorizationController?
-    /// `perform()` の呼び出し元へ結果を返す continuation
-    private var continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
+    /// `perform(request:)` の呼び出し元へ結果を返す continuation
+    private var continuation: CheckedContinuation<ASAuthorization, Error>?
 
-    /// Sign in with Apple のシートを出し、ユーザーが認証するかシートを閉じるまで待つ
-    func perform() async throws -> ASAuthorizationAppleIDCredential {
-        let request = ASAuthorizationAppleIDProvider().createRequest()
-        // トークンの失効に使う authorization code だけが要るため、メールアドレスと氏名は要求しない
-        request.requestedScopes = []
+    /// Sign in with Apple のシートを出し、ユーザーが認証するかシートを閉じるまで待つ。
+    /// 要求する範囲と nonce は用途 (トークンの失効・サインイン) で変わるため、呼び出し側が設定したリクエストを受け取る
+    func perform(request: ASAuthorizationAppleIDRequest) async throws -> ASAuthorization {
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
@@ -504,16 +536,12 @@ private final class AppleIDAuthorization: NSObject, ASAuthorizationControllerDel
         }
     }
 
-    /// Apple ID 以外の認証情報 (パスワード等) は要求していないため届かないが、届いた時も continuation を再開して呼び出し元を待たせない
+    /// 認証情報の種類 (Apple ID 以外の認証情報が届いていないか) は呼び出し側が確かめる
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-            finish(result: .success(appleIDCredential))
-        } else {
-            finish(result: .failure(AppleSignInError.missingAuthorizationCode))
-        }
+        finish(result: .success(authorization))
     }
 
-    /// シートを閉じた時は ASAuthorizationError.canceled が届き、呼び出し元が削除の中断として扱う
+    /// シートを閉じた時は ASAuthorizationError.canceled が届き、呼び出し元が中断として扱う
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         finish(result: .failure(error))
     }
@@ -524,13 +552,13 @@ private final class AppleIDAuthorization: NSObject, ASAuthorizationControllerDel
         if let keyWindow = windowScenes.flatMap(\.windows).first(where: \.isKeyWindow) {
             return keyWindow
         }
-        // 設定画面の操作から呼ぶため、画面を持つシーンは必ずある
+        // 設定画面・ペイウォールの操作から呼ぶため、画面を持つシーンは必ずある
         guard let windowScene = windowScenes.first else { preconditionFailure("No window scene to present Sign in with Apple") }
         return ASPresentationAnchor(windowScene: windowScene)
     }
 
     /// continuation は 1 度しか再開できないため、取り出してから再開する
-    private func finish(result: Result<ASAuthorizationAppleIDCredential, Error>) {
+    private func finish(result: Result<ASAuthorization, Error>) {
         continuation?.resume(with: result)
         continuation = nil
         controller = nil

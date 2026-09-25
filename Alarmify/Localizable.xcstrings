@@ -15554,6 +15554,26 @@
         }
       }
     },
+    "Pro is already active on this account" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアカウントでは Pro が有効になっています"
+          }
+        }
+      }
+    },
+    "Pro requires Sign in with Apple. Your email and name aren't requested." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro の購入には Sign in with Apple が必要です。メールアドレスと氏名は求めません。"
+          }
+        }
+      }
+    },
     "Pro until %@" : {
       "localizations" : {
         "ja" : {
