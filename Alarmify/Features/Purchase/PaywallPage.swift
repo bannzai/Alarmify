@@ -32,7 +32,7 @@ enum PurchaseSignInGate: Equatable {
 /// Pro はアカウント単位の機能 (サーバーのプラン・複数端末への配送・API トークン) のため、購入はアカウントに Apple の認証情報がリンクされている時だけ始める
 /// (課金設計: https://github.com/bannzai/Alarmify/issues/90#issuecomment-5651147821 )。
 /// `signInOutcome` は購入ボタンを押した時点で既にリンク済みで、サインインを求めなかった時に nil。
-/// `isPro` はサインインを終えた後の `ProEntitlement.isPro` (切り替えた先のアカウントの購入を反映した値)。純粋関数であり冪等
+/// `isPro` はサインインを終え、RevenueCat を今の uid に結び付けた後の `ProEntitlement.isPro` (切り替えた先のアカウントの購入を反映した値)。純粋関数であり冪等
 func purchaseSignInGate(signInOutcome: AppleSignInOutcome?, isPro: Bool) -> PurchaseSignInGate {
     switch signInOutcome {
     case nil:
@@ -460,8 +460,15 @@ struct PaywallPage: View {
         guard !isPurchasing else { return }
         isPurchasing = true
         defer { isPurchasing = false }
-        // Pro の判定は切り替えた先のアカウントの購入を反映した値で行うため、サインインを終えてから読む
         let signInOutcome = session.appleIDLinked ? nil : await session.signInWithAppleWithoutButton()
+        // サインインで uid が変わり得るため、RevenueCat との結び付けの確認はサインインの後に行う。
+        // 切り替え時の RevenueCat の logIn は失敗しても伝わらず、キャッシュの Pro 判定が匿名アカウントのまま残り得るため、
+        // 結び付けを確かめてから (ProEntitlement.logIn がその uid の購入をキャッシュした後に) Pro を判定する。
+        // シートを閉じた・サインインに失敗した時は購入しないため確かめない
+        if signInOutcome == nil || signInOutcome == .linked, let blocked = await purchaseBlockedMessage() {
+            purchaseError = blocked
+            return
+        }
         switch purchaseSignInGate(signInOutcome: signInOutcome, isPro: ProEntitlement.isPro) {
         case .purchase:
             break
@@ -472,11 +479,6 @@ struct PaywallPage: View {
             return
         case .alreadyPro:
             proAlreadyActive = true
-            return
-        }
-        // サインインで uid が変わり得るため、RevenueCat との結び付けの確認はサインインの後に行う
-        if let blocked = await purchaseBlockedMessage() {
-            purchaseError = blocked
             return
         }
         do {
