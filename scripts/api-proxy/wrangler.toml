@@ -10,6 +10,11 @@ preview_urls = false
 # custom_domain = true で同じ zone の DNS レコードと証明書を wrangler が用意する
 routes = [{ pattern = "api.signalarm.app", custom_domain = true }]
 
+# Workers Observability のアラート (エラー率等) を付ける前提としてログ保存を有効にする (bannzai/castle#1222)
+[observability]
+enabled = true
+head_sampling_rate = 1
+
 [vars]
 # alarmsApi の Cloud Run URL (`gcloud run services list --project alarmify-prod --region asia-northeast1`)。
 # cloudfunctions.net の URL は関数名がパスに付くため、パスを変えずに転送できる run.app の URL を使う
