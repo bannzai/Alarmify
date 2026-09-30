@@ -19,10 +19,12 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 
 複数の iPhone を 1 つのアカウントにまとめるための認証（有料サービスの購入時には必須、それ以外は任意）には、Apple Inc. が提供する Sign in with Apple を利用します。連携時に Apple Inc. から受け取る情報は、上記のとおり Apple のユーザー識別子のみです。Apple Inc. による情報の取扱いは Apple のプライバシーポリシー（https://www.apple.com/legal/privacy/ ）に基づきます。
 
+アプリの不具合を検知して修正するため、Google LLC が提供する Firebase Crashlytics を利用しています。アプリが異常終了した場合に、Firebase Crashlytics が異常終了時の処理の記録（スタックトレース）とアプリの状態、端末の種別、OS のバージョン、アプリのバージョン等を収集します。本サービスのアカウント識別子は送信しません。<!-- source: Alarmify.xcodeproj: アプリ本体ターゲットに FirebaseCrashlytics をリンクし、FirebaseApp.configure() で収集が始まる。Crashlytics.setUserID やカスタムキーは使っていない (documents/app-privacy.md の CRASH_DATA) -->Google LLC による情報の取扱いは Firebase のプライバシーとセキュリティの説明（https://firebase.google.com/support/privacy ）に基づきます。
+
 プッシュ通知の配送には Apple Inc. の Apple Push Notification service および Google LLC の Firebase Cloud Messaging を利用します。アプリ内購入の決済は Apple Inc. が処理します。提供者はクレジットカード情報等の決済情報を取得しません。
 
 ### 提供者が収集しない情報
-本サービスは、広告識別子（IDFA）、位置情報、連絡先、写真等の端末内のデータを収集しません。アプリの利用状況を分析する SDK およびクラッシュレポートの SDK は使用していません。
+本サービスは、広告識別子（IDFA）、位置情報、連絡先、写真等の端末内のデータを収集しません。アプリの利用状況を分析する SDK は使用していません。
 
 ## 利用目的
 利用者情報の具体的な利用目的は以下のとおりです。
@@ -31,6 +33,7 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 - API トークンの認証、不正利用の防止、利用回数の制限（無料プランの上限等）の判定のため
 - ユーザーのアカウントの識別および認証（Sign in with Apple による複数の iPhone の 1 つのアカウントへの統合を含みます。）のため
 - 有料サービスの購入状況の確認・復元等、本サービスの提供、維持、保護および改善のため
+- アプリの異常終了等の不具合を検知し、修正するため
 - 本サービスに関するご案内、お問い合わせ等への対応のため
 - 本サービスに関する提供者の規約、ポリシー等に違反する行為に対する対応のため
 - 本サービスに関する規約等の変更などを通知するため

@@ -19,10 +19,12 @@ The Service uses RevenueCat, provided by RevenueCat, Inc., to manage purchase st
 
 For the authentication that lets multiple iPhones be used under a single account (required when purchasing paid services and optional otherwise), the Service uses Sign in with Apple provided by Apple Inc. As described above, the only information received from Apple Inc. when linking is the Apple user identifier. Apple Inc. handles information in accordance with Apple's privacy policy (https://www.apple.com/legal/privacy/).
 
+The Service uses Firebase Crashlytics, provided by Google LLC, to detect and fix defects in the app. When the app terminates abnormally, Firebase Crashlytics collects a record of the processing at the time of the crash (stack trace), the state of the app, the device type, the OS version, the app version, and similar information. The account identifier of the Service is not sent.<!-- source: Alarmify.xcodeproj: FirebaseCrashlytics is linked to the app target and collection starts with FirebaseApp.configure(). Crashlytics.setUserID and custom keys are not used (CRASH_DATA in documents/app-privacy.md) --> Google LLC handles information in accordance with Firebase's privacy and security description (https://firebase.google.com/support/privacy).
+
 The Service uses the Apple Push Notification service of Apple Inc. and Firebase Cloud Messaging of Google LLC to deliver push notifications. Payments for in-app purchases are processed by Apple Inc. The Provider does not obtain payment information such as credit card details.
 
 ### Information Not Collected by the Provider
-The Service does not collect the advertising identifier (IDFA), location information, contacts, photos, or other data on your device. The Service does not use any SDK for analyzing app usage or any SDK for crash reporting.
+The Service does not collect the advertising identifier (IDFA), location information, contacts, photos, or other data on your device. The Service does not use any SDK for analyzing app usage.
 
 ## Purposes of Use
 The specific purposes of use of user information are as follows:
@@ -31,6 +33,7 @@ The specific purposes of use of user information are as follows:
 - To authenticate API Tokens, prevent unauthorized use, and determine limits on the number of uses (such as the limits of the free plan)
 - To identify and authenticate the user's account (including combining multiple iPhones into a single account through Sign in with Apple)
 - To provide, maintain, protect, and improve the Service, including confirming and restoring purchase status of paid services
+- To detect and fix defects such as abnormal termination of the app
 - To provide information about the Service and respond to inquiries
 - To respond to acts that violate the Provider's terms, policies, or other rules regarding the Service
 - To notify users of changes to the terms and other rules regarding the Service
