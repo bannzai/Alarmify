@@ -9,7 +9,7 @@ describe("Functions の実行サービスアカウント", () => {
   it("公開する全関数が実行専用サービスアカウントで実行される", async () => {
     const exported: unknown[] = Object.values(await import("../src/index.js"));
     const endpoints = exported.filter(hasEndpoint);
-    expect(endpoints.length).toBe(7);
+    expect(endpoints.length).toBe(10);
     for (const endpoint of endpoints) {
       expect(endpoint.__endpoint.serviceAccountEmail).toBe(
         "functions-runtime@alarmify-prod.iam.gserviceaccount.com",
