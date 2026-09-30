@@ -37,7 +37,7 @@
   2. Silent / Background Push (`content-available: 1`)
   3. Live Activity / ActivityKit Remote Push (PushWard が最も近い先行事例)
 - 2026-09-02 の雛形検証 (simulator iOS 26.5): app 本体からの AlarmKit 権限取得・登録は動作。`xcrun simctl push` の visible push は届いたが Notification Service Extension のプロセスは起動しなかった (ログに extension の記録なし)。Extension 経路の検証は実機 + 実 APNs で行う
-- 課金は RevenueCat。Analytics / Crashlytics は MVP では導入しない
+- 課金は RevenueCat。Analytics は MVP では導入しない。クラッシュの検知には Crashlytics を使い、アラートは Cloud Functions で Slack `#alarmify-notification` へ転送する (#119)
 - 参考実装: bannzai/mementomorning (AlarmKit の基盤・規約の取り込み元)、bannzai/Pilll (AlarmKit 利用)
 
 ## 課金設計 (Freemium + サブスクリプション)
