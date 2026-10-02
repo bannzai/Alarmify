@@ -170,6 +170,7 @@ gh secret delete FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Alarmify --
 | auth step が `Unable to acquire impersonated credentials` / `PERMISSION_DENIED` | Provider の attribute 条件に合わない (environment 未使用の job・別リポジトリ) か、`roles/iam.workloadIdentityUser` の binding が無い | 上記「GitHub Actions の認証」の条件と binding を確認する。`gh run view --log` の auth step にトークンの claim が出る |
 | `Failed to authenticate, have you run firebase login?` | firebase-tools が ADC を読めない (`GOOGLE_APPLICATION_CREDENTIALS` 未設定、または Node 22.23.0 / 24.17.0 の keep-alive の不具合 + firebase-tools 15.22.2 以前) | auth step の `export_environment_variables: true` と firebase-tools のバージョン固定 (15.22.3 以降) を確認する |
 | `In non-interactive mode but have no value for ... <VAR>` | `defineString()` 等の params の値が CI に無い (IAM とは無関係) | 値を GitHub Variable 等で渡し、deploy 直前に `.env.<project>` を生成する step を足す |
+| `Pass the --force option to deploy functions with a failure policy` | retry 付き (failure policy) の関数 (Crashlytics 転送関数) を含むデプロイで、非対話モードの確認の代わりになる `--force` が無い (IAM とは無関係) | `functions-deploy.yml` と `make deploy-functions` は `--force` を付けている。手で `firebase deploy` する時も `--force` を付ける (`--only` で対象を絞っていれば対象外の関数は消えない) |
 
 `PERMISSION_DENIED` は IAM 不足、`SERVICE_DISABLED` は API 未有効で切り分ける。
 

@@ -142,4 +142,7 @@ jobs:
             target="functions"
           fi
           echo "firebase deploy --only ${target} --project ${FIREBASE_ALIAS} (${FIREBASE_PROJECT_ID})"
-          firebase deploy --only "$target" --project "$FIREBASE_ALIAS" --non-interactive
+          # --force: retry 付き (failure policy) の関数を含むと、非対話モードでは確認の代わりに --force が要る
+          # (無いと "Pass the --force option to deploy functions with a failure policy" で止まる。Crashlytics 転送関数が該当)。
+          # --only で対象を絞っているため、--force が対象外の関数を消すことはない
+          firebase deploy --only "$target" --project "$FIREBASE_ALIAS" --non-interactive --force
