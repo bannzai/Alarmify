@@ -82,4 +82,4 @@ deploy-functions:
 		[ -n "$$target" ] || { echo "Error: FUNCTIONS の指定が空です" >&2; exit 1; }; \
 	else target="functions"; fi; \
 	echo "デプロイ先: alias=$$alias_name project=$$project_id target=$$target"; \
-	cd firebase && npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive
+	cd firebase && npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive --force
