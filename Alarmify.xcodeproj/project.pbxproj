@@ -96,6 +96,7 @@
 		3F7A1C4E9B052D6188E4A730 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */; };
 		2E9F5C81D703A64BF18C25E7 /* AppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4D63A0F1C89E25340AB6D9 /* AppCheckProviderFactory.swift */; };
 		96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 01958D05CA8D55574EE318D0 /* FirebaseMessaging */; };
+		C7A1E0F2B3D4958617283940 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C7A1E0F2B3D4958617283941 /* FirebaseCrashlytics */; };
 		ECC890E13A9BBAA513737EA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0E04A1FF6FE7BE0E8CDCE /* SettingsView.swift */; };
 		E8296264F834F5E31A843445 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C005C06E1EB7413CF2AE3C /* AccountDeletionTests.swift */; };
 		374EED1D71657E5180388D53 /* RuntimeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602AF58BE146DD14334CC5B /* RuntimeEnvironment.swift */; };
@@ -271,6 +272,7 @@
 				B8B963FABCE89DF4962D1B99 /* FirebaseAuth in Frameworks */,
 				3F7A1C4E9B052D6188E4A730 /* FirebaseAppCheck in Frameworks */,
 				96521B648648C386541618F6 /* FirebaseMessaging in Frameworks */,
+				C7A1E0F2B3D4958617283940 /* FirebaseCrashlytics in Frameworks */,
 				FD6CCE92C30B7BEC11FA7BB9 /* RevenueCat in Frameworks */,
 				AE41A5A1041B4C8082092701 /* LicenseList in Frameworks */,
 			);
@@ -670,6 +672,7 @@
 				CB5D0521BF03DA354F13FCF5 /* Resources */,
 				CDC5F1D8F67B4C35816FC00E /* Embed Foundation Extensions */,
 				F066B638D231739966C67F7E /* Check RevenueCat API key for Release */,
+				C7A1E0F2B3D4958617283942 /* Upload dSYMs to Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -682,6 +685,7 @@
 				78B8494C5ADCC16EACF8FC22 /* FirebaseAuth */,
 				5C2E9D18A4F73B60D1592CE8 /* FirebaseAppCheck */,
 				01958D05CA8D55574EE318D0 /* FirebaseMessaging */,
+				C7A1E0F2B3D4958617283941 /* FirebaseCrashlytics */,
 				29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */,
 				AE41A5A1041B4C8082092702 /* LicenseList */,
 			);
@@ -907,6 +911,30 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  bash \"${SRCROOT}/scripts/check_release_revenuecat_key.sh\"\nfi\n";
 		};
+		C7A1E0F2B3D4958617283942 /* Upload dSYMs to Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Upload dSYMs to Crashlytics";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Debug (simulator・CI の build-for-testing) のたびに本番の Firebase へ dSYM を送らないよう、配布に使う Release だけで実行する\nif [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  \"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1113,6 +1141,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Alarmify.AppStore";
 				SDKROOT = iphoneos;
@@ -1176,6 +1208,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bannzai.Alarmify;
 				SDKROOT = iphoneos;
@@ -1595,6 +1631,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		C7A1E0F2B3D4958617283941 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 151D05933BFDA938EF79396D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		29E57DC7EF0BBAA8AAF8D06B /* RevenueCat */ = {
 			isa = XCSwiftPackageProductDependency;
