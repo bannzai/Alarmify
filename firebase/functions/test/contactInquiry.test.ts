@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
 import { CONTACT_INQUIRY_SLACK_CHANNEL, escapeSlackText } from "../src/lib/contactInquiry.js";
-import { collections, contactInquirySchema } from "../src/schema/index.js";
+import { collections, contactInquirySchema, deletedAccountFields } from "../src/schema/index.js";
 import {
   clearFirestore,
   createTestContext,
@@ -128,6 +128,19 @@ describe("お問い合わせ", () => {
     const response = await postInquiry(VALID_INQUIRY).expect(429);
     expect(response.body.error.code).toBe("rate_limited");
     expect(context.slackMessages).toHaveLength(5);
+  });
+
+  it("アカウントが削除処理中なら 410 で保存も通知もしない", async () => {
+    await context.deps.firestore.collection(collections.deletedAccounts).doc(context.uid).set({
+      [deletedAccountFields.requestedAt]: Timestamp.fromDate(TEST_NOW),
+    });
+
+    const response = await postInquiry(VALID_INQUIRY).expect(410);
+
+    expect(response.body.error.code).toBe("account_deleted");
+    const snapshot = await context.deps.firestore.collection(collections.contactInquiries).get();
+    expect(snapshot.size).toBe(0);
+    expect(context.slackMessages).toHaveLength(0);
   });
 
   it("App Check トークンが無ければ 401", async () => {

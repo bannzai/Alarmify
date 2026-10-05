@@ -537,7 +537,11 @@ export function createAppApi(deps: Deps): Express {
       createdAt: Timestamp.fromDate(now),
       expiresAt: Timestamp.fromMillis(now.getTime() + CONTACT_INQUIRY_RETENTION_DAYS * 24 * 60 * 60 * 1000),
     };
-    await ref.set(inquiry);
+    // 削除前に発行された ID トークンで、削除後のアカウントから問い合わせを新しく保存・通知させない
+    await deps.firestore.runTransaction(async (transaction) => {
+      await rejectIfAccountDeleted(transaction, deps, uid);
+      transaction.set(ref, inquiry);
+    });
     try {
       await deps.postSlackMessage(
         CONTACT_INQUIRY_SLACK_CHANNEL,
