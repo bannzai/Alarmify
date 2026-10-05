@@ -13,7 +13,7 @@ npm --prefix firebase/functions audit --omit=dev # 本番 (Cloud Functions に�
 
 ## 残件 (2026-10-05、firebase-tools 15.32.1)
 
-いずれも firebase-tools の推移依存で、`npm audit` の fixAvailable は firebase-tools 14.23.0 へのダウングレード (破壊的) しか提示しない。修正版は依存元の宣言範囲の外 (メジャー違い) にあるか存在しないため、npm の `overrides` で差し替えると依存元の CLI 機能を壊すおそれがある。上流の宣言範囲が更新されるまで override しない。
+いずれも firebase-tools の推移依存で、`npm audit` の fixAvailable は firebase-tools 14.23.0 へのダウングレード (破壊的) しか提示しない。修正版は依存元の宣言範囲の外 (メジャー違い) にあるか存在しないため、npm の `overrides` で差し替えると依存元の CLI 機能を壊すおそれがある。上流の宣言範囲が更新されるまで、この 3 件は override しない。`package.json` に以前からある `overrides` (re2・@grpc/grpc-js・gaxios / teeny-request 配下の uuid) は別の対応で入れたもので、この方針の対象外。
 
 | パッケージ | advisory | 修正版 | 依存元の宣言 | このプロジェクトでの到達可能性 |
 | --- | --- | --- | --- | --- |
@@ -29,7 +29,7 @@ npm --prefix firebase/functions audit --omit=dev # 本番 (Cloud Functions に�
 
 firebase-tools 15.32.1 を単独でインストールした `npm audit` (2026-10-05) では、上記の残件に加えて次が出る。
 
-| パッケージ | advisory | プロジェクト側の対処 | デプロイでの到達可能性 |
+| パッケージ | advisory | プロジェクトの `overrides` (グローバル導入の CLI には効かない) | デプロイでの到達可能性 |
 | --- | --- | --- | --- |
 | re2 1.24.1 (経路: superstatic) | https://github.com/advisories/GHSA-6hxr-mr5r-9836 ほか 3 件 (空文字にマッチするパターンの `String.prototype.match` で無限ループ等) | `overrides` の `re2: ^1.26.1` | 使用箇所は superstatic (Hosting のローカル配信) の URL パターン照合で、Functions のデプロイでは読み込まない |
 | uuid 9.0.1 (経路: gaxios 6.7.1) | https://github.com/advisories/GHSA-w5hq-g745-h8pq (v3 / v5 / v6 に `buf` を渡した時の境界検査漏れ) | `overrides` の `gaxios` → `uuid: ^11.1.1` | gaxios 6 は multipart の boundary 生成に `v4()` だけを使い、advisory の前提 (v3 / v5 / v6 と `buf`) を満たさない |
