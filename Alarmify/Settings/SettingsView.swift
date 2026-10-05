@@ -135,11 +135,12 @@ struct SettingsView: View {
                 Task { await refreshPermissions() }
             }
         }
-        .confirmationDialog(
+        // iOS 26 の confirmationDialog はポップオーバーで出てキャンセルのボタンを表示しないため、
+        // 「削除する」と「キャンセル」を並べて見せられる alert にしている
+        .alert(
             // ja: アカウントを削除しますか?
             Text("Delete your account?"),
-            isPresented: $deletionConfirmation,
-            titleVisibility: .visible
+            isPresented: $deletionConfirmation
         ) {
             Button(role: .destructive) {
                 Task { await deleteAccount() }
