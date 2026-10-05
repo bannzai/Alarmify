@@ -52,5 +52,5 @@ Issue #60 で作成した全画面のデザイン。アプリへの反映は #6 
 
 - ペイウォールの価格 ($14.99 / 年、$1.99 / 月) は `documents/PROJECT.md` の目安を見本として置いた値。アプリは RevenueCat の offering から取得できた価格だけを表示し、固定値のフォールバックを持たない (`~/.claude/rules/coding-rules-no-default-for-external-source-of-truth.md`)
 - 履歴の「送信元」はトークンの prefix (`alm_9f2c`) で表す。`AlarmHistoryEntry.tokenID` から prefix を引ける。画面に置いたサービス名 (GitHub Actions 等) はトークンに名前を付ける前提で、`APIToken` にラベルを持たせるバックエンドの変更が必要 (Pro の「サービスごとのトークン」で意味を持つ)。ラベル無しのトークンは prefix だけを表示する
-- 「Ring a test」(ホーム) と「Ring a test alarm in 1 minute」(オンボーディング) は既存の `ContentView.scheduleTestAlarm` (1 分後のテストアラーム) をそのまま使う
+- 「Ring a test alarm in 1 minute」(ホームの次に鳴るアラームの空状態とオンボーディング) は既存の `ContentView.scheduleTestAlarm` (1 分後のテストアラーム) をそのまま使う
 - 設定の「Permissions」は AlarmKit の権限状態 (`AlarmKitScheduler.authorizationState`) と通知の権限状態 (`UNUserNotificationCenter` の設定) を表示する

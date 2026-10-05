@@ -11,7 +11,7 @@
    - 3 行目: タイトル 20 semibold (外部サービスの文字列をそのまま。無ければ `Untitled alarm` を `fg3`)
    - 4 行目: トークンの prefix チップ (`accentSoft` の地、等幅 11) + サービス名 (13 `fg3`。トークンのラベル。`../README.md`「前提と未確定事項」)
    - 空状態: 同じカードに `No upcoming alarm` (17 `fg3`) と `Ring a test alarm in 1 minute` の副ボタンを置く。カードの枠は `hair`
-3. **Recent alarms** セクション。見出しの右に `Ring a test` (15 `accentText`。テストアラームの登録)
+3. **Recent alarms** セクション。見出しの右に操作は置かない (テストアラームの登録は次に鳴るアラームの空状態の副ボタンだけにする。#140)
    - 行 (12×16): タイトル 17 semibold (1 行、末尾省略) / 2 行目に日時 (13 `fg3`) + prefix (等幅 11) / 右端に状態 (13 medium `fg3`)
    - 状態の文言は `ContentView.historyStatusText` の既存の分岐をそのまま使う (Rang / Scheduled on this iPhone / Canceled / Waiting for this iPhone / Failed on this iPhone …)。失敗系は `destructive` ではなく `fg3` のまま文言で伝える
    - 末尾の行: 無料プランなら `Older alarms are kept in Pro` (15 `fg3`) + シェブロン → ペイウォール (`.alarmHistory`)。Pro なら表示しない
@@ -27,6 +27,5 @@
 | 日付 | Tomorrow | 明日 |
 | 空状態 | No upcoming alarm | 次に鳴るアラームはありません |
 | セクション | Recent alarms / Connect | 直近のアラーム / 連携 |
-| セクションの操作 | Ring a test | テストを鳴らす |
 | Pro 行 | Older alarms are kept in Pro | それより前の履歴は Pro で見られます |
 | Connect 行 | API tokens / Integration recipes | API トークン / 連携レシピ |
