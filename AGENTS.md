@@ -9,12 +9,12 @@
 
 - `Alarmify.xcodeproj` をプロジェクト構成の唯一の正とする。XcodeGen と `project.yml` は使わず、`xcodegen generate` を実行しない (理由: [ADR 0002](documents/adr/0002-manage-xcode-project-directly.md)。機械検査: `~/.agents/skills/create-new-app/scripts/check-setup.sh` の `xcode-project-source` 項目)
 - ターゲット、ファイル、Build Settings、Build Phases、Scheme、Swift Package の変更は Xcode の GUI で行う。自動化が必要な場合は、プロジェクト構成を `Alarmify.xcodeproj/project.pbxproj`、Scheme を `Alarmify.xcodeproj/xcshareddata/xcschemes/*.xcscheme` で直接編集する
-- 変更後は `git diff -- Alarmify.xcodeproj` で意図した差分だけであることを確認し、下記のビルドとテストを実行する
+- 変更後は `git diff -- Alarmify.xcodeproj` で意図した差分だけであることを確認し、下記のビルドとテストで確認する
 - app と Extension で共有するファイルは `Alarmify/Shared/` に置き、両ターゲットに所属させる。`AlarmMetadata` 準拠型の所属要件は `.claude/rules/ios-alarmkit-constraints.md` に従う
 
 ## 検証方法
 
-- シミュレータビルド: `make build-ios`、ユニットテスト: `make test` (simulator は sim-boot が用意する)。ログは `./tmp/build.log` 等に保存し、全文を warning / error で検査する
+- シミュレータビルドとユニットテスト: push 後に PR の CI (`.github/workflows/ci.yml`。macOS runner でアプリとスクリーンショット用ターゲットのビルド、`xcodebuild test` を行う) で確認し、ローカル Mac で `make build-ios` / `make test` を実行しない (ローカルのリソースを使わないため)。結果は `gh pr checks` で見て、失敗したら `gh run view <run ID> --log-failed` のログで原因を調べる。ローカルで実行してよいのは CI では原因を調べられない時だけで、その理由を完了報告に書く
 - 動作確認 (UI・挙動): `/ios-simulator` skill を起点にし、**特別な理由がない限り simtunnel (GitHub Actions macOS Runner 上のリモート iOS Simulator) で行う**。ローカル simulator (sim-boot) は既定にしない。issue や手順書にローカル前提の記述 (`simslim` の設定・`make ios` 等) があっても、それだけではローカルに倒す理由にしない
   - 手順: 検証対象のブランチを push してから `SIMTUNNEL_REPO=bannzai/Alarmify ~/ghq/github.com/bannzai/simtunnel/local/simtunnel up <セッション名> --ref <ブランチ> --wait` で起動する (`--ref` を省略すると main がビルドされる)。caller workflow は `.github/workflows/simulator-session.yml`、セッション名は worktree 名 (`issue-N` 等)。操作・スクリーンショットは `/ios-simulator` skill の `scripts/ios-wda.sh --session <セッション名>` (セッション途中から使う場合) か、`.mcp.json` に書き込んだ mobile-mcp 互換ツールで行う。確認が終わったら `simtunnel down <セッション名>` で閉じる (macOS runner の並列上限を CI と共有するため放置しない)
   - 到達困難な状態 (push 到着・課金状態等) は開発者メニューで作る (`.claude/rules/debug-menu-for-verification.md`)。リモートでは `xcrun simctl` や起動引数を使えないため、必要な操作が無ければ開発者メニューに追加してから検証する
