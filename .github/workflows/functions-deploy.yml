@@ -35,7 +35,7 @@ permissions:
 
 env:
   # firebase-tools は明示的にバージョンを固定する (latest だと CLI の更新で挙動が変わり、デプロイが再現しなくなるため)
-  FIREBASE_TOOLS_VERSION: "15.30.0"
+  FIREBASE_TOOLS_VERSION: "15.32.1"
 
 jobs:
   deploy:
