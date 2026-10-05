@@ -75,7 +75,7 @@ struct SoftAccentButtonStyle: ButtonStyle {
     }
 }
 
-/// 橙のテキストだけのリンク風ボタン (セクション見出しの「Ring a test」、コードブロックの「Copy」)
+/// 橙のテキストだけのリンク風ボタン (コードブロックの「Copy」)
 struct AccentTextButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -182,7 +182,7 @@ extension Text {
     }
 }
 
-/// セクション見出しの行。右端に操作 (「Ring a test」等) を置ける。
+/// セクション見出しの行。右端に操作を置ける。
 /// `dense` は設定のように行が詰まった画面で上下の余白を縮める (tokens.md「セクション見出しの上下」)
 struct SectionHeader<Trailing: View>: View {
     let title: Text
