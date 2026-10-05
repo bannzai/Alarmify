@@ -25,6 +25,8 @@ struct DeveloperMenuView: View {
     @State private var deviceToken = DeviceTokenStore.load()
     /// 権限の要求・テストアラームの登録・取消に失敗した時のエラー
     @State private var errorMessage: String?
+    /// 強制クラッシュの確認ダイアログの表示状態。誤操作でアプリを落とさないよう、ボタンを押しただけではクラッシュさせない
+    @State private var forceCrashConfirmation = false
 
     private struct PushPayloadResult {
         var message: String
@@ -138,6 +140,22 @@ struct DeveloperMenuView: View {
             } header: {
                 // ja: 課金
                 Text("Subscription")
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    forceCrashConfirmation = true
+                } label: {
+                    // ja: 強制的にクラッシュさせる
+                    Text("Force a crash")
+                }
+                .accessibilityIdentifier("debug_force_crash")
+            } header: {
+                // ja: クラッシュレポート
+                Text("Crash reporting")
+            } footer: {
+                // ja: クラッシュレポートの送信を確認するためにアプリを終了させます。レポートは次にアプリを開いた時に送信されます。
+                Text("Terminates the app to verify crash reporting. The report is sent the next time you open the app.")
             }
 
             Section {
@@ -299,6 +317,25 @@ struct DeveloperMenuView: View {
         .sheet(item: $paywallTrigger) { trigger in
             PaywallPage(trigger: trigger)
         }
+        .confirmationDialog(
+            // ja: アプリをクラッシュさせますか?
+            Text("Crash the app?"),
+            isPresented: $forceCrashConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(role: .destructive) {
+                forceCrash()
+            } label: {
+                // ja: クラッシュさせる
+                Text("Crash")
+            }
+            .accessibilityIdentifier("debug_force_crash_confirm")
+            Button(role: .cancel) {
+            } label: {
+                // ja: キャンセル
+                Text("Cancel")
+            }
+        }
         .task {
             refresh()
             // push 受信や開発者メニューの payload 適用で変わった登録済みアラームをその場で反映する
@@ -396,6 +433,13 @@ struct DeveloperMenuView: View {
             errorMessage = error.localizedDescription
         }
         refresh()
+    }
+
+    /// Crashlytics にクラッシュレポートが届くかを確かめるためにアプリを落とす (公開前チェックリスト #14 の実機 QA)。
+    /// 開発者メニューが解放されていない配布では何もしない
+    private func forceCrash() {
+        guard DeveloperMenu.isAvailable else { return }
+        fatalError("Forced crash from the developer menu")
     }
 
     private func cancel(_ alarm: Alarm) {

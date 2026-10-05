@@ -25035,6 +25035,46 @@
         }
       }
     },
+    "Crash" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クラッシュさせる"
+          }
+        }
+      }
+    },
+    "Crash reporting" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クラッシュレポート"
+          }
+        }
+      }
+    },
+    "Crash the app?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリをクラッシュさせますか?"
+          }
+        }
+      }
+    },
+    "Force a crash" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強制的にクラッシュさせる"
+          }
+        }
+      }
+    },
     "Untitled alarm" : {
       "localizations" : {
         "ja" : {
@@ -26231,6 +26271,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iPhone をロックすると鳴ります"
+          }
+        }
+      }
+    },
+    "Terminates the app to verify crash reporting. The report is sent the next time you open the app." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クラッシュレポートの送信を確認するためにアプリを終了させます。レポートは次にアプリを開いた時に送信されます。"
           }
         }
       }
