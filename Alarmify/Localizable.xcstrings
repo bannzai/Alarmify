@@ -26424,6 +26424,16 @@
           }
         }
       }
+    },
+    "Keep your message within %lld characters" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内容は %lld 文字以内にしてください"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

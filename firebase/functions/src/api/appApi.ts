@@ -516,7 +516,9 @@ export function createAppApi(deps: Deps): Express {
   });
 
   // お問い合わせフォームの送信。保存してから Slack へ通知する (bannzai/Focus のお問い合わせと同じ流れ)。
-  // 通知に失敗しても問い合わせは保存済みのため 201 を返し、error ログから Firestore の文書を辿れるようにする
+  // 通知に失敗しても問い合わせは保存済みのため 201 を返し、error ログから Firestore の文書を辿れるようにする。
+  // 冪等にしない: 送信ごとに id を採番するため、応答を受け取れずに再送すると同じ内容が 2 件届く。
+  // 人が書いて送るフォームで重複は目で見て判別でき、取りこぼしより重複の方が害が小さいため受け入れる
   app.post("/v1/contact-inquiries", async (req, res) => {
     const parsed = createContactInquiryRequestSchema.safeParse(req.body);
     if (!parsed.success) {

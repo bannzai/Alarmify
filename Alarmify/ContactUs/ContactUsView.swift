@@ -181,6 +181,13 @@ struct ContactUsView: View {
     /// 入力を検査してから送信する。成功したら完了のアラートを出し、失敗したら errorMessage に理由を出す
     private func submit() async {
         let trimmedEmailAddress = emailAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        // サーバーの zod は JavaScript の文字列長 (UTF-16 のコード単位) で数えるため、同じ単位で比べる
+        guard trimmedContent.utf16.count <= Self.contentMaxLength else {
+            // ja: 内容は %lld 文字以内にしてください
+            errorMessage = String(localized: "Keep your message within \(Self.contentMaxLength) characters")
+            return
+        }
         guard Self.isValidEmailAddress(emailAddress: trimmedEmailAddress) else {
             // ja: メールアドレスの形式を確認してください
             errorMessage = String(localized: "Check the format of your email address")
@@ -192,7 +199,7 @@ struct ContactUsView: View {
             try await session.client.submitContactInquiry(
                 inquiry: ContactInquiry(
                     inquiryType: inquiryType,
-                    content: content.trimmingCharacters(in: .whitespacesAndNewlines),
+                    content: trimmedContent,
                     emailAddress: trimmedEmailAddress,
                     appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
                 )
@@ -203,6 +210,9 @@ struct ContactUsView: View {
             errorMessage = error.localizedDescription
         }
     }
+
+    /// 本文の上限。サーバーの createContactInquiryRequestSchema の content の上限 (firebase/functions/src/schema/request.ts) と同じ値にする
+    static let contentMaxLength = 4000
 
     /// 返信先として送ってよい形のメールアドレスか。送信前に入力ミスを知らせるための簡易な判定で、正否の最終判定はサーバーが行う
     static func isValidEmailAddress(emailAddress: String) -> Bool {
