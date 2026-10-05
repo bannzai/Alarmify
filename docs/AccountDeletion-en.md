@@ -25,7 +25,7 @@ If you cannot use the app, send an email to bannzai.app@gmail.com stating that y
 ## Data Retained After Deletion and Retention Periods
 
 - The purchase history of in-app purchases is retained by RevenueCat, Inc. and Apple Inc. in accordance with each company's policy, for payment processing and refund handling. Because the account identifier of the Service is registered with RevenueCat as the purchaser identifier, the purchase history remains with RevenueCat, Inc. linked to the identifier of the deleted account. The paid plan status stored on the Provider's servers is deleted together with the account<!-- source: Alarmify/Features/Purchase/ProEntitlement.swift: Purchases.logIn is called with the Firebase Auth uid, which becomes the RevenueCat App User ID. firebase/functions/src/account/deleteAccount.ts: deleteUserAccount removes users/{uid} (including plan) with recursiveDelete and does not delete the RevenueCat customer -->
-- Inquiry emails are retained as a record of the response for one year from receipt, and are then deleted
+- Inquiry emails and inquiries sent from within the app are retained as a record of the response for one year from receipt, and are then deleted
 - Deleted data included in server backups is erased through backup rotation within a maximum of 30 days after deletion
 - A record used to confirm that the deletion has completed (the account identifier only; it contains no other data) is normally erased automatically within 3 hours after deletion (if a cleanup run fails, it is retried every hour and the record is erased once a run succeeds)
 
