@@ -58,7 +58,7 @@ gcloud pubsub topics get-iam-policy budget-alarmify-prod --project=alarmify-prod
 ```sh
 cd firebase
 [ -n "$SLACK_BOT_TOKEN" ] || { echo "Error: SLACK_BOT_TOKEN is empty" >&2; exit 1; }
-printf '%s' "$SLACK_BOT_TOKEN" | npx --yes firebase-tools@15.30.0 functions:secrets:set SLACK_BOT_TOKEN --project prod --data-file -
+printf '%s' "$SLACK_BOT_TOKEN" | npx --yes firebase-tools@15.32.1 functions:secrets:set SLACK_BOT_TOKEN --project prod --data-file -
 ```
 
 `functions:secrets:set` は同名の Secret があれば新しいバージョンを追加する (冪等ではない)。登録済みかは `gcloud secrets list --project=alarmify-prod` で名前だけ確認できる。bot token を作り直した (Slack App を再インストールした) 時は同じコマンドで新しい値を登録し、関数を再デプロイする (Secret は起動時に読む)。

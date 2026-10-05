@@ -126,7 +126,7 @@ gcloud run services add-iam-policy-binding budgetalerttoslack --region=asia-nort
 | Provider | `.../providers/alarmify` (issuer `https://token.actions.githubusercontent.com`) |
 | Provider の attribute 条件 | `assertion.repository_owner_id == '10897361' && assertion.repository_id == '1354444647' && assertion.environment == 'firebase-prod'` (リポジトリ名の変更で壊れないよう ID で絞る。`environment` claim は environment `firebase-prod` を使う job にだけ付く) |
 | deployer SA への binding | `roles/iam.workloadIdentityUser` を `principalSet://iam.googleapis.com/projects/320409781062/locations/global/workloadIdentityPools/github/attribute.repository_id/1354444647` に付与 |
-| workflow 側 | `permissions: id-token: write` と `google-github-actions/auth` (SHA 固定) の `create_credentials_file` / `export_environment_variables`。firebase-tools は `GOOGLE_APPLICATION_CREDENTIALS` の `external_account` 資格情報を ADC として読む (15.22.2 で壊れた回帰は 15.22.3 で修正済み。workflow は 15.30.0 を固定) |
+| workflow 側 | `permissions: id-token: write` と `google-github-actions/auth` (SHA 固定) の `create_credentials_file` / `export_environment_variables`。firebase-tools は `GOOGLE_APPLICATION_CREDENTIALS` の `external_account` 資格情報を ADC として読む (15.22.2 で壊れた回帰は 15.22.3 で修正済み。workflow は 15.32.1 を固定) |
 
 environment `firebase-prod` の作成と `main` だけへのデプロイブランチ制限は適用済み (下の setup-environment.sh は再実行しても同じ状態に収束する)。Pool / Provider / binding の作成 (冪等。`describe` で存在確認してから作る):
 

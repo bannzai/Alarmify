@@ -10,7 +10,7 @@ Accepted (2026-09-14)
 2. Workload Identity Federation (WIF) で GitHub の OIDC トークンを SA の短命な access token に交換する (SA impersonation)
 3. WIF の直接連携 (SA を介さず、Workload Identity Pool の principal に直接ロールを付ける)
 
-3 は Google Cloud の対応表で Cloud Run / Cloud Run functions が「Workload Identity Federation direct resource access に対応しない。SA impersonation を使う」とされており採れない ( https://docs.cloud.google.com/iam/docs/federated-identity-supported-services )。2 は firebase-tools が `GOOGLE_APPLICATION_CREDENTIALS` の `external_account` 資格情報を Application Default Credentials として読むため、deploy コマンドは変えずに済む (15.22.2 で壊れた回帰は 15.22.3 で修正済みで、workflow は 15.30.0 を固定している)。
+3 は Google Cloud の対応表で Cloud Run / Cloud Run functions が「Workload Identity Federation direct resource access に対応しない。SA impersonation を使う」とされており採れない ( https://docs.cloud.google.com/iam/docs/federated-identity-supported-services )。2 は firebase-tools が `GOOGLE_APPLICATION_CREDENTIALS` の `external_account` 資格情報を Application Default Credentials として読むため、deploy コマンドは変えずに済む (15.22.2 で壊れた回帰は 15.22.3 で修正済みで、workflow は 15.22.3 以降のバージョンを固定している)。
 
 ## Decision
 方式 2 を採る。
