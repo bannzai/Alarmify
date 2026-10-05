@@ -8,8 +8,15 @@ import {
   type QuerySnapshot,
   type Transaction,
 } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import { requireAppCheck } from "../lib/appCheck.js";
+import {
+  CONTACT_INQUIRY_RETENTION_DAYS,
+  CONTACT_INQUIRY_SLACK_CHANNEL,
+  formatContactInquirySlackText,
+} from "../lib/contactInquiry.js";
+import { createRateLimiter, type RateLimit } from "../lib/rateLimit.js";
 import type { Deps, VerifiedIdToken } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { effectivePlan, planLimits } from "../lib/plan.js";
@@ -28,12 +35,20 @@ import {
   collections,
   listCursorSchema,
   createApiTokenRequestSchema,
+  createContactInquiryRequestSchema,
   mergeAnonymousAccountRequestSchema,
   registerDeviceRequestSchema,
   reportDeviceResultRequestSchema,
   userSchema,
+  type ContactInquiry,
   type DeviceReport,
 } from "../schema/index.js";
+
+/**
+ * アカウントごとのお問い合わせの送信の上限。人が書いて送るフォームで 1 時間に 5 件を超えることは無く、
+ * それ以上は誤操作の連打か Slack への大量投稿の試みとみなす (インスタンス単位のため厳密な総量制限ではない)
+ */
+const CONTACT_INQUIRY_RATE_LIMIT: RateLimit = { limit: 5, windowMs: 60 * 60 * 1000 };
 
 /** 匿名認証で発行された ID トークンの `firebase.sign_in_provider` (Firebase Auth の仕様値) */
 const ANONYMOUS_SIGN_IN_PROVIDER = "anonymous";
@@ -159,6 +174,7 @@ export function createAppApi(deps: Deps): Express {
   app.use(express.json({ limit: "32kb" }));
   app.use(requireAppCheck(deps));
   app.use(authenticate(deps));
+  const contactInquiryLimiter = createRateLimiter({ ...CONTACT_INQUIRY_RATE_LIMIT, now: deps.now });
 
   // 端末の FCM トークンを登録する。同じ device_id への再登録で上書きする (冪等)
   app.post("/v1/devices", async (req, res) => {
@@ -497,6 +513,40 @@ export function createAppApi(deps: Deps): Express {
     });
 
     res.status(200).json({ alarm_id: alarmId, device_id: parsedBody.data.device_id });
+  });
+
+  // お問い合わせフォームの送信。保存してから Slack へ通知する (bannzai/Focus のお問い合わせと同じ流れ)。
+  // 通知に失敗しても問い合わせは保存済みのため 201 を返し、error ログから Firestore の文書を辿れるようにする
+  app.post("/v1/contact-inquiries", async (req, res) => {
+    const parsed = createContactInquiryRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw badRequestFromZod(parsed.error);
+    }
+    const uid = currentUid(res);
+    if (!contactInquiryLimiter.consume(uid)) {
+      throw new ApiError(429, "rate_limited", "お問い合わせの送信が多すぎます。しばらく待って再試行してください");
+    }
+    const now = deps.now();
+    const ref = deps.firestore.collection(collections.contactInquiries).doc();
+    const inquiry: ContactInquiry = {
+      uid,
+      inquiryType: parsed.data.inquiry_type,
+      content: parsed.data.content,
+      emailAddress: parsed.data.email_address,
+      appVersion: parsed.data.app_version ?? null,
+      createdAt: Timestamp.fromDate(now),
+      expiresAt: Timestamp.fromMillis(now.getTime() + CONTACT_INQUIRY_RETENTION_DAYS * 24 * 60 * 60 * 1000),
+    };
+    await ref.set(inquiry);
+    try {
+      await deps.postSlackMessage(
+        CONTACT_INQUIRY_SLACK_CHANNEL,
+        formatContactInquirySlackText({ projectId: deps.projectId(), inquiryId: ref.id, ...inquiry }),
+      );
+    } catch (error) {
+      logger.error("contact inquiry notification failed", { inquiryId: ref.id, error: String(error) });
+    }
+    res.status(201).json({ id: ref.id });
   });
 
   app.use(notFoundHandler);

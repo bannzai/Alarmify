@@ -13,6 +13,8 @@ export const collections = {
   accountMerges: "accountMerges",
   /** 予算通知を Slack へ転送した記録 (`budgetNotifications/{budgetId}`) */
   budgetNotifications: "budgetNotifications",
+  /** アプリのお問い合わせフォームから送られた問い合わせ (`contactInquiries/{自動採番 id}`) */
+  contactInquiries: "contactInquiries",
 } as const;
 
 export const timestampSchema = z.custom<Timestamp>(

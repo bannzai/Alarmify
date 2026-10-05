@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { deviceReportActionSchema, deviceReportResultSchema } from "./alarm.js";
+import { contactInquiryTypeSchema } from "./contactInquiry.js";
 import { devicePlatformSchema } from "./device.js";
 
 /**
@@ -131,6 +132,19 @@ export const mergeAnonymousAccountRequestSchema = z.object({
   anonymous_id_token: z.string().min(1).max(4096),
 });
 export type MergeAnonymousAccountRequest = z.infer<typeof mergeAnonymousAccountRequestSchema>;
+
+/**
+ * アプリ向け: POST /v1/contact-inquiries
+ * content の上限は express.json の 32kb より十分小さく、Slack の 1 投稿に収まる 4000 文字にする。
+ * email_address の上限は RFC 5321 のアドレス長の上限 (254 文字)
+ */
+export const createContactInquiryRequestSchema = z.object({
+  inquiry_type: contactInquiryTypeSchema,
+  content: z.string().trim().min(1).max(4000),
+  email_address: z.string().trim().max(254).pipe(z.email()),
+  app_version: z.string().min(1).max(32).optional(),
+});
+export type CreateContactInquiryRequest = z.infer<typeof createContactInquiryRequestSchema>;
 
 /** アプリ向け: GET /v1/alarms の limit。上限なしの取得を書かない (.claude/rules/firestore-db-rules.md) */
 export const alarmHistoryLimitSchema = z.coerce.number().int().min(1).max(100).default(50);
