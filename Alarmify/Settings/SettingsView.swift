@@ -4,7 +4,7 @@ import LicenseList
 import SwiftUI
 import UserNotifications
 
-/// 設定画面。プランとペイウォールへの導線、権限の状態、アカウント ID とサポート、法務ドキュメントへのリンク、
+/// 設定画面。プランとペイウォールへの導線、権限の状態、アカウント ID とお問い合わせ、法務ドキュメントへのリンク、
 /// アプリ内からのアカウント削除 (App Store Review Guideline 5.1.1 (v)) を行う。構成と文言は design_handoff/screens/settings.md
 struct SettingsView: View {
     /// 削除フローの進行状態
@@ -304,22 +304,14 @@ struct SettingsView: View {
             HairlineDivider()
             appleAccountRow
             HairlineDivider()
-            Link(destination: LegalLinks.supportMail(accountID: session.uid)) {
-                HStack {
-                    // ja: サポート
-                    Text("Support")
-                        .font(.body)
-                        .foregroundStyle(Color.paper)
-                    Spacer()
-                    // ja: メール
-                    Text("Email")
-                        .font(.body)
-                        .foregroundStyle(Color.paperTertiary)
-                    RowChevron()
-                }
-                .rowPadding()
+            NavigationLink {
+                ContactUsView()
+            } label: {
+                // ja: お問い合わせ
+                row(Text("Contact Us"), chevron: true)
             }
-            .accessibilityIdentifier("settings_support")
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings_contact_us")
         }
         .card()
         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)

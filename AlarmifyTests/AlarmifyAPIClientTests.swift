@@ -384,6 +384,49 @@ final class AlarmifyAPIClientTests: XCTestCase {
             }
         }
     }
+
+    /// 本文のキーはサーバーの createContactInquiryRequestSchema (snake_case) に合わせる
+    func testSubmitContactInquirySendsTheFormFields() async throws {
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/contact-inquiries")
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            XCTAssertEqual(body, [
+                "inquiry_type": "feedback",
+                "content": "Please add a snooze option",
+                "email_address": "user@example.com",
+                "app_version": "1.2.0",
+            ])
+            return (201, Data(#"{"id":"inquiry-1"}"#.utf8))
+        }
+
+        try await makeClient().submitContactInquiry(
+            inquiry: ContactInquiry(inquiryType: .feedback, content: "Please add a snooze option", emailAddress: "user@example.com", appVersion: "1.2.0")
+        )
+    }
+
+    /// バージョンを取得できない時はキーごと省き、サーバーが「不明」として扱う
+    func testSubmitContactInquiryOmitsTheMissingAppVersion() async throws {
+        StubURLProtocol.handler = { request in
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            XCTAssertNil(body?["app_version"])
+            return (201, Data(#"{"id":"inquiry-1"}"#.utf8))
+        }
+
+        try await makeClient().submitContactInquiry(
+            inquiry: ContactInquiry(inquiryType: .bug, content: "It does not ring", emailAddress: "user@example.com", appVersion: nil)
+        )
+    }
+
+    /// 送信前の入力チェックは明らかな入力ミスだけを弾く
+    func testContactEmailAddressValidation() {
+        XCTAssertTrue(ContactUsView.isValidEmailAddress(emailAddress: "user@example.com"))
+        XCTAssertTrue(ContactUsView.isValidEmailAddress(emailAddress: "first.last+tag@mail.example.co.jp"))
+        XCTAssertFalse(ContactUsView.isValidEmailAddress(emailAddress: "user"))
+        XCTAssertFalse(ContactUsView.isValidEmailAddress(emailAddress: "user@example"))
+        XCTAssertFalse(ContactUsView.isValidEmailAddress(emailAddress: "user @example.com"))
+        XCTAssertFalse(ContactUsView.isValidEmailAddress(emailAddress: "user@@example.com"))
+    }
 }
 
 /// テスト中の HTTP 応答を差し替える URLProtocol

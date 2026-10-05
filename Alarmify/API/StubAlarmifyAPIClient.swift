@@ -13,6 +13,8 @@ actor StubAlarmifyAPIClient: AlarmifyAPIClient {
     private var issuedCount = 0
     /// 受け取った適用結果の報告 (アラーム id と操作ごとに最新の 1 件)。本物のサーバーと同じく上書きで持つ
     private(set) var reports: [AlarmApplyReport] = []
+    /// 受け取ったお問い合わせ (送信順)
+    private(set) var contactInquiries: [ContactInquiry] = []
 
     func registerDevice(fcmRegistrationToken: String) async throws {
         registeredFCMRegistrationToken = fcmRegistrationToken
@@ -86,4 +88,9 @@ actor StubAlarmifyAPIClient: AlarmifyAPIClient {
 
     /// スタブは Firebase Auth の実アカウントを切り替えないため、統合するデータも無い
     func mergeAnonymousAccount(anonymousIDToken: String) async throws {}
+
+    /// メモリに残すだけで、Slack への通知は行わない
+    func submitContactInquiry(inquiry: ContactInquiry) async throws {
+        contactInquiries.append(inquiry)
+    }
 }
