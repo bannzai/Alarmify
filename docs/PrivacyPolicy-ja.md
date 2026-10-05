@@ -12,7 +12,7 @@ bannzai（以下「提供者」といいます。）は、提供者の提供す�
 - **API トークン**: 外部サービスから本サービスを呼び出すためにユーザーが発行するトークン。提供者のサーバーにはハッシュ化した値のみを保存します
 - **端末情報**: プッシュ通知の配送に必要なデバイストークン、端末の種別、OS のバージョン、アプリのバージョン、および本アプリからのリクエストであることを検証するための Firebase App Check のトークン
 - **アラーム要求**: 外部サービスから送信されたアラームの日時・タイトル・送信元の識別子、および配送・登録の結果。アラームのタイトルには、ユーザーまたはユーザーが連携した外部サービスが設定した文言が含まれます。これらの情報は送信から 30 日で自動的に削除されます
-- **お問い合わせ情報**: ユーザーがメールまたはアプリ内からお問い合わせを行った場合の連絡先と問い合わせ内容。アプリ内からのお問い合わせでは、返信先のメールアドレス、問い合わせの種別と内容、アカウント識別子、アプリのバージョンを受け取り、提供者が確認するため Slack Technologies, LLC が提供する Slack の提供者のワークスペースへ転送します。これらの情報は受信から 1 年で自動的に削除されます<!-- source: firebase/functions/src/api/appApi.ts: POST /v1/contact-inquiries が contactInquiries/{id} に保存し (expiresAt = 受信から 365 日。firebase/firestore.indexes.json の TTL ポリシーで削除)、Slack #alarmify-notification へ投稿する -->
+- **お問い合わせ情報**: ユーザーがメールまたはアプリ内からお問い合わせを行った場合の連絡先と問い合わせ内容。アプリ内からのお問い合わせでは、返信先のメールアドレス、問い合わせの種別と内容、アカウント識別子、アプリのバージョンを受け取り、提供者が確認するため Slack Technologies, LLC が提供する Slack の提供者のワークスペースへ転送します。提供者のサーバーに保存したお問い合わせは受信から 1 年で自動的に削除されます。Slack へ転送した内容は、提供者のワークスペースの保持設定に従って Slack 上に保持されます<!-- source: firebase/functions/src/api/appApi.ts: POST /v1/contact-inquiries が contactInquiries/{id} に保存し (expiresAt = 受信から 365 日。firebase/firestore.indexes.json の TTL ポリシーで削除)、Slack #alarmify-notification へ投稿する -->
 
 ### 外部サービスが収集する情報
 本サービスでは、有料サービスの購入状況の管理および決済処理のため、RevenueCat, Inc. が提供する RevenueCat を利用しています。RevenueCat は購入情報（購入した商品、購入日時、本サービスのアカウント識別子等）を収集します。<!-- source: Alarmify/Features/Purchase/ProEntitlement.swift: Purchases.logIn に Firebase Auth の uid (アカウント識別子) を渡し、RevenueCat の App User ID にしている -->収集された情報は RevenueCat, Inc. のプライバシーポリシー（https://www.revenuecat.com/privacy ）に基づき管理されます。
