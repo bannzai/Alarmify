@@ -148,12 +148,6 @@ struct SettingsView: View {
                 Text("Delete")
             }
             .accessibilityIdentifier("settings_delete_confirm")
-            Button {
-                openURL(LegalLinks.accountDeletionGuide)
-            } label: {
-                // ja: 削除の手順と削除されるデータを見る
-                Text("See what gets deleted")
-            }
             Button(role: .cancel) {
             } label: {
                 // ja: キャンセル
