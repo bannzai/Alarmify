@@ -5,7 +5,7 @@
 ## 構成
 
 1. ナビ: `< Signalarm` / `Settings`
-2. **Plan**: `Plan` → `Free` / `Pro` (値は `fg3`)。無料なら `Signalarm Pro` の行 (シェブロン) → ペイウォール (`.settings`)。Pro なら行を出さず、`Plan` の値を `Pro` にする (失効日時があれば `Pro until Oct 12` のように併記)
+2. **Plan**: `Plan` → `Free` / `Pro` (値は `fg3`)。無料なら同じカードの中で `Plan` の行の下に主ボタン `Upgrade to Pro` → ペイウォール (`.settings`)。Pro ならボタンを出さず、`Plan` の値を `Pro` にする (失効日時があれば `Pro until Oct 12` のように併記)
 3. **Permissions**: `Alarms` → `Allowed` / `Denied` / `Not determined` (`AlarmKitScheduler.authorizationState`)、`Notifications` → 同様 (`UNUserNotificationCenter.notificationSettings`)。`Denied` の行はタップで OS の設定を開く (`UIApplication.openSettingsURLString`)、`Not determined` はその場で要求する
 4. **Account**: `Account ID` → uid (等幅 13 `fg3`、中央を省略、`textSelection`)。`Contact Us` の行 (シェブロン) → お問い合わせフォーム (`ContactUsView`。種別・内容・返信先のメールアドレスを送り、Slack へ通知する。メールで問い合わせたい人向けに、同じ画面に宛先のメールアドレスの行を出し、タップでメールアプリを開いてアカウント ID を本文に添える)
 5. **Legal**: `Terms of Use` / `Privacy Policy` / `Legal Notice` / `Open Source Licenses` (既存のリンク先)
@@ -18,7 +18,7 @@
 | --- | --- | --- |
 | タイトル | Settings | 設定 |
 | セクション | Plan / Permissions / Account / Legal | プラン / 権限 / アカウント / 法務情報 |
-| Plan | Plan / Free / Pro / Signalarm Pro | プラン / 無料 / Pro / Signalarm Pro |
+| Plan | Plan / Free / Pro / Upgrade to Pro | プラン / 無料 / Pro / Pro にアップグレード |
 | Permissions | Alarms / Notifications / Allowed / Denied / Not determined | アラーム / 通知 / 許可済み / 拒否 / 未確認 |
 | Account | Account ID / Contact Us | アカウント ID / お問い合わせ |
 | お問い合わせ | Contact Us / Type / Bug or issue / Feedback or request / Other / Message / Reply-to email / Send / Prefer email | お問い合わせ / 種別 / バグ・不具合 / ご意見・ご要望 / その他 / 内容 / 返信先のメールアドレス / 送信 / メールで問い合わせる |

@@ -488,7 +488,7 @@ const settings = (t) => `
   ${navBar(t, { title: "Settings", leading: backButton(t, "Signalarm") })}
   <div style="${s({ flexGrow: 1, overflow: "hidden", display: "flex", flexDirection: "column" })}">
     ${sectionHeader(t, "Plan", "", { tight: true })}
-    ${card(t, valueRow(t, "Plan", "Free") + navRow(t, "Signalarm Pro", { last: true }))}
+    ${card(t, valueRow(t, "Plan", "Free", { last: true }) + `<div style="${s({ padding: "0 16px 13px" })}">${buttonPrimary(t, "Upgrade to Pro")}</div>`)}
     ${sectionHeader(t, "Permissions", "", { tight: true })}
     ${card(t, valueRow(t, "Alarms", "Allowed") + valueRow(t, "Notifications", "Allowed", { last: true }))}
     ${sectionHeader(t, "Account", "", { tight: true })}

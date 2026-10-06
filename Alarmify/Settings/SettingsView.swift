@@ -184,8 +184,9 @@ struct SettingsView: View {
 
     // MARK: - カード
 
+    /// プランの表示とペイウォールへの導線を 1 枚のカードにまとめる。無料の時はプランの下に主ボタンを置いて Pro への導線を目立たせる (#142。bannzai/Focus の設定画面のプランのセクションに揃える)
     private var planCard: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 12) {
             HStack {
                 // ja: プラン
                 Text("Plan")
@@ -196,20 +197,19 @@ struct SettingsView: View {
                     .font(.body)
                     .foregroundStyle(Color.paperTertiary)
             }
-            .rowPadding()
             .accessibilityIdentifier("settings_plan")
             if !isPro {
-                HairlineDivider()
                 Button {
                     paywallTrigger = .settings
                 } label: {
-                    // 製品名 + Pro。翻訳しない
-                    row(Text(verbatim: "Signalarm Pro"), chevron: true)
+                    // ja: Pro にアップグレード
+                    Text("Upgrade to Pro")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PrimaryButtonStyle())
                 .accessibilityIdentifier("settings_upgrade_button")
             }
         }
+        .rowPadding()
         .card()
         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
     }
