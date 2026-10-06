@@ -15,6 +15,7 @@
 ## 検証方法
 
 - シミュレータビルド: `make build-ios`、ユニットテスト: `make test` (simulator は sim-boot が用意する)。ログは `./tmp/build.log` 等に保存し、全文を warning / error で検査する
+- 動作確認を一括で行うのは `make verify` (引数なしの `make` でも実行される)。CI (`.github/workflows/ci.yml`) と同じ検査をまとめたもので、`build-ios`・`test`・`test-functions` の後に Functions の lint と、スクリーンショット基盤 (`AppStoreScreenshotsUITests` / `AlarmifySnapshotUITests`) の `build-for-testing` を実行する
 - 動作確認 (UI・挙動): `/ios-simulator` skill を起点にし、**特別な理由がない限り simtunnel (GitHub Actions macOS Runner 上のリモート iOS Simulator) で行う**。ローカル simulator (sim-boot) は既定にしない。issue や手順書にローカル前提の記述 (`simslim` の設定・`make ios` 等) があっても、それだけではローカルに倒す理由にしない
   - 手順: 検証対象のブランチを push してから `SIMTUNNEL_REPO=bannzai/Alarmify ~/ghq/github.com/bannzai/simtunnel/local/simtunnel up <セッション名> --ref <ブランチ> --wait` で起動する (`--ref` を省略すると main がビルドされる)。caller workflow は `.github/workflows/simulator-session.yml`、セッション名は worktree 名 (`issue-N` 等)。操作・スクリーンショットは `/ios-simulator` skill の `scripts/ios-wda.sh --session <セッション名>` (セッション途中から使う場合) か、`.mcp.json` に書き込んだ mobile-mcp 互換ツールで行う。確認が終わったら `simtunnel down <セッション名>` で閉じる (macOS runner の並列上限を CI と共有するため放置しない)
   - 到達困難な状態 (push 到着・課金状態等) は開発者メニューで作る (`.claude/rules/debug-menu-for-verification.md`)。リモートでは `xcrun simctl` や起動引数を使えないため、必要な操作が無ければ開発者メニューに追加してから検証する
