@@ -18466,16 +18466,6 @@
         }
       }
     },
-    "Ring a test" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "テストを鳴らす"
-          }
-        }
-      }
-    },
     "Ring a test alarm in 1 minute" : {
       "localizations" : {
         "ja" : {
