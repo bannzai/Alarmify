@@ -83,3 +83,15 @@ deploy-functions:
 	else target="functions"; fi; \
 	echo "デプロイ先: alias=$$alias_name project=$$project_id target=$$target"; \
 	cd firebase && npx --yes firebase-tools@$(FIREBASE_TOOLS_VERSION) deploy --only "$$target" --project "$$alias_name" --non-interactive --force
+
+# verify の前提 (build-ios / test) は同じ DerivedData へ書き込むため、-j 指定でも並列にしない
+.NOTPARALLEL:
+
+# 引数なしの make で動作確認 (verify) を実行する
+.DEFAULT_GOAL := verify
+
+.PHONY: verify
+verify: build-ios test test-functions
+	npm --prefix firebase/functions run lint
+	xcodebuild build-for-testing -project $(XCODEPROJ) -scheme AppStoreScreenshotsUITests -derivedDataPath $(DERIVED_DATA) -destination 'generic/platform=iOS Simulator' $(SIM_CODE_SIGN)
+	xcodebuild build-for-testing -project $(XCODEPROJ) -scheme AlarmifySnapshotUITests -derivedDataPath $(DERIVED_DATA) -destination 'generic/platform=iOS Simulator' $(SIM_CODE_SIGN)

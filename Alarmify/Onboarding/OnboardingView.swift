@@ -342,7 +342,8 @@ struct OnboardingView: View {
             Text("Test alarm").eyebrowStyle(color: .paperTertiary)
             Group {
                 if let testAlarmFireDate {
-                    Text(testAlarmFireDate, style: .timer)
+                    // `Text(_:style: .timer)` は発火日時を過ぎるとカウントアップに転じるため、区間付きのタイマーで 0:00 に止める
+                    Text(timerInterval: testAlarmFireDate.addingTimeInterval(-TestAlarm.fireInterval)...testAlarmFireDate, countsDown: true)
                 } else {
                     // 登録前の見本の数字 (1 分)。翻訳しない
                     Text(verbatim: "01:00")
