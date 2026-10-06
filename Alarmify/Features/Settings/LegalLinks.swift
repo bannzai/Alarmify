@@ -11,10 +11,10 @@ enum LegalLinks {
     static var privacyPolicy: URL { privacyPolicy(displayLanguageCode: appDisplayLanguageCode) }
     /// 特定商取引法に基づく表記 (日本の法令に基づく表記のため日本語のみ)
     static let specifiedCommercialTransactionAct = URL(string: "https://signalarm.app/SpecifiedCommercialTransactionAct-ja")!
-    /// サポートの連絡先。公開している法務ドキュメント (docs/) と同じアドレス
+    /// お問い合わせの連絡先。公開している法務ドキュメント (docs/) と同じアドレス
     static let supportEmail = "bannzai.app@gmail.com"
 
-    /// サポート宛のメール作成リンク。問い合わせの特定に使うアカウント ID を本文に添える (未サインインなら空)
+    /// お問い合わせのメール作成リンク (お問い合わせ画面でメールを選ぶ人向け)。問い合わせの特定に使うアカウント ID を本文に添える (未サインインなら空)
     static func supportMail(accountID: String?) -> URL {
         var components = URLComponents()
         components.scheme = "mailto"

@@ -21,8 +21,12 @@ App Store Connect の「App のプライバシー」への回答内容と、そ�
 | PURCHASE_HISTORY (購入履歴) | ANALYTICS, APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | RevenueCat SDK が購入・購読情報を RevenueCat サーバーへ送信する。`Purchases.logIn` で Firebase Auth の uid を App User ID にしている (`Alarmify/Features/Purchase/ProEntitlement.swift`) | RevenueCat 公式は匿名 App User ID で個人を識別できない場合に DATA_NOT_LINKED_TO_YOU を選べると説明する ( https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy ) だが、uid で識別できるアカウントに購入履歴が紐づくため「ユーザーに紐付く」。RevenueCat の webhook がこの uid で `users/{uid}.plan` を更新する (#19) |
 | CRASH_DATA (クラッシュデータ) | APP_FUNCTIONALITY | DATA_NOT_LINKED_TO_YOU | Firebase Crashlytics SDK がクラッシュ時のスタックトレース・アプリの状態・端末と OS の情報を送信する | クラッシュの検知と修正のため。`Crashlytics.setUserID` やカスタムキーで uid 等を付けていないため「ユーザーに紐付かない」。uid を付けるよう変えた時は DATA_LINKED_TO_YOU に変える |
 | OTHER_DIAGNOSTIC_DATA (その他の診断データ) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | アラーム登録・取消の反映結果、失敗時のエラー、反映日時 | `AlarmApplyReportQueue` に保存した結果を `AlarmifyAPIClient.reportAlarmApply` が送信し、サーバーはユーザーのアラームに端末別の結果を保存する。履歴に登録の成否を表示するために用いる |
+| EMAIL_ADDRESS (メールアドレス) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | お問い合わせフォーム (`ContactUsView`) に入力された返信先のメールアドレス | `AlarmifyAPIClient.submitContactInquiry` が送信し、サーバーは uid と一緒に `contactInquiries/{id}` に保存して Slack へ通知する (受信から 1 年で TTL が削除)。返信 (カスタマーサポート) に用いる |
+| CUSTOMER_SUPPORT (カスタマーサポート) | APP_FUNCTIONALITY | DATA_LINKED_TO_YOU | お問い合わせフォームの種別・本文・アプリのバージョン | 上と同じ経路。問い合わせへの対応に用いる |
 
-Sign in with Apple はメールアドレスと氏名のスコープを要求しない (`AccountSession.prepare(appleIDRequest:)` の `requestedScopes = []`)。Apple の identity token にメールアドレスが載らず Firebase Auth も保持しないため、EMAIL_ADDRESS と NAME は収集しない。Firebase Auth が保持する Apple のユーザー識別子は USER_ID に含める。スコープを要求するよう変えた時は EMAIL_ADDRESS (APP_FUNCTIONALITY / DATA_LINKED_TO_YOU) を追加する。
+Sign in with Apple はメールアドレスと氏名のスコープを要求しない (`AccountSession.prepare(appleIDRequest:)` の `requestedScopes = []`)。Apple の identity token にメールアドレスが載らず Firebase Auth も保持しないため、Sign in with Apple の経路では EMAIL_ADDRESS と NAME を収集しない。Firebase Auth が保持する Apple のユーザー識別子は USER_ID に含める。EMAIL_ADDRESS はお問い合わせフォームの返信先としてだけ収集する。
+
+お問い合わせフォームの EMAIL_ADDRESS と CUSTOMER_SUPPORT は、Apple の「Optional disclosure」(任意入力のフィードバックフォーム等は申告を省略できる) に当たらないため申告する。省略できる条件の 1 つ「送信フォームにユーザーの名前かアカウント名が目立つ形で表示され、送信のたびにユーザーが選んで提供する」を満たさない (アカウント ID はフォームに表示せず自動で添える) ため (2026-10-06 に https://developer.apple.com/app-store/app-privacy-details/ の Optional disclosure の条件と照合)。
 
 ## 収集しないデータ
 
@@ -44,7 +48,7 @@ Sign in with Apple はメールアドレスと氏名のスコープを要求し�
 | キー | 宣言 | 根拠 |
 |---|---|---|
 | NSPrivacyTracking | false | トラッキングなし |
-| NSPrivacyCollectedDataTypes | UserID / DeviceID / OtherUserContent / OtherDiagnosticData (いずれも linked=true, tracking=false, purpose=AppFunctionality) | 自アプリのコードが自前 API へ送信するデータ。RevenueCat SDK・Firebase Crashlytics SDK の収集は SDK 同梱の manifest が宣言するため重複して書かない |
+| NSPrivacyCollectedDataTypes | UserID / DeviceID / OtherUserContent / OtherDiagnosticData / EmailAddress / CustomerSupport (いずれも linked=true, tracking=false, purpose=AppFunctionality) | 自アプリのコードが自前 API へ送信するデータ。RevenueCat SDK・Firebase Crashlytics SDK の収集は SDK 同梱の manifest が宣言するため重複して書かない |
 | NSPrivacyAccessedAPITypes | UserDefaults / CA92.1, 1C8F.1 | アプリ専用の課金キャッシュは CA92.1。通知 Extension と共有するアラーム ID・タイトル・未送信の反映結果等の App Group UserDefaults は 1C8F.1 |
 
 Required Reason API の洗い出し (2026-09-12): UserDefaults のみ使用。ファイルタイムスタンプ・システム起動時刻・ディスク空き容量・アクティブキーボードの API は使用なし。Swift ソースに Required Reason API を追加した時は本表を更新する。

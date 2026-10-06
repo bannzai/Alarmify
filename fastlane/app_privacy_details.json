@@ -28,5 +28,15 @@
     "category": "OTHER_DIAGNOSTIC_DATA",
     "purposes": ["APP_FUNCTIONALITY"],
     "data_protections": ["DATA_LINKED_TO_YOU"]
+  },
+  {
+    "category": "EMAIL_ADDRESS",
+    "purposes": ["APP_FUNCTIONALITY"],
+    "data_protections": ["DATA_LINKED_TO_YOU"]
+  },
+  {
+    "category": "CUSTOMER_SUPPORT",
+    "purposes": ["APP_FUNCTIONALITY"],
+    "data_protections": ["DATA_LINKED_TO_YOU"]
   }
 ]

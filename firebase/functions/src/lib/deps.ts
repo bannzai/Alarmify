@@ -33,5 +33,9 @@ export interface Deps {
   /** アカウントのサーバー上のデータと Firebase Auth のユーザーを削除する (`deleteUserAccount`)。匿名アカウントの統合が使う */
   deleteUserAccount: (uid: string) => Promise<DeleteUserAccountResult>;
   pushDeliveryMode: () => PushDeliveryMode;
+  /** Slack のチャンネルへ本文を 1 件投稿する。投稿できなかった時は例外にする。お問い合わせの通知が使う */
+  postSlackMessage: (channel: string, text: string) => Promise<void>;
+  /** 実行中の Firebase プロジェクト ID。通知に載せる Firebase コンソールの URL に使う */
+  projectId: () => string;
   now: () => Date;
 }

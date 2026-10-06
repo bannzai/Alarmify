@@ -29,6 +29,12 @@ import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
 
 initializeApp();
 
+/**
+ * 通知 bot (slack-notification-setup skill) の Slack bot token (Secret Manager)。
+ * 登録手順は documents/budget-alert-slack.md。未登録だと deploy が止まる (defineSecret の仕様)
+ */
+const slackBotToken = defineSecret("SLACK_BOT_TOKEN");
+
 function createDeps(): Deps {
   return {
     firestore: getFirestore(),
@@ -48,12 +54,16 @@ function createDeps(): Deps {
     deleteUserAccount: (uid) => deleteUserAccount({ firestore: getFirestore(), auth: getAuth() }, uid),
     // 配送経路は #13 の実機検証で確定する。それまでは環境変数で切り替えられるようにする
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
+    // token は投稿する時にだけ読む。SLACK_BOT_TOKEN を束ねていない関数 (alarmsApi 等) からは呼ばない
+    postSlackMessage: createSlackPoster(() => slackBotToken.value()),
+    // Cloud Functions のランタイムが実行中のプロジェクト ID を渡す
+    projectId: () => process.env.GCLOUD_PROJECT ?? "",
     now: () => new Date(),
   };
 }
 
-/** アプリ向け API (Firebase Auth の ID トークンで認証) */
-export const appApi = onRequest(createAppApi(createDeps()));
+/** アプリ向け API (Firebase Auth の ID トークンで認証)。お問い合わせを Slack へ通知するため SLACK_BOT_TOKEN を束ねる */
+export const appApi = onRequest({ secrets: [slackBotToken] }, createAppApi(createDeps()));
 
 /** 外部サービス向け API (Bearer = API トークン) */
 export const alarmsApi = onRequest(createExternalApi(createDeps()));
@@ -118,12 +128,6 @@ export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async (
     );
   }
 });
-
-/**
- * 通知 bot (slack-notification-setup skill) の Slack bot token (Secret Manager)。
- * 登録手順は documents/budget-alert-slack.md。未登録だと deploy が止まる (defineSecret の仕様)
- */
-const slackBotToken = defineSecret("SLACK_BOT_TOKEN");
 
 /**
  * Cloud Billing の予算通知 (Pub/Sub) を Slack #alarmify-notification へ転送する。

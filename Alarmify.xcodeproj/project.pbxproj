@@ -80,6 +80,8 @@
 		52B414563077803D00F258B2 /* IntegrationRecipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */; };
 		F0741EE9469173649F6ADF3E /* AlarmifyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */; };
 		4B7E7C27C0554C845E459AF9 /* AlarmifyAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */; };
+		7C3A9E41D2B84F6A1E0C5144 /* ContactInquiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C3A9E41D2B84F6A1E0C5143 /* ContactInquiry.swift */; };
+		7C3A9E41D2B84F6A1E0C5146 /* ContactUsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C3A9E41D2B84F6A1E0C5145 /* ContactUsView.swift */; };
 		E8F14CF570C084D57A607E32 /* AlarmifyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */; };
 		B31BE58E67EAC1A826252E25 /* APIToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8995085D234479FC07C5802 /* APIToken.swift */; };
 		89410FAD6656B7D2FFA63FA7 /* StubAlarmifyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */; };
@@ -238,6 +240,8 @@
 		36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationRecipeTests.swift; sourceTree = "<group>"; };
 		FAC9013E1652AC55601C01D3 /* AlarmifyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClient.swift"; sourceTree = "<group>"; };
 		C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIError.swift"; sourceTree = "<group>"; };
+		7C3A9E41D2B84F6A1E0C5143 /* ContactInquiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInquiry.swift; sourceTree = "<group>"; };
+		7C3A9E41D2B84F6A1E0C5145 /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
 		80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyBackend.swift"; sourceTree = "<group>"; };
 		C8995085D234479FC07C5802 /* APIToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIToken.swift"; sourceTree = "<group>"; };
 		3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StubAlarmifyAPIClient.swift"; sourceTree = "<group>"; };
@@ -398,6 +402,7 @@
 				EA6F3C3C50544DAC5E2DEED6 /* API */,
 				59154B5C415BFDDA5030DCF5 /* APIToken */,
 				41C12046F78BFC5C7EFB55BC /* Account */,
+				7C3A9E41D2B84F6A1E0C5147 /* ContactUs */,
 				F0B0BA3AA317B1253CEA0183 /* Debug */,
 				11CC736808A8830A08879A3A /* DesignSystem */,
 				84B75E34FE2C970E0B34B5E2 /* Features */,
@@ -574,9 +579,18 @@
 				C37BF6E35DCF6B74AEBADB3A /* AlarmifyAPIError.swift */,
 				80C930C885D71F49D171DD45 /* AlarmifyBackend.swift */,
 				C8995085D234479FC07C5802 /* APIToken.swift */,
+				7C3A9E41D2B84F6A1E0C5143 /* ContactInquiry.swift */,
 				3011F01505022D7C4475A22B /* StubAlarmifyAPIClient.swift */,
 			);
 			path = API;
+			sourceTree = "<group>";
+		};
+		7C3A9E41D2B84F6A1E0C5147 /* ContactUs */ = {
+			isa = PBXGroup;
+			children = (
+				7C3A9E41D2B84F6A1E0C5145 /* ContactUsView.swift */,
+			);
+			path = ContactUs;
 			sourceTree = "<group>";
 		};
 		59154B5C415BFDDA5030DCF5 /* APIToken */ = {
@@ -1008,6 +1022,8 @@
 				E8F14CF570C084D57A607E32 /* AlarmifyBackend.swift in Sources */,
 				B31BE58E67EAC1A826252E25 /* APIToken.swift in Sources */,
 				89410FAD6656B7D2FFA63FA7 /* StubAlarmifyAPIClient.swift in Sources */,
+				7C3A9E41D2B84F6A1E0C5144 /* ContactInquiry.swift in Sources */,
+				7C3A9E41D2B84F6A1E0C5146 /* ContactUsView.swift in Sources */,
 				4066C3AB3D29DA4945C926BD /* APITokenModel.swift in Sources */,
 				53EAD0824A77DE703C32098B /* APITokenView.swift in Sources */,
 				D696C1D3B477CC08A4D82AFB /* AccountSession.swift in Sources */,

@@ -2,6 +2,7 @@ export * from "./accountMerge.js";
 export * from "./alarm.js";
 export * from "./apiToken.js";
 export * from "./budgetNotification.js";
+export * from "./contactInquiry.js";
 export * from "./deletedAccount.js";
 export * from "./device.js";
 export * from "./firestore.js";

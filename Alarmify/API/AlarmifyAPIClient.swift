@@ -20,6 +20,8 @@ protocol AlarmifyAPIClient: Sendable {
     /// 匿名アカウントの端末を呼び出し元 (Sign in with Apple のアカウント) へ移し、匿名アカウントを削除する。
     /// `anonymousIDToken` は統合元の匿名アカウントの Firebase ID トークン
     func mergeAnonymousAccount(anonymousIDToken: String) async throws
+    /// お問い合わせを送る。サーバーが保存して運営者へ通知する
+    func submitContactInquiry(inquiry: ContactInquiry) async throws
 }
 
 /// URLSession で Cloud Functions のアプリ向け API (`appApi`) を叩く実装。
@@ -125,6 +127,19 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
     /// 応答の本文 (移した端末の数) は画面に出さないため読まない
     func mergeAnonymousAccount(anonymousIDToken: String) async throws {
         _ = try await send(method: "POST", path: "/v1/account/merge", body: ["anonymous_id_token": anonymousIDToken])
+    }
+
+    /// 応答の本文 (保存した問い合わせの id) は画面に出さないため読まない
+    func submitContactInquiry(inquiry: ContactInquiry) async throws {
+        var body: [String: Any] = [
+            "inquiry_type": inquiry.inquiryType.rawValue,
+            "content": inquiry.content,
+            "email_address": inquiry.emailAddress,
+        ]
+        if let appVersion = inquiry.appVersion {
+            body["app_version"] = appVersion
+        }
+        _ = try await send(method: "POST", path: "/v1/contact-inquiries", body: body)
     }
 
     /// Callable 関数の成功応答

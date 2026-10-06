@@ -61,6 +61,10 @@ export interface TestContext {
   deletedAuthUids: string[];
   /** ANONYMOUS_UID のユーザーに今リンクされているプロバイダを差し替える (既定は匿名のまま = 空配列) */
   setAnonymousUserProviderIds(providerIds: string[]): void;
+  /** postSlackMessage が受け取った投稿 (呼び出し順) */
+  slackMessages: { channel: string; text: string }[];
+  /** 次の 1 回の Slack への投稿を失敗させる */
+  failNextSlackMessage(): void;
 }
 
 /**
@@ -79,6 +83,8 @@ export function createTestContext(uid = "test-uid"): TestContext {
   const sentBatches: Message[][] = [];
   const deletedAuthUids: string[] = [];
   let anonymousUserProviderIds: string[] = [];
+  const slackMessages: { channel: string; text: string }[] = [];
+  let failNextSlack = false;
   const firestore = testFirestore();
   const deps: Deps = {
     firestore,
@@ -140,6 +146,14 @@ export function createTestContext(uid = "test-uid"): TestContext {
         targetUid,
       ),
     pushDeliveryMode: () => "notification-service",
+    postSlackMessage: async (channel, text) => {
+      slackMessages.push({ channel, text });
+      if (failNextSlack) {
+        failNextSlack = false;
+        throw new Error("slack unavailable");
+      }
+    },
+    projectId: () => PROJECT_ID,
     now: () => now,
   };
   return {
@@ -170,6 +184,10 @@ export function createTestContext(uid = "test-uid"): TestContext {
     deletedAuthUids,
     setAnonymousUserProviderIds: (providerIds) => {
       anonymousUserProviderIds = providerIds;
+    },
+    slackMessages,
+    failNextSlackMessage: () => {
+      failNextSlack = true;
     },
   };
 }
