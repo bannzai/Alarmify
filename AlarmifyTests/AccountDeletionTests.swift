@@ -107,13 +107,13 @@ final class AccountDeletionTests: XCTestCase {
         XCTAssertNil(PendingAnonymousMergeIDTokenStore.load())
     }
 
-    /// 削除手順のページは ja 版と en 版しか公開していないため、日本語以外の表示言語では英語版へ寄せる
+    /// 法務文書は ja 版と en 版しか公開していないため、日本語以外の表示言語では英語版へ寄せる
     /// (Localizable.xcstrings で言語別に URL を持つと、翻訳した言語ぶんの存在しないページへのリンクになる。PR #43 の Codex 指摘)
-    func testAccountDeletionGuideFallsBackToEnglishForUnsupportedLanguages() {
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ja").absoluteString, "https://signalarm.app/AccountDeletion-ja")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "en").absoluteString, "https://signalarm.app/AccountDeletion-en")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "ar").absoluteString, "https://signalarm.app/AccountDeletion-en")
-        XCTAssertEqual(LegalLinks.accountDeletionGuide(displayLanguageCode: "zh-Hans").absoluteString, "https://signalarm.app/AccountDeletion-en")
+    func testLegalDocumentsFallBackToEnglishForUnsupportedLanguages() {
+        XCTAssertEqual(LegalLinks.terms(displayLanguageCode: "ja").absoluteString, "https://signalarm.app/Terms-ja")
+        XCTAssertEqual(LegalLinks.terms(displayLanguageCode: "en").absoluteString, "https://signalarm.app/Terms-en")
+        XCTAssertEqual(LegalLinks.privacyPolicy(displayLanguageCode: "ar").absoluteString, "https://signalarm.app/PrivacyPolicy-en")
+        XCTAssertEqual(LegalLinks.privacyPolicy(displayLanguageCode: "zh-Hans").absoluteString, "https://signalarm.app/PrivacyPolicy-en")
     }
 
     /// サポート宛のメールは、問い合わせの特定に使うアカウント ID を本文に載せる (未サインインなら ID の部分が空のまま)。

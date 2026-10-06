@@ -33,16 +33,7 @@ struct ContentView: View {
                         .padding(.top, 12)
 
                     // ja: 直近のアラーム
-                    SectionHeader(Text("Recent alarms")) {
-                        Button {
-                            Task { await scheduleTestAlarm() }
-                        } label: {
-                            // ja: テストを鳴らす
-                            Text("Ring a test")
-                        }
-                        .buttonStyle(AccentTextButtonStyle())
-                        .accessibilityIdentifier("home_ring_test")
-                    }
+                    SectionHeader(Text("Recent alarms"))
                     historyCard
                         .padding(.horizontal, DesignMetrics.screenHorizontalPadding)
 

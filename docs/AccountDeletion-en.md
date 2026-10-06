@@ -11,10 +11,6 @@ These are the steps to delete your Signalarm account (provider: bannzai) and the
 
 Deletion is performed immediately and cannot be undone.
 
-## Requesting Deletion by Email
-
-If you cannot use the app, send an email to bannzai.app@gmail.com stating that you wish to delete your account, together with the account ID displayed on the settings screen of the app. After confirming that the request is made by you, the Provider will delete your account within 7 days.
-
 ## Data That Is Deleted
 
 - Account identifier (the anonymous user ID, or the user ID of the account when Sign in with Apple is linked; a linked Apple token is revoked)

@@ -9,7 +9,7 @@
 3. **Permissions**: `Alarms` → `Allowed` / `Denied` / `Not determined` (`AlarmKitScheduler.authorizationState`)、`Notifications` → 同様 (`UNUserNotificationCenter.notificationSettings`)。`Denied` の行はタップで OS の設定を開く (`UIApplication.openSettingsURLString`)、`Not determined` はその場で要求する
 4. **Account**: `Account ID` → uid (等幅 13 `fg3`、中央を省略、`textSelection`)。`Support` → `Email` (メールアプリを開く。アカウント ID を本文に添える)
 5. **Legal**: `Terms of Use` / `Privacy Policy` / `Legal Notice` / `Open Source Licenses` (既存のリンク先)
-6. `Delete Account` (`destructive` の文字、単独カード)。確認ダイアログ・削除後の alert・エラー表示は既存の `SettingsView` のまま。削除の手順のリンク (`LegalLinks.accountDeletionGuide`) は確認ダイアログの message から辿れるようにし、行としては出さない
+6. `Delete Account` (`destructive` の文字、単独カード)。確認ダイアログ・削除後の alert・エラー表示は既存の `SettingsView` のまま。確認は alert で出し、選択肢は `Delete` と `Cancel` だけにする
 7. 開発者メニュー (DEBUG / TestFlight) は `Legal` の下に `Developer menu` の行として出す (accessibilityIdentifier `debug_menu` は維持)
 
 ## 確定コピー

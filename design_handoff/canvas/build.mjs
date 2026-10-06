@@ -347,7 +347,7 @@ const home = (t) => `
        </div>`,
       { borderColor: t.accentLine },
     )}
-    ${sectionHeader(t, "Recent alarms", "Ring a test")}
+    ${sectionHeader(t, "Recent alarms")}
     ${card(
       t,
       historyRow(t, { title: "Deploy finished", source: "alm_9f2c", when: "Today 18:42", status: "Rang" }) +
