@@ -87,8 +87,8 @@ deploy-functions:
 # verify の前提 (build-ios / test) は同じ DerivedData へ書き込むため、-j 指定でも並列にしない
 .NOTPARALLEL:
 
-# 引数なしの make で動作確認 (verify) を実行する
-.DEFAULT_GOAL := verify
+# 引数なしの make で ios を実行する (人が手で動作確認するための入口。検査・テストは CI が行う)
+.DEFAULT_GOAL := ios
 
 .PHONY: verify
 verify: build-ios test test-functions
