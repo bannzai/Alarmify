@@ -11,7 +11,9 @@ import SwiftUI
 /// AlarmifySnapshotUITests/Features/ に対応する SnapshotUITest を作る
 struct SnapshotUITestPage: View {
     var body: some View {
-        NavigationView {
+        // NavigationView は regular width (iPhone Duo の内側ディスプレイ) で一覧が左のサイドバーへ縮むため、
+        // 幅を問わず 1 カラムで積む NavigationStack を使う
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading) {
                     SnapshotUITest<ContentView_Previews>()
