@@ -173,8 +173,21 @@ set_pose() {
   return 1
 }
 
-# 終了時は外側ディスプレイ (閉じた姿勢) に戻す
-trap 'bash "$DUO_POSE_SH" set --udid "$DUO_SIM_UDID" closed > /dev/null 2>&1 || true' EXIT
+# generate_inner が起動した撮影ループの PID (動いていない時は空)
+capture_loop_pid=""
+
+# 終了時は撮影ループを止めてから外側ディスプレイ (閉じた姿勢) に戻す。
+# Ctrl+C や SIGTERM で中断した時、バックグラウンドの撮影ループは SIGINT を受け取らず、
+# .stop も作られないため、止めないと残って次の実行の inner-capture を横取りする
+cleanup() {
+  if [ -n "$capture_loop_pid" ]; then
+    kill "$capture_loop_pid" 2> /dev/null || true
+    wait "$capture_loop_pid" 2> /dev/null || true
+  fi
+  bash "$DUO_POSE_SH" set --udid "$DUO_SIM_UDID" closed > /dev/null 2>&1 || true
+}
+trap cleanup EXIT
+trap 'exit 130' INT TERM
 
 if [ "$SKIP_BUILD" = false ]; then
   ./scripts/generate_screenshots/build_appstore_screenshot.sh
@@ -272,7 +285,7 @@ generate_inner() {
   set_pose open
   remove_previous_outputs inner
   local capture_dir="$WORK_DIR/inner-capture"
-  local number test_path artifact_path capture_loop_pid
+  local number test_path artifact_path
   for number in $numbers; do
     rm -rf "$capture_dir"
     mkdir -p "$capture_dir"
@@ -311,6 +324,7 @@ generate_inner() {
     if ! wait "$capture_loop_pid"; then
       failed_pages+=("inner:$number")
     fi
+    capture_loop_pid=""
   done
 }
 
