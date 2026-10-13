@@ -88,6 +88,17 @@ magick -size 1398x2034 xc:white -alpha off "$TEST_DIRECTORY/renamed.jpg"
 cp "$TEST_DIRECTORY/renamed.jpg" "$format_dir/ja/outer/1.png"
 assert_exit_code "PNG 以外の形式の時は exit 1" 1 \
   bash "$VERIFY_SCRIPT" "$format_dir" "ja,en-US" "0,1"
+# ディレクトリ名に format が入っていても (sips の 1 行目のパスにキー名が含まれる)、
+# NG になるのは改名した 1 枚だけで、正しい PNG を巻き込まないことを確かめる
+ng_lines=$(grep -c '^\[NG\]' "$TEST_DIRECTORY/last.log" || true)
+if [ "$ng_lines" -eq 1 ] && grep -q '^\[NG\] .*/ja/outer/1.png: format=jpeg' "$TEST_DIRECTORY/last.log"; then
+  echo "PASS: PNG 以外の形式の時に NG になるのは改名した 1 枚だけ"
+  pass_count=$((pass_count + 1))
+else
+  echo "FAIL: PNG 以外の形式の時に NG になるのは改名した 1 枚だけ (NG 行 ${ng_lines} 件)"
+  cat "$TEST_DIRECTORY/last.log"
+  fail_count=$((fail_count + 1))
+fi
 
 assert_exit_code "引数が足りない時は exit 2" 2 \
   bash "$VERIFY_SCRIPT" "$complete_dir" "ja"

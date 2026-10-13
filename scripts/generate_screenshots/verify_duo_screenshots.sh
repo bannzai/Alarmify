@@ -53,14 +53,15 @@ check_png() {
     return
   fi
 
-  # sips の出力 (例: "  pixelWidth: 1398") から値だけを取り出す。
+  # sips の出力 (例: "  pixelWidth: 1398") から値だけを取り出す。1 行目はファイルのパスなので、
+  # パスにキー名 (format 等) が含まれても拾わないよう、行頭のキー名で一致させる。
   # format は拡張子ではなく中身から判定される (JPEG を .png に改名したものは format: jpeg になる)
   local sips_output format width height has_alpha
   sips_output=$(sips -g format -g pixelWidth -g pixelHeight -g hasAlpha "$file")
-  format=$(echo "$sips_output" | awk '/format/ {print $2}')
-  width=$(echo "$sips_output" | awk '/pixelWidth/ {print $2}')
-  height=$(echo "$sips_output" | awk '/pixelHeight/ {print $2}')
-  has_alpha=$(echo "$sips_output" | awk '/hasAlpha/ {print $2}')
+  format=$(echo "$sips_output" | awk '$1 == "format:" {print $2}')
+  width=$(echo "$sips_output" | awk '$1 == "pixelWidth:" {print $2}')
+  height=$(echo "$sips_output" | awk '$1 == "pixelHeight:" {print $2}')
+  has_alpha=$(echo "$sips_output" | awk '$1 == "hasAlpha:" {print $2}')
 
   if [ "$format" = "png" ] && [ "$width" = "$expected_width" ] && [ "$height" = "$expected_height" ] && [ "$has_alpha" = "no" ]; then
     ok_count=$((ok_count + 1))
