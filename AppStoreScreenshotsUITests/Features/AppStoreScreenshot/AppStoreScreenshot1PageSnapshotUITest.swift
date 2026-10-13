@@ -54,10 +54,7 @@ final class AppStoreScreenshot1PageSnapshotUITest: XCTestCase {
                 // (persistentSystemOverlays(.hidden) は自動非表示の許可で、最終タッチから数秒後に消える) を待って撮影する
                 sleep(6)
 
-                let attachment = XCTAttachment(screenshot: app.screenshot())
-                attachment.name = "\(fileName)---\(functionName)---\(language)---\(index)"
-                attachment.lifetime = .keepAlways
-                add(attachment)
+                attachAppStoreScreenshot(app: app, name: "\(fileName)---\(functionName)---\(language)---\(index)")
             }
         }
     }

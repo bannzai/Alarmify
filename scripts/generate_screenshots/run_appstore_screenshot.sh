@@ -18,6 +18,8 @@
 #   言語フィルタリングは TEST_RUNNER_SNAPSHOT_LANGUAGES 環境変数で行う。
 #   xcodebuild の TEST_RUNNER_ プレフィックス機構により、テストランナー
 #   プロセスに SNAPSHOT_LANGUAGES として引き渡される。
+#   環境変数 PARALLEL_TESTING_ENABLED=NO を渡すと、simulator の clone を作らずに
+#   DESTINATION の simulator そのもので実行する (generate_duo_screenshots.sh が使う)。
 #
 set -euo pipefail
 
@@ -51,6 +53,8 @@ fi
 rm -rf "$RESULT_BUNDLE_PATH"
 
 # テスト実行
+# iPhone Duo の clone は閉じた姿勢で起動し、元の simulator を開いた姿勢にしても反映されないため、
+# Duo の撮影では PARALLEL_TESTING_ENABLED=NO で clone を使わせない (references/iphone-duo.md の SwiftUI の節 2 番)
 xcodebuild test-without-building \
   -project Alarmify.xcodeproj \
   -scheme "$SCHEME" \
@@ -58,6 +62,7 @@ xcodebuild test-without-building \
   -destination "$DESTINATION" \
   -only-testing:"$TEST" \
   -resultBundlePath "$RESULT_BUNDLE_PATH" \
-  -derivedDataPath "$DERIVED_DATA_PATH"
+  -derivedDataPath "$DERIVED_DATA_PATH" \
+  ${PARALLEL_TESTING_ENABLED:+-parallel-testing-enabled "$PARALLEL_TESTING_ENABLED"}
 
 echo "==== Test completed: $TEST ===="

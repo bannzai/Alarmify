@@ -20,7 +20,10 @@ scripts/generate_screenshots/
 ├── run_appstore_screenshot.sh         # 個別テストを test-without-building で実行
 ├── organize_appstore_screenshots.sh   # 抽出画像を fastlane 形式に整理
 ├── generate_appstore_screenshots.sh   # メインスクリプト (ビルド → 実行 → 抽出 → 整理)
-└── apply_variant.sh                   # 選択バリアントを fastlane/screenshots/ に適用
+├── apply_variant.sh                   # 選択バリアントを fastlane/screenshots/ に適用
+├── generate_duo_screenshots.sh        # iPhone Duo (外側・内側ディスプレイ) のスクリーンショットを生成
+├── verify_duo_screenshots.sh          # iPhone Duo のスクリーンショットの寸法・alpha・枚数を機械検証
+└── tests/test_verify_duo_screenshots.sh
 ```
 
 ## 使い方
@@ -93,6 +96,46 @@ simtunnel は runner に存在する機種だけ起動できる。2026-09-12 の
 
 `AppStoreScreenshotsUITests/Languages.swift` が SSOT。現状は ja / en の 2 言語。
 fastlane ディレクトリ名への変換 (en → en-US) は `appstore_screenshot_env.sh` の `map_language_to_fastlane` で行う。
+
+## iPhone Duo (外側・内側ディスプレイ)
+
+折りたたみ端末 iPhone Duo 用のスクリーンショットを、上と同じ UITest を iPhone Duo の simulator で動かして作る。作り方の SSOT は appstore-screenshot-builder skill の `references/iphone-duo.md`。Apple の仕様 ( https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications ) では 2027 年 4 月から iOS 27.1 SDK 以降でビルドしたアプリに Duo のスクリーンショットが必須になる。
+
+```bash
+# 全言語 (ja, en) × 1-5 の外側・内側を生成して機械検証する
+./scripts/generate_screenshots/generate_duo_screenshots.sh
+
+# 言語・ページを絞る / ビルドを省略する
+./scripts/generate_screenshots/generate_duo_screenshots.sh -l "ja" -n "1,4" --skip-build
+
+# 終わったら simulator を止める
+sim-shutdown "$(sim-id)"
+```
+
+- 外側は閉じた姿勢で 1398×2034 px、内側は開いた姿勢で横向き 2853×2007 px を撮る。姿勢の切り替えは ios-simulator skill の `duo-pose.sh` が Device Hub のウィンドウを操作して行うため、ローカルの Mac でしか実行できない
+- レイアウトは `AppStoreScreenshotSignalLayout` が表示領域の形で切り替える (横長なら見出しを左・端末を右、背の低い縦長なら端末を下に大きくはみ出させる)。iPhone の縦長の描き方は変えていない
+- 出力先は `scripts/generate_screenshots/artifacts/_duo/_variant-{名前}/{言語}/{outer|inner}/{インデックス}.png` (言語は fastlane の言語名。例: `en-US`)。fastlane deliver は Duo の寸法を受け付けず (fastlane 2.241.0 の `deliver/lib/deliver/app_screenshot.rb` の `DEVICE_RESOLUTIONS` に Duo の寸法が無い)、`fastlane/screenshots/` に置くとアップロード全体が止まるため、`apply_variant.sh` の対象にしない
+
+### App Store Connect へのアップロード
+
+外側と内側は同じ表示タイプ `APP_IPHONE_DUO` の 1 つの枠 (最大 10 枚) に入る (出典: appstore-screenshot-builder skill の `references/iphone-duo.md`「App Store Connect へのアップロード経路」)。5 ページ × 外側・内側 = 10 枚でちょうど枠に収まる。
+
+Web UI から手で上げる時は、App Store Connect > アプリ > 配信 (対象バージョン) > プレビューとスクリーンショット の **iPhone Duo** の枠に、`{言語}/outer/0.png` 〜 `4.png` の後に `{言語}/inner/0.png` 〜 `4.png` の順でドラッグする (日本語は `ja/`、英語 (米国) は `en-US/` を、ローカライズの切り替えで対応する言語に上げる)。枠の名前と並び順は上げる時に画面で確かめる (Web UI の表示は未確認)。
+
+CLI で上げる時は `asc` 5.12.0 以降の `--device-type APP_IPHONE_DUO` を使う (`asc --version` で版を確かめる。1.2.8 のような古い版は送信前に弾く。出典は同 `references/iphone-duo.md` と `asc` の対応 PR https://github.com/rorkai/App-Store-Connect-CLI/pull/2926 )。
+
+```bash
+# 言語ごとに、その言語の version localization の ID と画像のディレクトリを渡す
+asc screenshots upload --version-localization <LOCALIZATION_ID> \
+  --path scripts/generate_screenshots/artifacts/_duo/_variant-signal/<言語>/outer \
+  --device-type APP_IPHONE_DUO --skip-existing
+asc screenshots upload --version-localization <LOCALIZATION_ID> \
+  --path scripts/generate_screenshots/artifacts/_duo/_variant-signal/<言語>/inner \
+  --device-type APP_IPHONE_DUO --skip-existing
+```
+
+- `asc` はディレクトリ内のファイルをファイル名でソートして上げるため、`0.png` 〜 `4.png` の順に並ぶ (ソース参照: `internal/cli/assets/assets_screenshots_discovery.go` が集めたファイル一覧を `sort.Strings(files)` で並べ替えてから返す。実際の並びは上げた後に App Store Connect で確かめる)
+- 内側 (2853×2007) の画像をサーバが受け付けるかは未確認 (`asc` の対応 PR が「外側だけ実際にアップロードした」と明記)。拒否された時は Web UI から手で上げる
 
 ## 前提条件
 
