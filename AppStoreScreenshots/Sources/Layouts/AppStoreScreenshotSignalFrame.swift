@@ -39,7 +39,7 @@ struct AppStoreScreenshotSignalLayout<Content: View>: View {
                 if geometry.size.width > geometry.size.height {
                     // 横長: 左の列にキャッチコピーを縦中央で置き、右半分にデバイスフレームを上から置いて下端を切る。
                     // 内側ディスプレイは高さ 669pt で、上の余白 64 を除いた残りにモック画面の 8 割が収まる高さにする
-                    // (縦長の iPhone と同じく下部ボタンまでは見せない)
+                    // (縦長の iPhone と同じく、1 枚目の停止ボタンまで見えて、その下の余白で切れる)
                     HStack(spacing: 0) {
                         header
                             .padding(.leading, 64)

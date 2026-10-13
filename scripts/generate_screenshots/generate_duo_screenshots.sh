@@ -246,6 +246,27 @@ generate_outer() {
   done
 }
 
+# 内側ディスプレイを、ホームインジケーターが写っていない状態で撮る。
+# UITest のタップで再表示されたホームインジケーターは persistentSystemOverlays(.hidden) で数秒後に消えるが、
+# 消えるまでの時間が一定でなく、撮ってから写っていれば待って撮り直す (写った率は 10 枚中 2〜3 枚、最大 5 回)。
+# 写っているかは、インジケーターの位置 (下端中央の幅 760px・高さ 30px) の平均輝度で判定する。
+# しきい値 0.07 は、写った画像が 0.10、写っていない画像が 0.04 だった実測の中間
+capture_inner_without_home_indicator() {
+  local destination="$1"
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    xcrun simctl io "$DUO_SIM_UDID" screenshot --display=primary-1 "$destination" > /dev/null
+    # simctl の PNG は alpha 付きで、alpha を残したまま輝度を取ると透明な画素が明るく数えられるため、place_png と同じく落としてから測る
+    if [ "$(magick "$destination" -alpha remove -alpha off -crop 760x30+1046+1970 +repage -colorspace Gray -format '%[fx:mean < 0.07 ? 1 : 0]' info:)" = "1" ]; then
+      return 0
+    fi
+    echo "ホームインジケーターが写ったため撮り直します ($attempt 回目): $destination" >&2
+    sleep 3
+  done
+  echo "Error: ホームインジケーターが消えないため撮れませんでした: $destination" >&2
+  return 1
+}
+
 # 内側ディスプレイ: 開いた姿勢で UITest を実行し、テストが書く {name}.ready を見てホスト側で撮る
 generate_inner() {
   set_pose open
@@ -258,18 +279,24 @@ generate_inner() {
 
     # テストの {name}.ready を待って内側ディスプレイを撮り、{name}.done で撮り終えたことをテストに伝える
     (
+      capture_failed=0
       while [ ! -e "$capture_dir/.stop" ]; do
         for ready_file in "$capture_dir"/*.ready; do
           if [ -e "$ready_file" ]; then
             name=$(basename "$ready_file" .ready)
-            xcrun simctl io "$DUO_SIM_UDID" screenshot --display=primary-1 "$capture_dir/$name.png" > /dev/null
-            place_png "$capture_dir/$name.png" "$(output_path_for_attachment "$name" inner)"
+            # 撮れなくても .done は書く (テストを 120 秒の timeout まで待たせないため)。失敗はこのループの終了コードで伝える
+            if capture_inner_without_home_indicator "$capture_dir/$name.png"; then
+              place_png "$capture_dir/$name.png" "$(output_path_for_attachment "$name" inner)"
+            else
+              capture_failed=1
+            fi
             mv "$ready_file" "$capture_dir/$name.taken"
             touch "$capture_dir/$name.done"
           fi
         done
         sleep 0.2
       done
+      exit "$capture_failed"
     ) &
     capture_loop_pid=$!
 
