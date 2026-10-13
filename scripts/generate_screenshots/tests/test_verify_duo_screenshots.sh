@@ -2,7 +2,7 @@
 # =============================================================================
 # verify_duo_screenshots.sh のテスト
 #
-# magick で作った PNG を置き、揃っている時に exit 0、欠け・寸法違い・alpha ありの時に
+# magick で作った PNG を置き、揃っている時に exit 0、欠け・寸法違い・alpha あり・PNG 以外の形式の時に
 # exit 1、引数不足の時に exit 2 になることを確かめる。simulator は使わない。
 #
 # 使い方:
@@ -80,6 +80,14 @@ make_complete_output "$alpha_dir"
 magick -size 1398x2034 xc:none "$alpha_dir/ja/outer/1.png"
 assert_exit_code "alpha がある時は exit 1" 1 \
   bash "$VERIFY_SCRIPT" "$alpha_dir" "ja,en-US" "0,1"
+
+format_dir="$TEST_DIRECTORY/format"
+make_complete_output "$format_dir"
+# JPEG を .png に改名したものは寸法と alpha が合っていても NG にする
+magick -size 1398x2034 xc:white -alpha off "$TEST_DIRECTORY/renamed.jpg"
+cp "$TEST_DIRECTORY/renamed.jpg" "$format_dir/ja/outer/1.png"
+assert_exit_code "PNG 以外の形式の時は exit 1" 1 \
+  bash "$VERIFY_SCRIPT" "$format_dir" "ja,en-US" "0,1"
 
 assert_exit_code "引数が足りない時は exit 2" 2 \
   bash "$VERIFY_SCRIPT" "$complete_dir" "ja"

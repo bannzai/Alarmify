@@ -10,7 +10,7 @@
 # 寸法は Apple の「Screenshot specifications」の iPhone Duo の節
 # (https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)。
 # 内側は横向き (2853×2007) で作る (理由は generate_duo_screenshots.sh のヘッダー)。
-# 1 つでも欠け・寸法違い・alpha ありがあれば [NG] を出して exit 1 で終わる。
+# 1 つでも欠け・PNG 以外の形式・寸法違い・alpha ありがあれば [NG] を出して exit 1 で終わる。
 #
 # 【どうやって使用するか】
 #   $ ./scripts/generate_screenshots/verify_duo_screenshots.sh <出力ディレクトリ> <言語のカンマ区切り> <インデックスのカンマ区切り>
@@ -40,7 +40,7 @@ fi
 ng_count=0
 ok_count=0
 
-# 1 枚の PNG が期待する寸法で alpha なしかを検査し、結果を [OK]/[NG] で表示する関数
+# 1 枚の画像が PNG 形式で期待する寸法、alpha なしかを検査し、結果を [OK]/[NG] で表示する関数
 # 引数: $1 ファイルパス, $2 期待する幅, $3 期待する高さ
 check_png() {
   local file=$1
@@ -53,17 +53,19 @@ check_png() {
     return
   fi
 
-  # sips の出力 (例: "  pixelWidth: 1398") から値だけを取り出す
-  local sips_output width height has_alpha
-  sips_output=$(sips -g pixelWidth -g pixelHeight -g hasAlpha "$file")
+  # sips の出力 (例: "  pixelWidth: 1398") から値だけを取り出す。
+  # format は拡張子ではなく中身から判定される (JPEG を .png に改名したものは format: jpeg になる)
+  local sips_output format width height has_alpha
+  sips_output=$(sips -g format -g pixelWidth -g pixelHeight -g hasAlpha "$file")
+  format=$(echo "$sips_output" | awk '/format/ {print $2}')
   width=$(echo "$sips_output" | awk '/pixelWidth/ {print $2}')
   height=$(echo "$sips_output" | awk '/pixelHeight/ {print $2}')
   has_alpha=$(echo "$sips_output" | awk '/hasAlpha/ {print $2}')
 
-  if [ "$width" = "$expected_width" ] && [ "$height" = "$expected_height" ] && [ "$has_alpha" = "no" ]; then
+  if [ "$format" = "png" ] && [ "$width" = "$expected_width" ] && [ "$height" = "$expected_height" ] && [ "$has_alpha" = "no" ]; then
     ok_count=$((ok_count + 1))
   else
-    echo "[NG] $file: ${width}x${height} hasAlpha=${has_alpha} (期待: ${expected_width}x${expected_height} hasAlpha=no)"
+    echo "[NG] $file: format=${format} ${width}x${height} hasAlpha=${has_alpha} (期待: format=png ${expected_width}x${expected_height} hasAlpha=no)"
     ng_count=$((ng_count + 1))
   fi
 }
