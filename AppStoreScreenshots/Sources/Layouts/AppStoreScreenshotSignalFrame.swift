@@ -48,7 +48,7 @@ struct AppStoreScreenshotSignalLayout<Content: View>: View {
 
                         fixedHeightDevice(height: (geometry.size.height - 64) / 0.8)
                             .padding(.top, 64)
-                            .frame(width: geometry.size.width / 2, maxHeight: .infinity, alignment: .top)
+                            .frame(width: geometry.size.width / 2, height: geometry.size.height, alignment: .top)
                     }
                 } else if geometry.size.height / geometry.size.width < 1.8 {
                     // 背の低い縦長 (外側ディスプレイ 466×678pt。縦横比 1.46。iPhone は 2.16 以上):
