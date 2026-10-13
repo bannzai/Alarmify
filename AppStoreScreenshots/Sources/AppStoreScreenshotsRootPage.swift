@@ -6,7 +6,10 @@ import SwiftUI
 /// スクリーンショット番号とバリアントの対応は scripts/generate_screenshots/appstore_screenshot_env.sh の get_variant_name が正
 struct AppStoreScreenshotsRootPage: View {
     var body: some View {
-        NavigationView {
+        // NavigationView は regular width (iPhone Duo の内側ディスプレイ) でサイドバー付きの 2 カラムになり、
+        // 一覧が左の列に残ったまま右の列にページが出るため、ページを全画面で表示できる NavigationStack にする
+        // (Alarmify/Features/SnapshotUITest/SnapshotUITestPage.swift と同じ対処)
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading) {
                     SnapshotUITest<AppStoreScreenshot1Page_Previews>()

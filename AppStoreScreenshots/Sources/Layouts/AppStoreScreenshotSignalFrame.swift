@@ -6,7 +6,11 @@ import SwiftUI
 /// 見せる画面は実装済みの機能に限る (連携レシピ・API トークンは本番画面の構成をなぞる)
 /// スクリーンショット番号とバリアントの対応は scripts/generate_screenshots/appstore_screenshot_env.sh の get_variant_name が正
 
-/// 訴求軸 signal のレイアウトコンテナ
+/// 訴求軸 signal のレイアウトコンテナ。
+/// 表示領域の形で 3 通りに組む: iPhone の縦長はキャッチコピーの下にデバイスフレーム、
+/// 背の低い縦長 (iPhone Duo の外側ディスプレイ 466×678pt) は同じ構成でデバイスフレームを下に大きくはみ出させ、
+/// 横長 (iPhone Duo の内側ディスプレイ 951×669pt) はキャッチコピーを左、デバイスフレームを右に並べる
+/// (appstore-screenshot-builder skill の references/iphone-duo.md「決めること」)
 struct AppStoreScreenshotSignalLayout<Content: View>: View {
     /// メインのキャッチコピー
     let title: Text
@@ -15,55 +19,105 @@ struct AppStoreScreenshotSignalLayout<Content: View>: View {
     /// デバイスフレーム内に表示するモック画面
     @ViewBuilder let content: () -> Content
 
+    /// キャッチコピー領域の高さ。見出し 2 行 + サブコピー 2 行分で固定し、
+    /// 行数の差でデバイスフレームの位置と大きさがページごとに変わらないようにする
+    private let headerHeight: CGFloat = 240
+
     var body: some View {
-        ZStack {
-            Color.night
+        GeometryReader { geometry in
+            ZStack {
+                Color.night
 
-            // 左上から差し込むシグナルの微光 (アイコンの橙アークと同モチーフ)。コピーの可読性を優先して淡く敷く
-            RadialGradient(
-                colors: [Color.signal.opacity(0.28), Color.signal.opacity(0)],
-                center: .topLeading,
-                startRadius: 0,
-                endRadius: 520
-            )
+                // 左上から差し込むシグナルの微光 (アイコンの橙アークと同モチーフ)。コピーの可読性を優先して淡く敷く
+                RadialGradient(
+                    colors: [Color.signal.opacity(0.28), Color.signal.opacity(0)],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 520
+                )
 
-            VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 16) {
-                    title
-                        // 40pt + 横 padding 28 で、6.5 インチでも日本語 8 文字 / 英字 17 文字が 1 行に収まる。
-                        // 改行位置は端末幅に依存させず、コピー側 (英語原文と xcstrings の ja) の \n で 2 行に固定する
-                        .font(.system(size: 40, weight: .heavy))
-                        .lineSpacing(6)
-                        .foregroundStyle(Color.paper)
-                        .multilineTextAlignment(.leading)
-                        .minimumScaleFactor(0.8)
-                    Text(subtitle)
-                        .font(.system(size: 18, weight: .medium))
-                        .lineSpacing(6)
-                        .foregroundStyle(Color.paper.opacity(0.7))
-                        .multilineTextAlignment(.leading)
+                if geometry.size.width > geometry.size.height {
+                    // 横長: 左の列にキャッチコピーを縦中央で置き、右半分にデバイスフレームを上から置いて下端を切る。
+                    // 内側ディスプレイは高さ 669pt で、上の余白 64 を除いた残りにモック画面の 8 割が収まる高さにする
+                    // (縦長の iPhone と同じく下部ボタンまでは見せない)
+                    HStack(spacing: 0) {
+                        header
+                            .padding(.leading, 64)
+                            .padding(.trailing, 24)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+
+                        fixedHeightDevice(height: (geometry.size.height - 64) / 0.8)
+                            .padding(.top, 64)
+                            .frame(width: geometry.size.width / 2, maxHeight: .infinity, alignment: .top)
+                    }
+                } else if geometry.size.height / geometry.size.width < 1.8 {
+                    // 背の低い縦長 (外側ディスプレイ 466×678pt。縦横比 1.46。iPhone は 2.16 以上):
+                    // 縦長の iPhone と同じ aspectRatio(.fit) ではデバイスフレームが残りの高さに合わせて幅 200pt まで縮むため、
+                    // キャッチコピーの下の残りの高さにモック画面の 7 割が収まる大きさにし、下端を画面外に切る
+                    VStack(spacing: 0) {
+                        header
+                            .padding(.top, 56)
+                            .padding(.horizontal, 28)
+                            .frame(maxWidth: .infinity, minHeight: headerHeight, alignment: .topLeading)
+
+                        fixedHeightDevice(height: (geometry.size.height - headerHeight) / 0.7)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                } else {
+                    VStack(spacing: 0) {
+                        header
+                            .padding(.top, 56)
+                            .padding(.horizontal, 28)
+                            .frame(maxWidth: .infinity, minHeight: headerHeight, alignment: .topLeading)
+
+                        Spacer()
+
+                        // デバイスは傾けず正面・垂直に配置する (appstore-screenshot-builder skill の共通デザイン原則)。
+                        // 下端はフレームごと画面外に切り、モック画面の下部ボタン省略と整合させる
+                        ScreenshotContentImage(size: CGSize(width: 393, height: 852)) {
+                            content()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: 44))
+                        .overlay(IPhoneFrameOverlay())
+                        .aspectRatio(9.0 / 19.5, contentMode: .fit)
+                        .padding(.horizontal, 44)
+                        .offset(y: 56)
+                    }
                 }
-                .padding(.top, 56)
-                .padding(.horizontal, 28)
-                // 見出し 2 行 + サブコピー 2 行分の高さで固定し、行数の差でデバイスフレームの位置と大きさがページごとに変わらないようにする
-                .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
-
-                Spacer()
-
-                // デバイスは傾けず正面・垂直に配置する (appstore-screenshot-builder skill の共通デザイン原則)。
-                // 下端はフレームごと画面外に切り、モック画面の下部ボタン省略と整合させる
-                ScreenshotContentImage(size: CGSize(width: 393, height: 852)) {
-                    content()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 44))
-                .overlay(IPhoneFrameOverlay())
-                .aspectRatio(9.0 / 19.5, contentMode: .fit)
-                .padding(.horizontal, 44)
-                .offset(y: 56)
             }
         }
         .ignoresSafeArea()
+    }
+
+    /// 見出しとサブコピー
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            title
+                // 40pt + 横 padding 28 で、6.5 インチでも日本語 8 文字 / 英字 17 文字が 1 行に収まる。
+                // 改行位置は端末幅に依存させず、コピー側 (英語原文と xcstrings の ja) の \n で 2 行に固定する
+                .font(.system(size: 40, weight: .heavy))
+                .lineSpacing(6)
+                .foregroundStyle(Color.paper)
+                .multilineTextAlignment(.leading)
+                .minimumScaleFactor(0.8)
+            Text(subtitle)
+                .font(.system(size: 18, weight: .medium))
+                .lineSpacing(6)
+                .foregroundStyle(Color.paper.opacity(0.7))
+                .multilineTextAlignment(.leading)
+        }
+    }
+
+    /// 高さを指定したデバイスフレーム (幅は iPhone の画面比 9:19.5 から決める)。
+    /// 表示領域に収めず、置いた側で下端を画面外に切るために使う
+    private func fixedHeightDevice(height: CGFloat) -> some View {
+        ScreenshotContentImage(size: CGSize(width: 393, height: 852)) {
+            content()
+        }
+        .frame(width: height * 9.0 / 19.5, height: height)
+        .clipShape(RoundedRectangle(cornerRadius: 44))
+        .overlay(IPhoneFrameOverlay())
     }
 }
 
