@@ -67,6 +67,12 @@ configure_screenshot_device() {
   # simulator_common.sh の自動作成が使うデバイスタイプ (専用名のシミュレータでも正しい機種で作る)
   export DESTINATION_SIM_DEVICE_TYPE="$SCREENSHOT_DEVICE_TYPE"
   export DESTINATION="platform=iOS Simulator,name=${DESTINATION_SIM_NAME:-$SCREENSHOT_DEVICE_TYPE},OS=${SCREENSHOT_OS_VERSION}"
+  # DESTINATION_SIM_UDID を渡した時は UDID で simulator を指定する。
+  # iPhone Duo は iOS 27.1 以降のランタイムにしか無く、上の iOS 26 系の OS 指定では選べないため
+  # (generate_duo_screenshots.sh が使う。この関数は source 時にも呼ばれるため、上書きはここで行う)
+  if [ -n "${DESTINATION_SIM_UDID:-}" ]; then
+    export DESTINATION="platform=iOS Simulator,id=${DESTINATION_SIM_UDID}"
+  fi
 }
 
 # 既定は 6.9 インチ。generate がデバイスごとに configure_screenshot_device を呼び直し、
