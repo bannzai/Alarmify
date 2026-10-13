@@ -134,7 +134,7 @@ asc screenshots upload --version-localization <LOCALIZATION_ID> \
   --device-type APP_IPHONE_DUO --skip-existing
 ```
 
-- `asc` はディレクトリ内のファイルをファイル名でソートして上げるため、`0.png` 〜 `4.png` の順に並ぶ
+- `asc` はディレクトリ内のファイルをファイル名でソートして上げるため、`0.png` 〜 `4.png` の順に並ぶ (ソース参照: `internal/cli/assets/assets_screenshots_discovery.go` が集めたファイル一覧を `sort.Strings(files)` で並べ替えてから返す。実際の並びは上げた後に App Store Connect で確かめる)
 - 内側 (2853×2007) の画像をサーバが受け付けるかは未確認 (`asc` の対応 PR が「外側だけ実際にアップロードした」と明記)。拒否された時は Web UI から手で上げる
 
 ## 前提条件
