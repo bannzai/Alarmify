@@ -9,9 +9,11 @@ import {
   parseBearerToken,
 } from "../src/lib/apiToken.js";
 import { parseAppCheckEnforcementMode } from "../src/lib/appCheck.js";
+import { crashlyticsSlackChannel } from "../src/lib/crashlyticsAlert.js";
 import { effectivePlan, monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
 import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
+import { notificationSlackChannel } from "../src/lib/slackChannel.js";
 import {
   isAnonymousAppUserId,
   planUpdatesOf,
@@ -19,6 +21,23 @@ import {
   resolveUid,
   type RevenueCatEvent,
 } from "../src/lib/revenueCat.js";
+
+describe.each([
+  ["予算アラート・お問い合わせ", notificationSlackChannel],
+  ["Crashlytics のアラート", crashlyticsSlackChannel],
+])("%s の投稿先 Slack チャンネル", (_name, slackChannel) => {
+  it("本番のプロジェクトでは本番の通知チャンネル", () => {
+    expect(slackChannel("alarmify-prod")).toBe("#alarmify-notification");
+  });
+
+  it("別のプロジェクトでは QA のチャンネル", () => {
+    expect(slackChannel("demo-alarmify")).toBe("#alarmify-notification-qa");
+  });
+
+  it("プロジェクト ID が空なら QA のチャンネル", () => {
+    expect(slackChannel("")).toBe("#alarmify-notification-qa");
+  });
+});
 
 describe("API トークン", () => {
   it("平文は接頭辞つきで、毎回異なる", () => {

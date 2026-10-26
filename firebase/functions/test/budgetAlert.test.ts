@@ -1,7 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
-  BUDGET_SLACK_CHANNEL,
   budgetMessageSchema,
   budgetNotificationRef,
   formatBudgetSlackText,
@@ -10,7 +9,7 @@ import {
   type BudgetMessage,
 } from "../src/lib/budgetAlert.js";
 import { budgetNotificationFields } from "../src/schema/index.js";
-import { clearFirestore, TEST_NOW, testFirestore } from "./helpers.js";
+import { clearFirestore, PROJECT_ID, TEST_NOW, testFirestore } from "./helpers.js";
 
 /** Cloud Billing が付けるメッセージ属性 (budgetId は予算の UUID) */
 const ATTRIBUTES = {
@@ -48,6 +47,7 @@ beforeEach(async () => {
       }
       posted.push({ channel, text });
     },
+    projectId: () => PROJECT_ID,
     now: () => TEST_NOW,
   };
 });
@@ -118,13 +118,19 @@ describe("予算通知の転送", () => {
     expect(await notifyBudgetThreshold(deps, exceeded90)).toBe("already_notified");
     expect(await notifyBudgetThreshold(deps, exceeded50)).toBe("already_notified");
 
-    expect(posted.map((post) => post.channel)).toEqual([BUDGET_SLACK_CHANNEL, BUDGET_SLACK_CHANNEL]);
+    expect(posted.map((post) => post.channel)).toEqual(["#alarmify-notification-qa", "#alarmify-notification-qa"]);
     expect(posted[0].text).toContain("50%");
     expect(posted[1].text).toContain("90%");
     expect(await storedRecord()).toMatchObject({
       [budgetNotificationFields.costIntervalStart]: "2026-09-01T00:00:00Z",
       [budgetNotificationFields.notifiedThresholdPercent]: 0.9,
     });
+  });
+
+  it("本番のプロジェクトで動く時だけ本番の通知チャンネルへ投稿する", async () => {
+    deps.projectId = () => "alarmify-prod";
+    await notifyBudgetThreshold(deps, { data: budgetMessage({ alertThresholdExceeded: 0.5 }), attributes: ATTRIBUTES });
+    expect(posted.map((post) => post.channel)).toEqual(["#alarmify-notification"]);
   });
 
   it("集計期間が変われば同じ閾値でも投稿する", async () => {

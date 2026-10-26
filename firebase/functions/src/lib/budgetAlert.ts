@@ -3,6 +3,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { z } from "zod";
 import { budgetNotificationSchema, collections, type BudgetNotification } from "../schema/index.js";
+import { notificationSlackChannel } from "./slackChannel.js";
 
 /**
  * Cloud Billing の予算通知を受ける Pub/Sub トピック名。
@@ -10,13 +11,6 @@ import { budgetNotificationSchema, collections, type BudgetNotification } from "
  * 予算への紐づけは documents/budget-alert-slack.md
  */
 export const BUDGET_PUBSUB_TOPIC = "budget-alarmify-prod";
-
-/**
- * 投稿先の Slack チャンネル。
- * slack-notification-setup skill の規約 (サービス名-notification) で作った通知チャンネルで、
- * Cloud Monitoring の error-log-spike アラートと同じ宛先に揃える
- */
-export const BUDGET_SLACK_CHANNEL = "#alarmify-notification";
 
 /**
  * 予算通知のメッセージ本文 (Pub/Sub の data を JSON にしたもの) のうち使う部分。
@@ -50,6 +44,8 @@ export interface BudgetAlertDeps {
   firestore: Firestore;
   /** Slack のチャンネルへ本文を 1 件投稿する。投稿できなかった時は例外にする */
   postSlackMessage: (channel: string, text: string) => Promise<void>;
+  /** 実行中の Firebase プロジェクト ID。投稿先のチャンネル (本番か QA か) を決める */
+  projectId: () => string;
   now: () => Date;
 }
 
@@ -150,7 +146,7 @@ export async function notifyBudgetThreshold(
     }
 
     await deps.postSlackMessage(
-      BUDGET_SLACK_CHANNEL,
+      notificationSlackChannel(deps.projectId()),
       formatBudgetSlackText(message.data, thresholdPercent, attributes.data),
     );
 

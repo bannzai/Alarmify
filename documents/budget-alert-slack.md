@@ -9,7 +9,7 @@ Cloud Billing の予算が Monitoring の通知チャンネルとして受け付
 | 予算 | `billingAccounts/013124-184724-31547F/budgets/655b729c-8d1e-4e9f-a458-dbce538d6c6d` (displayName `budget-alarmify-prod`) |
 | Pub/Sub トピック | `projects/alarmify-prod/topics/budget-alarmify-prod` (`BUDGET_PUBSUB_TOPIC`) |
 | 関数 | `budgetAlertToSlack` (`firebase/functions/src/index.ts`。転送の本体は `firebase/functions/src/lib/budgetAlert.ts`) |
-| 投稿先 | Slack `#alarmify-notification` (`BUDGET_SLACK_CHANNEL`。slack-notification-setup skill が作った通知チャンネルで、error-log-spike アラートと同じ) |
+| 投稿先 | Slack `#alarmify-notification` (slack-notification-setup skill が作った通知チャンネルで、error-log-spike アラートと同じ)。本番 (`alarmify-prod`) 以外のプロジェクトでは `#alarmify-notification-qa` (`notificationSlackChannel`) |
 | 投稿に使う token | Secret `SLACK_BOT_TOKEN` (slack-notification-setup skill の通知 bot の bot token。`chat:write` スコープ) |
 | 投稿済みの記録 | Firestore `budgetNotifications/{budgetId}` (`firebase/functions/src/schema/budgetNotification.ts`) |
 

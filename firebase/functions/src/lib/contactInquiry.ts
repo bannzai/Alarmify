@@ -1,12 +1,6 @@
 import type { ContactInquiryType } from "../schema/index.js";
 
 /**
- * お問い合わせの通知先。slack-notification-setup skill の規約 (サービス名-notification) で作った通知チャンネルで、
- * 予算アラート・Crashlytics のアラートと同じ宛先に揃える
- */
-export const CONTACT_INQUIRY_SLACK_CHANNEL = "#alarmify-notification";
-
-/**
  * お問い合わせの保持期間 (日)。docs/AccountDeletion-ja.md の「お問い合わせは対応の記録として受信から 1 年間保持した後に削除」に合わせる
  */
 export const CONTACT_INQUIRY_RETENTION_DAYS = 365;

@@ -11,12 +11,9 @@ import {
 import { logger } from "firebase-functions";
 import { generateApiToken, parseBearerToken } from "../lib/apiToken.js";
 import { requireAppCheck } from "../lib/appCheck.js";
-import {
-  CONTACT_INQUIRY_RETENTION_DAYS,
-  CONTACT_INQUIRY_SLACK_CHANNEL,
-  formatContactInquirySlackText,
-} from "../lib/contactInquiry.js";
+import { CONTACT_INQUIRY_RETENTION_DAYS, formatContactInquirySlackText } from "../lib/contactInquiry.js";
 import { createRateLimiter, type RateLimit } from "../lib/rateLimit.js";
+import { notificationSlackChannel } from "../lib/slackChannel.js";
 import type { Deps, VerifiedIdToken } from "../lib/deps.js";
 import { ApiError, badRequestFromZod, errorHandler, notFoundHandler } from "../lib/errors.js";
 import { effectivePlan, planLimits } from "../lib/plan.js";
@@ -546,7 +543,7 @@ export function createAppApi(deps: Deps): Express {
     });
     try {
       await deps.postSlackMessage(
-        CONTACT_INQUIRY_SLACK_CHANNEL,
+        notificationSlackChannel(deps.projectId()),
         formatContactInquirySlackText({ projectId: deps.projectId(), inquiryId: ref.id, ...inquiry }),
       );
     } catch (error) {
