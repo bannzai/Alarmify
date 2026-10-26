@@ -24,6 +24,7 @@ Pub/Sub から Slack への転送先には次の選択肢があった。
 - **認証**: Slack の bot token は Secret `SLACK_BOT_TOKEN`。設定手順は `documents/budget-alert-slack.md`
 - **既存の email 通知**: そのまま残す。Pub/Sub トピックは email チャンネルと併存する
 - **投稿先**: `#alarmify-notification` をコードの定数にする (slack-notification-setup skill の規約「サービス名-notification」で決まる固定の宛先で、環境ごとに変える値ではない)
+  - 2026-10-26 更新 (#171): 本番以外 (dev・QA・ローカル) からの投稿を本番の通知に混ぜないため、実行中のプロジェクト ID が `alarmify-prod` の時だけ `#alarmify-notification`、それ以外は `#alarmify-notification-qa` にした (`firebase/functions/src/lib/slackChannel.ts` の `notificationSlackChannel`)
 
 ## Consequences
 
