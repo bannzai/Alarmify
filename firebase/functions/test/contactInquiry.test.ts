@@ -4,7 +4,7 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAppApi } from "../src/api/appApi.js";
 import { APP_CHECK_HEADER } from "../src/lib/appCheck.js";
-import { CONTACT_INQUIRY_SLACK_CHANNEL, escapeSlackText } from "../src/lib/contactInquiry.js";
+import { escapeSlackText } from "../src/lib/contactInquiry.js";
 import { collections, contactInquirySchema, deletedAccountFields } from "../src/schema/index.js";
 import {
   clearFirestore,
@@ -67,7 +67,8 @@ describe("お問い合わせ", () => {
     });
 
     expect(context.slackMessages).toHaveLength(1);
-    expect(context.slackMessages[0].channel).toBe(CONTACT_INQUIRY_SLACK_CHANNEL);
+    // テストは本番ではないプロジェクト (demo-alarmify) で動くため QA のチャンネルへ投稿する
+    expect(context.slackMessages[0].channel).toBe("#alarmify-notification-qa");
     expect(context.slackMessages[0].text).toContain("[種別] バグ・不具合");
     expect(context.slackMessages[0].text).toContain(`[UserID] ${context.uid}`);
     expect(context.slackMessages[0].text).toContain("[Email] user@example.com");

@@ -23,6 +23,7 @@ import { createExternalApi } from "./api/externalApi.js";
 import { createRevenueCatWebhook } from "./api/revenueCatWebhook.js";
 import { BUDGET_PUBSUB_TOPIC, createSlackPoster, notifyBudgetThreshold } from "./lib/budgetAlert.js";
 import { deleteExpiredAlarms, EXPIRED_ALARMS_OUTLIVED_TTL_EVENT } from "./lib/cleanup.js";
+import { currentProjectId } from "./lib/crashlyticsAlert.js";
 import { parseAppCheckEnforcementMode } from "./lib/appCheck.js";
 import type { Deps } from "./lib/deps.js";
 import { createFcmPushSender, parsePushDeliveryMode } from "./lib/push.js";
@@ -56,8 +57,7 @@ function createDeps(): Deps {
     pushDeliveryMode: () => parsePushDeliveryMode(process.env.ALARMIFY_PUSH_DELIVERY),
     // token は投稿する時にだけ読む。SLACK_BOT_TOKEN を束ねていない関数 (alarmsApi 等) からは呼ばない
     postSlackMessage: createSlackPoster(() => slackBotToken.value()),
-    // Cloud Functions のランタイムが実行中のプロジェクト ID を渡す
-    projectId: () => process.env.GCLOUD_PROJECT ?? "",
+    projectId: currentProjectId,
     now: () => new Date(),
   };
 }
@@ -130,7 +130,7 @@ export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async (
 });
 
 /**
- * Cloud Billing の予算通知 (Pub/Sub) を Slack #alarmify-notification へ転送する。
+ * Cloud Billing の予算通知 (Pub/Sub) を Slack の通知チャンネル (投稿先は notificationSlackChannel) へ転送する。
  * 予算が受け付ける Monitoring の通知チャンネルは email 型だけのため、Pub/Sub 経由で流す (ADR 0007)
  */
 export const budgetAlertToSlack = onMessagePublished(
@@ -147,6 +147,7 @@ export const budgetAlertToSlack = onMessagePublished(
       {
         firestore: getFirestore(),
         postSlackMessage: createSlackPoster(() => slackBotToken.value()),
+        projectId: currentProjectId,
         now: () => new Date(),
       },
       { data, attributes: event.data.message.attributes },
