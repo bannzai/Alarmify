@@ -85,9 +85,9 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/signing-assets.sh create-profil
 ```sh
 # 適用済み (再実行しても同じ状態になる)
 bash ~/.agents/skills/ios-deploy-actions/scripts/setup-environment.sh \
-  --repo bannzai/Alarmify --environment ios-deploy --branch main
+  --repo bannzai/Signalarm --environment ios-deploy --branch main
 
-bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bannzai/Alarmify --env ios-deploy --dry-run \
+bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bannzai/Signalarm --env ios-deploy --dry-run \
   --secret ASC_API_KEY_ID="$ASC_API_KEY_ID" \
   --secret ASC_API_KEY_ISSUER_ID="$ASC_API_KEY_ISSUER_ID" \
   --secret ASC_API_KEY_P8_BASE64="$ASC_API_KEY_P8_BASE64" \
@@ -104,7 +104,7 @@ bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bann
 
 `APPLE_DEVELOPMENT_TEAM_ID` は Developer Portal の Team ID。public リポジトリに Team ID の実値をコミットしない方針 (AGENTS.md「秘匿情報」) のため、workflow にベタ書きせず environment secret から渡す。ローカルでは direnv の `.envrc` の `FASTLANE_TEAM_ID` に入っている。
 
-`--dry-run` で対象と値の非空を確認してから、`--dry-run` を外して登録する。1 つでも空値・不存在があれば 1 件も書き込まれない。登録後は `gh secret list --repo bannzai/Alarmify` を確認し、同じキーがリポジトリスコープに残っていないこと (environment 側にだけあること) を確かめる。
+`--dry-run` で対象と値の非空を確認してから、`--dry-run` を外して登録する。1 つでも空値・不存在があれば 1 件も書き込まれない。登録後は `gh secret list --repo bannzai/Signalarm` を確認し、同じキーがリポジトリスコープに残っていないこと (environment 側にだけあること) を確かめる。
 
 ## 配布する
 

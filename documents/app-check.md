@@ -122,7 +122,7 @@ simulator ではデバッグプロバイダが動き、環境変数 `FIRAAppChec
   ```sh
   bash ~/.claude/skills/firebase-app-check-setup/scripts/appattest-profile.sh Alarmify.AppStore ./tmp/Alarmify.AppStore --yes
   bash ~/.claude/skills/firebase-app-check-setup/scripts/verify-profile-entitlement.sh ./tmp/Alarmify.AppStore.mobileprovision
-  bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bannzai/Alarmify --env ios-deploy \
+  bash ~/.agents/skills/ios-deploy-actions/scripts/register-secrets.sh --repo bannzai/Signalarm --env ios-deploy \
     --secret-base64-file IOS_PROVISIONING_PROFILE_BASE64=./tmp/Alarmify.AppStore.mobileprovision
   ```
 

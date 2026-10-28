@@ -3,7 +3,7 @@
 外部サービスからの HTTP リクエスト (Webhook / REST API) を契機に、ユーザーが操作していない iPhone の AlarmKit アラームを登録・更新する iOS アプリ。「Anything → Signalarm API → iPhone → AlarmKit」。
 
 - 企画の起点: https://github.com/bannzai/IdeaMemo/issues/194 (先行事例 PushWard / Wakey / Pealo / Alarm Friend の調査と、実現方式の検証計画)
-- 製品名は「Signalarm」(2026-09-04 決定。App Store Connect のアプリレコードはこの名前で作成済み、app id 6808548984。候補の確認結果: https://github.com/bannzai/Alarmify/issues/14#issuecomment-5537519985 )。「Alarmify」は開発コードネームで、App Store に「Alarmify™」(Spotify 連携の目覚まし) が存在し類似名も複数あるため製品名には使わない。利用者の目に触れる名称 (ストア表示名・LP・法務ドキュメント・アプリ内表示・push の通知タイトル・アラームの既定タイトル) は Signalarm、コード・リポジトリ名・bundle id (`com.bannzai.Alarmify`)・App Group・ターゲット名・スキーム名・profile 名はコードネームのまま使う (Cloudflare Pages のプロジェクト名と Worker 名は製品名の `signalarm` / `signalarm-api`)
+- 製品名は「Signalarm」(2026-09-04 決定。App Store Connect のアプリレコードはこの名前で作成済み、app id 6808548984。候補の確認結果: https://github.com/bannzai/Alarmify/issues/14#issuecomment-5537519985 )。「Alarmify」は開発コードネームで、App Store に「Alarmify™」(Spotify 連携の目覚まし) が存在し類似名も複数あるため製品名には使わない。利用者の目に触れる名称 (ストア表示名・LP・法務ドキュメント・アプリ内表示・push の通知タイトル・アラームの既定タイトル) と GitHub のリポジトリ名 (`bannzai/Signalarm`。2026-10-28 に `bannzai/Alarmify` から変更、#82) は Signalarm、コード・bundle id (`com.bannzai.Alarmify`)・App Group・ターゲット名・スキーム名・profile 名はコードネームのまま使う (Cloudflare Pages のプロジェクト名と Worker 名は製品名の `signalarm` / `signalarm-api`)
 
 ## コンセプト
 

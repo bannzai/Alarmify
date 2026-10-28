@@ -33,7 +33,7 @@ scripts/generate_screenshots/
 `simulator-session.yml` の `bundle_id` に撮影用アプリを指定すると、GitHub Actions 上でビルドして simtunnel にインストールする。ローカルの Xcode・Simulator は使わない。
 
 ```bash
-SIMTUNNEL_REPO=bannzai/Alarmify ~/ghq/github.com/bannzai/simtunnel/local/simtunnel up issue-81 --ref issue-81 --device "iPhone 17 Pro Max" --bundle-id com.bannzai.Alarmify.AppStoreScreenshots --wait
+SIMTUNNEL_REPO=bannzai/Signalarm ~/ghq/github.com/bannzai/simtunnel/local/simtunnel up issue-81 --ref issue-81 --device "iPhone 17 Pro Max" --bundle-id com.bannzai.Alarmify.AppStoreScreenshots --wait
 ```
 
 セッション名と `--ref` は確認対象の worktree・ブランチに置き換える。アプリの一覧から `AppStoreScreenshot1Page_Previews_0` 等のボタンを開くと、UITest と同じ撮影ページを表示できる。操作は `/ios-simulator` の `ios-wda.sh --session <セッション名>` を使う。

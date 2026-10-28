@@ -132,7 +132,7 @@ environment `firebase-prod` の作成と `main` だけへのデプロイブラ�
 
 ```sh
 bash ~/.agents/skills/ios-deploy-actions/scripts/setup-environment.sh \
-  --repo bannzai/Alarmify --environment firebase-prod --branch main
+  --repo bannzai/Signalarm --environment firebase-prod --branch main
 
 gcloud services enable sts.googleapis.com --project=alarmify-prod
 gcloud iam workload-identity-pools create github --project=alarmify-prod --location=global --display-name="GitHub Actions"
@@ -153,7 +153,7 @@ gcloud iam service-accounts add-iam-policy-binding github-firebase-deployer@alar
 ```sh
 gcloud iam service-accounts keys list --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod --managed-by=user
 gcloud iam service-accounts keys delete 3fe666772127d30490beb33699a660faf6b56039 --iam-account=github-firebase-deployer@alarmify-prod.iam.gserviceaccount.com --project=alarmify-prod
-gh secret delete FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Alarmify --env firebase-prod
+gh secret delete FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 --repo bannzai/Signalarm --env firebase-prod
 ```
 
 復旧 (WIF が使えない時に鍵方式へ戻す): workflow の認証 step を鍵の復元に戻し (git 履歴の 2026-09-14 以前の `functions-deploy.yml`)、`gcloud iam service-accounts keys create` で鍵を発行して同名の environment secret に登録する。
