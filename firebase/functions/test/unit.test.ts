@@ -9,11 +9,11 @@ import {
   parseBearerToken,
 } from "../src/lib/apiToken.js";
 import { parseAppCheckEnforcementMode } from "../src/lib/appCheck.js";
-import { crashlyticsSlackChannel } from "../src/lib/crashlyticsAlert.js";
+import { CRASHLYTICS_SLACK_CHANNEL } from "../src/lib/crashlyticsAlert.js";
 import { effectivePlan, monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
 import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
-import { notificationSlackChannel } from "../src/lib/slackChannel.js";
+import { contactInquirySlackChannel } from "../src/lib/slackChannel.js";
 import {
   isAnonymousAppUserId,
   planUpdatesOf,
@@ -22,21 +22,18 @@ import {
   type RevenueCatEvent,
 } from "../src/lib/revenueCat.js";
 
-describe.each([
-  ["予算アラート・お問い合わせ", notificationSlackChannel],
-  ["Crashlytics のアラート", crashlyticsSlackChannel],
-])("%s の投稿先 Slack チャンネル", (_name, slackChannel) => {
-  it("本番のプロジェクトでは本番の通知チャンネル", () => {
-    expect(slackChannel("alarmify-prod")).toBe("#alarmify-notification");
+describe("お問い合わせの投稿先 Slack チャンネル", () => {
+  it("テスト用の引数が付いた時は共通のテスト用チャンネル", () => {
+    expect(contactInquirySlackChannel(true)).toBe("#test-notification");
   });
 
-  it("別のプロジェクトでは QA のチャンネル", () => {
-    expect(slackChannel("demo-alarmify")).toBe("#alarmify-notification-qa");
+  it("テスト用の引数が無い時は本番の通知チャンネル", () => {
+    expect(contactInquirySlackChannel(false)).toBe("#alarmify-notification");
   });
+});
 
-  it("プロジェクト ID が空なら QA のチャンネル", () => {
-    expect(slackChannel("")).toBe("#alarmify-notification-qa");
-  });
+it("Crashlytics のアラートは本番の通知チャンネルへ投稿する", () => {
+  expect(CRASHLYTICS_SLACK_CHANNEL).toBe("#alarmify-notification");
 });
 
 describe("API トークン", () => {

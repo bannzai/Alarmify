@@ -1,13 +1,19 @@
-/** 本番の Firebase プロジェクト ID。`firebase/.firebaserc` の prod alias と同じ値 */
-const PROD_PROJECT_ID = "alarmify-prod";
+/**
+ * 本番の通知チャンネル。slack-notification-setup skill の規約 (サービス名-notification) で作ったチャンネルで、
+ * 予算アラート・お問い合わせ・Crashlytics のアラート・Cloud Monitoring の error-log-spike アラートの宛先に揃える
+ */
+export const NOTIFICATION_SLACK_CHANNEL = "#alarmify-notification";
 
 /**
- * 実行中のプロジェクト ID に対応する、予算アラート・お問い合わせの投稿先 Slack チャンネル。
- * 本番のプロジェクトと判定できた時だけ slack-notification-setup skill の規約で作った「サービス名-notification」を返し、
- * それ以外 (dev・QA・ローカル・プロジェクト ID が取れない時) は「サービス名-notification-qa」に倒して、QA の投稿を本番の通知に混ぜない
- * (規約: bannzai/castle の home/.claude/documents/rules/qa-notifications-to-separate-channel.md)。
- * Crashlytics のアラートは skill が生成する crashlyticsAlert.ts の crashlyticsSlackChannel が同じ判定を持つ
+ * bannzai のプロジェクト共通のテスト用チャンネル。テスト・QA で起こした投稿を本番の通知に混ぜないために使う
+ * (規約: bannzai/castle の home/.claude/documents/rules/slack-test-notification-channel.md)
  */
-export function notificationSlackChannel(projectId: string): string {
-  return projectId === PROD_PROJECT_ID ? "#alarmify-notification" : "#alarmify-notification-qa";
+export const TEST_NOTIFICATION_SLACK_CHANNEL = "#test-notification";
+
+/**
+ * お問い合わせの投稿先。リクエストにテスト用の引数 (`test: true`) が付いた時だけテスト用のチャンネル、それ以外は本番のチャンネル。
+ * 実行中のプロジェクト ID では切り替えない (規約: 同上。dev のプロジェクトからでも引数が無い投稿は本番のチャンネルに送る)
+ */
+export function contactInquirySlackChannel(test: boolean): string {
+  return test ? TEST_NOTIFICATION_SLACK_CHANNEL : NOTIFICATION_SLACK_CHANNEL;
 }

@@ -130,7 +130,7 @@ export const sweepDeletedAccountsHourly = onSchedule("every 60 minutes", async (
 });
 
 /**
- * Cloud Billing の予算通知 (Pub/Sub) を Slack の通知チャンネル (投稿先は notificationSlackChannel) へ転送する。
+ * Cloud Billing の予算通知 (Pub/Sub) を Slack の通知チャンネル (NOTIFICATION_SLACK_CHANNEL) へ転送する。
  * 予算が受け付ける Monitoring の通知チャンネルは email 型だけのため、Pub/Sub 経由で流す (ADR 0007)
  */
 export const budgetAlertToSlack = onMessagePublished(
@@ -147,7 +147,6 @@ export const budgetAlertToSlack = onMessagePublished(
       {
         firestore: getFirestore(),
         postSlackMessage: createSlackPoster(() => slackBotToken.value()),
-        projectId: currentProjectId,
         now: () => new Date(),
       },
       { data, attributes: event.data.message.attributes },
