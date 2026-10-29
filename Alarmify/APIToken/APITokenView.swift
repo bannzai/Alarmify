@@ -229,7 +229,7 @@ struct CurlExampleFireTimeNote: View {
 
     var body: some View {
         // ja: この例はこの iPhone の時刻で%@に鳴ります。fire_at は UTC (Z) で指定します。
-        Text("This example rings at \(fireDate, format: .dateTime.month(.defaultDigits).day().hour().minute().second().timeZone(.specificName(.short))) on this iPhone. fire_at is in UTC (Z).")
+        Text("This example rings at \(fireDate, format: .dateTime.month(.defaultDigits).day().hour().minute(.twoDigits).second(.twoDigits).timeZone(.specificName(.short))) on this iPhone. fire_at is in UTC (Z).")
             .font(.footnote)
             .foregroundStyle(Color.paperTertiary)
             .fixedSize(horizontal: false, vertical: true)
