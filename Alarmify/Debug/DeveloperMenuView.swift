@@ -524,6 +524,7 @@ struct DeveloperMenuView: View {
         refresh()
     }
 
+    /// 件数上限を測る操作の結果の表示。登録の結果は成功件数・登録済みの全件数・失敗した位置とエラーの種類を並べる
     @ViewBuilder
     private func alarmLimitStatusView(status: AlarmLimitStatus) -> some View {
         switch status {

@@ -6,6 +6,7 @@ import Foundation
 /// 1 件ずつ登録して何件目で失敗したかを返す。登録は本物のアラームと同じ `AlarmKitScheduler.schedule` を通し、
 /// 登録したテスト用アラームの id だけを覚えておき、一括取り消しはその id に限る (外部サービスから登録された本物のアラームを消さない)
 enum DebugAlarmLimitProbe {
+    /// 一括登録・一括取り消しを始められなかった理由。1 件ごとの登録の失敗は投げずに `Outcome.failure` で返す
     enum Error: Swift.Error, LocalizedError {
         /// App Store 配布 (開発者メニューが解放されていない) では何もしない
         case unavailable
