@@ -41,6 +41,7 @@ struct DeveloperMenuView: View {
 
     /// 件数上限を測る操作の結果
     private enum AlarmLimitStatus {
+        /// 一括登録の結果
         case scheduled(DebugAlarmLimitProbe.Outcome)
         /// 取り消した件数
         case cancelled(Int)

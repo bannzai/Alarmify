@@ -29,6 +29,7 @@ enum DebugAlarmLimitProbe {
 
     /// 1 件の登録に失敗した理由
     enum Failure: Equatable {
+        /// AlarmKit の件数上限 (`AlarmManager.AlarmError.maximumLimitReached`)
         case maximumLimitReached
         /// 件数上限以外のエラー。値はエラーの説明
         case other(String)
