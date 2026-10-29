@@ -29,6 +29,7 @@
 		BEDCB68CE5413BC4E1A30603 /* AlarmifyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD26D2F97131F4A50684C1E /* AlarmifyWidgetBundle.swift */; };
 		DCE4F709E7AE80B1CF878A32 /* AlarmRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */; };
 		0D7327D88A274C7BB56113AF /* DebugPushPayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */; };
+		7C1E4A9B2D3F4E5A8B6C0D02 /* DebugAlarmLimitProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E4A9B2D3F4E5A8B6C0F02 /* DebugAlarmLimitProbeTests.swift */; };
 		DF5F29343C850077D3CECD66 /* AlarmKitScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */; };
 		8C7D7DA80B2B6086739A741F /* AlarmApplyReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */; };
 		C81F1397CFE9DB98EF9AB828 /* AlarmApplyReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */; };
@@ -92,6 +93,7 @@
 		BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */; };
 		0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */; };
 		50539BA0C0094EE0B4E53FD2 /* DebugPushPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */; };
+		7C1E4A9B2D3F4E5A8B6C0D01 /* DebugAlarmLimitProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E4A9B2D3F4E5A8B6C0F01 /* DebugAlarmLimitProbe.swift */; };
 		5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */; };
 		8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA085358AAEA03A5EF70727B /* APITokenTests.swift */; };
 		82CF0537B48147B70E5D28E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */; };
@@ -186,6 +188,7 @@
 		A3855C5317EACB9CD0D7B34D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmRequestTests.swift; sourceTree = "<group>"; };
 		9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPushPayloadTests.swift; sourceTree = "<group>"; };
+		7C1E4A9B2D3F4E5A8B6C0F02 /* DebugAlarmLimitProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAlarmLimitProbeTests.swift; sourceTree = "<group>"; };
 		AF42B6B43C8D0969ECFA49E8 /* AlarmKitScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmKitScheduler.swift; sourceTree = "<group>"; };
 		FC18E1F369C3C2E4A459987A /* AlarmApplyReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmApplyReport.swift; sourceTree = "<group>"; };
 		D5A7F7C19BBD420D81A09460 /* SharedStoreLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStoreLock.swift; sourceTree = "<group>"; };
@@ -253,6 +256,7 @@
 		740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperMenuView.swift"; sourceTree = "<group>"; };
 		B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperSettings.swift"; sourceTree = "<group>"; };
 		A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugPushPayload.swift"; sourceTree = "<group>"; };
+		7C1E4A9B2D3F4E5A8B6C0F01 /* DebugAlarmLimitProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAlarmLimitProbe.swift; sourceTree = "<group>"; };
 		CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlarmifyAPIClientTests.swift"; sourceTree = "<group>"; };
 		FA085358AAEA03A5EF70727B /* APITokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APITokenTests.swift"; sourceTree = "<group>"; };
 		9A19018BEB42978A4FD19474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -426,6 +430,7 @@
 				2777C0D279353A7CDA9FEFD5 /* AlarmKitSchedulerTests.swift */,
 				A65A1C2946B3D5F000921443 /* AlarmRequestTests.swift */,
 				9E1A8ABF51FF4FB197A3C915 /* DebugPushPayloadTests.swift */,
+				7C1E4A9B2D3F4E5A8B6C0F02 /* DebugAlarmLimitProbeTests.swift */,
 				36124CAE4A04440814C4E92A /* IntegrationRecipeTests.swift */,
 				640EC4E9A1B51AB996206052 /* HomeNextAlarmTests.swift */,
 				CD1A57C323AA34848EEE3795 /* AlarmifyAPIClientTests.swift */,
@@ -616,6 +621,7 @@
 		F0B0BA3AA317B1253CEA0183 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				7C1E4A9B2D3F4E5A8B6C0F01 /* DebugAlarmLimitProbe.swift */,
 				A2E7185DF8824A96A66577BD /* DebugPushPayload.swift */,
 				740313DE57A18C9407DB60CC /* DeveloperMenuView.swift */,
 				B355A7C5BC38E4FC83019902 /* DeveloperSettings.swift */,
@@ -970,6 +976,7 @@
 				D2A25BFA4F043C07A2EEA4F5 /* AlarmApplyReportQueueTests.swift in Sources */,
 				1CD11AA85286485F9F205BCF /* SharedStoreLockTests.swift in Sources */,
 				0D7327D88A274C7BB56113AF /* DebugPushPayloadTests.swift in Sources */,
+				7C1E4A9B2D3F4E5A8B6C0D02 /* DebugAlarmLimitProbeTests.swift in Sources */,
 				5466D6314E6E67F31139F41A /* AlarmifyAPIClientTests.swift in Sources */,
 				8192B0091440F034224B6B50 /* APITokenTests.swift in Sources */,
 			);
@@ -1033,6 +1040,7 @@
 				BC54965BAF02372DD06B88A9 /* DeveloperMenuView.swift in Sources */,
 				0E0BF7D7798B378048B41907 /* DeveloperSettings.swift in Sources */,
 				50539BA0C0094EE0B4E53FD2 /* DebugPushPayload.swift in Sources */,
+				7C1E4A9B2D3F4E5A8B6C0D01 /* DebugAlarmLimitProbe.swift in Sources */,
 				1A45C87910DFB1EEA8EA2A7C /* LegalLinks.swift in Sources */,
 				68E2E12244AD3B798F163CF7 /* PaywallPage.swift in Sources */,
 				A98E513F72C65D9A9D6491D3 /* ProEntitlement.swift in Sources */,
