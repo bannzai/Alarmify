@@ -1,3 +1,4 @@
+import AlarmKit
 import XCTest
 @testable import Alarmify
 
@@ -177,6 +178,8 @@ final class FakeAlarmStore: @unchecked Sendable {
     var alarms: [UUID: Entry] = [:]
     var alarmsError: Failure?
     var scheduleError: Failure?
+    /// AlarmKit の件数上限の代わり。登録済みがこの件数に達していると `AlarmManager.AlarmError.maximumLimitReached` を投げる
+    var maximumCount: Int?
     private(set) var scheduleCount = 0
 
     func registeredAlarms() throws -> [any RegisteredAlarm] {
@@ -187,6 +190,7 @@ final class FakeAlarmStore: @unchecked Sendable {
     func schedule(id: UUID, fireDate: Date, title: String) async throws {
         scheduleCount += 1
         if let scheduleError { throw scheduleError }
+        if let maximumCount, alarms.count >= maximumCount { throw AlarmManager.AlarmError.maximumLimitReached }
         alarms[id] = Entry(fireDate: fireDate, title: title, isAlerting: false)
     }
 
