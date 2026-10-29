@@ -276,7 +276,7 @@ struct OnboardingView: View {
     /// トークン画面のカードと curl。発行中はカードの位置に ProgressView、失敗時はエラー文と再試行ボタンを出す
     @ViewBuilder
     private var tokenVisual: some View {
-        if let issued = tokenModel.issued, let curlExample = tokenModel.curlExample {
+        if let issued = tokenModel.issued {
             VStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 10) {
                     // ja: トークン
@@ -306,8 +306,17 @@ struct OnboardingView: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .card(border: .signalLine)
-                // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
-                CodeBlock(code: curlExample, copyIdentifier: "onboarding_curl_copy", copyText: { tokenModel.curlExample ?? curlExample })
+                // 表示中の例と発火時刻は 1 秒ごとに作り直し、コピーする瞬間にも作り直して過去日時にならないようにする
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    VStack(spacing: 8) {
+                        CodeBlock(
+                            code: tokenModel.curlExample(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay)) ?? "",
+                            copyIdentifier: "onboarding_curl_copy",
+                            copyText: { tokenModel.curlExample(fireDate: .now.addingTimeInterval(APITokenUsageExample.fireDelay)) ?? "" }
+                        )
+                        CurlExampleFireTimeNote(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay))
+                    }
+                }
             }
         } else if tokenPreparing {
             ProgressView()

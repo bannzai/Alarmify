@@ -61,6 +61,10 @@ struct IssuedAPIToken: Equatable, Sendable, Decodable {
 /// 発行したトークンをそのまま貼って使える `POST /v1/alarms` の curl の例。
 /// 宛先は外部サービス向け API (`alarmsApi`)。表示は 1 行に収める (ユーザーがコピーしてそのまま実行できるようにするため)
 enum APITokenUsageExample {
+    /// 例の fire_at を「今」からどれだけ後にするか。コピーして外部サービスやターミナルに貼り、実行するまでに過去日時にならない長さで、
+    /// かつ鳴るのを待ちきれる短さにするため 5 分にする
+    static let fireDelay: TimeInterval = 300
+
     /// - Parameters:
     ///   - secret: 発行直後の平文トークン
     ///   - fireDate: 例に埋め込むアラームの発火日時
