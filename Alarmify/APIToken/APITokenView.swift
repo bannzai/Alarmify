@@ -181,12 +181,16 @@ struct APITokenView: View {
                 .disabled(model.loading)
                 .accessibilityIdentifier("api_token_revoke_\(token.id)")
             }
-            // 表示中の例の fire_at は body 評価時点のもの。コピーする瞬間に作り直して過去日時にならないようにする
-            CodeBlock(
-                code: curlExample(secret: secret, token: token),
-                copyIdentifier: "api_token_curl_copy_\(token.id)",
-                copyText: { curlExample(secret: secret, token: token) }
-            )
+            // 表示中の例と発火時刻は 1 秒ごとに作り直し、過去日時にならないようにする。コピーは表示中の例をそのまま使い、注記の時刻と揃える
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                VStack(spacing: 8) {
+                    CodeBlock(
+                        code: curlExample(secret: secret, token: token, fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay)),
+                        copyIdentifier: "api_token_curl_copy_\(token.id)"
+                    )
+                    CurlExampleFireTimeNote(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay))
+                }
+            }
             // チップは幅に収まらない分を次の行へ送る (名前を省略しない)
             FlowLayout(spacing: 8) {
                 // ja: レシピ
@@ -209,9 +213,27 @@ struct APITokenView: View {
         .card()
     }
 
-    /// トークンカードの curl の例。平文が無いトークンは prefix + 省略記号で埋める。fire_at は呼ばれた瞬間の 5 分後
-    private func curlExample(secret: String?, token: APIToken) -> String {
-        APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: .now.addingTimeInterval(300))
+    /// トークンカードの curl の例。平文が無いトークンは prefix + 省略記号で埋める
+    /// - Parameter fireDate: 例に埋め込むアラームの発火日時。画面に併記する発火時刻と同じ値を渡す
+    private func curlExample(secret: String?, token: APIToken, fireDate: Date) -> String {
+        APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: fireDate)
+    }
+}
+
+/// curl の例の fire_at (UTC) が、この端末のタイムゾーンで何日の何時に当たるかの注記。
+/// fire_at は `Z` 付きの UTC で書くため、例だけでは端末の時刻でいつ鳴るかが読み取れない
+struct CurlExampleFireTimeNote: View {
+    /// curl の例に埋め込んだ発火日時
+    let fireDate: Date
+
+    var body: some View {
+        // ja: この例はこの iPhone の時刻で%@に鳴ります。fire_at は UTC (Z) で指定します。
+        Text("This example rings at \(fireDate, format: .dateTime.month(.defaultDigits).day().hour().minute(.twoDigits).second(.twoDigits).timeZone(.specificName(.short))) on this iPhone. fire_at is in UTC (Z).")
+            .font(.footnote)
+            .foregroundStyle(Color.paperTertiary)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier("curl_example_fire_time")
     }
 }
 

@@ -23437,6 +23437,16 @@
         }
       }
     },
+    "This example rings at %@ on this iPhone. fire_at is in UTC (Z)." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この例はこの iPhone の時刻で%@に鳴ります。fire_at は UTC (Z) で指定します。"
+          }
+        }
+      }
+    },
     "This iPhone rings" : {
       "localizations" : {
         "ja" : {

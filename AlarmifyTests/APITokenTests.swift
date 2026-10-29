@@ -40,7 +40,7 @@ final class APITokenTests: XCTestCase {
         XCTAssertEqual(model.tokens.count, 1)
         XCTAssertNil(model.errorMessage)
         let issued = try? XCTUnwrap(model.issued)
-        XCTAssertEqual(model.curlExample?.contains(issued?.secret ?? "-"), true)
+        XCTAssertEqual(model.curlExample(fireDate: .now)?.contains(issued?.secret ?? "-"), true)
 
         await model.revoke(id: issued?.token.id ?? "")
 
