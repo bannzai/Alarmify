@@ -306,16 +306,10 @@ struct OnboardingView: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .card(border: .signalLine)
-                // 表示中の例と発火時刻は 1 秒ごとに作り直し、過去日時にならないようにする。コピーは表示中の例をそのまま使い、注記の時刻と揃える
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    VStack(spacing: 8) {
-                        CodeBlock(
-                            code: tokenModel.curlExample(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay)) ?? "",
-                            copyIdentifier: "onboarding_curl_copy"
-                        )
-                        CurlExampleFireTimeNote(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay))
-                    }
-                }
+                CurlExampleWithFireTime(
+                    curl: { tokenModel.curlExample(issued: issued, fireDate: $0) },
+                    copyIdentifier: "onboarding_curl_copy"
+                )
             }
         } else if tokenPreparing {
             ProgressView()

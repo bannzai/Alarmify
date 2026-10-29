@@ -23,11 +23,12 @@ final class APITokenModel {
         self.session = session ?? .shared
     }
 
-    /// 発行直後のトークンをそのまま使える curl の例。未発行なら nil
-    /// - Parameter fireDate: 例に埋め込むアラームの発火日時。画面に併記する発火時刻と同じ値を渡す
-    func curlExample(fireDate: Date) -> String? {
-        guard let issued else { return nil }
-        return APITokenUsageExample.curl(
+    /// 発行直後のトークンをそのまま使える curl の例
+    /// - Parameters:
+    ///   - issued: 発行直後のトークン。呼び出し側で `issued` を unwrap した値を渡す
+    ///   - fireDate: 例に埋め込むアラームの発火日時。画面に併記する発火時刻と同じ値を渡す
+    func curlExample(issued: IssuedAPIToken, fireDate: Date) -> String {
+        APITokenUsageExample.curl(
             secret: issued.secret,
             backend: session.settings.backend,
             fireDate: fireDate
