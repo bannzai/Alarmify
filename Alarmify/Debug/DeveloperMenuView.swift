@@ -27,10 +27,27 @@ struct DeveloperMenuView: View {
     @State private var errorMessage: String?
     /// 強制クラッシュの確認ダイアログの表示状態。誤操作でアプリを落とさないよう、ボタンを押しただけではクラッシュさせない
     @State private var forceCrashConfirmation = false
+    /// 件数上限を測る一括登録で入力された件数。既定の 3 件は simulator で結果の表示を確かめる時に使う件数
+    @State private var alarmLimitCountText = "3"
+    /// 直近の一括登録・一括取り消しの結果
+    @State private var alarmLimitStatus: AlarmLimitStatus?
+    /// 一括登録・一括取り消しの実行中。重ねて実行すると結果と登録の記録が混ざるため、実行中はボタンを無効にする
+    @State private var alarmLimitRunning = false
 
     private struct PushPayloadResult {
         var message: String
         var isError: Bool
+    }
+
+    /// 件数上限を測る操作の結果
+    private enum AlarmLimitStatus {
+        case scheduled(DebugAlarmLimitProbe.Outcome)
+        /// 取り消した件数
+        case cancelled(Int)
+        /// 入力された件数が範囲外
+        case invalidCount
+        /// 操作自体に失敗した時のエラーの説明
+        case failed(String)
     }
 
     var body: some View {
@@ -252,6 +269,52 @@ struct DeveloperMenuView: View {
             }
 
             Section {
+                TextField(text: $alarmLimitCountText) {
+                    // ja: 件数
+                    Text("Number of alarms")
+                }
+                .keyboardType(.numberPad)
+                .accessibilityIdentifier("debug_alarm_limit_count")
+                Button {
+                    Task { await scheduleAlarmLimitProbe(spacing: .everyMinute) }
+                } label: {
+                    // ja: 1 分おきに登録する
+                    Text("Schedule one minute apart")
+                }
+                .accessibilityIdentifier("debug_alarm_limit_schedule_every_minute")
+                Button {
+                    Task { await scheduleAlarmLimitProbe(spacing: .sameTime) }
+                } label: {
+                    // ja: 同じ時刻に登録する
+                    Text("Schedule at the same time")
+                }
+                .accessibilityIdentifier("debug_alarm_limit_schedule_same_time")
+                Button(role: .destructive) {
+                    cancelAlarmLimitProbe()
+                } label: {
+                    // ja: テスト用アラームをすべて取り消す
+                    Text("Cancel all test alarms")
+                }
+                .accessibilityIdentifier("debug_alarm_limit_cancel_all")
+                if alarmLimitRunning {
+                    ProgressView()
+                }
+                if let alarmLimitStatus {
+                    alarmLimitStatusView(status: alarmLimitStatus)
+                        .font(.caption)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityIdentifier("debug_alarm_limit_result")
+                }
+            } header: {
+                // ja: AlarmKit の件数上限
+                Text("AlarmKit limit")
+            } footer: {
+                // ja: アラームを 1 件ずつ登録し、最初に失敗したところで止めて、登録できた件数を表示します。取り消しはここで登録したアラームだけが対象です。
+                Text("Schedules alarms one at a time and stops at the first failure to show how many AlarmKit accepted. Cancelling only removes alarms scheduled here.")
+            }
+            .disabled(alarmLimitRunning)
+
+            Section {
                 if alarms.isEmpty {
                     // ja: 登録済みのアラームはありません
                     Text("No alarms scheduled")
@@ -433,6 +496,69 @@ struct DeveloperMenuView: View {
             errorMessage = error.localizedDescription
         }
         refresh()
+    }
+
+    /// 入力された件数のテスト用アラームを `spacing` の並べ方で登録し、結果を表示する
+    private func scheduleAlarmLimitProbe(spacing: DebugAlarmLimitProbe.Spacing) async {
+        guard let count = DebugAlarmLimitProbe.count(text: alarmLimitCountText) else {
+            alarmLimitStatus = .invalidCount
+            return
+        }
+        alarmLimitRunning = true
+        defer { alarmLimitRunning = false }
+        do {
+            alarmLimitStatus = .scheduled(try await DebugAlarmLimitProbe.schedule(spacing: spacing, count: count))
+        } catch {
+            alarmLimitStatus = .failed(error.localizedDescription)
+        }
+        refresh()
+    }
+
+    /// テスト用に登録したアラームだけを取り消し、取り消した件数を表示する
+    private func cancelAlarmLimitProbe() {
+        do {
+            alarmLimitStatus = .cancelled(try DebugAlarmLimitProbe.cancelAll())
+        } catch {
+            alarmLimitStatus = .failed(error.localizedDescription)
+        }
+        refresh()
+    }
+
+    @ViewBuilder
+    private func alarmLimitStatusView(status: AlarmLimitStatus) -> some View {
+        switch status {
+        case .scheduled(let outcome):
+            VStack(alignment: .leading, spacing: 4) {
+                // ja: %2$lld 件中 %1$lld 件を登録しました
+                Text("Scheduled \(outcome.scheduledCount) of \(outcome.requestedCount) alarms")
+                if let registeredCount = outcome.registeredCount {
+                    // ja: AlarmKit に登録済みのアラーム: %lld 件
+                    Text("Alarms registered in AlarmKit: \(registeredCount)")
+                }
+                switch outcome.failure {
+                case nil:
+                    EmptyView()
+                case .maximumLimitReached:
+                    // ja: %lld 件目で件数上限 (maximumLimitReached) に達しました
+                    Text("Alarm \(outcome.scheduledCount + 1) hit the limit (maximumLimitReached)")
+                        .foregroundStyle(.red)
+                case .other(let message):
+                    // ja: %1$lld 件目で失敗しました: %2$@
+                    Text("Alarm \(outcome.scheduledCount + 1) failed: \(message)")
+                        .foregroundStyle(.red)
+                }
+            }
+        case .cancelled(let count):
+            // ja: テスト用アラームを %lld 件取り消しました
+            Text("Cancelled \(count) test alarms")
+        case .invalidCount:
+            // ja: 1〜%lld の数を入力してください
+            Text("Enter a number from 1 to \(DebugAlarmLimitProbe.maxCount)")
+                .foregroundStyle(.red)
+        case .failed(let message):
+            Text(message)
+                .foregroundStyle(.red)
+        }
     }
 
     /// Crashlytics にクラッシュレポートが届くかを確かめるためにアプリを落とす (公開前チェックリスト #14 の実機 QA)。

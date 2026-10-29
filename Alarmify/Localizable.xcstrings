@@ -26200,6 +26200,126 @@
           }
         }
       }
+    },
+    "Number of alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "件数"
+          }
+        }
+      }
+    },
+    "Schedule one minute apart" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分おきに登録する"
+          }
+        }
+      }
+    },
+    "Schedule at the same time" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同じ時刻に登録する"
+          }
+        }
+      }
+    },
+    "Cancel all test alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テスト用アラームをすべて取り消す"
+          }
+        }
+      }
+    },
+    "AlarmKit limit" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AlarmKit の件数上限"
+          }
+        }
+      }
+    },
+    "Schedules alarms one at a time and stops at the first failure to show how many AlarmKit accepted. Cancelling only removes alarms scheduled here." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームを 1 件ずつ登録し、最初に失敗したところで止めて、登録できた件数を表示します。取り消しはここで登録したアラームだけが対象です。"
+          }
+        }
+      }
+    },
+    "Scheduled %lld of %lld alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$lld 件中 %1$lld 件を登録しました"
+          }
+        }
+      }
+    },
+    "Alarm %lld hit the limit (maximumLimitReached)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 件目で件数上限 (maximumLimitReached) に達しました"
+          }
+        }
+      }
+    },
+    "Alarm %lld failed: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 件目で失敗しました: %2$@"
+          }
+        }
+      }
+    },
+    "Cancelled %lld test alarms" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テスト用アラームを %lld 件取り消しました"
+          }
+        }
+      }
+    },
+    "Enter a number from 1 to %lld" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1〜%lld の数を入力してください"
+          }
+        }
+      }
+    },
+    "Alarms registered in AlarmKit: %lld" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AlarmKit に登録済みのアラーム: %lld 件"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
