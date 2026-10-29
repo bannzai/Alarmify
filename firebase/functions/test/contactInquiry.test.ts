@@ -67,14 +67,27 @@ describe("お問い合わせ", () => {
     });
 
     expect(context.slackMessages).toHaveLength(1);
-    // テストは本番ではないプロジェクト (demo-alarmify) で動くため QA のチャンネルへ投稿する
-    expect(context.slackMessages[0].channel).toBe("#alarmify-notification-qa");
+    // 本番ではないプロジェクト (demo-alarmify) で動いても、テスト用の引数が無ければ本番の通知チャンネルへ投稿する
+    expect(context.slackMessages[0].channel).toBe("#alarmify-notification");
     expect(context.slackMessages[0].text).toContain("[種別] バグ・不具合");
     expect(context.slackMessages[0].text).toContain(`[UserID] ${context.uid}`);
     expect(context.slackMessages[0].text).toContain("[Email] user@example.com");
     expect(context.slackMessages[0].text).toContain("[AppVersion] 1.2.0");
     expect(context.slackMessages[0].text).toContain(`~2FcontactInquiries~2F${response.body.id}`);
     expect(context.slackMessages[0].text).toContain("アラームが鳴りません");
+  });
+
+  it("テスト用の引数 test: true が付いた時は共通のテスト用チャンネルへ投稿する", async () => {
+    await postInquiry({ ...VALID_INQUIRY, test: true }).expect(201);
+
+    expect(context.slackMessages).toHaveLength(1);
+    expect(context.slackMessages[0].channel).toBe("#test-notification");
+  });
+
+  it("test: false の時は本番の通知チャンネルへ投稿する", async () => {
+    await postInquiry({ ...VALID_INQUIRY, test: false }).expect(201);
+
+    expect(context.slackMessages[0].channel).toBe("#alarmify-notification");
   });
 
   it("アプリのバージョンが無くても受け付ける", async () => {
@@ -112,6 +125,7 @@ describe("お問い合わせ", () => {
     ["本文が空白だけ", { ...VALID_INQUIRY, content: "   " }],
     ["本文が上限を超える", { ...VALID_INQUIRY, content: "a".repeat(4001) }],
     ["メールアドレスの形式が不正", { ...VALID_INQUIRY, email_address: "not-an-email" }],
+    ["テスト用の引数が真偽値でない", { ...VALID_INQUIRY, test: "true" }],
   ])("%s なら 400 で保存も通知もしない", async (_label, body) => {
     const response = await postInquiry(body).expect(400);
     expect(response.body.error.code).toBe("invalid_argument");
