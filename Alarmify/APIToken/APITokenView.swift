@@ -181,16 +181,10 @@ struct APITokenView: View {
                 .disabled(model.loading)
                 .accessibilityIdentifier("api_token_revoke_\(token.id)")
             }
-            // 表示中の例と発火時刻は 1 秒ごとに作り直し、過去日時にならないようにする。コピーは表示中の例をそのまま使い、注記の時刻と揃える
-            TimelineView(.periodic(from: .now, by: 1)) { context in
-                VStack(spacing: 8) {
-                    CodeBlock(
-                        code: curlExample(secret: secret, token: token, fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay)),
-                        copyIdentifier: "api_token_curl_copy_\(token.id)"
-                    )
-                    CurlExampleFireTimeNote(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay))
-                }
-            }
+            CurlExampleWithFireTime(
+                curl: { curlExample(secret: secret, token: token, fireDate: $0) },
+                copyIdentifier: "api_token_curl_copy_\(token.id)"
+            )
             // チップは幅に収まらない分を次の行へ送る (名前を省略しない)
             FlowLayout(spacing: 8) {
                 // ja: レシピ
@@ -217,6 +211,27 @@ struct APITokenView: View {
     /// - Parameter fireDate: 例に埋め込むアラームの発火日時。画面に併記する発火時刻と同じ値を渡す
     private func curlExample(secret: String?, token: APIToken, fireDate: Date) -> String {
         APITokenUsageExample.curl(secret: secret ?? token.prefix + "…", backend: session.settings.backend, fireDate: fireDate)
+    }
+}
+
+/// curl の例と、その fire_at が端末の時刻でいつに当たるかの注記を並べたブロック。
+/// 例・注記・コピーの値が同じ発火日時を指すよう、発火日時は 1 度だけ求めて両方に渡す
+struct CurlExampleWithFireTime: View {
+    /// 発火日時を受け取り、それを fire_at に埋め込んだ curl の例を返す
+    let curl: (Date) -> String
+    /// コピーボタンの accessibilityIdentifier
+    let copyIdentifier: String
+
+    var body: some View {
+        // 注記が秒まで表示するため、秒が変わるたびに例と注記を作り直す。例の fire_at が過去日時にならないようにする意味もある
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let fireDate = context.date.addingTimeInterval(APITokenUsageExample.fireDelay)
+            VStack(spacing: 8) {
+                // コピーは表示中の例をそのまま使い、注記の時刻と揃える
+                CodeBlock(code: curl(fireDate), copyIdentifier: copyIdentifier)
+                CurlExampleFireTimeNote(fireDate: fireDate)
+            }
+        }
     }
 }
 
