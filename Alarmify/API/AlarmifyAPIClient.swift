@@ -139,6 +139,11 @@ struct URLSessionAlarmifyAPIClient: AlarmifyAPIClient {
         if let appVersion = inquiry.appVersion {
             body["app_version"] = appVersion
         }
+        #if DEBUG
+        // DEBUG ビルドからの送信は、サーバーが共通のテスト用チャンネル #test-notification へ通知する
+        // (規約: bannzai/castle の home/.claude/documents/rules/slack-test-notification-channel.md)
+        body["test"] = true
+        #endif
         _ = try await send(method: "POST", path: "/v1/contact-inquiries", body: body)
     }
 
