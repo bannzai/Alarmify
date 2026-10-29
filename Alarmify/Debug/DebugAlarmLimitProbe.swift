@@ -81,7 +81,8 @@ enum DebugAlarmLimitProbe {
         for (index, fireDate) in fireDates(spacing: spacing, count: count, now: dependencies.now()).enumerated() {
             let id = UUID()
             do {
-                try await AlarmKitScheduler.schedule(id: id, fireDate: fireDate, title: "Limit probe \(index + 1)/\(count)", dependencies: dependencies)
+                // ja: 件数上限の確認 %1$lld/%2$lld
+                try await AlarmKitScheduler.schedule(id: id, fireDate: fireDate, title: String(localized: "Limit probe \(index + 1)/\(count)"), dependencies: dependencies)
             } catch {
                 return Outcome(requestedCount: count, scheduledCount: index, failure: failure(error: error), registeredCount: try? dependencies.registeredAlarms().count)
             }

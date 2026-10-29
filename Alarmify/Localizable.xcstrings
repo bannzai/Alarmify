@@ -26320,6 +26320,16 @@
           }
         }
       }
+    },
+    "Limit probe %lld/%lld" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "件数上限の確認 %1$lld/%2$lld"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
