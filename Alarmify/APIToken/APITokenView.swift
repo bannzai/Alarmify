@@ -181,13 +181,12 @@ struct APITokenView: View {
                 .disabled(model.loading)
                 .accessibilityIdentifier("api_token_revoke_\(token.id)")
             }
-            // 表示中の例と発火時刻は 1 秒ごとに作り直し、コピーする瞬間にも作り直して過去日時にならないようにする
+            // 表示中の例と発火時刻は 1 秒ごとに作り直し、過去日時にならないようにする。コピーは表示中の例をそのまま使い、注記の時刻と揃える
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 VStack(spacing: 8) {
                     CodeBlock(
                         code: curlExample(secret: secret, token: token, fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay)),
-                        copyIdentifier: "api_token_curl_copy_\(token.id)",
-                        copyText: { curlExample(secret: secret, token: token, fireDate: .now.addingTimeInterval(APITokenUsageExample.fireDelay)) }
+                        copyIdentifier: "api_token_curl_copy_\(token.id)"
                     )
                     CurlExampleFireTimeNote(fireDate: context.date.addingTimeInterval(APITokenUsageExample.fireDelay))
                 }
