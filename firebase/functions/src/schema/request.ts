@@ -143,6 +143,8 @@ export const createContactInquiryRequestSchema = z.object({
   content: z.string().trim().min(1).max(4000),
   email_address: z.string().trim().max(254).pipe(z.email()),
   app_version: z.string().min(1).max(32).optional(),
+  /** テスト用の引数。true の時は通知を共通のテスト用チャンネルに送る (アプリの DEBUG ビルドが付ける) */
+  test: z.boolean().optional(),
 });
 export type CreateContactInquiryRequest = z.infer<typeof createContactInquiryRequestSchema>;
 

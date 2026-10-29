@@ -390,13 +390,17 @@ final class AlarmifyAPIClientTests: XCTestCase {
         StubURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.url?.path(), "/demo-alarmify/asia-northeast1/appApi/v1/contact-inquiries")
-            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
-            XCTAssertEqual(body, [
-                "inquiry_type": "feedback",
-                "content": "Please add a snooze option",
-                "email_address": "user@example.com",
-                "app_version": "1.2.0",
-            ])
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: Any]
+            XCTAssertEqual(body?["inquiry_type"] as? String, "feedback")
+            XCTAssertEqual(body?["content"] as? String, "Please add a snooze option")
+            XCTAssertEqual(body?["email_address"] as? String, "user@example.com")
+            XCTAssertEqual(body?["app_version"] as? String, "1.2.0")
+            // DEBUG ビルドの送信はテスト用の引数を付け、通知を共通のテスト用チャンネルへ送らせる
+            #if DEBUG
+            XCTAssertEqual(body?["test"] as? Bool, true)
+            #else
+            XCTAssertNil(body?["test"])
+            #endif
             return (201, Data(#"{"id":"inquiry-1"}"#.utf8))
         }
 
@@ -408,7 +412,8 @@ final class AlarmifyAPIClientTests: XCTestCase {
     /// バージョンを取得できない時はキーごと省き、サーバーが「不明」として扱う
     func testSubmitContactInquiryOmitsTheMissingAppVersion() async throws {
         StubURLProtocol.handler = { request in
-            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: String]
+            let body = (try? JSONSerialization.jsonObject(with: StubURLProtocol.body(of: request))) as? [String: Any]
+            XCTAssertNotNil(body)
             XCTAssertNil(body?["app_version"])
             return (201, Data(#"{"id":"inquiry-1"}"#.utf8))
         }

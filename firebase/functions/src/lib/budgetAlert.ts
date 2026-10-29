@@ -3,7 +3,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { z } from "zod";
 import { budgetNotificationSchema, collections, type BudgetNotification } from "../schema/index.js";
-import { notificationSlackChannel } from "./slackChannel.js";
+import { NOTIFICATION_SLACK_CHANNEL } from "./slackChannel.js";
 
 /**
  * Cloud Billing の予算通知を受ける Pub/Sub トピック名。
@@ -44,8 +44,6 @@ export interface BudgetAlertDeps {
   firestore: Firestore;
   /** Slack のチャンネルへ本文を 1 件投稿する。投稿できなかった時は例外にする */
   postSlackMessage: (channel: string, text: string) => Promise<void>;
-  /** 実行中の Firebase プロジェクト ID。投稿先のチャンネル (本番か QA か) を決める */
-  projectId: () => string;
   now: () => Date;
 }
 
@@ -146,7 +144,8 @@ export async function notifyBudgetThreshold(
     }
 
     await deps.postSlackMessage(
-      notificationSlackChannel(deps.projectId()),
+      // Pub/Sub が起動する関数でテスト用の引数を渡せないため、プロジェクトを問わず本番のチャンネルに送る
+      NOTIFICATION_SLACK_CHANNEL,
       formatBudgetSlackText(message.data, thresholdPercent, attributes.data),
     );
 

@@ -25,6 +25,7 @@ Pub/Sub から Slack への転送先には次の選択肢があった。
 - **既存の email 通知**: そのまま残す。Pub/Sub トピックは email チャンネルと併存する
 - **投稿先**: `#alarmify-notification` をコードの定数にする (slack-notification-setup skill の規約「サービス名-notification」で決まる固定の宛先で、環境ごとに変える値ではない)
   - 2026-10-26 更新 (#171): 本番以外 (dev・QA・ローカル) からの投稿を本番の通知に混ぜないため、実行中のプロジェクト ID が `alarmify-prod` の時だけ `#alarmify-notification`、それ以外は `#alarmify-notification-qa` にした (`firebase/functions/src/lib/slackChannel.ts` の `notificationSlackChannel`)
+  - 2026-10-29 更新 (#191): 上の 2026-10-26 の変更を取り消し、プロジェクトを問わず `#alarmify-notification` に戻した。owner がプロジェクト ID で投稿先を切り替える設計を取り消し、テスト・QA の投稿は共通の `#test-notification` に、DEBUG ビルドかテスト用の引数で切り替える規約に決め直したため (bannzai/castle の `home/.claude/documents/rules/slack-test-notification-channel.md`、https://github.com/bannzai/castle/issues/1983 )。予算アラートは Pub/Sub が起動する関数で引数を渡せないため、常に本番のチャンネルに送る (定数は `slackChannel.ts` の `NOTIFICATION_SLACK_CHANNEL`)。`#alarmify-notification-qa` はアーカイブ済み
 
 ## Consequences
 
