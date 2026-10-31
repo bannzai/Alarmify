@@ -20,12 +20,7 @@ import type {
   RegressionAlertPayload,
   VelocityAlertPayload,
 } from "firebase-functions/v2/alerts/crashlytics";
-
-/**
- * 投稿先の Slack チャンネル。
- * slack-notification-setup skill の規約 (サービス名-notification) で作った通知チャンネルに揃える
- */
-export const CRASHLYTICS_SLACK_CHANNEL = "#alarmify-notification";
+import { NOTIFICATION_SLACK_CHANNEL } from "./slackChannel.js";
 
 /** slack-notification-setup skill の通知 bot の bot token (chat:write)。Secret Manager から起動時に読む */
 const SLACK_BOT_TOKEN = defineSecret("SLACK_BOT_TOKEN");
@@ -141,7 +136,7 @@ async function postToSlack(text: string): Promise<void> {
       authorization: `Bearer ${SLACK_BOT_TOKEN.value()}`,
       "content-type": "application/json; charset=utf-8",
     },
-    body: JSON.stringify({ channel: CRASHLYTICS_SLACK_CHANNEL, text }),
+    body: JSON.stringify({ channel: NOTIFICATION_SLACK_CHANNEL, text }),
     // 関数の実行時間の上限 (既定 60 秒) より十分に短くし、Slack が応答しない時も失敗として記録できるようにする
     signal: AbortSignal.timeout(SLACK_REQUEST_TIMEOUT_MS),
   });
