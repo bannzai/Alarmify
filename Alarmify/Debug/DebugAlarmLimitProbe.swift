@@ -111,7 +111,8 @@ enum DebugAlarmLimitProbe {
         return cancelledCount
     }
 
-    /// 登録したテスト用アラームの id
+    /// `schedule` が登録に成功し、`cancelAll` がまだ記録から外していないテスト用アラームの id を登録順に返す。
+    /// 発火済みで AlarmKit から消えた id も含むため、AlarmKit に今残っている件数とは一致しない。記録が無ければ空配列を返す
     static func alarmIDs(userDefaults: UserDefaults) -> [UUID] {
         (userDefaults.stringArray(forKey: alarmIDsKey) ?? []).compactMap(UUID.init(uuidString:))
     }
@@ -121,7 +122,9 @@ enum DebugAlarmLimitProbe {
         userDefaults.set(alarmIDs.map(\.uuidString), forKey: alarmIDsKey)
     }
 
-    /// 登録のエラーを、件数上限かそれ以外かに分ける
+    /// `AlarmKitScheduler.schedule` が投げたエラーを `Outcome.failure` の値にする。
+    /// 件数上限として扱うのは `AlarmManager.AlarmError.maximumLimitReached` だけで、AlarmKit の他のエラーと AlarmKit 以外のエラーは
+    /// 説明 (`localizedDescription`) を持つ `.other` になる
     private static func failure(error: any Swift.Error) -> Failure {
         if error as? AlarmManager.AlarmError == .maximumLimitReached {
             return .maximumLimitReached

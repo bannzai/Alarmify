@@ -4,8 +4,11 @@ import XCTest
 /// 開発者メニューの件数上限を測る一括登録 (`DebugAlarmLimitProbe`) の、件数・時刻の組み立て、結果の集計、一括取り消しのテスト。
 /// AlarmKit 本体には触れず、メモリ上の偽の登録先 (`FakeAlarmStore`) に差し替えて検証する
 final class DebugAlarmLimitProbeTests: XCTestCase {
+    /// テスト対象が読む現在時刻 (`dependencies.now`)。発火時刻の期待値を実行時刻に左右されず書けるよう固定する。値は他のテスト (`AlarmKitSchedulerTests` 等) と揃えただけで意味は無い
     private let now = Date(timeIntervalSince1970: 1_788_418_800)
+    /// AlarmKit の代わりの登録先。`setUp` でテストごとに作り直すため、前のテストで登録したアラームは残らない
     private var store: FakeAlarmStore!
+    /// テスト用アラームの id の記録先。`setUp` でテストごとに空の suite を作るため、記録はテストをまたがない
     private var userDefaults: UserDefaults!
     /// テストは 1 プロセスで順に動き、競合する書き手がいないためロックしない
     private let noLock = SharedStoreLock(fileURL: nil)
@@ -19,6 +22,7 @@ final class DebugAlarmLimitProbeTests: XCTestCase {
         userDefaults.removePersistentDomain(forName: suiteName)
     }
 
+    /// テスト対象に渡す依存。AlarmKit・App Group・現在時刻の代わりに `store`・`userDefaults`・`now` を使わせる
     private var dependencies: AlarmSchedulerDependencies {
         let store = store!
         let now = now
