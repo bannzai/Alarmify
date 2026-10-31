@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase-admin/firestore";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   API_TOKEN_PREFIX,
   displayPrefix,
@@ -9,11 +9,11 @@ import {
   parseBearerToken,
 } from "../src/lib/apiToken.js";
 import { parseAppCheckEnforcementMode } from "../src/lib/appCheck.js";
-import { CRASHLYTICS_SLACK_CHANNEL } from "../src/lib/crashlyticsAlert.js";
+import { crashlyticsNewFatalIssueToSlack } from "../src/lib/crashlyticsAlert.js";
 import { effectivePlan, monthKey } from "../src/lib/plan.js";
 import { buildAlarmMessage, parsePushDeliveryMode, toIso8601Seconds } from "../src/lib/push.js";
 import { createRateLimiter, createRecentKeys } from "../src/lib/rateLimit.js";
-import { contactInquirySlackChannel } from "../src/lib/slackChannel.js";
+import { contactInquirySlackChannel, NOTIFICATION_SLACK_CHANNEL } from "../src/lib/slackChannel.js";
 import {
   isAnonymousAppUserId,
   planUpdatesOf,
@@ -32,8 +32,27 @@ describe("お問い合わせの投稿先 Slack チャンネル", () => {
   });
 });
 
-it("Crashlytics のアラートは本番の通知チャンネルへ投稿する", () => {
-  expect(CRASHLYTICS_SLACK_CHANNEL).toBe("#alarmify-notification");
+describe("Crashlytics のアラートの投稿先 Slack チャンネル", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("お問い合わせ・予算アラートと同じ本番の通知チャンネルへ投稿する", async () => {
+    vi.stubEnv("SLACK_BOT_TOKEN", "xoxb-test");
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ ok: true }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await crashlyticsNewFatalIssueToSlack.run({
+      id: "event-1",
+      appId: "1:000000000000:ios:0000000000000000",
+      data: { payload: { issue: { id: "issue-1", title: "Crash", subtitle: "main", appVersion: "1.0 (1)" } } },
+    } as unknown as Parameters<typeof crashlyticsNewFatalIssueToSlack.run>[0]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(JSON.parse(init.body as string).channel).toBe(NOTIFICATION_SLACK_CHANNEL);
+  });
 });
 
 describe("API トークン", () => {
